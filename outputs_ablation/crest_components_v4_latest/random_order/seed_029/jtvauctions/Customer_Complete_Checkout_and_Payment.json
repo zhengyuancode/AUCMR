@@ -1,0 +1,906 @@
+{
+  "use_case_name": "Complete Checkout and Payment",
+  "actor": "Customer",
+  "slots": {
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The email recipient clicks on a 'Pay with PayPal or Amazon Payments' button.",
+          "evidence_refs": [
+            "EC-TR-003"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The 'Payment Status' column in the 'Items I've Won' table displays 'Paid' for the item(s) whose checkout and payment transaction was successfully completed.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ]
+        },
+        {
+          "content": "Upon completing the Amazon or PayPal checkout process, the Customer is returned to a Thank You page that uses the global header and footer and includes a prominent link to the JTVauctions.com home page.",
+          "evidence_refs": [
+            "EC-PO-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-001",
+        "EC-PO-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "payment-status-paid",
+          "thank-you-page"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Customer wants to complete checkout and payment for won auction items by choosing which items to pay for, selecting a shipping method, and selecting a payment type.",
+          "evidence_refs": [
+            "EC-G-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Customer wants to complete checkout and payment for won auction items by choosing which items to pay for, selecting a shipping method, and selecting a payment type.",
+        "canonical_success_scenario": "The Customer selects the won item(s) to pay for, chooses a shipping method, selects a payment type, and completes the checkout and payment transaction for the selected item(s).",
+        "start_boundary": "The Customer has won auction item(s) and begins the checkout and payment process for those item(s).",
+        "success_boundary": "The Customer has chosen the item(s) to pay for, selected a shipping method, and selected a payment type, thereby completing checkout and payment for the selected won item(s).",
+        "in_scope_actions": [
+          "Choosing which won items to pay for",
+          "Selecting a shipping method",
+          "Selecting a payment type",
+          "Completing checkout and payment for the selected won items"
+        ],
+        "excluded_adjacent_actions": [
+          "Placing bids or winning auctions",
+          "Sending or clicking winnings alert email links",
+          "Clicking a 'Pay with PayPal or Amazon Payments' button from an email",
+          "Displaying a Thank You page",
+          "Updating Payment Status to 'Paid'",
+          "Accepting a 2nd-Chance offer",
+          "Post-checkout shipping fulfillment"
+        ],
+        "variant_dimensions": [
+          "Which won items the Customer chooses to pay for",
+          "Shipping method selection",
+          "Payment type selection"
+        ],
+        "evidence_refs": [
+          "EC-G-000"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "During checkout, if the Customer clicks the 'Checkout Later' button or radio button, the system grays out the page, disables all links, and displays a DIV layer with a message explaining that payment can be made within 7 days (168 hours), but unpaid orders will be cancelled after that payment window expires.",
+          "evidence_refs": [
+            "EC-EF-001",
+            "EC-EF-009"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the Customer does not pay for the won order(s) via Amazon or PayPal within 7 days (168 hours) of the auction ending time, the order(s) are cancelled and the item(s) are placed in Hold status.",
+          "evidence_refs": [
+            "EC-EF-005",
+            "EC-EF-002"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the Customer fails to complete the payment transaction within 7 days (168 hours) of the auction's closing date/time, the Customer's account may be suspended.",
+          "evidence_refs": [
+            "EC-EF-007"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a PayPal or Amazon Payments Customer allows their order(s) to expire (i.e., unresolved/unpaid auction winnings greater than 7 days old), the system automatically locks the account and puts it into Review Status; the Customer cannot unlock the account by paying for the order(s) because those order(s) are automatically cancelled after 7 days.",
+          "evidence_refs": [
+            "EC-EF-010",
+            "EC-EF-011"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-001",
+        "EC-EF-009",
+        "EC-EF-005",
+        "EC-EF-002",
+        "EC-EF-007",
+        "EC-EF-010",
+        "EC-EF-011"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-checkout-later",
+          "EF-payment-timeout-cancellation",
+          "EF-account-suspension",
+          "EF-account-lock-review"
+        ],
+        "missing_aspects": [
+          "Handling of a declined or failed payment authorization during checkout is not documented in the available evidence."
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 4: Returning users with a default Method of Payment of PayPal or Amazon Payments are routed to a specific page that offers them a choice of shipping methods and initiates the payment process for their winnings.",
+          "evidence_refs": [
+            "EC-AF-006"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 4: The Customer may choose PayPal as the payment method by selecting the corresponding radio button in the 'My Payment Methods' section.",
+          "evidence_refs": [
+            "EC-AF-013",
+            "EC-AF-017"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 4: The Customer may select Amazon Payments as their payment method by choosing the corresponding radio button in the 'My Payment Methods' section.",
+          "evidence_refs": [
+            "EC-AF-014"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 5: If the Customer already has a PayPal account, they may log in using the email and password fields on the right side of the PayPal page, instead of creating a new PayPal account or using Amazon Payments; this path allows them to complete payment with the existing PayPal account.",
+          "evidence_refs": [
+            "EC-AF-022"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges from Step 5: The Customer may choose to create a new PayPal account by selecting 'Create a PayPal account' and entering Country (defaulted to United States), then selecting either 'Bill Me Later®' or 'Credit Card' as the payment method.",
+          "evidence_refs": [
+            "EC-AF-021"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-006",
+        "EC-AF-013",
+        "EC-AF-017",
+        "EC-AF-014",
+        "EC-AF-022",
+        "EC-AF-021"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Customer chooses which won item(s) to pay for from a list of won items by checking the 'Pay Now' checkbox next to each item.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system offers the Customer a choice of shipping methods.",
+          "evidence_refs": [
+            "EC-MF-001"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Customer selects a shipping speed option (e.g., USPS Standard or Expedited) via radio buttons.",
+          "evidence_refs": [
+            "EC-MF-004"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system gets the Customer started on the payment process for their winnings.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The Customer selects a checkout option by clicking one of three buttons: 'Check out with PayPal', 'Check out with Amazon', or 'Checkout Later'.",
+          "evidence_refs": [
+            "EC-MF-005"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer completes the Amazon or PayPal checkout process.",
+          "evidence_refs": [
+            "EC-PO-002"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-003",
+        "EC-MF-001",
+        "EC-MF-004",
+        "EC-MF-002",
+        "EC-MF-005",
+        "EC-PO-002"
+      ]
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Customer has won at least one auction item and has unpaid auction winnings to pay for.",
+          "evidence_refs": [
+            "EC-PC-006",
+            "EC-PC-005"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer has previously chosen either PayPal or Amazon Payments as their default Method of Payment and has that payment method type on file in their registration data.",
+          "evidence_refs": [
+            "EC-PC-007",
+            "EC-PC-003",
+            "EC-PC-005"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-006",
+        "EC-PC-005",
+        "EC-PC-007",
+        "EC-PC-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "unpaid-won-items",
+          "default-payment-method-paypal-amazon"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The Trigger starts from an email recipient clicking a 'Pay with PayPal or Amazon Payments' button, but the goal scope contract explicitly excludes clicking that email button as an adjacent action, and Main Flow step 1 begins with the in-scope action of choosing won items from a list. The Trigger therefore does not continue into the Main Flow; it restarts from a different, out-of-scope entry point. (atomic grounding: candidate remains incomplete (Navigation to the Returning Winners Payments page is not supported by the cited evidence.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] Main Flow step 5 offers 'Checkout Later' as one of the three checkout options. If the Customer selects it, the next step ('Customer completes the Amazon or PayPal checkout process') cannot happen, so the postconditions (Payment Status = 'Paid' and the Thank You page) are not reachable from the main flow as written. The main success path should only continue with 'Check out with PayPal' or 'Check out with Amazon'; 'Checkout Later' should be an alternate/exception flow.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow",
+        "alternative_flow"
+      ],
+      "inconsistency_hints": [
+        "Main Flow step 5 stops at the Customer selecting a checkout option (PayPal, Amazon, or Checkout Later). The flow never includes the actual completion of the selected PayPal/Amazon payment or the resulting return/confirmation, so the Postconditions (Payment Status = 'Paid' and Thank You page) are not reached by the authored Main Flow.",
+        "Alternative flow claim 3 says it diverges from main_flow Step 4, but the branch content is an out-of-scope email notification sent after the auction is won plus a manual login obligation that occurs before the Customer begins checkout. This does not branch from Step 4 inside the checkout/payment session, and the goal scope explicitly excludes 'sending or clicking winnings alert email links'.",
+        "Main Flow step 6 says the Customer is returned to a JTVauctions Thank You page and the Payment Status displays 'Paid', but the goal's scope_contract explicitly lists 'Displaying a Thank You page' and 'Updating Payment Status to Paid' as excluded_adjacent_actions. Thus the complete behavior in Main Flow includes actions that the Goal declares out of scope."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 61,
+    "cross_page_cards": 24,
+    "modalities": {
+      "text": 58,
+      "diagram": 2,
+      "table": 1
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1765.789,
+    "llm_calls": 21.0,
+    "llm_seconds": 1695.514,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 70.134,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 7.0,
+    "judge_calls": 0,
+    "cards_collected": 61,
+    "cards_referenced": 26,
+    "evidence_reused": true,
+    "reused_card_count": 61,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/jtvauctions/Customer_Complete_Checkout_and_Payment-evidence.json",
+    "dra_elapsed_seconds": 1030.385,
+    "dra_llm_calls": 14,
+    "dra_llm_seconds": 1030.373,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_calls": 0,
+    "dra_judge_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The email recipient clicks on a 'Pay with PayPal or Amazon Payments' button.",
+            "evidence_refs": [
+              "EC-TR-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The 'Payment Status' column in the 'Items I've Won' table displays 'Paid' for the item(s) whose checkout and payment transaction was successfully completed.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "Upon completing the Amazon or PayPal checkout process, the Customer is returned to a Thank You page that uses the global header and footer and includes a prominent link to the JTVauctions.com home page.",
+            "evidence_refs": [
+              "EC-PO-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer wants to complete checkout and payment for won auction items by choosing which items to pay for, selecting a shipping method, and selecting a payment type.",
+            "evidence_refs": [
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "During checkout, if the Customer clicks the 'Checkout Later' button or radio button, the system grays out the page, disables all links, and displays a DIV layer with a message explaining that payment can be made within 7 days (168 hours), but unpaid orders will be cancelled after that payment window expires.",
+            "evidence_refs": [
+              "EC-EF-001",
+              "EC-EF-009"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the Customer does not pay for the won order(s) via Amazon or PayPal within 7 days (168 hours) of the auction ending time, the order(s) are cancelled and the item(s) are placed in Hold status.",
+            "evidence_refs": [
+              "EC-EF-005",
+              "EC-EF-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the Customer fails to complete the payment transaction within 7 days (168 hours) of the auction's closing date/time, the Customer's account may be suspended.",
+            "evidence_refs": [
+              "EC-EF-007"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If a PayPal or Amazon Payments Customer allows their order(s) to expire (i.e., unresolved/unpaid auction winnings greater than 7 days old), the system automatically locks the account and puts it into Review Status; the Customer cannot unlock the account by paying for the order(s) because those order(s) are automatically cancelled after 7 days.",
+            "evidence_refs": [
+              "EC-EF-010",
+              "EC-EF-011"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 4: Returning users with a default Method of Payment of PayPal or Amazon Payments are routed to a specific page that offers them a choice of shipping methods and initiates the payment process for their winnings.",
+            "evidence_refs": [
+              "EC-AF-006"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 4: The Customer may choose PayPal as the payment method by selecting the corresponding radio button in the 'My Payment Methods' section.",
+            "evidence_refs": [
+              "EC-AF-013",
+              "EC-AF-017"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 4: The Customer may select Amazon Payments as their payment method by choosing the corresponding radio button in the 'My Payment Methods' section.",
+            "evidence_refs": [
+              "EC-AF-014"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 5: If the Customer already has a PayPal account, they may log in using the email and password fields on the right side of the PayPal page, instead of creating a new PayPal account or using Amazon Payments; this path allows them to complete payment with the existing PayPal account.",
+            "evidence_refs": [
+              "EC-AF-022"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 5: The Customer may choose to create a new PayPal account by selecting 'Create a PayPal account' and entering Country (defaulted to United States), then selecting either 'Bill Me Later®' or 'Credit Card' as the payment method.",
+            "evidence_refs": [
+              "EC-AF-021"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer chooses which won item(s) to pay for from a list of won items by checking the 'Pay Now' checkbox next to each item.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system offers the Customer a choice of shipping methods.",
+            "evidence_refs": [
+              "EC-MF-001"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Customer selects a shipping speed option (e.g., USPS Standard or Expedited) via radio buttons.",
+            "evidence_refs": [
+              "EC-MF-004"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system gets the Customer started on the payment process for their winnings.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The Customer selects a checkout option by clicking one of three buttons: 'Check out with PayPal', 'Check out with Amazon', or 'Checkout Later'.",
+            "evidence_refs": [
+              "EC-MF-005"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The Customer completes the Amazon or PayPal checkout process.",
+            "evidence_refs": [
+              "EC-PO-002"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer has won at least one auction item and has unpaid auction winnings to pay for.",
+            "evidence_refs": [
+              "EC-PC-006",
+              "EC-PC-005"
+            ]
+          },
+          {
+            "content": "The Customer has previously chosen either PayPal or Amazon Payments as their default Method of Payment and has that payment method type on file in their registration data.",
+            "evidence_refs": [
+              "EC-PC-007",
+              "EC-PC-003",
+              "EC-PC-005"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=29]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=29]",
+    "directory": "random_order/seed_029",
+    "seed": 29,
+    "slot_order": [
+      "trigger",
+      "postconditions",
+      "goal",
+      "exception_flow",
+      "alternative_flow",
+      "main_flow",
+      "preconditions",
+      "primary_actor"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "bbad46b813e245a691ac45616af4b22b"
+}

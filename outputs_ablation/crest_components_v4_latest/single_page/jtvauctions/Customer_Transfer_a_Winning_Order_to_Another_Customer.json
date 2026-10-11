@@ -1,0 +1,1298 @@
+{
+  "use_case_name": "Transfer a Winning Order to Another Customer",
+  "actor": "Customer",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The goal is to sell churned product much faster by transferring cancelled orders to second-place finishers at their last bid price.",
+          "evidence_refs": [
+            "EC-G-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002"
+      ],
+      "scope_contract": {
+        "goal_statement": "The goal is to sell churned product much faster by transferring cancelled orders to second-place finishers at their last bid price.",
+        "canonical_success_scenario": "A winning order exists and has been cancelled; the order is transferred to the second-place finisher at the second-place finisher's last bid price.",
+        "start_boundary": "A winning order exists in a cancelled state and a second-place finisher is available to receive the order.",
+        "success_boundary": "The cancelled winning order is transferred to the second-place finisher at the second-place finisher's last bid price.",
+        "in_scope_actions": [
+          "Transfer the cancelled winning order to the second-place finisher",
+          "Use the second-place finisher's last bid price as the transfer price"
+        ],
+        "excluded_adjacent_actions": [
+          "Improving inventory turns by selling churned product faster",
+          "Re-scheduling cancelled orders",
+          "Payment after the auction"
+        ],
+        "variant_dimensions": [],
+        "evidence_refs": [
+          "EC-G-002"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "A winning order exists and has been cancelled (placed into a 'Hold' status) due to non-payment within seven days (168 hours) of the auction's closing date/time.",
+          "evidence_refs": [
+            "EC-PC-009"
+          ]
+        },
+        {
+          "content": "The first-place winner had PayPal or Amazon Payments set as their default Method of Payment.",
+          "evidence_refs": [
+            "EC-PC-003"
+          ]
+        },
+        {
+          "content": "A second-place finisher exists for the cancelled item.",
+          "evidence_refs": [
+            "EC-PC-008"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-009",
+        "EC-PC-003",
+        "EC-PC-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "cancelled-winning-order",
+          "eligible-payment-method",
+          "second-place-finisher-exists",
+          "preconditions",
+          "cancelled_order_state",
+          "account_eligibility_constraint"
+        ],
+        "missing_aspects": [
+          "preconditions"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The trigger for the use case is when a winning order has been cancelled (placed into 'Hold' status) due to non-payment within seven days (168 hours) of the auction's closing date/time, and a second-place finisher exists for that item.",
+          "evidence_refs": [
+            "EC-TR-014",
+            "EC-TR-007",
+            "EC-TR-011"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-014",
+        "EC-TR-007",
+        "EC-TR-011"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger",
+          "trigger-event",
+          "trigger-condition"
+        ],
+        "missing_aspects": [
+          "trigger"
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "Before sending the email, the system verifies that the second-place finisher's account data does not match the winner's account data on Customer Name, Customer Phone Number, Customer Email Address, Customer Member ID, or Customer Billing and/or Shipping Addresses.",
+          "evidence_refs": [
+            "EC-MF-040",
+            "EC-MF-006"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The system sends an automated email to the second-place finisher offering to sell the item at the second-place finisher's last bid price.",
+          "evidence_refs": [
+            "EC-MF-019",
+            "EC-MF-008"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The email presents the Customer with three options: Credit Card Option, PayPal or Amazon Payments Option, and Decline Option.",
+          "evidence_refs": [
+            "EC-MF-020"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The Customer chooses to accept the offer by selecting either the Credit Card Option or the PayPal or Amazon Payments Option and clicking the corresponding acceptance button.",
+          "evidence_refs": [
+            "EC-MF-021",
+            "EC-MF-022"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The system triggers an automated process to generate an order for the item. If the Customer selected the Credit Card Option, the order is generated and the item is shipped. If the Customer selected the PayPal or Amazon Payments Option, the order is generated and placed in Hold until payment is received.",
+          "evidence_refs": [
+            "EC-MF-004",
+            "EC-MF-021",
+            "EC-MF-022",
+            "EC-PO-017",
+            "EC-PO-012"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-040",
+        "EC-MF-006",
+        "EC-MF-019",
+        "EC-MF-008",
+        "EC-MF-020",
+        "EC-MF-021",
+        "EC-MF-022",
+        "EC-MF-004",
+        "EC-PO-017",
+        "EC-PO-012"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2: The system supports '2nd-Chance Offers' (Feature #18) as a mechanism for offering items to non-winning bidders.",
+          "evidence_refs": [
+            "EC-AF-002"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 4: The Customer accepts the offer using the Credit Card Option with their On File credit card; the system triggers an automated process to generate the order and ship the item immediately, requiring no further action from the customer.",
+          "evidence_refs": [
+            "EC-AF-012"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 4: The Customer accepts the offer using the PayPal or Amazon Payments Option; clicking the corresponding button generates the order but interrupts the flow to load a Sign-In page, after which the user must complete payment on the Returning Winners Payments Page.",
+          "evidence_refs": [
+            "EC-AF-013"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-002",
+        "EC-AF-012",
+        "EC-AF-013"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "alt-offer-channel-2nd-chance",
+          "alt-payment-credit-card",
+          "alt-payment-paypal-amazon",
+          "alternative_flow_feature_existence",
+          "existence_of_2nd_chance_offer_mechanism",
+          "alternative_flow_variant_definition",
+          "alternative_flow_steps",
+          "APM_non_payment_exception_path",
+          "checkout_deferral_option",
+          "alternative_flow_deferred_payment",
+          "deferred_payment_option",
+          "payment_deadline_notification",
+          "expiration_consequence",
+          "explicit_decline_path",
+          "timeout_non_response_path",
+          "fraud_prevention_alternative_flow"
+        ],
+        "missing_aspects": [
+          "specific_steps_for_2nd_chance_flow",
+          "trigger_conditions_for_2nd_chance_flow",
+          "The claim that this replaces the automated email process is not explicitly supported by the evidence; Feature #18 is listed in the comparison table but the specific operational logic of replacing the email flow is not detailed."
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from main_flow Step 1. If a match is found between the second-place finisher's account data and the winner's account data on any of Customer Name, Customer Phone Number, Customer Email Address, Customer Member ID, or Customer Billing and/or Shipping Addresses, the 2nd-Chance email is not sent.",
+          "evidence_refs": [
+            "EC-EF-008"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from main_flow Step 1. If the second-place finisher has two accounts and is essentially bidding against themselves, the 2nd-Chance email is not sent.",
+          "evidence_refs": [
+            "EC-EF-007"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from main_flow Step 2. If the second-place finisher's last bid is below the item's unit cost, the 2nd-Chance email is not sent.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from main_flow Step 4. If the Customer does not respond to the 2nd-Chance email within 72 hours after the email is sent, the item is returned to auction available inventory and rescheduled for a future auction. Exit: use case terminates; the order is not transferred.",
+          "evidence_refs": [
+            "EC-EF-006"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-008",
+        "EC-EF-007",
+        "EC-EF-005",
+        "EC-EF-006"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-account-match-block",
+          "EF-self-bidding-block",
+          "EF-below-cost-block",
+          "EF-72h-timeout",
+          "exception-trigger-condition",
+          "exception-system-response",
+          "recovery-path-initiation",
+          "exception_non_payment_deadline",
+          "exception_system_response_cancel_and_hold",
+          "exception_account_suspension_penalty",
+          "exception_timeout_non_payment",
+          "exception_order_cancellation_consequence",
+          "validation_failure_prevention",
+          "timeout_exception_path",
+          "exception_flow",
+          "fraud_prevention_exception_trigger",
+          "account_match_validation_criteria",
+          "terminal_exception_outcome_no_email_sent",
+          "timeout_non_payment_exception",
+          "terminal_cancellation_outcome"
+        ],
+        "missing_aspects": [
+          "Disposition/recovery of the item after the 2nd-Chance email is blocked (account match, self-bidding, or below-cost bid).",
+          "exception_conditions",
+          "system_error_responses",
+          "recovery_paths",
+          "terminal_failure_states",
+          "Explicit confirmation that the use case terminates or no transfer offer is made upon this condition."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "Upon successful acceptance of the 2nd-Chance Offer (via Credit Card or PayPal/Amazon Payments), the system generates a transferred order for the item for the second-place finisher at the second-place finisher's last bid price.",
+          "evidence_refs": [
+            "EC-PO-024",
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "If the second-place finisher accepted using the Credit Card Option, the system triggers an automated process to generate an order and ship the item.",
+          "evidence_refs": [
+            "EC-PO-017"
+          ]
+        },
+        {
+          "content": "Orders won with an alternative payment method, i.e. PayPal or Amazon Payments, will be placed in a Hold status until payment is received.",
+          "evidence_refs": [
+            "EC-PO-012"
+          ]
+        },
+        {
+          "content": "After the transfer/order generation, the system displays the Returning Winners Payments Page showing a confirmation message, a list of won items with descriptions and auction numbers, and options to choose shipping speed and checkout method.",
+          "evidence_refs": [
+            "EC-PO-027"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-024",
+        "EC-PO-000",
+        "EC-PO-017",
+        "EC-PO-012",
+        "EC-PO-027"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "transferred_order_creation",
+          "transferred_order_pricing_last_bid",
+          "credit_card_shipment",
+          "alternative_payment_hold_status",
+          "returning_winners_payments_page",
+          "system_state_after_success",
+          "user_interface_options",
+          "order_priced_at_second_place_bid",
+          "inventory_status_update",
+          "payment_page_ui_state",
+          "item_selection_interface",
+          "shipping_selection_interface",
+          "checkout_method_interface",
+          "transferred_order_creation_confirmation",
+          "ui_postcondition_elements",
+          "system_state_after_success_credit_card",
+          "system_state_after_success_paypal_amazon",
+          "inventory_status_change_shipment",
+          "financial_data_updates",
+          "report_generation_state",
+          "order_metrics_tracking"
+        ],
+        "missing_aspects": [
+          "final status of the original cancelled order after the transfer",
+          "inventory allocation/hold status after the transfer",
+          "explicit_postcondition_state_change",
+          "transferred_order_creation",
+          "order_status_change",
+          "inventory_status_update",
+          "second_place_finisher_account_update",
+          "explicit_postcondition_state_change_confirmation_message_or_ui_feedback",
+          "second_place_finisher_account_update_details",
+          "transferred_order_creation_confirmation"
+        ]
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] Main Flow step 5 states that accepting via the Credit Card Option immediately generates the order and ships the item, while the PayPal/Amazon path generates the order and places it in Hold until payment. Postcondition 4, however, requires that after transfer/order generation the system displays the Returning Winners Payments Page with options to choose shipping speed and checkout method. An already shipped or held order cannot still require shipping-speed and checkout-method selection, so the main flow does not reasonably lead to this postcondition.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[goal_mainflow_alignment] The goal is anchored on transferring cancelled winning orders to second-place finishers at their last bid price, but main_flow only describes verification, emailing the second-place finisher, option selection, and generating a new order. It never states that the winning order is cancelled or that the generated order is the transfer of the cancelled order. This leaves the main flow inconsistent with the goal's start/success boundary.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": [
+        "Main flow step 5 only triggers a generic order-generation process. The postconditions require payment-method-specific outcomes that this step does not establish: Credit Card acceptance must also trigger shipment (EC-PO-017), while PayPal/Amazon acceptance must place the order in Hold until payment is received (EC-PO-012). Because the main flow omits these conditional branch outcomes after acceptance, it does not fully lead to the stated postconditions.",
+        "Main Flow step 1 introduces an account-data match check that can prevent the offer email from being sent; if matches are found, the Main Flow silently stops and none of the Postconditions can be reached. The Preconditions (and Trigger) do not state that the second-place finisher's account data must not match the original winner's data, so the vertical flow is not continuous for matching-account cases."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 148,
+    "cross_page_cards": 0,
+    "modalities": {
+      "text": 129,
+      "table": 11,
+      "diagram": 8
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 5103.833,
+    "llm_calls": 60,
+    "llm_seconds": 4111.593,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 920.481,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 145,
+    "judge_calls": 0,
+    "cards_collected": 148,
+    "cards_referenced": 27
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The goal is to sell churned product much faster by transferring cancelled orders to second-place finishers at their last bid price.",
+            "evidence_refs": [
+              "EC-G-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "A winning order exists and has been cancelled (placed into a 'Hold' status) due to non-payment within seven days (168 hours) of the auction's closing date/time.",
+            "evidence_refs": [
+              "EC-PC-009"
+            ]
+          },
+          {
+            "content": "The first-place winner had PayPal or Amazon Payments set as their default Method of Payment.",
+            "evidence_refs": [
+              "EC-PC-003"
+            ]
+          },
+          {
+            "content": "A second-place finisher exists for the cancelled item.",
+            "evidence_refs": [
+              "EC-PC-008"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The trigger for the use case is when a winning order has been cancelled (placed into 'Hold' status) due to non-payment within seven days (168 hours) of the auction's closing date/time, and a second-place finisher exists for that item.",
+            "evidence_refs": [
+              "EC-TR-014",
+              "EC-TR-007",
+              "EC-TR-011"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Before sending the email, the system verifies that the second-place finisher's account data does not match the winner's account data on Customer Name, Customer Phone Number, Customer Email Address, Customer Member ID, or Customer Billing and/or Shipping Addresses.",
+            "evidence_refs": [
+              "EC-MF-040",
+              "EC-MF-006"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system sends an automated email to the second-place finisher offering to sell the item at the second-place finisher's last bid price.",
+            "evidence_refs": [
+              "EC-MF-019",
+              "EC-MF-008"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The email presents the Customer with three options: Credit Card Option, PayPal or Amazon Payments Option, and Decline Option.",
+            "evidence_refs": [
+              "EC-MF-020"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The Customer chooses to accept the offer by selecting either the Credit Card Option or the PayPal or Amazon Payments Option and clicking the corresponding acceptance button.",
+            "evidence_refs": [
+              "EC-MF-021",
+              "EC-MF-022"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The system triggers an automated process to generate an order for the item. If the Customer selected the Credit Card Option, the order is generated and the item is shipped. If the Customer selected the PayPal or Amazon Payments Option, the order is generated and placed in Hold until payment is received.",
+            "evidence_refs": [
+              "EC-MF-004",
+              "EC-MF-021",
+              "EC-MF-022",
+              "EC-PO-017",
+              "EC-PO-012"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-MF-040",
+          "EC-MF-041",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-PO-025",
+          "EC-PO-026",
+          "EC-PO-027",
+          "EC-PO-028",
+          "EC-PO-029",
+          "EC-PO-030",
+          "EC-PO-031",
+          "EC-PO-032",
+          "EC-PO-033",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 2: The system supports '2nd-Chance Offers' (Feature #18) as a mechanism for offering items to non-winning bidders.",
+            "evidence_refs": [
+              "EC-AF-002"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 4: The Customer accepts the offer using the Credit Card Option with their On File credit card; the system triggers an automated process to generate the order and ship the item immediately, requiring no further action from the customer.",
+            "evidence_refs": [
+              "EC-AF-012"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 4: The Customer accepts the offer using the PayPal or Amazon Payments Option; clicking the corresponding button generates the order but interrupts the flow to load a Sign-In page, after which the user must complete payment on the Returning Winners Payments Page.",
+            "evidence_refs": [
+              "EC-AF-013"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-MF-040",
+          "EC-MF-041",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from main_flow Step 1. If a match is found between the second-place finisher's account data and the winner's account data on any of Customer Name, Customer Phone Number, Customer Email Address, Customer Member ID, or Customer Billing and/or Shipping Addresses, the 2nd-Chance email is not sent.",
+            "evidence_refs": [
+              "EC-EF-008"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from main_flow Step 1. If the second-place finisher has two accounts and is essentially bidding against themselves, the 2nd-Chance email is not sent.",
+            "evidence_refs": [
+              "EC-EF-007"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from main_flow Step 2. If the second-place finisher's last bid is below the item's unit cost, the 2nd-Chance email is not sent.",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from main_flow Step 4. If the Customer does not respond to the 2nd-Chance email within 72 hours after the email is sent, the item is returned to auction available inventory and rescheduled for a future auction. Exit: use case terminates; the order is not transferred.",
+            "evidence_refs": [
+              "EC-EF-006"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-MF-040",
+          "EC-MF-041",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Upon successful acceptance of the 2nd-Chance Offer (via Credit Card or PayPal/Amazon Payments), the system generates a transferred order for the item for the second-place finisher at the second-place finisher's last bid price.",
+            "evidence_refs": [
+              "EC-PO-024",
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "If the second-place finisher accepted using the Credit Card Option, the system triggers an automated process to generate an order and ship the item.",
+            "evidence_refs": [
+              "EC-PO-017"
+            ]
+          },
+          {
+            "content": "Orders won with an alternative payment method, i.e. PayPal or Amazon Payments, will be placed in a Hold status until payment is received.",
+            "evidence_refs": [
+              "EC-PO-012"
+            ]
+          },
+          {
+            "content": "After the transfer/order generation, the system displays the Returning Winners Payments Page showing a confirmation message, a list of won items with descriptions and auction numbers, and options to choose shipping speed and checkout method.",
+            "evidence_refs": [
+              "EC-PO-027"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-MF-040",
+          "EC-MF-041",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-PO-025",
+          "EC-PO-026",
+          "EC-PO-027",
+          "EC-PO-028",
+          "EC-PO-029",
+          "EC-PO-030",
+          "EC-PO-031",
+          "EC-PO-032",
+          "EC-PO-033",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      }
+    }
+  },
+  "method": "CREST - complete-region reading",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "single_page",
+    "method": "CREST - complete-region reading",
+    "directory": "single_page",
+    "seed": null,
+    "slot_order": null,
+    "reuse_prior_evidence": true,
+    "single_page_only": true,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "89850b0a37e1447abbe7927310227f7e"
+}

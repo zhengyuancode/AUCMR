@@ -1,0 +1,680 @@
+from pymilvus import MilvusClient, DataType, Function, FunctionType, AnnSearchRequest, RRFRanker
+from config.settings import MILVUS_TOKEN, MILVUS_URI
+from pymilvus.bulk_writer import bulk_import, get_import_progress
+import numpy as np
+import concurrent.futures
+import json
+import os
+
+
+uri = MILVUS_URI
+client = MilvusClient(uri=MILVUS_URI, token=MILVUS_TOKEN or None)
+class MilvusColbertRetriever:
+    def __init__(self, milvus_client, collection_name):
+        # Initialize the retriever with a Milvus client, collection name, and dimensionality of the vector embeddings.
+        # If the collection exists, load it.
+        self.collection_name = collection_name
+        self.client = milvus_client
+        if self.client.has_collection(collection_name=self.collection_name):
+            self.client.load_collection(collection_name)
+
+    def create_collection_multi_img(self):
+        # Create a new collection in Milvus for storing embeddings.
+        # Drop the existing collection if it already exists and define the schema for the collection.
+        if self.client.has_collection(collection_name=self.collection_name):
+            self.client.drop_collection(collection_name=self.collection_name)
+        schema = self.client.create_schema(
+            auto_id=True,
+            enable_dynamic_field=True,
+        )
+        schema.add_field(field_name="pk", datatype=DataType.INT64, is_primary=True)
+        schema.add_field(
+            field_name="patch_dense", 
+            datatype=DataType.FLOAT_VECTOR, 
+            dim=128,
+            description="image patch dense embedding"
+        )
+        schema.add_field(field_name="seq_id", datatype=DataType.INT16)
+        schema.add_field(field_name="page_num", datatype=DataType.INT64)
+        schema.add_field(field_name="page_path", datatype=DataType.VARCHAR, max_length=65535)
+        schema.add_field(field_name="file_name", datatype=DataType.VARCHAR, max_length=65535)
+
+        self.client.create_collection(
+            collection_name=self.collection_name, schema=schema
+        )
+
+    def create_index_multi_img(self):
+        # Create an index on the vector field to enable fast similarity search.
+        # Releases and drops any existing index before creating a new one with specified parameters.
+        self.client.release_collection(collection_name=self.collection_name)
+        self.client.drop_index(
+            collection_name=self.collection_name, index_name="patch_dense"
+        )
+        index_params = self.client.prepare_index_params()
+        index_params.add_index(
+            field_name="patch_dense",
+            index_name="patch_dense_index",
+            index_type="HNSW",  # or any other index type you want
+            metric_type="IP",  # or the appropriate metric type
+            params={
+                "M": 50,
+                "efConstruction": 500,
+            },  # adjust these parameters as needed
+        )
+        
+        index_params.add_index(
+            field_name="page_num",
+            index_name="page_num_index",
+            index_type="INVERTED", 
+        )
+        
+        index_params.add_index(
+            field_name="seq_id",
+            index_name="seq_id_index",
+            index_type="INVERTED", 
+        )
+        
+        index_params.add_index(
+            field_name="page_path",
+            index_name="page_path_index",
+            index_type="INVERTED", 
+        )
+        
+        index_params.add_index(
+            field_name="file_name",
+            index_name="file_name_index",
+            index_type="INVERTED", 
+        )
+        
+
+        self.client.create_index(
+            collection_name=self.collection_name, index_params=index_params, sync=True
+        )
+        
+    def create_collection_text_hybrid(self):
+        # Create a new collection in Milvus for storing embeddings.
+        # Drop the existing collection if it already exists and define the schema for the collection.
+        if self.client.has_collection(collection_name=self.collection_name):
+            self.client.drop_collection(collection_name=self.collection_name)
+        schema = self.client.create_schema(
+            auto_id=True,
+            enable_dynamic_field=True,
+        )
+        schema.add_field(field_name="pk", datatype=DataType.INT64, is_primary=True)
+        schema.add_field(
+            field_name="text", 
+            datatype=DataType.VARCHAR, 
+            max_length=5000, 
+            enable_analyzer=True, 
+            description="raw text chunk"
+        )
+        schema.add_field(
+            field_name="text_dense", 
+            datatype=DataType.FLOAT_VECTOR, 
+            dim=2048,
+            description="chunk text dense"
+        )
+        schema.add_field(
+            field_name="text_sparse", 
+            datatype=DataType.SPARSE_FLOAT_VECTOR, 
+            description="text sparse embedding auto-generated by the built-in BM25 function")
+        schema.add_field(field_name="page_num", datatype=DataType.INT64)
+        schema.add_field(field_name="page_path", datatype=DataType.VARCHAR, max_length=65535)
+        schema.add_field(field_name="file_name", datatype=DataType.VARCHAR, max_length=65535)
+        
+        # Add function to schema
+        bm25_function = Function(
+            name="text_bm25_emb",
+            input_field_names=["text"],
+            output_field_names=["text_sparse"],
+            function_type=FunctionType.BM25,
+        )
+        schema.add_function(bm25_function)
+
+        self.client.create_collection(
+            collection_name=self.collection_name, schema=schema
+        )
+
+    def create_collection_text_colbert(self, dimension=128, recreate=False):
+        """Create the token-level text collection used by TextRAG."""
+        if self.client.has_collection(collection_name=self.collection_name):
+            if not recreate:
+                raise RuntimeError(f"collection already exists: {self.collection_name}")
+            self.client.drop_collection(collection_name=self.collection_name)
+        schema = self.client.create_schema(auto_id=True, enable_dynamic_field=False)
+        schema.add_field(field_name="pk", datatype=DataType.INT64, is_primary=True)
+        schema.add_field(
+            field_name="token_dense", datatype=DataType.FLOAT_VECTOR,
+            dim=int(dimension), description="Jina passage token embedding",
+        )
+        schema.add_field(field_name="seq_id", datatype=DataType.INT32)
+        schema.add_field(field_name="chunk_id", datatype=DataType.INT64)
+        schema.add_field(field_name="page_num", datatype=DataType.INT64)
+        schema.add_field(field_name="page_path", datatype=DataType.VARCHAR, max_length=65535)
+        schema.add_field(field_name="file_name", datatype=DataType.VARCHAR, max_length=1024)
+        schema.add_field(field_name="text", datatype=DataType.VARCHAR, max_length=65535)
+        self.client.create_collection(collection_name=self.collection_name, schema=schema)
+
+    def create_index_text_colbert(self):
+        index_params = self.client.prepare_index_params()
+        index_params.add_index(
+            field_name="token_dense", index_name="token_dense_index",
+            index_type="HNSW", metric_type="IP",
+            params={"M": 50, "efConstruction": 500},
+        )
+        for field in ("seq_id", "chunk_id", "page_num", "file_name"):
+            index_params.add_index(
+                field_name=field, index_name=f"{field}_index", index_type="INVERTED"
+            )
+        self.client.create_index(
+            collection_name=self.collection_name, index_params=index_params, sync=True
+        )
+
+    def insert_text_colbert_rows(self, rows):
+        if rows:
+            return self.client.insert(collection_name=self.collection_name, data=rows)
+
+    def text_colbert_search(self, multi_query, file_names, topk=10, coarse=100):
+        """Retrieve token candidates then rerank chunks with ColBERT MaxSim."""
+        file_names = self.clean_file_names(file_names)
+        query_vectors = np.asarray(multi_query, dtype=np.float32)
+        if query_vectors.ndim != 2 or query_vectors.shape[0] == 0:
+            raise ValueError("multi_query must be a non-empty [tokens, dimension] matrix")
+        search_kwargs = {
+            "collection_name": self.collection_name,
+            "data": query_vectors.tolist(),
+            "limit": int(coarse),
+            "anns_field": "token_dense",
+            "output_fields": ["chunk_id", "file_name"],
+            "search_params": {"metric_type": "IP", "params": {"ef": max(100, int(coarse))}},
+        }
+        if file_names:
+            search_kwargs["filter"] = f'file_name in {json.dumps(file_names, ensure_ascii=False)}'
+        results = self.client.search(**search_kwargs)
+        candidates = []
+        seen = set()
+        for token_hits in results:
+            for hit in token_hits:
+                entity = hit.get("entity", hit)
+                key = (str(entity["file_name"]), int(entity["chunk_id"]))
+                if key not in seen:
+                    seen.add(key)
+                    candidates.append(key)
+
+        scored = []
+        for file_name, chunk_id in candidates:
+            escaped_name = json.dumps(file_name, ensure_ascii=False)
+            rows = self.client.query(
+                collection_name=self.collection_name,
+                filter=f"file_name == {escaped_name} and chunk_id == {chunk_id}",
+                output_fields=["seq_id", "token_dense", "page_num", "page_path", "text"],
+                limit=16383,
+            )
+            if not rows:
+                continue
+            rows.sort(key=lambda row: int(row["seq_id"]))
+            passage_vectors = np.asarray([row["token_dense"] for row in rows], dtype=np.float32)
+            from pipelines.text_index import colbert_maxsim
+            score = colbert_maxsim(query_vectors, passage_vectors)
+            metadata = next((row for row in rows if int(row["seq_id"]) == 0), rows[0])
+            scored.append({
+                "score": score,
+                "file_name": file_name,
+                "chunk_id": chunk_id,
+                "page_num": int(metadata.get("page_num", 0)),
+                "page_path": str(metadata.get("page_path", "")),
+                "text": str(metadata.get("text", "")),
+            })
+        scored.sort(key=lambda item: item["score"], reverse=True)
+        return scored[:int(topk)]
+
+    def create_index_text_hybrid(self):
+        # Create an index on the vector field to enable fast similarity search.
+        # Releases and drops any existing index before creating a new one with specified parameters.
+        self.client.release_collection(collection_name=self.collection_name)
+        self.client.drop_index(
+            collection_name=self.collection_name, index_name="patch_dense"
+        )
+        index_params = self.client.prepare_index_params()
+        index_params.add_index(
+            field_name="text_dense",
+            index_name="text_dense_index",
+            index_type="AUTOINDEX",  # or any other index type you want
+            metric_type="IP"  # or the appropriate metric type
+        )
+        
+        index_params.add_index(
+            field_name="text_sparse",
+            index_name="text_sparse_index",
+            index_type="SPARSE_INVERTED_INDEX",
+            metric_type="BM25",
+            params={"inverted_index_algo": "DAAT_MAXSCORE"}, # or "DAAT_WAND" or "TAAT_NAIVE"
+        )
+        
+        index_params.add_index(
+            field_name="page_num",
+            index_name="page_num_index",
+            index_type="INVERTED", 
+        )
+        
+        index_params.add_index(
+            field_name="page_path",
+            index_name="page_path_index",
+            index_type="INVERTED", 
+        )
+        
+        index_params.add_index(
+            field_name="file_name",
+            index_name="file_name_index",
+            index_type="INVERTED", 
+        )
+        
+
+        self.client.create_index(
+            collection_name=self.collection_name, index_params=index_params, sync=True
+        )
+
+    
+    def clean_file_names(self, file_names):
+        cleaned = []
+        for fn in file_names:
+            if fn is None:
+                continue
+            fn = str(fn).strip()
+            # 去掉外层多余引号
+            if len(fn) >= 2 and ((fn[0] == "'" and fn[-1] == "'") or (fn[0] == '"' and fn[-1] == '"')):
+                fn = fn[1:-1]
+            cleaned.append(fn)
+        return cleaned
+    
+    def multi_img_search(self, multi_query, file_names, topk, coarse):
+        # Perform a vector search on the collection to find the top-k most similar documents.
+        # Data is a vector group used for batch retrieval
+        file_names = self.clean_file_names(file_names)     
+        try: 
+            results = self.client.search(
+                self.collection_name,
+                multi_query,
+                limit=coarse,
+                anns_field="patch_dense",
+                filter=f'file_name in {json.dumps(file_names, ensure_ascii=False)}',
+                output_fields=["page_num","file_name"],
+                search_params={"metric_type": "IP"}
+            )
+        except Exception as e:
+            print("Multi_img retrieval failed:\n")
+            print(str(e))
+                 
+        pages = []
+        seen = set()  # 用于跟踪已见的唯一标识
+        for r_id in range(len(results)):
+            for r in range(len(results[r_id])):
+                # 提取文档的唯一标识组合
+                page_num = results[r_id][r]["entity"]["page_num"]
+                file_name = results[r_id][r]["entity"]["file_name"]
+                unique_key = (page_num, file_name)  # 创建不可变的唯一�?
+                
+                # 仅当未出现过时才添加到列�?
+                if unique_key not in seen:
+                    seen.add(unique_key)
+                    pages.append({
+                        "page_num": page_num,
+                        "file_name": file_name
+                    })
+                    
+        score_results = []
+        def rerank_single_page(page, multi_query, client, collection_name):
+            # Rerank a single document by retrieving its embeddings and calculating the similarity with the query.
+            page_num = page["page_num"]
+            file_name = page["file_name"]
+            page_colbert_vecs = client.query(
+                collection_name=collection_name,
+                filter=f'page_num == {page_num} and file_name == "{file_name}"',
+                output_fields=["seq_id", "patch_dense", "page_path"]
+            )
+            page_vecs = np.vstack(
+                [page_colbert_vecs[i]["patch_dense"] for i in range(len(page_colbert_vecs))]
+            )
+            score = np.dot(multi_query, page_vecs.T).max(1).sum()
+            page_path=""
+            for item in page_colbert_vecs:
+                if item["seq_id"] == 0:
+                    page_path = item["page_path"]
+                    break 
+            return (score, file_name, page_num, page_path)
+
+        with concurrent.futures.ThreadPoolExecutor(4) as executor:
+            workers = {
+                executor.submit(
+                    rerank_single_page, page, multi_query, client, self.collection_name
+                ): page
+                for page in pages
+            }
+            for worker in concurrent.futures.as_completed(workers):
+                score, file_name, page_num, page_path = worker.result()
+                score_results.append((score, file_name, page_num, page_path))
+        score_results.sort(key=lambda x: x[0], reverse=True)
+        # return scores
+        if len(score_results) >= topk:
+            return score_results[:topk]
+        else:
+            return score_results
+    
+    def coarse_multi_token_search(self, multi_query, file_names, topk):
+        # Perform a vector search on the collection to find the top-k most similar documents.
+        # Data is a vector group used for batch retrieval   
+        try: 
+            results = self.client.search(
+                self.collection_name,
+                multi_query,
+                limit=topk,
+                anns_field="patch_dense",
+                filter=f'file_name in {file_names}',
+                output_fields=["page_num","file_name"],
+                search_params={"metric_type": "IP"}
+            )
+        except Exception as e:
+            print("Multi_img retrieval failed:\n")
+            print(str(e))
+                 
+        pages = []
+        seen = set()  # 用于跟踪已见的唯一标识
+        for r_id in range(len(results)):
+            for r in range(len(results[r_id])):
+                # 提取文档的唯一标识组合
+                page_num = results[r_id][r]["entity"]["page_num"]
+                file_name = results[r_id][r]["entity"]["file_name"]
+                unique_key = (page_num, file_name)  # 创建不可变的唯一�?
+                
+                # 仅当未出现过时才添加到列�?
+                if unique_key not in seen:
+                    seen.add(unique_key)
+                    pages.append({
+                        "page_num": page_num,
+                        "file_name": file_name
+                    })   
+        page_paths = []
+        def search_page_path(page, client, collection_name):
+            page_num = page["page_num"]
+            file_name = page["file_name"]
+            page_colbert_vecs = client.query(
+                collection_name=collection_name,
+                filter=f'page_num == {page_num} and file_name == "{file_name}"',
+                output_fields=["seq_id", "page_path"]
+            )
+            page_path=""
+            for item in page_colbert_vecs:
+                if item["seq_id"] == 0:
+                    page_path = item["page_path"]
+                    break 
+            return page_path
+
+        with concurrent.futures.ThreadPoolExecutor(os.cpu_count()) as executor:
+            workers = {
+                executor.submit(
+                    search_page_path, page, client, self.collection_name
+                ): page
+                for page in pages
+            }
+            for worker in concurrent.futures.as_completed(workers):
+                page_path = worker.result()
+                page_paths.append(page_path)
+                
+        return page_paths
+    
+    def hybrid_text_search(self,query_param, topk):
+        file_names = query_param["file_names"]
+        
+        # text semantic search (dense)
+        search_param_1 = {
+            "data": [query_param["text_dense"]],
+            "anns_field": "text_dense",
+            "param": {"nprobe": 10},
+            "expr": f"file_name in {file_names}",
+            "limit": topk
+        }
+        request_1 = AnnSearchRequest(**search_param_1)
+        
+        # full-text search (sparse)
+        search_param_2 = {
+            "data": [query_param["text"]],
+            "anns_field": "text_sparse",
+            "param": {"drop_ratio_search": 0.2},
+            "expr": f"file_name in {file_names}",
+            "limit": topk
+        }
+        request_2 = AnnSearchRequest(**search_param_2)
+        
+        reqs = [request_1, request_2]
+        ranker = RRFRanker(80)
+        res = client.hybrid_search(
+                collection_name=self.collection_name,
+                reqs=reqs,
+                ranker=ranker,
+                limit=topk,
+                output_fields=["page_num","file_name","page_path"]
+            )
+        
+        page_paths = []
+        for hits in res:
+            for hit in hits:
+                page_path = hit["entity"]["page_path"]
+                if page_path not in page_paths:
+                    page_paths.append(page_path)
+        return page_paths
+    
+    def hybrid_pure_text_search(self,query_param, topk):
+        file_names = query_param["file_names"]
+        
+        # text semantic search (dense)
+        search_param_1 = {
+            "data": [query_param["text_dense"]],
+            "anns_field": "text_dense",
+            "param": {"nprobe": 10},
+            "expr": f"file_name in {file_names}",
+            "limit": topk*10
+        }
+        request_1 = AnnSearchRequest(**search_param_1)
+        
+        # full-text search (sparse)
+        search_param_2 = {
+            "data": [query_param["text"]],
+            "anns_field": "text_sparse",
+            "param": {"drop_ratio_search": 0.2},
+            "expr": f"file_name in {file_names}",
+            "limit": topk*10
+        }
+        request_2 = AnnSearchRequest(**search_param_2)
+        
+        reqs = [request_1, request_2]
+        ranker = RRFRanker(80)
+        res = client.hybrid_search(
+                collection_name=self.collection_name,
+                reqs=reqs,
+                ranker=ranker,
+                limit=topk,
+                output_fields=["text", "page_path"]
+            )
+        
+        page_paths = []
+        ans_chunks = []
+        for hits in res:
+            for hit in hits:
+                page_path = hit["entity"]["page_path"]
+                ans_chunk = hit["entity"]["text"]
+                ans_chunks.append(ans_chunk)
+                page_paths.append(page_path)
+        return ans_chunks, page_paths
+    
+    def multi_img_in_pages_search(self, page_paths, multi_query, topk):
+        score_results = []
+        def rerank_single_page(page_path, multi_query):
+            # Rerank a single document by retrieving its embeddings and calculating the similarity with the query.
+            page_num_name = self.client.query(
+                collection_name=self.collection_name,
+                filter=f'page_path == "{page_path}"',
+                output_fields=["page_num", "file_name"]
+            )
+            if(len(page_num_name) != 1):
+                print(f"ERROR:When search {page_path}")
+                print(f"Vector database data return not the only one or no return:\n{page_num_name}")
+                return (0, "", "", page_path)
+            page_num, file_name = page_num_name[0]["page_num"], page_num_name[0]["file_name"]
+            
+            page_colbert_vecs = self.client.query(
+                collection_name=self.collection_name,
+                filter=f'page_num == {page_num} and file_name == "{file_name}"',
+                output_fields=["patch_dense"]
+            )
+            page_vecs = np.vstack(
+                [page_colbert_vecs[i]["patch_dense"] for i in range(len(page_colbert_vecs))]
+            )
+            score = np.dot(multi_query, page_vecs.T).max(1).sum()
+            return (score, file_name, page_num, page_path)
+
+        with concurrent.futures.ThreadPoolExecutor(os.cpu_count()) as executor:
+            workers = {
+                executor.submit(
+                    rerank_single_page, page_path, multi_query
+                ): page_path
+                for page_path in page_paths
+            }
+            for worker in concurrent.futures.as_completed(workers):
+                score, file_name, page_num, page_path = worker.result()
+                score_results.append((score, file_name, page_num, page_path))
+        score_results.sort(key=lambda x: x[0], reverse=True)
+        # return scores
+        if len(score_results) >= topk:
+            return score_results[:topk]
+        else:
+            return score_results
+        
+
+    def insert_multi_img(self, data):
+        # Insert ColBERT embeddings and metadata for a document into the collection.
+        colbert_vecs = data["colbert_vecs"]
+        seq_length = len(colbert_vecs)
+        self.client.insert(
+            self.collection_name,
+            [
+                {
+                    "patch_dense": colbert_vecs[i],
+                    "seq_id": i,
+                    "page_num": data["page_num"],
+                    "page_path": data["page_path"] if i == 0 else "",
+                    "file_name": data["file_name"]
+                }
+                for i in range(seq_length)
+            ],
+        )
+        
+    def bulk_insert_prepare_multi_img(self, data,writer):
+        colbert_vecs = data["colbert_vecs"]
+        seq_length = len(colbert_vecs)
+        for i in range(seq_length):
+            writer.append_row({
+                "patch_dense":colbert_vecs[i],
+                "seq_id":i,
+                "page_num":data["page_num"],
+                "page_path":data["page_path"] if i == 0 else "",
+                "file_name":data["file_name"]
+            })
+            
+    def insert_text_hybrid(self, data):
+        self.client.insert(
+            self.collection_name,
+            [
+                {
+                    "text":data["text"],
+                    "text_dense": data["text_dense"],
+                    "page_num": data["page_num"],
+                    "page_path": data["page_path"],
+                    "file_name": data["file_name"]
+                }
+            ],
+        )
+        
+    def bulk_insert_prepare_text_hybrid(self, data,writer):
+        writer.append_row({
+                    "text":data["text"],
+                    "text_dense": data["text_dense"],
+                    "page_num": data["page_num"],
+                    "page_path": data["page_path"],
+                    "file_name": data["file_name"]
+                })
+    
+    def bulk_prepare_commit(self,writer):
+        writer.commit()
+    
+    def bulk_minio_insert_milvus(self,collection_name,files):
+        resp = bulk_import(
+            url=uri,
+            collection_name=collection_name,
+            files=files,
+        )
+
+        job_id = resp.json()['data']['jobId']
+        print(f"Current batch import jobId:{job_id}\nPlease remember that jobId can be used to view the import progress in the future.")
+        return job_id
+    
+    def search_import_progress(self,job_id):
+        resp = get_import_progress(
+            url=uri,
+            job_id=job_id,
+        )
+        print(json.dumps(resp.json(), indent=4))
+        return resp.json()
+        
+    def delete_entity_by_file(self,file_name):
+        res = client.delete(
+            collection_name=self.collection_name,
+            filter=f"file_name in ['{file_name}']"
+        )
+        print(res)
+        
+    def delete_collection(self):
+        client.drop_collection(collection_name=self.collection_name)
+        
+        
+    def search_all_file(self):
+        res = client.query(
+            collection_name=self.collection_name,
+            filter="seq_id == 0 and page_num == 1",
+            output_fields=["file_name"]
+        )
+        return res
+    
+    
+    def count_entity_all(self):
+        res = client.query(
+            collection_name=self.collection_name,
+            output_fields=["count(*)"]
+        )
+        return res
+    
+    def count_entity_by_file(self,file_names):
+        res = client.query(
+            collection_name=self.collection_name,
+            filter=f"file_name in {file_names}",
+            output_fields=["count(*)"]
+        )
+        count_value = res[0]['count(*)']
+        return count_value
+    
+    def count_page_by_file(self,file_names):
+        res = client.query(
+            collection_name=self.collection_name,
+            filter=f"seq_id == 0 and file_name in {file_names}",
+            output_fields=["count(*)"]
+        )
+        count_value = res[0]['count(*)']
+        return count_value
+    
+    def count_file_all(self):
+        res = client.query(
+            collection_name=self.collection_name,
+            filter=f"seq_id == 0 and doc_id == 0",
+            output_fields=["count(*)"]
+        )
+        count_value = res[0]['count(*)']
+        return count_value

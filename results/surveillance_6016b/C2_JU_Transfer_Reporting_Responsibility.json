@@ -1,0 +1,678 @@
+{
+  "use_case_name": "Transfer Reporting Responsibility",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The C2 JU achieves the transfer of reporting responsibility (R2) for a track by ensuring that only one C2 JU maintains R2, either by ceasing reporting and dropping the track when a correlation conflict with different Track Numbers is resolved, or by taking over responsibility for an emergency point when periodic updates are missed.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-001"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU must have achieved 'Active' status (either initially or after returning from 'Inactive' status or 'TDS Failure').",
+          "evidence_refs": [
+            "EC-PC-011"
+          ]
+        },
+        {
+          "content": "The C2 JU must have the capability to originate and report real-time air, surface (maritime), land (ground), or space tracks, and must be capable of assuming R2.",
+          "evidence_refs": [
+            "EC-PC-006",
+            "EC-PC-012"
+          ]
+        },
+        {
+          "content": "All C2 JUs performing common tracking must be performing correlation and decorrelation of their local track data with respect to the remote data they are receiving.",
+          "evidence_refs": [
+            "EC-PC-005"
+          ]
+        },
+        {
+          "content": "The C2 JU must have correlated local sensor data.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ]
+        },
+        {
+          "content": "The C2 JU must be in a state where data points are detected by local sensors, and the C2 JU is determining whether these points are currently reported on the interface and if there are any conflicts between locally derived information and information reported on the interface.",
+          "evidence_refs": [
+            "EC-PC-014"
+          ]
+        },
+        {
+          "content": "If the use case involves resolving a correlation conflict, the tracks being evaluated must not have an Identity (ID) difference constituting a conflict, must not have different current Mode II codes, must not both be locally derived real-time tracks, and must not both have Strength field values greater than 1 (unless Strength is 'No Statement').",
+          "evidence_refs": [
+            "EC-PC-007",
+            "EC-PC-008",
+            "EC-PC-009",
+            "EC-PC-010"
+          ]
+        },
+        {
+          "content": "The C2 JU must have sufficient reporting responsibility checks, correlation, and data registration performed.",
+          "evidence_refs": [
+            "EC-PC-013"
+          ]
+        },
+        {
+          "content": "If reporting a point, the J3.0 message field Point/Line/Area Descriptor shall be set to value 0 (Point) in the initial word.",
+          "evidence_refs": [
+            "EC-PC-001"
+          ]
+        },
+        {
+          "content": "If altitude is specified, Altitude, 100 Ft 1 and, if appropriate, Altitude, 100 Ft 2 shall be reported in each J3.0E0 word transmitted.",
+          "evidence_refs": [
+            "EC-PC-002"
+          ]
+        },
+        {
+          "content": "The C2 JU has received a J2 PPLI message and detected a correlation with a locally held track where the Track Numbers (TNs) are different, indicating a conflict requiring resolution.",
+          "evidence_refs": [
+            "EC-MF-048",
+            "EC-MF-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-011",
+        "EC-PC-006",
+        "EC-PC-012",
+        "EC-PC-005",
+        "EC-PC-000",
+        "EC-PC-014",
+        "EC-PC-007",
+        "EC-PC-008",
+        "EC-PC-009",
+        "EC-PC-010",
+        "EC-PC-013",
+        "EC-PC-001",
+        "EC-PC-002",
+        "EC-MF-048",
+        "EC-MF-000"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger"
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU receives a J2 PPLI message from another JU and, having correlated its local track data with the remote data, detects a correlation conflict where the Track Numbers (TNs) are different.",
+          "evidence_refs": [
+            "EC-MF-048",
+            "EC-MF-000",
+            "EC-MF-001"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU holds Reporting Responsibility (R2) for the correlated track, it transmits a J7.2 Correlation message with the Response Value (RV) set to 'Reverse Correlated' (RV=60), designating its local TN as the Retained TN and the remote surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-049"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "If another C2 JU holds R2 for the correlated track with different TNs, the C2 JU transmits a J7.2 Correlation message with the Response Value (RV) set to 'Accept' (RV=1), designating the remote Source TN as the Retained TN and its own surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "EC-MF-001",
+            "EC-MF-050"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "If another C2 JU holds R2 for the correlated track and the TNs are the same, the C2 JU accepts the PPLI information for surveillance tracking but disregards the J3.0 surveillance data from that track, except when the Geodetic Position Quality field is 0, in which case the track number and identity are discarded.",
+          "evidence_refs": [
+            "EC-MF-002",
+            "EC-MF-051"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "For any track designated as 'Dropped' where the C2 JU previously held R2, the C2 JU transmits a J7.0 (ACT = 0) Drop Track message to cease reporting.",
+          "evidence_refs": [
+            "EC-MF-018",
+            "EC-MF-011"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the Dropped TN is reported by another IU after the transmission of the J7.0 message, the C2 JU retains the Dropped TN as a remote track and does not reattempt correlation with the Retained TN for 60 seconds.",
+          "evidence_refs": [
+            "EC-MF-019",
+            "EC-MF-069"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "The C2 JU monitors emergency points for which it does not hold R2; if no periodic update is received for three consecutive update intervals, or if a J7.0 (ACT = 0) message is received, the C2 JU (via operator action) assumes R2 for the point.",
+          "evidence_refs": [
+            "EC-MF-005",
+            "EC-MF-054",
+            "EC-MF-033"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "Upon assuming R2 for an emergency point, the C2 JU uses the same Reference TN as the previous unit and reports the point as if reported by the previous reporting unit.",
+          "evidence_refs": [
+            "EC-MF-006",
+            "EC-MF-033"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-048",
+        "EC-MF-000",
+        "EC-MF-001",
+        "EC-MF-049",
+        "EC-MF-050",
+        "EC-MF-002",
+        "EC-MF-051",
+        "EC-MF-018",
+        "EC-MF-011",
+        "EC-MF-019",
+        "EC-MF-069",
+        "EC-MF-005",
+        "EC-MF-054",
+        "EC-MF-033",
+        "EC-MF-006"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: The C2 JU identifies a specific point, line, or area not currently reported on the interface. To initiate reporting responsibility for this specific data immediately (rather than waiting for the next periodic update), the C2 JU transmits a J7.1 (ACT = 1) Data Update Request for the desired Track Number (TN).",
+          "evidence_refs": [
+            "EC-AF-001",
+            "EC-AF-029",
+            "EC-MF-052",
+            "EC-MF-086"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 2: The C2 JU holds R2 for the correlated track, but automatic correlation is inhibited due to specific restrictions (e.g., Identity difference, different current Mode II codes, both tracks locally derived real-time, or Strength > 1). The operator is alerted and must intervene by either: (1) Designating the Retained TN as a common local track if the C2 JU holds the Dropped TN locally, or (2) Changing the local ID or Exercise Indicator to allow automatic correlation. If the operator chooses option 2, a J7.0 (ACT = 0) Drop Track message is transmitted for the Dropped TN.",
+          "evidence_refs": [
+            "EC-AF-009",
+            "EC-AF-084",
+            "EC-AF-085",
+            "EC-AF-004",
+            "EC-AF-005",
+            "EC-AF-010"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3: The correlation is inhibited by restrictions (e.g., ID difference, Mode II conflict). The operator intervenes by designating the Retained TN as a common local track because the C2 JU holds the Dropped TN as a local or common local track, thereby bypassing the transmission of a Drop Track message for the remote track.",
+          "evidence_refs": [
+            "EC-AF-009",
+            "EC-AF-084",
+            "EC-AF-085",
+            "EC-MF-017",
+            "EC-MF-094"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 5: When determining which TN to drop, the C2 JU applies specific selection logic: it shall not select a TN for dropping if it has specific Occupied (OCC) statuses. If the track has both a TN greater than 07777 and a TN less than 07777, the track with the TN greater than 07777 is designated as the TN to be dropped.",
+          "evidence_refs": [
+            "EC-AF-008",
+            "EC-MF-067",
+            "EC-MF-092"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 7: The C2 JU assumes R2 for an Air, Surface (Maritime), or Land (Ground) track via a timeout mechanism because it has not received a remote report for approximately 40 seconds (Air/Surface) or 120 seconds (Land). Upon assuming R2, it transmits a non-real-time report with the TQ field set to value 0.",
+          "evidence_refs": [
+            "EC-AF-014",
+            "EC-AF-041",
+            "EC-MF-099"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 7: The C2 JU receives a J2 PPLI message from a JU that has R2, where the NPS Indicator is set to Inactive, Conditional Radio Silence, or TDS Failure. The C2 JU assumes R2 at the next opportunity to transmit the track, provided local reporting eligibility remains and no remote report has been received on that track.",
+          "evidence_refs": [
+            "EC-AF-044",
+            "EC-MF-028",
+            "EC-MF-102"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 7: The C2 JU assumes R2 for a non-real-time track (TQ=0) when the track is locally updated by a new non-real-time report, or when it receives an A3 or J3 message (excluding J3.0, A3, J3.1) from a JU with R2 of a locally held track.",
+          "evidence_refs": [
+            "EC-AF-012",
+            "EC-MF-043"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 7: The C2 JU receives a J7.0 (ACT = 0) Drop Track message on a locally held track. It assumes R2 at the next opportunity to transmit the track if local reporting eligibility remains and no remote report has been received on that track. Prior to assuming R2 for an air or surface track, the JU tests the track for correlation in accordance with paragraphs 4.4.4.3.1f and g, except the test is conducted only once.",
+          "evidence_refs": [
+            "EC-AF-013",
+            "EC-AF-087",
+            "EC-MF-042",
+            "EC-MF-100"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 7: For Subsurface Interface Unit (IU) tracks, if the IU is inactive, the C2 JU assumes R2 using the IU's address as the Track Number. If the IU becomes active again, the C2 JU ceases reporting but does not transmit a J7.0 message to drop the track. If a dual designation exists (address vs. previous TN), a J7.2 message may be used to resolve it to the IU's address.",
+          "evidence_refs": [
+            "EC-AF-019",
+            "EC-AF-020",
+            "EC-MF-050"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-001",
+        "EC-AF-029",
+        "EC-MF-052",
+        "EC-MF-086",
+        "EC-AF-009",
+        "EC-AF-084",
+        "EC-AF-085",
+        "EC-AF-004",
+        "EC-AF-005",
+        "EC-AF-010",
+        "EC-MF-017",
+        "EC-MF-094",
+        "EC-AF-008",
+        "EC-MF-067",
+        "EC-MF-092",
+        "EC-AF-014",
+        "EC-AF-041",
+        "EC-MF-099",
+        "EC-AF-044",
+        "EC-MF-028",
+        "EC-MF-102",
+        "EC-AF-012",
+        "EC-MF-043",
+        "EC-AF-013",
+        "EC-AF-087",
+        "EC-MF-042",
+        "EC-MF-100",
+        "EC-AF-019",
+        "EC-AF-020",
+        "EC-MF-050"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2 or 3: If no J7.0 (ACT = 0) message for the Dropped TN is received after a period of 60 seconds from the transmission of the correlation request, the correlation is deemed to have failed. The C2 JU shall retain the Dropped TN as a remote track and cancel all associated processing for the correlation conflict, effectively dropping the local reporting of the Dropped TN without re-attempting correlation for that specific conflict resolution.",
+          "evidence_refs": [
+            "EC-MF-093",
+            "EC-EF-028",
+            "EC-PO-098",
+            "EC-PO-040"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 5: If the C2 JU experiences a loss of reporting capability for a track for which it has reporting responsibility, it shall transmit a J7.0 (ACT = 0) message to drop the track.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 5: If time segments or area sides are defined for a point, line, or area for which the C2 JU has reporting responsibility, it shall transmit a J7.0 (ACT = 0) message to drop the track.",
+          "evidence_refs": [
+            "EC-EF-024"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 5: If a J7.0 (ACT = 0) Drop Track message is received from the FJU for a track, and the C2 JU finds a correlation with a track for which another C2 JU has R2 and the TNs are different, the C2 JU transmits a J7.2 (RV = 1) Correlation message. The Source TN in the Header word of the J2 PPLI message is designated as the Retained TN and the surveillance TN as the Dropped TN. The C2 JU shall then cease reporting the Dropped TN and transmit a J7.0 (ACT = 0) Drop Track message, effectively transferring the reporting responsibility to the other C2 JU and resolving the conflict.",
+          "evidence_refs": [
+            "EC-EF-020",
+            "EC-AF-053",
+            "EC-EF-003",
+            "EC-PO-059"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-093",
+        "EC-EF-028",
+        "EC-PO-098",
+        "EC-PO-040",
+        "EC-EF-003",
+        "EC-EF-024",
+        "EC-EF-020",
+        "EC-AF-053",
+        "EC-PO-059"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "If the C2 JU previously held Reporting Responsibility (R2) for a track involved in a correlation conflict with different Track Numbers, the C2 JU has ceased reporting the track and transmitted a J7.0 (ACT = 0) Drop Track message for the Dropped TN.",
+          "evidence_refs": [
+            "EC-PO-019",
+            "EC-PO-020",
+            "EC-PO-014",
+            "EC-PO-006"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU accepted a correlation with another C2 JU holding R2 and the Track Numbers (TNs) were different, the C2 JU has transmitted a J7.2 Correlation message with the Source TN designated as the Retained TN and the surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "EC-PO-001",
+            "EC-PO-058"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU accepted a correlation with another C2 JU holding R2 and the Track Numbers (TNs) were the same, the C2 JU has accepted the PPLI information for surveillance tracking but disregarded the J3.0 surveillance data from that track.",
+          "evidence_refs": [
+            "EC-PO-002",
+            "EC-PO-026"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the Geodetic Position Quality field in the accepted PPLI message is 0, the track number and identity of the PPLI message have been discarded.",
+          "evidence_refs": [
+            "EC-PO-003",
+            "EC-PO-026"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the Dropped TN is reported by another Interface Unit after the transmission of the J7.0 message, the C2 JU has retained the Dropped TN as a remote track.",
+          "evidence_refs": [
+            "EC-PO-015",
+            "EC-PO-068"
+          ]
+        },
+        {
+          "content": "If the C2 JU holds the Dropped TN as a local or common local track, the Retained TN has been designated as a common local track.",
+          "evidence_refs": [
+            "EC-PO-013",
+            "EC-PO-067",
+            "EC-PO-097"
+          ]
+        },
+        {
+          "content": "Nonzero Mode I, II, or III IFF/SIF data from the Dropped TN for modes where the Retained TN data is zero has been transferred to the Retained TN.",
+          "evidence_refs": [
+            "EC-PO-041"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the Dropped TN Mode IV data is a higher value than the Retained TN Mode IV data, the Dropped TN Mode IV data has been transferred to the Retained TN.",
+          "evidence_refs": [
+            "EC-PO-016",
+            "EC-PO-042"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the Dropped TN had the Force Tell Indicator set to value 1, the Retained TN now has the Force Tell Indicator set to value 1.",
+          "evidence_refs": [
+            "EC-PO-017",
+            "EC-PO-043"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the Dropped TN had the Emergency Indicator set to value 1, the Retained TN now has the Emergency Indicator set to value 1.",
+          "evidence_refs": [
+            "EC-PO-018",
+            "EC-PO-044"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU assumes R2 for an emergency point, it uses the same Reference TN and TN Previously Reported as reported by the previous reporting unit.",
+          "evidence_refs": [
+            "EC-PO-064",
+            "EC-PO-029"
+          ]
+        },
+        {
+          "content": "The C2 JU does not reattempt correlation with the Retained TN and the Dropped TN for a period of 60 seconds after the transmission of the J7.0 message.",
+          "evidence_refs": [
+            "EC-PO-040",
+            "EC-PO-060",
+            "EC-PO-069"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-019",
+        "EC-PO-020",
+        "EC-PO-014",
+        "EC-PO-006",
+        "EC-PO-001",
+        "EC-PO-058",
+        "EC-PO-002",
+        "EC-PO-026",
+        "EC-PO-003",
+        "EC-PO-015",
+        "EC-PO-068",
+        "EC-PO-013",
+        "EC-PO-067",
+        "EC-PO-097",
+        "EC-PO-041",
+        "EC-PO-016",
+        "EC-PO-042",
+        "EC-PO-017",
+        "EC-PO-043",
+        "EC-PO-018",
+        "EC-PO-044",
+        "EC-PO-064",
+        "EC-PO-029",
+        "EC-PO-040",
+        "EC-PO-060",
+        "EC-PO-069"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "trigger",
+      "detail": "No evidence found for slot 'trigger'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 9 states 'Diverges from Step 7'. Same issue as above. The Main Flow Step 7 is too generic. (slot already rewritten once; further slot_rewrite suppressed)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[trigger_preconditions_coverage] The Trigger slot is empty. However, Main Flow Step 1 begins with 'The C2 JU receives a J2 PPLI message... and... detects a correlation conflict'. This implies a specific event (Reception of J2 PPLI) and a specific internal state (Conflict Detected) that constitute the Trigger. Because the Trigger slot is blank, it fails to explicitly define the entry event that starts the use case, creating a discontinuity with the Preconditions which only define static states/capabilities. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] Main Flow Step 1 describes receiving a J2 PPLI and detecting a conflict. The Preconditions do not explicitly state that a J2 PPLI is pending or being processed as the immediate antecedent event. Without an explicit Trigger, the continuity from Preconditions (static state) to Main Flow (dynamic event) is broken. The Preconditions describe 'data points are detected', which is a precursor, but the specific trigger for this use case (conflict resolution via PPLI) is missing. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[trigger_preconditions_coverage] The Trigger slot is empty. However, Main Flow Step 1 explicitly states that the C2 JU 'receives a J2 PPLI message' and 'detects a correlation conflict'. These events constitute the trigger for the use case. By leaving the Trigger slot empty, the preconditions (which list state requirements) are not linked to a specific initiating event. While the preconditions list state prerequisites (PC-011, PC-006, etc.), the specific condition required to *start* the flow (receiving the conflicting PPLI) is missing from the Trigger slot, causing a discontinuity between the 'pre-state' and the 'first action'.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The use case involves multiple distinct scenarios: 1) Resolving correlation conflicts (Steps 1-6), and 2) Assuming R2 for emergency points (Steps 7-8). The current Preconditions are heavily biased towards the correlation conflict scenario (PC-005, PC-007-010, PC-014). They do not include the preconditions necessary for the emergency takeover scenario (Steps 7-8), such as the C2 JU monitoring an emergency point where no periodic update is received for three consecutive intervals. Without these preconditions, the path to Steps 7-8 is not fully supported by the slot.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 1 states 'Diverges from Step 2', but the main_flow definition contains 8 steps, including a valid Step 2. This specific divergence point exists in the main flow. However, looking at the entire alternative flow list: Claim 0 diverges from Step 1 (exists). Claim 1 diverges from Step 2 (exists). Claim 2 diverges from Step 3 (exists). Claim 3 diverges from Step 5 (exists). Claim 4 diverges from Step 7 (exists). Claim 5 diverges from Step 7 (exists). Claim 6 diverges from Step 7 (exists). Claim 7 diverges from Step 7 (exists). Claim 8 diverges from Step 7 (exists). All divergence points appear to reference valid steps in the main flow. Let's re-read carefully. Main flow steps are 1 through 8. Alternative flow claims reference Steps 1, 2, 3, 5, 7. All these steps exist in main_flow. Wait, is there a mismatch in content? The rule is about divergence points existing. They do exist. Let's look for other issues. ",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "goal",
+      "detail": "[goal_mainflow_alignment] The goal mentions 'ensuring that only one C2 JU maintains R2, either by ceasing reporting... or by taking over responsibility for an emergency point'. The main flow covers both aspects: correlation conflicts (Steps 1-6) and assuming R2 for emergency points (Steps 7-8). However, the goal phrases it as a single unified outcome. The main flow splits these into distinct logical paths (correlation vs. emergency takeover). While consistent, is there a broader issue? Let's check actor presence.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "preconditions",
+        "main_flow",
+        "alternative_flow",
+        "exception_flow"
+      ],
+      "inconsistency_hints": [
+        "The Trigger is empty, but the Main Flow step 1 explicitly requires the C2 JU to receive a J2 PPLI message and detect a correlation conflict where Track Numbers (TNs) are different. Preconditions must explicitly state that the system is in a state of receiving and correlating PPLI data to support the trigger event. Currently, EC-PC-014 mentions detecting conflicts but is part of a general data determination state, and there is no specific precondition linking the receipt of a J2 PPLI message to the initiation of this specific use case flow for different TNs.",
+        "[slot_rewrite] The last step in the Main Flow (Step 8) describes assuming R2 for an emergency point using the same Reference TN. However, the Postconditions include several outcomes related to 'Dropped TNs' (e.g., EC-PO-015, EC-PO-068, EC-PO-013, EC-PO-067, EC-PO-097, EC-PO-041, EC-PO-016, EC-PO-042, EC-PO-017, EC-PO-043). Specifically, postconditions like 'If the Dropped TN is reported by another Interface Unit...' (EC-PO-015) and 'Nonzero Mode I, II, or III IFF/SIF data... transferred to the Retained TN' (EC-PO-041) are not covered by the final steps of the main flow, which only ends with the emergency point assumption. The main flow fails to include the steps for handling the 'Dropped TN' state transitions and data transfers that constitute the majority of the postconditions.",
+        "Alternative flow claim 6 states 'Diverges from Step 7', but this step describes assuming R2 for non-real-time tracks via local update or A3/J3 messages. While this is a valid scenario for assuming R2, the Main Flow Step 7 is specifically triggered by missing periodic updates for emergency points or receiving a J7.0 message. The alt_flow diverges on a different trigger condition (local update vs. timeout/J7.0) that is not explicitly modeled as a separate branch in the Main Flow's binary logic of Step 7. More critically, Main Flow Step 7 covers 'emergency points' specifically, while Alt Flow Claim 6 covers 'non-real-time tracks' generally. However, the most glaring issue is Claim 7 ('Diverges from Step 7') which involves receiving a J7.0 on a locally held track. Main Flow Step 7 assumes R2 upon *not* receiving updates or receiving a J7.0. If the C2 JU *holds* the track, receiving a J7.0 from another unit is handled by Alt Flow Claim 7. The Main Flow Step 7 says 'if a J7.0 ... message is received, the C2 JU ... assumes R2'. It does not distinguish whether the C2 JU *already* holds the track or not. In reality, if C2 JU holds the track, it shouldn't 'assume' R2 from another unit's J7.0 in the same way; it might be a conflict. But strictly looking at the text, Main Flow Step 7 is the only step handling R2 assumption via J7.0. The Alt Flows 6, 7, 8, 9, 10 all claim to diverge from Step 7. This implies Step 7 is a complex decision point. The Main Flow text for Step 7 is: 'monitors emergency points... if no periodic update... or J7.0 received... assumes R2'. It does not mention the conditions in Alt Flows (e.g., non-real-time, specific NPS indicators, IU inactive). Therefore, the Main Flow is too simplistic for Step 7, causing the Alt Flows to diverge from a step that doesn't capture the necessary pre-conditions to avoid divergence. The root cause is that Main Flow Step 7 is not detailed enough to encompass the various R2 assumption scenarios, forcing Alt Flows to diverge from a generic 'Step 7' label without a clear alternative path in the Main Flow logic itself.",
+        "Alternative flow claim 7 states 'Diverges from Step 7'. As noted above, Main Flow Step 7 is a single step covering multiple distinct scenarios (timeout, J7.0 receipt). The alt flow describes a specific case (receiving J7.0 on a locally held track) that conflicts with the Main Flow's general statement. The Main Flow does not distinguish between 'holding the track' and 'not holding the track' in Step 7, making the divergence ambiguous.",
+        "[slot_rewrite] Alternative flow claim 8 states 'Diverges from Step 7'. Same issue as above. The Main Flow Step 7 is too generic.",
+        "Exception flow claim 0 diverges from Step 2 or 3. It states that if a J7.2 is sent but no J7.0 is received after 60 seconds, processing is cancelled. Main Flow Step 2 and 3 describe sending J7.2 messages. However, the Main Flow does not define a timeout or error handling for the lack of response to these correlation messages. The exception flow introduces a new state ('correlation failed') and action ('cancel processing') that is not present in the Main Flow's terminal steps or exit conditions. The Main Flow assumes the correlation proceeds or falls into other branches. The exception flow exits the use case (cancels processing) but this exit path is not covered in the Main Flow's structure.",
+        "Exception flow claim 0 describes a divergence from Step 2 or 3 (correlation conflict resolution). It states that if no J7.0 is received after 60 seconds, 'all associated processing is cancelled.' This implies the use case terminates or aborts. However, the use case goal is to achieve transfer of reporting responsibility, and the main flow includes subsequent steps (Steps 7-8) for assuming responsibility for emergency points. A complete cancellation of processing for a correlation conflict does not align with the broader goal of ensuring R2 is managed, nor does it explicitly hand off to an alternative flow or return to a valid state for continued use case execution. The exit condition is ambiguous: does 'cancelled' mean the track is dropped (covered in Step 5), or does the entire use case instance end? Given the goal emphasizes maintaining R2, an abrupt cancellation without a clear resolution (like dropping the track or assuming R2) creates a gap in the exception handling coverage relative to the goal.",
+        "Exception flow claim 3 (index 3) describes a scenario where the C2 JU receives a J7.0 from an FJU and transmits a J7.2 (RV=1) Correlation message. However, unlike other exception claims that explicitly state the processing is cancelled or a message is sent to drop the track (implying termination of the specific track handling), this claim ends with the transmission of the J7.2 message. It does not specify a clear exit: it does not state that the use case instance terminates, nor does it explicitly state that the flow returns to a monitoring state (Main Flow) or hands off. Given the goal of 'Transfer Reporting Responsibility', accepting the correlation (RV=1) implies a successful state, but the flow control is missing."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 471,
+    "cross_page_cards": 155,
+    "modalities": {
+      "text": 463,
+      "table": 8
+    }
+  }
+}

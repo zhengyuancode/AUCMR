@@ -1,0 +1,1311 @@
+{
+  "use_case_name": "Define Reference Points and Geometric Areas",
+  "actor": "C2 JU",
+  "slots": {
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "When a request to establish or modify a prearranged filter is being processed and the filter combination GEO=0, SP=0, SIM=0 occurs, transmission of the Reference Point is inhibited.",
+          "evidence_refs": [
+            "EC-EF-006"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "When data concerning any point that comprises a portion of a segmented line or multisided area is changed, the reporting JU transmits the entire line or area, and receiving units purge the previously held line/area and replace it with the new report.",
+          "evidence_refs": [
+            "EC-EF-000",
+            "EC-EF-015"
+          ],
+          "step_number": 2
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-006",
+        "EC-EF-000",
+        "EC-EF-015"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "ef-filter-inhibit-reference-point-transmission",
+          "ef-segmented-line-area-full-retransmission",
+          "ef-segmented-line-area-receiver-purge-replace",
+          "exception_flow",
+          "trigger condition for exception",
+          "system response to error or unexpected condition",
+          "Recovery behavior for missed termination messages on Emergency Points",
+          "system response to implementation mismatch",
+          "recovery/continuation behavior"
+        ],
+        "missing_aspects": [
+          "Recovery or continuation after Reference Point transmission is inhibited by the GEO=0, SP=0, SIM=0 filter combination is not specified.",
+          "Recovery/continuation behavior for Reference Point transmissions inhibited by other transmission filter combinations is not specified.",
+          "Recovery or continuation after Reference Point transmission is inhibited",
+          "Explicit confirmation that this inhibition results in the termination or exit of the current processing branch.",
+          "Explicit confirmation that this sequence constitutes the exit condition of the exception flow branch."
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "Requirement for J7.6 message capability to manage reference point filters"
+        ],
+        "missing_aspects": [
+          "System state or conditions that must hold before the C2 JU can begin defining reference points and geometric areas are not specified in the available evidence.",
+          "System state or conditions that must hold before the C2 JU can begin defining reference points and geometric areas",
+          "System state or conditions that must hold before the use case 'Define Reference Points and Geometric Areas' can begin",
+          "Specific operational mode or login state required before accessing the reference point definition function",
+          "Pre-existing network connectivity or synchronization status required"
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "If a slaved point or area has been defined, its position is established as Delta Latitude and 1/Delta Longitude from the Related TN at the time of the report, with the Slaved Indicator set to value 1.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ]
+        },
+        {
+          "content": "If the J3.0E0 word is included in a report of a slaved point or area, Latitude and Longitude are set to No Statement.",
+          "evidence_refs": [
+            "EC-PO-002"
+          ]
+        },
+        {
+          "content": "Each point, line, or area reported on the interface shall be assigned a TN(s) by the reporting JU.",
+          "evidence_refs": [
+            "EC-PO-009"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-001",
+        "EC-PO-002",
+        "EC-PO-009"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU defines the point, line, or area selected by the operator, including a multisided area described by more than 3 points.",
+          "evidence_refs": [
+            "EC-TR-009",
+            "EC-MF-021",
+            "EC-MF-017"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU assigns a Track Number (TN) to the point, line, or area reported on the interface.",
+          "evidence_refs": [
+            "EC-MF-013",
+            "EC-MF-021"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The C2 JU reports the position of each point using geodetic latitude/longitude values, except that for a slaved point or area the C2 JU sets the Slaved Indicator to value 1 and establishes the position as Delta Latitude and 1/Delta Longitude from the Related TN at the time of the report; if the J3.0E0 word is included in a slaved point/area report, Latitude and Longitude are set to No Statement.",
+          "evidence_refs": [
+            "EC-MF-021",
+            "EC-PO-001",
+            "EC-PO-002"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The C2 JU transmits multiple J3.0 messages, each with a unique TN.",
+          "evidence_refs": [
+            "EC-MF-017"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "In subsequent J3.0 messages, the C2 JU sets the Line/Area Continuation Indicator to value 1.",
+          "evidence_refs": [
+            "EC-MF-017"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU closes the figure by transmitting the last point location as the same location as the initial point transmitted in the first word sequence.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 6
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-009",
+        "EC-MF-021",
+        "EC-MF-017",
+        "EC-MF-013",
+        "EC-PO-001",
+        "EC-PO-002",
+        "EC-MF-002"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU operator initiates the definition process by selecting a point, line, or area type to report.",
+          "evidence_refs": [
+            "EC-TR-009"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-009"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-operator-action",
+          "trigger-select-entity-type",
+          "trigger-r2-assumption-context",
+          "trigger-entity-type-variants",
+          "explicit_trigger_event_initiating_definition_process",
+          "Explicit trigger event initiating the initial definition process (e.g., operator command to begin defining a new point/line/area)",
+          "Explicit trigger event initiating the Force Tell Alert process (setting FT IND in J3.0)"
+        ],
+        "missing_aspects": [
+          "Explicit trigger event initiating the definition process (e.g., operator command)",
+          "Explicit trigger event initiating the initial definition process (e.g., operator command to begin defining a new point/line/area)",
+          "Confirmation or feedback mechanism received by the actor after successful transmission of initial definition",
+          "Confirmation or feedback mechanism received by the actor after successful transmission",
+          "Evidence supporting that this trigger occurs specifically when another JU assumes Reporting Responsibility (R²) for that point, line, or area."
+        ]
+      }
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "Reference points (including slaved points/areas) and geometric areas (such as squares, rectangles, circles, ellipses, corridors, and low-level transit routes) are defined for reporting purposes.",
+          "evidence_refs": [
+            "EC-G-002",
+            "EC-G-005"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002",
+        "EC-G-005"
+      ],
+      "scope_contract": {
+        "goal_statement": "Reference points (including slaved points/areas) and geometric areas (such as squares, rectangles, circles, ellipses, corridors, and low-level transit routes) are defined for reporting purposes.",
+        "canonical_success_scenario": "C2 JU defines a single reference point or geometric area of a supported type, entering its defining data for reporting purposes.",
+        "start_boundary": "C2 JU begins the definition of a reference point or geometric area.",
+        "success_boundary": "The reference point or geometric area has been defined with its defining data and is ready for reporting.",
+        "in_scope_actions": [
+          "Defining reference points, including slaved points/areas",
+          "Defining geometric areas, including squares, rectangles, circles, ellipses, corridors, low-level transit routes, and annuli"
+        ],
+        "excluded_adjacent_actions": [
+          "Post-definition reporting/distribution of previously defined entities as a separate downstream use case",
+          "Administrative management of transmission filters outside the definition action"
+        ],
+        "variant_dimensions": [
+          "Geometric area type (square, rectangle, circle, ellipse, corridor, low-level transit route, annulus)",
+          "Reference point/area slaving status (slaved points/areas)"
+        ],
+        "evidence_refs": [
+          "EC-G-002",
+          "EC-G-005"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal",
+          "goal-define-reference-points",
+          "goal-define-geometric-areas",
+          "goal-reporting-purpose",
+          "high-level objective to report geographic references and tactical information",
+          "reporting of points, lines, areas, and volumes",
+          "High-level objective to define geometric shapes and lines via J3.0 messages",
+          "goal-slaved-points-and-areas",
+          "High-level objective to transmit data update requests for points, lines, and areas",
+          "Goal of responding to self-referenced data update requests with status reports",
+          "definition of geographic area types (Circle/Ellipse, Annulus)",
+          "Define Reference Points with Transmission Filters",
+          "Inhibit transmission based on filter criteria"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: the C2 JU uses a J3.0 message to transmit lines (e.g., FEBAs, roads), areas (e.g., search areas, exercise areas), or volumes (e.g., corridors).",
+          "evidence_refs": [
+            "EC-AF-000"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1: when reporting a single reference point, the C2 JU sets the Point/Line/Area Descriptor field to value 0 (Point) in the initial word of the J3.0 message.",
+          "evidence_refs": [
+            "EC-AF-011"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1: when 2 or 3 points are joined to form a segmented line, the C2 JU sets the Point/Line/Area Descriptor field to value 2 (Line) in the initial word and uses a single J3.0 message, rather than the multi-message sequence for a multisided area.",
+          "evidence_refs": [
+            "EC-AF-002",
+            "EC-AF-012"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1: when defining a square, rectangle, circle, or ellipse, the C2 JU uses a J3.0I/J3.0E0/J3.0C2, J3.5I/J3.5E0/J3.5C3, or J3.7I/J3.7C1/J3.7C2 word sequence; a circle/ellipse may be described about a ground point using the J3.5 message. For a square or rectangle, the Point/Line/Area Descriptor is set to value 1 (Single Point Area) and the Square/Circle Switch field is set to value 1.",
+          "evidence_refs": [
+            "EC-AF-003",
+            "EC-AF-001",
+            "EC-AF-013"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1: when defining a Low Level Transit Route, the C2 JU reports it using Point Type value 4, Line, and Point Amplification value 6.",
+          "evidence_refs": [
+            "EC-AF-016"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 3: when defining a slaved point or area, the C2 JU establishes the position as Delta Latitude, 1/Delta Longitude, 1 from the Related TN at the time of the report and sets the Slaved Indicator to value 1, instead of reporting geodetic latitude/longitude.",
+          "evidence_refs": [
+            "EC-AF-017"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-000",
+        "EC-AF-011",
+        "EC-AF-002",
+        "EC-AF-012",
+        "EC-AF-003",
+        "EC-AF-001",
+        "EC-AF-013",
+        "EC-AF-016",
+        "EC-AF-017"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "alt-line-area-volume-via-j3.0",
+          "alt-single-point-descriptor-point",
+          "alt-segmented-line-2-or-3-points",
+          "alt-square-rectangle-circle-ellipse",
+          "alt-square-rectangle-descriptor-and-switch",
+          "alt-lltr-definition",
+          "alt-slaved-point-area-delta-position",
+          "alternative-flow-point-definition-descriptor",
+          "alternative-flow-single-message-segmented-line",
+          "Alternative flow for defining squares and rectangles via specific switch values",
+          "Alternative flow for defining circles and ellipses via specific switch values",
+          "Alternative flow for defining Corridors via specific amplification values",
+          "Alternative flow for defining Low Level Transit Routes (LLTR) via specific amplification values",
+          "Alternative flow for defining slaved points/areas relative to a Related TN",
+          "alternative_flow-circle_definition_sequence",
+          "alternative_flow-annulus_definition_sequence",
+          "alternative_flow-circular_sector_definition_sequence",
+          "alternative_flow-sector_of_annulus_definition_sequence",
+          "alternative_flow-rectangle_definition_sequence",
+          "divergence_from_main_flow_point_by_point_definition"
+        ],
+        "missing_aspects": [
+          "Annulus geometric area definition alternative (parameter values/word sequence) is not specified in the available evidence.",
+          "Corridor-specific definition parameters beyond the J3.0 volume capability are not specified in the available evidence."
+        ]
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "preconditions",
+      "detail": "No evidence found for slot 'preconditions'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] The Main Flow defines a non-slaved multisided area using geodetic latitude/longitude and closes the figure. Postconditions 1 and 2 require that slaved point/area definitions express position as Delta Latitude and 1/Delta Longitude from the Related TN, set Slaved Indicator to 1, and set J3.0E0 Latitude/Longitude to No Statement when the J3.0E0 word is included. The Main Flow has no slaved point/area path or J3.0E0 word handling, so these postconditions are not reachable. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The trigger requires the C2 JU operator to initiate the definition process by selecting a point/line/area type, but the preconditions slot contains no actual precondition claims, only coverage metadata. No required system state is established (e.g., C2 JU capability/mode for J3.0 point/line/area definition and reporting, network participation) that must hold before the trigger can occur. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The preconditions slot has no actual claims: it only reports coverage_state, and the only covered aspect is not expressed as a precondition. The trigger, however, starts with the C2 JU operator selecting a point, line, or area type to report, which presumes that the operator has access to the reference-point definition function in an appropriate operational/login state. That independent entry-context state is not established, so the vertical flow from preconditions to trigger is incomplete.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow",
+        "postconditions"
+      ],
+      "inconsistency_hints": [
+        "The Trigger states that the C2 JU operator initiates the definition process by selecting a point, line, or area type to report. Main Flow step 1 immediately defines a multisided area with more than 3 points. This continues only the 'area' option; if the operator selected a point or line, the Main Flow restarts as a different scenario rather than continuing from the Trigger.",
+        "The Main Flow is an operator-initiated definition flow in which the C2 JU transmits J3.0 messages for a newly defined area. It contains no step in which the C2 JU responds to a data update request. Postcondition 3 states that when the C2 JU responds with J3.0, J3.7, and/or J6.0 Amplification, the Response Indicator field is set to 1. That describes a response behavior not present in the Main Flow, so the postcondition is not reachable.",
+        "Postconditions specify that slaved points/areas use Delta Latitude/Delta Longitude from the Related TN and can set Latitude/Longitude to No Statement when J3.0E0 is included. Main Flow step 3 instead reports every point's position using geodetic latitude/longitude, and the flow never mentions Slaved Indicator, Related TN, or J3.0E0. Therefore the slaved point/area postconditions are not reachable from, and are contradicted by, the main flow."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 129,
+    "cross_page_cards": 6,
+    "modalities": {
+      "text": 114,
+      "table": 15
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 5702.053,
+    "llm_calls": 61,
+    "llm_seconds": 4611.542,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 1035.775,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 140,
+    "judge_calls": 0,
+    "cards_collected": 129,
+    "cards_referenced": 22
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "When a request to establish or modify a prearranged filter is being processed and the filter combination GEO=0, SP=0, SIM=0 occurs, transmission of the Reference Point is inhibited.",
+            "evidence_refs": [
+              "EC-EF-006"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "When data concerning any point that comprises a portion of a segmented line or multisided area is changed, the reporting JU transmits the entire line or area, and receiving units purge the previously held line/area and replace it with the new report.",
+            "evidence_refs": [
+              "EC-EF-000",
+              "EC-EF-015"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "If a slaved point or area has been defined, its position is established as Delta Latitude and 1/Delta Longitude from the Related TN at the time of the report, with the Slaved Indicator set to value 1.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "If the J3.0E0 word is included in a report of a slaved point or area, Latitude and Longitude are set to No Statement.",
+            "evidence_refs": [
+              "EC-PO-002"
+            ]
+          },
+          {
+            "content": "Each point, line, or area reported on the interface shall be assigned a TN(s) by the reporting JU.",
+            "evidence_refs": [
+              "EC-PO-009"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-PO-025",
+          "EC-PO-026",
+          "EC-PO-027",
+          "EC-PO-028",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU defines the point, line, or area selected by the operator, including a multisided area described by more than 3 points.",
+            "evidence_refs": [
+              "EC-TR-009",
+              "EC-MF-021",
+              "EC-MF-017"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU assigns a Track Number (TN) to the point, line, or area reported on the interface.",
+            "evidence_refs": [
+              "EC-MF-013",
+              "EC-MF-021"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The C2 JU reports the position of each point using geodetic latitude/longitude values, except that for a slaved point or area the C2 JU sets the Slaved Indicator to value 1 and establishes the position as Delta Latitude and 1/Delta Longitude from the Related TN at the time of the report; if the J3.0E0 word is included in a slaved point/area report, Latitude and Longitude are set to No Statement.",
+            "evidence_refs": [
+              "EC-MF-021",
+              "EC-PO-001",
+              "EC-PO-002"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The C2 JU transmits multiple J3.0 messages, each with a unique TN.",
+            "evidence_refs": [
+              "EC-MF-017"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "In subsequent J3.0 messages, the C2 JU sets the Line/Area Continuation Indicator to value 1.",
+            "evidence_refs": [
+              "EC-MF-017"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The C2 JU closes the figure by transmitting the last point location as the same location as the initial point transmitted in the first word sequence.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-PO-025",
+          "EC-PO-026",
+          "EC-PO-027",
+          "EC-PO-028",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU operator initiates the definition process by selecting a point, line, or area type to report.",
+            "evidence_refs": [
+              "EC-TR-009"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Reference points (including slaved points/areas) and geometric areas (such as squares, rectangles, circles, ellipses, corridors, and low-level transit routes) are defined for reporting purposes.",
+            "evidence_refs": [
+              "EC-G-002",
+              "EC-G-005"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: the C2 JU uses a J3.0 message to transmit lines (e.g., FEBAs, roads), areas (e.g., search areas, exercise areas), or volumes (e.g., corridors).",
+            "evidence_refs": [
+              "EC-AF-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: when reporting a single reference point, the C2 JU sets the Point/Line/Area Descriptor field to value 0 (Point) in the initial word of the J3.0 message.",
+            "evidence_refs": [
+              "EC-AF-011"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: when 2 or 3 points are joined to form a segmented line, the C2 JU sets the Point/Line/Area Descriptor field to value 2 (Line) in the initial word and uses a single J3.0 message, rather than the multi-message sequence for a multisided area.",
+            "evidence_refs": [
+              "EC-AF-002",
+              "EC-AF-012"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: when defining a square, rectangle, circle, or ellipse, the C2 JU uses a J3.0I/J3.0E0/J3.0C2, J3.5I/J3.5E0/J3.5C3, or J3.7I/J3.7C1/J3.7C2 word sequence; a circle/ellipse may be described about a ground point using the J3.5 message. For a square or rectangle, the Point/Line/Area Descriptor is set to value 1 (Single Point Area) and the Square/Circle Switch field is set to value 1.",
+            "evidence_refs": [
+              "EC-AF-003",
+              "EC-AF-001",
+              "EC-AF-013"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: when defining a Low Level Transit Route, the C2 JU reports it using Point Type value 4, Line, and Point Amplification value 6.",
+            "evidence_refs": [
+              "EC-AF-016"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 3: when defining a slaved point or area, the C2 JU establishes the position as Delta Latitude, 1/Delta Longitude, 1 from the Related TN at the time of the report and sets the Slaved Indicator to value 1, instead of reporting geodetic latitude/longitude.",
+            "evidence_refs": [
+              "EC-AF-017"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=47]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=47]",
+    "directory": "random_order/seed_047",
+    "seed": 47,
+    "slot_order": [
+      "exception_flow",
+      "primary_actor",
+      "preconditions",
+      "postconditions",
+      "main_flow",
+      "trigger",
+      "goal",
+      "alternative_flow"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "b70812e932b44a4db5b3a401fad6560c"
+}

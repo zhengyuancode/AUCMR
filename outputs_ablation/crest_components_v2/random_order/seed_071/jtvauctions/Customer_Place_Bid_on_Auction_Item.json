@@ -1,0 +1,629 @@
+{
+  "use_case_name": "Place Bid on Auction Item",
+  "actor": "Customer",
+  "slots": {
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The customer clicks either the QuickBid/QuickBid Now button or, after selecting a bid amount, the Place SmartBid button on a specific auction item listing.",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-TR-002",
+            "EC-TR-003"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-TR-002",
+        "EC-TR-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-action",
+          "trigger-quickbid",
+          "trigger-smartbid"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The customer's bid is successfully placed on the auction item as either a QuickBid or SmartBid.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-TR-002",
+            "EC-TR-003"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "After the customer confirms the bid, the customer remains on the product details page.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-TR-002",
+        "EC-TR-003",
+        "EC-PO-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "bid-placed",
+          "page-retention"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "A specific auction item is active and displayed with current bid information, time remaining, and interactive bidding controls (QuickBid and SmartBid) available.",
+          "evidence_refs": [
+            "EC-PC-002",
+            "EC-PC-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-002",
+        "EC-PC-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "active-auction-item",
+          "bid-controls-available"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The customer wants to place a bid on an auction item, either as a single QuickBid or a maximum SmartBid, and receive confirmation of the bid.",
+          "evidence_refs": [
+            "EC-G-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002"
+      ],
+      "scope_contract": {
+        "goal_statement": "The customer wants to place a bid on an auction item, either as a single QuickBid or a maximum SmartBid, and receive confirmation of the bid.",
+        "canonical_success_scenario": "The customer places one bid on an auction item using the selected bidding method (QuickBid or SmartBid) and receives confirmation that the bid was placed.",
+        "start_boundary": "The customer is ready to submit a bid on an auction item; the use case does not cover finding or opening the item.",
+        "success_boundary": "The bid is accepted and the customer receives confirmation of the bid placement.",
+        "in_scope_actions": [
+          "Submit a single QuickBid",
+          "Submit a maximum SmartBid",
+          "Receive bid placement confirmation"
+        ],
+        "excluded_adjacent_actions": [
+          "Browsing or searching for auction items",
+          "Opening the product details page from a product module",
+          "Winning the auction or paying for the item",
+          "Post-auction offers or administrative bid processing"
+        ],
+        "variant_dimensions": [
+          "Bid type: single QuickBid vs maximum SmartBid"
+        ],
+        "evidence_refs": [
+          "EC-G-002"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At the bidder sign-in check (main flow step 2), if the customer is not signed in, the system prompts the customer to sign in and takes them directly to the sign-in page; the attempted bid is not placed. Exit after sign-in: if the attempted action was a QuickBid from a listing/catalog page, the system returns the customer to the catalog page, where the customer re-initiates the bid via Alternative Flow step 1 (clicking QuickBid again), not via main flow step 1. If the bid was initiated from the item's product details page and the customer has the required minimum information to bid, the system returns the customer to that product details page and the customer re-initiates the bid (return to main flow step 1). If the customer still lacks the required minimum information to bid, the system does not return the customer to the product details page; the attempted bid is not placed and the customer must supply the missing information before the bid can be re-initiated.",
+          "evidence_refs": [
+            "EC-EF-001",
+            "EC-EF-000",
+            "EC-EF-002",
+            "EC-TR-000"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At the bid confirmation step (main flow step 4), if the customer clicks the CANCEL button on the bid confirmation popup, the bid placement process is terminated and the bid is not placed. Exit: use case terminates.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-001",
+        "EC-EF-000",
+        "EC-EF-002",
+        "EC-TR-000",
+        "EC-EF-003"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The system processes the customer's selected bid request for the chosen bid method and begins the bid placement flow.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-002"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The system verifies that the customer is signed in and has the minimum information required to bid before allowing the bid to be placed.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The system displays a bid confirmation popup telling the customer the bid amount, bid type, and payment method and asking 'Is this correct?'; the rest of the page is grayed out and unclickable.",
+          "evidence_refs": [
+            "EC-MF-004",
+            "EC-PO-001"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer confirms the bid by clicking the affirmative confirmation button (e.g., 'Yes, Place SmartBid') in the popup.",
+          "evidence_refs": [
+            "EC-MF-004",
+            "EC-MF-008"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system finalizes the bid and, after the customer confirms the bid in the bid confirmation popup, keeps the customer on the product details page, providing the customer with confirmation that the bid was placed.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-005"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-MF-002",
+        "EC-MF-003",
+        "EC-MF-004",
+        "EC-PO-001",
+        "EC-MF-008",
+        "EC-MF-005"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: Instead of initiating the bid on the product details page, the customer clicks the QuickBid button directly on an auction-item listing (catalog page). When the customer is signed in, the QuickBid is placed, and the use case proceeds through the same bid confirmation and placement steps as the main flow.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-TR-001",
+            "EC-PC-000"
+          ],
+          "step_number": 1
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-TR-001",
+        "EC-PC-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "ALT-quickbid-from-listing"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[goal_mainflow_alignment] The goal's success boundary requires the customer to receive confirmation that the bid was placed, but main_flow step 5 only says the system finalizes the bid and keeps the customer on the product details page. The confirmation popup in step 3 is a pre-bid confirmation of bid details, not a post-placement success confirmation, so the main flow does not explicitly deliver the outcome promised by the goal. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow",
+        "exception_flow"
+      ],
+      "inconsistency_hints": [
+        "The trigger ends with the customer clicking the QuickBid/Place SmartBid control, but Main Flow step 1 starts by repeating the same click and amount entry rather than moving forward with the system's response to that trigger.",
+        "Exception flow claim 0 does not give a fully clear exit: for the QuickBid-from-listing branch it returns the customer to the catalog page but then says 'return to main flow step 1', even though main_flow step 1 is defined on the product details page and the correct resumption is via the Alternative Flow. Also, the product-details branch only returns the customer 'when the customer has the required minimum information to bid', with no specified exit if that information is still missing.",
+        "The goal's success boundary says the customer receives confirmation that the bid was placed, but main_flow step 5 only states that the system finalizes the bid and keeps the customer on the product details page; no main_flow claim presents a post-placement confirmation to the customer."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 30,
+    "cross_page_cards": 12,
+    "modalities": {
+      "text": 24,
+      "diagram": 6
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2376.399,
+    "llm_calls": 25,
+    "lvlm_calls": 42,
+    "llm_seconds": 2179.784,
+    "llm_retry_calls": 0,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 188.819,
+    "cards_collected": 30,
+    "cards_referenced": 19
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Structured author candidates captured before deterministic evidence-reference validation. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "The customer clicks either the QuickBid/QuickBid Now button or, after selecting a bid amount, the Place SmartBid button on a specific auction item listing.",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-TR-002",
+              "EC-TR-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The customer's bid is successfully placed on the auction item as either a QuickBid or SmartBid.",
+            "evidence_refs": [
+              "EC-TR-000",
+              "EC-TR-002",
+              "EC-TR-003"
+            ]
+          },
+          {
+            "content": "After the customer confirms the bid, the customer remains on the product details page.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "A specific auction item is active and displayed with current bid information, time remaining, and interactive bidding controls (QuickBid and SmartBid) available.",
+            "evidence_refs": [
+              "EC-PC-002",
+              "EC-PC-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "The customer wants to place a bid on an auction item, either as a single QuickBid or a maximum SmartBid, and receive confirmation of the bid.",
+            "evidence_refs": [
+              "EC-G-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-002",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "At the bidder sign-in check (main flow step 2), if the customer is not signed in, the system prompts the customer to sign in and takes them directly to the sign-in page; the attempted bid is not placed. Exit: after sign-in, if the attempted action was a QuickBid from a listing/catalog page, the system returns the customer to the catalog page; otherwise, for a bid initiated from the item's product details page, when the customer has the required minimum information to bid, the system returns the customer to that product details page. The customer re-initiates the bid (return to main flow step 1).",
+            "evidence_refs": [
+              "EC-EF-001",
+              "EC-EF-000",
+              "EC-EF-002",
+              "EC-TR-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At the bid confirmation step (main flow step 4), if the customer clicks the CANCEL button on the bid confirmation popup, the bid placement process is terminated and the bid is not placed. Exit: use case terminates.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000",
+          "EC-PC-002",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "On the product details page for the active auction item, the customer initiates a bid using the selected method: clicks the QuickBid/QuickBid Now button, or enters a bid amount in the 'Your SmartBid' dropdown and clicks the 'Place SmartBid' button.",
+            "evidence_refs": [
+              "EC-PC-002",
+              "EC-TR-001",
+              "EC-TR-002",
+              "EC-TR-003",
+              "EC-MF-006"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system verifies that the customer is signed in and has the minimum information required to bid before allowing the bid to be placed.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system displays a bid confirmation popup telling the customer the bid amount, bid type, and payment method and asking 'Is this correct?'; the rest of the page is grayed out and unclickable.",
+            "evidence_refs": [
+              "EC-MF-004",
+              "EC-PO-001"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The customer confirms the bid by clicking the affirmative confirmation button (e.g., 'Yes, Place SmartBid') in the popup.",
+            "evidence_refs": [
+              "EC-MF-004",
+              "EC-MF-008"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The system finalizes the bid and, after confirmation, keeps the customer on the product details page.",
+            "evidence_refs": [
+              "EC-PO-001",
+              "EC-MF-000",
+              "EC-MF-005"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-PC-000",
+          "EC-PC-002",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: Instead of initiating the bid on the product details page, the customer clicks the QuickBid button directly on an auction-item listing (catalog page). When the customer is signed in, the QuickBid is placed, and the use case proceeds through the same bid confirmation and placement steps as the main flow.",
+            "evidence_refs": [
+              "EC-TR-000",
+              "EC-TR-001",
+              "EC-PC-000"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-PC-000",
+          "EC-PC-002",
+          "EC-PO-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=71]",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=71]",
+    "directory": "random_order/seed_071",
+    "seed": 71,
+    "slot_order": [
+      "primary_actor",
+      "trigger",
+      "postconditions",
+      "preconditions",
+      "goal",
+      "exception_flow",
+      "main_flow",
+      "alternative_flow"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  }
+}

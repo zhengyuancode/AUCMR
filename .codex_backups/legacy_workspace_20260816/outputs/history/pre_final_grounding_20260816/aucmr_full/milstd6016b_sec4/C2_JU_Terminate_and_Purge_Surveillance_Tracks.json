@@ -1,0 +1,675 @@
+{
+  "use_case_name": "Terminate and Purge Surveillance Tracks",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "C2 JU terminates and purges surveillance tracks by automatically dropping remote tracks/points after the specified time interval since their last report has elapsed and by terminating transmission of EW product information when that information is no longer valid or time-related update requirements are not met.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "C2 JU terminates and purges surveillance tracks that are stale or no longer valid, specifically by dropping remote tracks/points after the specified time interval since their last report and by terminating transmission of EW product information when update requirements are not met.",
+        "canonical_success_scenario": "C2 JU automatically drops a remote track/point after the specified time interval since its last report has elapsed, and terminates transmission of EW product information when the information is no longer valid or time-related update requirements are not met.",
+        "start_boundary": "C2 JU has existing remote tracks/points or EW product information that may meet termination or purge criteria.",
+        "success_boundary": "The stale remote track/point has been dropped, and the transmission of invalid/out-of-date EW product information has been terminated.",
+        "in_scope_actions": [
+          "Dropping remote tracks/points after the specified time interval since their last report",
+          "Terminating transmission of EW product information when it is no longer valid or time-related update requirements are not met"
+        ],
+        "excluded_adjacent_actions": [
+          "Creating or acquiring surveillance tracks/points",
+          "Updating or reporting surveillance data",
+          "Archiving or downstream distribution of terminated/purged data",
+          "Configuring purge time intervals"
+        ],
+        "variant_dimensions": [
+          "Remote track versus remote point"
+        ],
+        "evidence_refs": [
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "A specified time interval parameter is defined in the system design to determine when locally held remote tracks/points should be automatically purged if they are no longer being updated.",
+          "evidence_refs": [
+            "EC-PC-005"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "At least one remote track/point is currently held/monitored by the system, has not been terminated by a J7.0 (ACT=0) Drop Track Report, and has received no further updates since its last report.",
+          "evidence_refs": [
+            "EC-PC-004",
+            "EC-PC-002",
+            "EC-PC-001"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "C2 JU is transmitting EW product information on the interface for which the information is no longer valid or time-related update requirements are not met.",
+          "evidence_refs": [
+            "EC-G-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-005",
+        "EC-PC-004",
+        "EC-PC-002",
+        "EC-PC-001",
+        "EC-G-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "purge_interval_parameter",
+          "existing_stale_remote_tracks",
+          "stale_ew_product_info"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The trigger is the elapse of the specified time interval since a remote track/point's last report without receipt of a J7.0 (ACT = 0) Drop Track Report or further updates, requiring C2 JU to automatically drop (purge) the remote track/point; or the EW product information becoming no longer valid or failing to meet time-related update requirements, requiring C2 JU to terminate transmission of that EW product information.",
+          "evidence_refs": [
+            "EC-TR-004",
+            "EC-TR-000",
+            "EC-G-001",
+            "EC-MF-008"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-004",
+        "EC-TR-000",
+        "EC-G-001",
+        "EC-MF-008"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "C2 JU determines that the specified time interval has elapsed since the remote track's/point's last report, with no J7.0 (ACT=0) Drop Track Report and no further updates.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-007",
+            "EC-TR-004"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "C2 JU automatically drops the remote track/point.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-010"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "C2 JU does not transmit a J7.0 (ACT=0) message for the purged remote track/point.",
+          "evidence_refs": [
+            "EC-MF-001",
+            "EC-MF-003"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "C2 JU determines that the EW product information being transmitted is no longer valid or that time-related update requirements are not met.",
+          "evidence_refs": [
+            "EC-MF-008"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "C2 JU terminates transmission of that EW product information by transmitting a J7.0 (ACT=0) message on the interface.",
+          "evidence_refs": [
+            "EC-MF-008",
+            "EC-MF-009"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-MF-007",
+        "EC-TR-004",
+        "EC-MF-010",
+        "EC-MF-001",
+        "EC-MF-003",
+        "EC-MF-008",
+        "EC-MF-009"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2. When C2 JU ceases reporting a subsurface track instead of waiting for the purge interval to elapse, it terminates that track by transmitting a J7.0 (ACT = 0) message, except when the track becomes an Active IU on the network with the same reference TN (in which case no J7.0 message is sent).",
+          "evidence_refs": [
+            "EC-AF-005"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1. For NOTACK areas, Moving Havens, and FWDAs, C2 JU terminates the point at its deactivation time by transmitting a J7.0 (ACT = 0) message, rather than waiting for the specified time interval since the last report to elapse and silently purging it.",
+          "evidence_refs": [
+            "EC-AF-006"
+          ],
+          "step_number": 2
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-005",
+        "EC-AF-006"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-explicit-j7-termination-on-cease-reporting",
+          "AF-deactivation-termination-asw-points"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from main_flow Step 2. If the remote track/point is a DATUM (DRT = 4), C2 JU shall not automatically drop/purge it when the specified purge interval has elapsed. Exit: the automatic purge branch is skipped for this DATUM; the use case terminates for that track/point without dropping it.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 1
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EX-DATUM-excluded-from-automatic-purge"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The remote track/point (DRT = 0-3) has been automatically purged from the C2 JU system and is no longer held locally.",
+          "evidence_refs": [
+            "EC-PO-004",
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "No J7.0 (ACT = 0) message is transmitted on the interface for the purged remote track/point.",
+          "evidence_refs": [
+            "EC-PO-001",
+            "EC-PO-002",
+            "EC-PO-009"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Transmission of the EW product information has been terminated.",
+          "evidence_refs": [
+            "EC-PO-007"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "For explicitly terminated EW product information, a J7.0 (ACT = 0) message is transmitted on the interface.",
+          "evidence_refs": [
+            "EC-PO-006"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-004",
+        "EC-PO-000",
+        "EC-PO-001",
+        "EC-PO-002",
+        "EC-PO-009",
+        "EC-PO-007",
+        "EC-PO-006"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The Trigger is disjunctive: it may fire either when the purge interval elapses for a remote track/point or when EW product information becomes invalid/fails update requirements. Main Flow step 1 only starts the remote-track branch (interval elapsed, no J7.0/further updates). The EW branch is deferred to step 4, so an EW-only trigger cannot enter the flow; steps 1-3 would require a stale track that may not be present.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Precondition 3 already asserts that EW product information is no longer valid or fails update requirements. That is the second Trigger event itself, not a state that must already hold before the Trigger. The necessary precondition is only that C2 JU is transmitting the EW product information on the interface; the invalidity/update failure should be introduced by the Trigger.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "trigger",
+        "preconditions",
+        "main_flow",
+        "postconditions"
+      ],
+      "inconsistency_hints": [
+        "Trigger introduces explicit track-termination paths (C2 JU ceasing to report a track with R², and deactivation of NOTACK/Moving Haven/FWDA) that never appear in the main flow. Preconditions also do not state the enabling states for those paths (R² ownership, active area). The main flow only performs silent remote-track purge and EW product-information termination, so the trigger-to-main-flow continuation breaks and postcondition 4's explicit track-termination result is unreachable.",
+        "The trigger does not include the EW-product-information invalidity / unmet time-related update requirement that precondition 3 and main-flow steps 4-5 depend on. The only EW-related trigger phrase is tied to area deactivation, so the EW termination branch of the main flow is not started by a corresponding trigger event.",
+        "[slot_rewrite] Preconditions 2 and 3 already assert the trigger conditions for both branches: claim 2 says a remote track/point already has no updates and its update requirements are no longer met, and claim 3 says the EW product information is already invalid or not meeting update requirements. The trigger, however, is the elapse of the interval / the product becoming invalid. If those conditions already hold, the trigger event cannot initiate the use case; additionally, because the trigger is disjunctive, requiring both branches to be true in preconditions over-constrains the start state.",
+        "Main Flow step 1 repeats the trigger condition ('no J7.0, no further updates, interval elapses') instead of picking up where the trigger leaves off. The trigger already ends with 'requiring C2 JU to automatically drop'; step 1 should be the first system action or detection after that event, not a restatement of the trigger.",
+        "Postcondition 4 requires a J7.0 (ACT=0) message for explicitly terminated tracks or EW product information, but the Main Flow only transmits J7.0 for EW product information. For automatically purged remote tracks/points, Main Flow step 3 explicitly says no J7.0 is transmitted. There is no Main Flow step that explicitly terminates a track, so this postcondition is not reachable from the Main Flow."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 64,
+    "cross_page_cards": 20,
+    "modalities": {
+      "text": 64
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2521.279,
+    "llm_seconds": 2243.681,
+    "lvlm_seconds": 267.402,
+    "llm_calls": 26.0,
+    "lvlm_calls": 45.0,
+    "lvlm_retry_calls": 0,
+    "llm_retry_calls": 0,
+    "cards_collected": 64,
+    "cards_referenced": 28,
+    "dra_elapsed_seconds": 1273.392,
+    "dra_llm_seconds": 1273.383,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_calls": 11,
+    "dra_lvlm_calls": 0,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_retry_calls": 0
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Structured author candidates captured before deterministic evidence-reference validation. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "C2 JU terminates and purges surveillance tracks by automatically dropping remote tracks/points after the specified time interval since their last report has elapsed and by terminating transmission of EW product information when that information is no longer valid or time-related update requirements are not met.",
+            "evidence_refs": [
+              "EC-G-000",
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "A specified time interval parameter is defined in the system design to determine when locally held remote tracks/points should be automatically purged if they are no longer being updated.",
+            "evidence_refs": [
+              "EC-PC-005"
+            ]
+          },
+          {
+            "content": "At least one remote track/point is currently held/monitored by the system, has not been terminated by a J7.0 (ACT=0) Drop Track Report, and has received no further updates since its last report.",
+            "evidence_refs": [
+              "EC-PC-004",
+              "EC-PC-002",
+              "EC-PC-001"
+            ]
+          },
+          {
+            "content": "C2 JU is transmitting EW product information on the interface for which the information is no longer valid or time-related update requirements are not met.",
+            "evidence_refs": [
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-005",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-007",
+          "EC-MF-009",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-004",
+          "EC-TR-004"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "The trigger is the elapse of the specified time interval since a remote track/point's last report without receipt of a J7.0 (ACT = 0) Drop Track Report or further updates, or C2 JU ceasing to report a track for which it currently has R² (except when R² is relinquished to another JU or the track becomes an Active IU on the network), or the deactivation of a NOTACK area, Moving Haven, or FWDA, requiring C2 JU to terminate or purge the affected track/EW product information.",
+            "evidence_refs": [
+              "EC-TR-004",
+              "EC-TR-000",
+              "EC-TR-003",
+              "EC-TR-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "A remote track/point has received no J7.0 (ACT=0) Drop Track Report and no further updates, and the specified time interval since its last report elapses.",
+            "evidence_refs": [
+              "EC-MF-007",
+              "EC-MF-003",
+              "EC-TR-004"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "C2 JU automatically drops the remote track/point.",
+            "evidence_refs": [
+              "EC-MF-000",
+              "EC-MF-010"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "C2 JU does not transmit a J7.0 (ACT=0) message for the purged remote track/point.",
+            "evidence_refs": [
+              "EC-MF-001",
+              "EC-MF-003"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "C2 JU determines that the EW product information being transmitted is no longer valid or that time-related update requirements are not met.",
+            "evidence_refs": [
+              "EC-MF-008"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "C2 JU terminates transmission of that EW product information by transmitting a J7.0 (ACT=0) message on the interface.",
+            "evidence_refs": [
+              "EC-MF-008",
+              "EC-MF-009"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from Step 2. When C2 JU ceases reporting a subsurface track instead of waiting for the purge interval to elapse, it terminates that track by transmitting a J7.0 (ACT = 0) message, except when the track becomes an Active IU on the network with the same reference TN (in which case no J7.0 message is sent).",
+            "evidence_refs": [
+              "EC-AF-005"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1. For NOTACK areas, Moving Havens, and FWDAs, C2 JU terminates the point at its deactivation time by transmitting a J7.0 (ACT = 0) message, rather than waiting for the specified time interval since the last report to elapse and silently purging it.",
+            "evidence_refs": [
+              "EC-AF-006"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-007"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from main_flow Step 2. If the remote track/point is a DATUM (DRT = 4), C2 JU shall not automatically drop/purge it when the specified purge interval has elapsed. Exit: the automatic purge branch is skipped for this DATUM; the use case terminates for that track/point without dropping it.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-003",
+          "EC-MF-007",
+          "EC-PC-004",
+          "EC-TR-004"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The remote track/point (DRT = 0-3) has been automatically purged from the C2 JU system and is no longer held locally.",
+            "evidence_refs": [
+              "EC-PO-004",
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "No J7.0 (ACT = 0) message is transmitted on the interface for the purged remote track/point.",
+            "evidence_refs": [
+              "EC-PO-001",
+              "EC-PO-002",
+              "EC-PO-009"
+            ]
+          },
+          {
+            "content": "Transmission of the EW product information has been terminated.",
+            "evidence_refs": [
+              "EC-PO-007"
+            ]
+          },
+          {
+            "content": "For explicitly terminated tracks or EW product information, a J7.0 (ACT = 0) message is transmitted on the interface to terminate the track or EW product information.",
+            "evidence_refs": [
+              "EC-PO-006",
+              "EC-PO-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-009",
+          "EC-PO-011",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)"
+}

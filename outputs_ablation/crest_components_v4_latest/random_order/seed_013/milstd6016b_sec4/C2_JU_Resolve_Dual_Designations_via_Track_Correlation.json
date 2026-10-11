@@ -1,0 +1,1512 @@
+{
+  "use_case_name": "Resolve Dual Designations via Track Correlation",
+  "actor": "C2 JU",
+  "slots": {
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "When the C2 JU recognizes that two tracks being reported to the interface are eligible for correlation, it initiates action, either automatically or manually, to resolve the dual designation.",
+          "evidence_refs": [
+            "EC-TR-003"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-recognition",
+          "trigger-initiation"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The recognizing JU resolves a dual designation by correlating two tracks reported to the interface that are eligible for correlation.",
+          "evidence_refs": [
+            "EC-G-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-004"
+      ],
+      "scope_contract": {
+        "goal_statement": "The recognizing JU resolves a dual designation by correlating two tracks reported to the interface that are eligible for correlation.",
+        "canonical_success_scenario": "The C2 JU correlates two tracks that are reported to the interface and eligible for correlation, and in doing so resolves the dual designation for that pair.",
+        "start_boundary": "The C2 JU is handling two tracks reported to the interface that are eligible for correlation.",
+        "success_boundary": "The two eligible tracks have been correlated and the dual designation is resolved.",
+        "in_scope_actions": [
+          "Correlating two tracks reported to the interface that are eligible for correlation",
+          "Resolving the dual designation for that pair"
+        ],
+        "excluded_adjacent_actions": [
+          "Using PPLI data to reduce surveillance track redundancy",
+          "Running standing protocols to minimize occurrences and duration of dual designations",
+          "Preventing future dual designations outside the current eligible pair"
+        ],
+        "variant_dimensions": [],
+        "evidence_refs": [
+          "EC-G-004"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a manual correlation is attempted for two tracks that are of a different E/C, or one is simulated and the other is live, or both tracks are remote, the tracks shall not be manually correlated.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The correlation test shall occur no more than 6 seconds after the extrapolation time.",
+          "evidence_refs": [
+            "EC-EF-012"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If conflicting IDs is the only correlation restriction, the operator shall be alerted to take one of the following actions: (a) change the local ID or the Exercise Indicator and ID, thereby allowing automatic correlation, or (b) transmit an ID Difference Report, thereby allowing automatic correlation if the remote ID or Exercise Indicator and ID is changed.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The receiving IU shall accept the requested correlation unless prespecified conditions exist that require or allow rejection; if a J7.2 Correlation message is received while the receiving IU holds OCCs on both tracks, or conflicting IDs on the two tracks (when the ID-conflict correlation restriction is enabled), the receiving IU shall reject the correlation and shall transmit a J7.2 message with RV set to 2 to report the rejection.",
+          "evidence_refs": [
+            "EC-EF-019",
+            "EC-EF-015",
+            "EC-EF-038"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a ballistic missile track is lost because the JU with R2 has not received local sensor data since the last transmitted update, or determines the track is lost by other system criteria, and the track is reported with Lost Track Indicator set to 1, the reporting JU is assumed to have a TQ 5 less than that being reported; for example, if a JU reports Lost Track data with TQ 15, a JU holding Tracking data may assume R2 with TQ 11.",
+          "evidence_refs": [
+            "EC-EF-017",
+            "EC-EF-035"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "If it is determined that more than one data point exists for a ballistic missile track currently being reported, track decorrelation shall occur.",
+          "evidence_refs": [
+            "EC-EF-033"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "If a received J7.2 message contains one or both of the same TNs as contained in the transmission of the own unit J7.2 message sequence in progress, the conflict-resolution actions are: (1) if the own unit RV field is set to value 0, 1, or 3, discontinue transmission of the own unit J7.2 message and process the received message; (2) if the own unit RV field is set to value 2, complete the transmission of the message sequence in progress.",
+          "evidence_refs": [
+            "EC-EF-041",
+            "EC-EF-058"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a dual ballistic missile designation involves one of the situations most likely to lead to dual ballistic missile designations (initial reports, track merging, simultaneous multiple launches, registration errors, time-of-observation differences, or high-velocity contacts), correlation may fail or produce erroneous results; when it is determined that more than one data point exists for the ballistic missile track currently being reported, track decorrelation should occur.",
+          "evidence_refs": [
+            "EC-EF-034",
+            "EC-EF-033"
+          ],
+          "step_number": 8
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-003",
+        "EC-EF-012",
+        "EC-EF-005",
+        "EC-EF-019",
+        "EC-EF-015",
+        "EC-EF-038",
+        "EC-EF-017",
+        "EC-EF-035",
+        "EC-EF-033",
+        "EC-EF-041",
+        "EC-EF-058",
+        "EC-EF-034"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The dual designation is resolved via correlation, and the reported ballistic missile track represents a single data point.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-PO-007"
+          ]
+        },
+        {
+          "content": "Upon acceptance of the requested correlation, the receiving IUs retain the designated Retained TN and drop the designated Dropped TN.",
+          "evidence_refs": [
+            "EC-PO-009"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the originating C2 JU held R2 for the Dropped TN, it has dropped the Dropped TN and transmitted a J7.0 (ACT=0) Drop Track message after the J7.2 Correlation message.",
+          "evidence_refs": [
+            "EC-PO-010",
+            "EC-PO-003"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Upon correlation execution, Latitude, Longitude, Course, Speed, Altitude, Altitude Source, TQ, and Strength (if the Dropped TN was a local or common local track) are transferred from the Dropped TN to the Retained TN.",
+          "evidence_refs": [
+            "EC-PO-004"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Any nonzero Mode I, II, or III IFF/SIF data from the Dropped TN is transferred to the Retained TN if the corresponding Retained TN data is zero.",
+          "evidence_refs": [
+            "EC-PO-006"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If ID conflict restrictions apply and the IDs differ, the last Identity reported for the Dropped TN is processed as an Identity Difference Report for the Retained TN; otherwise, specific ID/IAD and platform attributes are transferred.",
+          "evidence_refs": [
+            "EC-PO-005"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the own unit held the Dropped TN as a local or common local track, upon successful correlation execution the Dropped TN is designated as a common local track.",
+          "evidence_refs": [
+            "EC-PO-002"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "For a manual correlation accepted with RV field set to value 3, the resulting track is not subject to automatic decorrelation processing for 5 minutes.",
+          "evidence_refs": [
+            "EC-PO-011"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If either subject track is the Target TN in a J10.2 Engagement Status message originated by the unit attempting correlation, has an ID of Unknown or Hostile, and the other subject track has an ID of Friend, automatic correlation may be allowed despite the ID conflict restriction, with the Unknown/Hostile track being the Dropped TN (TN-2).",
+          "evidence_refs": [
+            "EC-PO-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-PO-007",
+        "EC-PO-009",
+        "EC-PO-010",
+        "EC-PO-003",
+        "EC-PO-004",
+        "EC-PO-006",
+        "EC-PO-005",
+        "EC-PO-002",
+        "EC-PO-011",
+        "EC-PO-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "success-single-data-point",
+          "receiving-iu-retain-drop",
+          "originating-iu-drop-transmit",
+          "positional-data-transfer",
+          "iff-data-transfer",
+          "id-conflict-data-transfer",
+          "dropped-track-common-local",
+          "manual-correlation-decorrelation-protection",
+          "j10.2-engagement-status-exception"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2: Instead of relying on the automatic correlation test criteria, correlation restrictions, or correlation requirements, the C2 JU manually initiates the correlation of any two tracks.",
+          "evidence_refs": [
+            "EC-AF-000"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 2: If conflicting IDs is the only correlation restriction, the operator is alerted and either changes the local ID or the Exercise Indicator and ID, thereby allowing automatic correlation, or transmits an ID Difference Report, thereby allowing automatic correlation if the remote ID or Exercise Indicator and ID is changed.",
+          "evidence_refs": [
+            "EC-AF-002"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 2: If either subject track is the Target TN in a J10.2 Engagement Status message originated by the unit attempting correlation, that track has an ID of Unknown or Hostile, and the other subject track has an ID of Friend, automatic correlation may be allowed despite the ID-conflict restriction.",
+          "evidence_refs": [
+            "EC-AF-003"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 6: Instead of accepting the requested correlation, a C2 JU responding with a reverse correlation transmits the J7.2 message with the originally received Retained TN and Dropped TN reversed and the RV field set to value 1.",
+          "evidence_refs": [
+            "EC-AF-010"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 4: If the Retained TN is not held but the Dropped TN is held, and the Dropped TN has an OCC, if RV is set to 3, the system executes the correlation using the Dropped TN data and the Retained TN track number.",
+          "evidence_refs": [
+            "EC-AF-011"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 4: If the Identity or Identity Amplifying Descriptor of the Retained TN and Dropped TN are different and the difference would result in automatic acceptance of the Dropped TN ID/IAD, the Dropped TN ID/IAD and Special Interest Indicator, Platform, Platform Activity, and Specific Type shall be transferred to the Retained TN.",
+          "evidence_refs": [
+            "EC-AF-005"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "Diverges from Step 4: If the Identity of the Retained TN and Dropped TN are the same, the associated identification data reported for the Retained TN shall be retained.",
+          "evidence_refs": [
+            "EC-AF-006"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "Diverges from Step 7: If the originating C2 JU holds R2 for the Dropped TN, it drops the Dropped TN and transmits the J7.0 (ACT = 0) message after the J7.2 message.",
+          "evidence_refs": [
+            "EC-AF-007"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 7: When the own unit initiated the J7.2 message and a Drop Track message has not yet been received for the Dropped TN, the Dropped TN is retained as a remote track.",
+          "evidence_refs": [
+            "EC-AF-004"
+          ],
+          "step_number": 9
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-000",
+        "EC-AF-002",
+        "EC-AF-003",
+        "EC-AF-010",
+        "EC-AF-011",
+        "EC-AF-005",
+        "EC-AF-006",
+        "EC-AF-007",
+        "EC-AF-004"
+      ]
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "A TN pair has been determined to be a dual designation.",
+          "evidence_refs": [
+            "EC-PC-015"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Two tracks reported to the interface have passed the positional correlation eligibility tests (Course Differential, Speed Differential, and Altitude Differential), making them eligible for correlation.",
+          "evidence_refs": [
+            "EC-PC-005",
+            "EC-PC-014"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The positions of all tracks and IUs tested for correlation have been extrapolated to the same time.",
+          "evidence_refs": [
+            "EC-PC-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-015",
+        "EC-PC-005",
+        "EC-PC-014",
+        "EC-PC-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "dual-designation-determined",
+          "tracks-reported-and-eligible",
+          "same-time-extrapolation"
+        ],
+        "missing_aspects": [
+          "Evidence is required to support that these specific tests were 'passed' rather than just being the criteria for eligibility."
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU automatically performs a correlation test by comparing locally derived sensor data (e.g., position, velocity, altitude, boost indication) for the two tracks with the data received on the interface.",
+          "evidence_refs": [
+            "EC-MF-017",
+            "EC-MF-000",
+            "EC-MF-021"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "When the two tracks pass the correlation tests and restrictions once, they are deemed a tentative correlation.",
+          "evidence_refs": [
+            "EC-MF-018"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The same two tracks are tested again upon the next correlation stimulus; the correlation tests and restrictions must be passed two times before the correlation is executed.",
+          "evidence_refs": [
+            "EC-MF-019",
+            "EC-MF-002"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Once the two tracks have successfully passed the second correlation test, they are processed for dual designation resolution when no correlation restriction applies; additionally, automatic correlation may be allowed despite the ID conflict restriction if either subject track is the Target TN in a J10.2 Engagement Status message originated by the unit attempting correlation, that track has an ID of Unknown or Hostile, and the other subject track has an ID of Friend, with the Unknown/Hostile track designated as the Dropped TN.",
+          "evidence_refs": [
+            "EC-MF-020",
+            "EC-AF-003",
+            "EC-EF-014"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "The recognizing JU initiates transmission of the J7.2 Correlation message with the Retained TN/Dropped TN selection, requesting all other C2 IUs to perform a correlation of the two tracks; the message identifies the TN to be retained and the TN to be dropped. A manual correlation may be initiated irrespective of the correlation test criteria and restrictions. When the RV field is set to value 3, it indicates that the correlation was manually initiated.",
+          "evidence_refs": [
+            "EC-MF-023",
+            "EC-MF-008",
+            "EC-AF-000",
+            "EC-EF-047"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "The receiving IUs accept the requested correlation unless prespecified conditions exist that require or allow rejection or a reverse correlation request.",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "The originating C2 JU, holding R2 for the Dropped TN, drops the Dropped TN and transmits the J7.0 (ACT = 0) Drop Track message after the J7.2 message.",
+          "evidence_refs": [
+            "EC-MF-010"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-017",
+        "EC-MF-000",
+        "EC-MF-021",
+        "EC-MF-018",
+        "EC-MF-019",
+        "EC-MF-002",
+        "EC-MF-020",
+        "EC-AF-003",
+        "EC-EF-014",
+        "EC-MF-023",
+        "EC-MF-008",
+        "EC-AF-000",
+        "EC-EF-047",
+        "EC-MF-009",
+        "EC-MF-010"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 2 is a bare timing constraint ('The correlation test shall occur no more than 6 seconds after the extrapolation time.') with no conditional trigger and no resulting exit. It does not return to a main flow step, terminate/hand off, or reach an explicit failure/prevention state. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The Trigger allows the C2 JU to initiate action either automatically or manually, but Main Flow step 1 describes only an automatic correlation test ('automatically performs a correlation test'). The manual branch is not continued from the Trigger; it is introduced later in step 5 as a bypass of the correlation test criteria/restrictions, leaving a continuity gap for manual initiation.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 2 (EC-EF-012) states a timing constraint ('The correlation test shall occur no more than 6 seconds after the extrapolation time') with no branch outcome: it neither returns to a main_flow step, terminates/hands off, nor reaches an explicit failure/prevention state if the deadline is exceeded. As written, it is an invariant, not an exception branch with a covered exit.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow",
+        "alternative_flow",
+        "exception_flow"
+      ],
+      "inconsistency_hints": [
+        "Main Flow step 4 requires 'no correlation restriction' before the two tracks are processed for dual designation resolution, but Postcondition EC-PO-001 describes an allowed automatic correlation despite an ID conflict restriction when one track is the Target TN in a J10.2 Engagement Status message with an Unknown/Hostile ID and the other track has Friend ID. The main flow therefore cannot reach this postcondition and contradicts its exception.",
+        "Alternative-flow claim at index 3 says 'Diverges from Step 3: Instead of accepting the requested correlation...' but main_flow step 3 is the second correlation test, not the acceptance of a correlation request. Accepting or reverse-correlating the J7.2 request is described in main_flow step 6, so the divergence point is logically unrelated to the branch content.",
+        "Alternative-flow claim at index 7 says 'Diverges from Step 4' but describes the originating C2 JU dropping the Dropped TN and transmitting J7.0 after J7.2, which is already main_flow step 7. Attaching this branch to step 4 is logically unrelated and creates a wrong/duplicate attachment.",
+        "Alternative-flow claim at index 8 says 'Diverges from Step 4' but the condition occurs after the J7.2 message has been initiated and no Drop Track message has yet been received; this is a post-J7.2 / drop-track situation, not the step-4 processing after the second correlation test. The branch should attach to main_flow step 7 or the J7.2 acceptance step 6.",
+        "Exception-flow claim at index 6 ends with 'the specified conflict-resolution actions shall be taken' without defining those actions or the resulting flow state; there is no clear return, terminal failure, or explicit handoff from the overlapping-J7.2 branch.",
+        "Exception-flow claim at index 7 concludes that correlation 'may fail or produce erroneous results, triggering exception handling,' which is probabilistic and does not specify a concrete outcome for the current use case invocation; it lacks a clear terminal/prevention state or handoff to a defined process.",
+        "The Trigger allows the C2 JU to initiate action either automatically or manually, and Postcondition 8 depends on a manual correlation accepted with RV field value 3. However, the Main Flow only describes an automatic correlation test and never introduces a manual correlation path/branch or the RV field. Therefore Postcondition 8 is not reachable from the described Main Flow."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 146,
+    "cross_page_cards": 53,
+    "modalities": {
+      "text": 146
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2299.618,
+    "llm_calls": 30.0,
+    "llm_seconds": 2084.762,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 213.022,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 15.0,
+    "judge_calls": 0,
+    "cards_collected": 118,
+    "cards_referenced": 48,
+    "evidence_reused": true,
+    "reused_card_count": 118,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/milstd6016b_sec4/C2_JU_Resolve_Dual_Designations_via_Track_Correlation-evidence.json",
+    "dra_elapsed_seconds": 1388.992,
+    "dra_llm_calls": 23,
+    "dra_llm_seconds": 1287.061,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 100.235,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_calls": 8,
+    "dra_judge_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "When the C2 JU recognizes that two tracks being reported to the interface are eligible for correlation, it initiates action, either automatically or manually, to resolve the dual designation.",
+            "evidence_refs": [
+              "EC-TR-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The recognizing JU resolves a dual designation by correlating two tracks reported to the interface that are eligible for correlation.",
+            "evidence_refs": [
+              "EC-G-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "If a manual correlation is attempted for two tracks that are of a different E/C, or one is simulated and the other is live, or both tracks are remote, the tracks shall not be manually correlated.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The correlation test shall occur no more than 6 seconds after the extrapolation time.",
+            "evidence_refs": [
+              "EC-EF-012"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If conflicting IDs is the only correlation restriction, the operator shall be alerted to take one of the following actions: (a) change the local ID or the Exercise Indicator and ID, thereby allowing automatic correlation, or (b) transmit an ID Difference Report, thereby allowing automatic correlation if the remote ID or Exercise Indicator and ID is changed.",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The receiving IU shall accept the requested correlation unless prespecified conditions exist that require or allow rejection; if a J7.2 Correlation message is received while the receiving IU holds OCCs on both tracks, or conflicting IDs on the two tracks (when the ID-conflict correlation restriction is enabled), the receiving IU shall reject the correlation and shall transmit a J7.2 message with RV set to 2 to report the rejection.",
+            "evidence_refs": [
+              "EC-EF-019",
+              "EC-EF-015",
+              "EC-EF-038"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If a ballistic missile track is lost because the JU with R2 has not received local sensor data since the last transmitted update, or determines the track is lost by other system criteria, and the track is reported with Lost Track Indicator set to 1, the reporting JU is assumed to have a TQ 5 less than that being reported; for example, if a JU reports Lost Track data with TQ 15, a JU holding Tracking data may assume R2 with TQ 11.",
+            "evidence_refs": [
+              "EC-EF-017",
+              "EC-EF-035"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "If it is determined that more than one data point exists for a ballistic missile track currently being reported, track decorrelation shall occur.",
+            "evidence_refs": [
+              "EC-EF-033"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "If a received J7.2 message contains one or both of the same TNs as contained in the transmission of the own unit J7.2 message sequence in progress, the conflict-resolution actions are: (1) if the own unit RV field is set to value 0, 1, or 3, discontinue transmission of the own unit J7.2 message and process the received message; (2) if the own unit RV field is set to value 2, complete the transmission of the message sequence in progress.",
+            "evidence_refs": [
+              "EC-EF-041",
+              "EC-EF-058"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "If a dual ballistic missile designation involves one of the situations most likely to lead to dual ballistic missile designations (initial reports, track merging, simultaneous multiple launches, registration errors, time-of-observation differences, or high-velocity contacts), correlation may fail or produce erroneous results; when it is determined that more than one data point exists for the ballistic missile track currently being reported, track decorrelation should occur.",
+            "evidence_refs": [
+              "EC-EF-034",
+              "EC-EF-033"
+            ],
+            "step_number": 8
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-EF-047",
+          "EC-EF-048",
+          "EC-EF-049",
+          "EC-EF-050",
+          "EC-EF-051",
+          "EC-EF-052",
+          "EC-EF-053",
+          "EC-EF-054",
+          "EC-EF-055",
+          "EC-EF-056",
+          "EC-EF-057",
+          "EC-EF-058",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The dual designation is resolved via correlation, and the reported ballistic missile track represents a single data point.",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-PO-007"
+            ]
+          },
+          {
+            "content": "Upon acceptance of the requested correlation, the receiving IUs retain the designated Retained TN and drop the designated Dropped TN.",
+            "evidence_refs": [
+              "EC-PO-009"
+            ]
+          },
+          {
+            "content": "If the originating C2 JU held R2 for the Dropped TN, it has dropped the Dropped TN and transmitted a J7.0 (ACT=0) Drop Track message after the J7.2 Correlation message.",
+            "evidence_refs": [
+              "EC-PO-010",
+              "EC-PO-003"
+            ]
+          },
+          {
+            "content": "Upon correlation execution, Latitude, Longitude, Course, Speed, Altitude, Altitude Source, TQ, and Strength (if the Dropped TN was a local or common local track) are transferred from the Dropped TN to the Retained TN.",
+            "evidence_refs": [
+              "EC-PO-004"
+            ]
+          },
+          {
+            "content": "Any nonzero Mode I, II, or III IFF/SIF data from the Dropped TN is transferred to the Retained TN if the corresponding Retained TN data is zero.",
+            "evidence_refs": [
+              "EC-PO-006"
+            ]
+          },
+          {
+            "content": "If ID conflict restrictions apply and the IDs differ, the last Identity reported for the Dropped TN is processed as an Identity Difference Report for the Retained TN; otherwise, specific ID/IAD and platform attributes are transferred.",
+            "evidence_refs": [
+              "EC-PO-005"
+            ]
+          },
+          {
+            "content": "If the own unit held the Dropped TN as a local or common local track, upon successful correlation execution the Dropped TN is designated as a common local track.",
+            "evidence_refs": [
+              "EC-PO-002"
+            ]
+          },
+          {
+            "content": "For a manual correlation accepted with RV field set to value 3, the resulting track is not subject to automatic decorrelation processing for 5 minutes.",
+            "evidence_refs": [
+              "EC-PO-011"
+            ]
+          },
+          {
+            "content": "If either subject track is the Target TN in a J10.2 Engagement Status message originated by the unit attempting correlation, has an ID of Unknown or Hostile, and the other subject track has an ID of Friend, automatic correlation may be allowed despite the ID conflict restriction, with the Unknown/Hostile track being the Dropped TN (TN-2).",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 2: Instead of relying on the automatic correlation test criteria, correlation restrictions, or correlation requirements, the C2 JU manually initiates the correlation of any two tracks.",
+            "evidence_refs": [
+              "EC-AF-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 2: If conflicting IDs is the only correlation restriction, the operator is alerted and either changes the local ID or the Exercise Indicator and ID, thereby allowing automatic correlation, or transmits an ID Difference Report, thereby allowing automatic correlation if the remote ID or Exercise Indicator and ID is changed.",
+            "evidence_refs": [
+              "EC-AF-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 2: If either subject track is the Target TN in a J10.2 Engagement Status message originated by the unit attempting correlation, that track has an ID of Unknown or Hostile, and the other subject track has an ID of Friend, automatic correlation may be allowed despite the ID-conflict restriction.",
+            "evidence_refs": [
+              "EC-AF-003"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 6: Instead of accepting the requested correlation, a C2 JU responding with a reverse correlation transmits the J7.2 message with the originally received Retained TN and Dropped TN reversed and the RV field set to value 1.",
+            "evidence_refs": [
+              "EC-AF-010"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 4: If the Retained TN is not held but the Dropped TN is held, and the Dropped TN has an OCC, if RV is set to 3, the system executes the correlation using the Dropped TN data and the Retained TN track number.",
+            "evidence_refs": [
+              "EC-AF-011"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges from Step 4: If the Identity or Identity Amplifying Descriptor of the Retained TN and Dropped TN are different and the difference would result in automatic acceptance of the Dropped TN ID/IAD, the Dropped TN ID/IAD and Special Interest Indicator, Platform, Platform Activity, and Specific Type shall be transferred to the Retained TN.",
+            "evidence_refs": [
+              "EC-AF-005"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Diverges from Step 4: If the Identity of the Retained TN and Dropped TN are the same, the associated identification data reported for the Retained TN shall be retained.",
+            "evidence_refs": [
+              "EC-AF-006"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "Diverges from Step 7: If the originating C2 JU holds R2 for the Dropped TN, it drops the Dropped TN and transmits the J7.0 (ACT = 0) message after the J7.2 message.",
+            "evidence_refs": [
+              "EC-AF-007"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "Diverges from Step 7: When the own unit initiated the J7.2 message and a Drop Track message has not yet been received for the Dropped TN, the Dropped TN is retained as a remote track.",
+            "evidence_refs": [
+              "EC-AF-004"
+            ],
+            "step_number": 9
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "A TN pair has been determined to be a dual designation.",
+            "evidence_refs": [
+              "EC-PC-015"
+            ]
+          },
+          {
+            "content": "Two tracks reported to the interface have passed the positional correlation eligibility tests (Course Differential, Speed Differential, and Altitude Differential), making them eligible for correlation.",
+            "evidence_refs": [
+              "EC-PC-005",
+              "EC-PC-014"
+            ]
+          },
+          {
+            "content": "The positions of all tracks and IUs tested for correlation have been extrapolated to the same time.",
+            "evidence_refs": [
+              "EC-PC-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU automatically performs a correlation test by comparing locally derived sensor data (e.g., position, velocity, altitude, boost indication) for the two tracks with the data received on the interface.",
+            "evidence_refs": [
+              "EC-MF-017",
+              "EC-MF-000",
+              "EC-MF-021"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "When the two tracks pass the correlation tests and restrictions once, they are deemed a tentative correlation.",
+            "evidence_refs": [
+              "EC-MF-018"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The same two tracks are tested again upon the next correlation stimulus; the correlation tests and restrictions must be passed two times before the correlation is executed.",
+            "evidence_refs": [
+              "EC-MF-019",
+              "EC-MF-002"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Once the two tracks have successfully passed the second correlation test, they are processed for dual designation resolution when no correlation restriction applies; additionally, automatic correlation may be allowed despite the ID conflict restriction if either subject track is the Target TN in a J10.2 Engagement Status message originated by the unit attempting correlation, that track has an ID of Unknown or Hostile, and the other subject track has an ID of Friend, with the Unknown/Hostile track designated as the Dropped TN.",
+            "evidence_refs": [
+              "EC-MF-020",
+              "EC-AF-003",
+              "EC-EF-014"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The recognizing JU initiates transmission of the J7.2 Correlation message with the Retained TN/Dropped TN selection, requesting all other C2 IUs to perform a correlation of the two tracks; the message identifies the TN to be retained and the TN to be dropped. A manual correlation may be initiated irrespective of the correlation test criteria and restrictions. When the RV field is set to value 3, it indicates that the correlation was manually initiated.",
+            "evidence_refs": [
+              "EC-MF-023",
+              "EC-MF-008",
+              "EC-AF-000",
+              "EC-EF-047"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The receiving IUs accept the requested correlation unless prespecified conditions exist that require or allow rejection or a reverse correlation request.",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "The originating C2 JU, holding R2 for the Dropped TN, drops the Dropped TN and transmits the J7.0 (ACT = 0) Drop Track message after the J7.2 message.",
+            "evidence_refs": [
+              "EC-MF-010"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-EF-047",
+          "EC-EF-048",
+          "EC-EF-049",
+          "EC-EF-050",
+          "EC-EF-051",
+          "EC-EF-052",
+          "EC-EF-053",
+          "EC-EF-054",
+          "EC-EF-055",
+          "EC-EF-056",
+          "EC-EF-057",
+          "EC-EF-058",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=13]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=13]",
+    "directory": "random_order/seed_013",
+    "seed": 13,
+    "slot_order": [
+      "trigger",
+      "goal",
+      "exception_flow",
+      "postconditions",
+      "primary_actor",
+      "alternative_flow",
+      "preconditions",
+      "main_flow"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "a92da076898840d78c3c31b4ec313cc2"
+}

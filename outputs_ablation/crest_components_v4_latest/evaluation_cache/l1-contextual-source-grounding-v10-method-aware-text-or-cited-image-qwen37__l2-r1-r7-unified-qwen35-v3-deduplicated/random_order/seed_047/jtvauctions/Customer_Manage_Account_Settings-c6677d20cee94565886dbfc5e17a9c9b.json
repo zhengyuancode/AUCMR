@@ -1,0 +1,678 @@
+{
+  "use_case_name": "Manage Account Settings",
+  "actor": "Customer",
+  "scg": 100.0,
+  "nli_g": 86.36363636363636,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 66.10169491525424,
+  "avg_cards": 33,
+  "total_claims": 22,
+  "total_cited_claims": 22,
+  "total_entailed_claims": 19,
+  "pre_constraint_claim_count": 22,
+  "pre_constraint_cited_claim_count": 22,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 59,
+  "cross_page_cards": 39,
+  "referenced_cards": 33,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 2,
+      "cited_claim_count": 2,
+      "evidence_ref_count": 4,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 5,
+      "cited_claim_count": 5,
+      "evidence_ref_count": 11,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 2,
+      "cited_claim_count": 2,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 7,
+      "cited_claim_count": 7,
+      "evidence_ref_count": 10,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 4,
+      "cited_claim_count": 4,
+      "evidence_ref_count": 6,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R7": 2,
+    "R2": 1,
+    "R3": 1,
+    "R6": 1
+  },
+  "l3_violations_pre_repair": {
+    "R1": 0,
+    "R2": 1,
+    "R3": 1,
+    "R4": 0,
+    "R5": 0,
+    "R6": 1,
+    "R7": 2
+  },
+  "l2_violations": {
+    "R1": 0,
+    "R2": 0,
+    "R3": 0,
+    "R4": 0,
+    "R5": 0,
+    "R6": 1,
+    "R7": 2
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R6": [
+        {
+          "rule_id": "R6",
+          "rule_name": "altflow_diverge_points",
+          "offending_slot": "alternative_flow",
+          "offending_claim_index": 0,
+          "rationale": "The alternative flow references 'address editing' and 'Shipping Address fields', but the Main Flow does not contain any steps involving address or shipping information."
+        }
+      ],
+      "R7": [
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 1,
+          "rationale": "The branch states an error condition requiring correction but does not specify a terminal failure state (e.g., save rejected) or a return to a specific step."
+        },
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 6,
+          "rationale": "The branch describes a UI state (checkbox grayed out) but lacks a clear outcome such as operation rejection, termination, or return to a main flow step."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 0,
+      "R2": 0,
+      "R3": 0,
+      "R4": 0,
+      "R5": 0,
+      "R6": 1,
+      "R7": 2
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception Flow claim 6 does not end in a single clear terminal state. It says the system 'may reject the address input as invalid, block the save, or flag risk' — three different possible exits. 'flag risk' is not an explicit terminal failure or prevention state, and the 'may' leaves the branch outcome non-deterministic. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The Trigger explicitly includes pages for editing Billing/Shipping Addresses, but Main Flow step 3 never includes any Billing/Shipping Address update; it only covers membership fields, payment-method selection, and email notification preferences. The scenario started by the Billing/Shipping Address trigger is therefore not continued in the Main Flow.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] Main Flow step 3 lets the Customer select a new payment method (PayPal, Amazon, or credit card) and step 4 saves the changes, but the Postconditions do not include any claim that the selected payment method was saved or persisted. The payment-method update in the Main Flow therefore has no corresponding postcondition, leaving the vertical success flow incomplete.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 1 refers to an 'address editing portion of the update step' and a 'New Shipping Address' field, but main_flow Step 3 does not contain any address-editing or shipping-address entry. The alternative therefore attaches to a non-existent main-flow divergence point.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 6 does not have a single clear terminal outcome: it says the system 'may reject... block the save, or flag risk'. 'Flag risk' does not by itself establish a terminal failure/prevention state or a return to a main_flow step, so the branch's exit coverage is unspecified.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "The Customer wants to change their membership account information by entering updated details (such ",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the objective and data fields but does not explicitly identify the actor as 'Customer', leaving that material proposition unsupported.",
+      "slot_fit_rationale": "The claim describes the actor's intended objective and success outcome, which is the definition of the goal slot.",
+      "evidence_refs": [
+        "EC-G-000",
+        "EC-G-001"
+      ],
+      "evidence_modalities": {
+        "EC-G-000": "card_text",
+        "EC-G-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The customer must have an existing account whose registration information (First Name, Last Name, Me",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-PC-002], which explicitly states the requirement for an existing account with specific stored registration information and password.",
+      "slot_fit_rationale": "The claim describes a necessary system state (existing account with stored data) that must hold before the interaction can begin, which aligns with the definition of a precondition.",
+      "evidence_refs": [
+        "EC-PC-002"
+      ],
+      "evidence_modalities": {
+        "EC-PC-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The customer must be authenticated/logged in to the system with an active session, as indicated by a",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The cited evidence collectively supports that the user must be authenticated (logged in) with an active session, evidenced by a cookie-based personalized welcome message.",
+      "slot_fit_rationale": "The claim describes a necessary state (authenticated user with active session) that must hold before the interaction begins, which aligns with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-003",
+        "EC-PC-005",
+        "EC-PC-006"
+      ],
+      "evidence_modalities": {
+        "EC-PC-003": "card_text",
+        "EC-PC-005": "card_text",
+        "EC-PC-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "The use case is triggered when the Customer accesses the 'My Account Edit Page' (specifically pages ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-TR-000], which explicitly states the trigger condition, and Evidence [EC-TR-001] confirms the specific 'Change Membership Account Information' page is part of this access pattern.",
+      "slot_fit_rationale": "The claim describes the specific user action (accessing edit pages) that initiates the use case, which is the precise definition of the Cockburn 'trigger' slot.",
+      "evidence_refs": [
+        "EC-TR-000",
+        "EC-TR-001"
+      ],
+      "evidence_modalities": {
+        "EC-TR-000": "card_text",
+        "EC-TR-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer views the Account Settings page, including the 'My Current Information' section showing",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that the Customer views the 'My Current Information' section displaying the exact fields listed in the claim.",
+      "slot_fit_rationale": "The claim describes a primary action performed by the actor within the normal successful interaction path, which aligns with the definition of a main flow step.",
+      "evidence_refs": [
+        "EC-MF-000"
+      ],
+      "evidence_modalities": {
+        "EC-MF-000": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer enters their current password to authorize account changes.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that the user is required to enter their current password to authorize changes, which directly supports the claim's assertion of this action.",
+      "slot_fit_rationale": "Entering a required password to proceed with account updates is a standard action within the normal successful interaction path (main flow) of the use case.",
+      "evidence_refs": [
+        "EC-EF-000",
+        "EC-EF-008",
+        "EC-MF-000"
+      ],
+      "evidence_modalities": {
+        "EC-EF-000": "card_text",
+        "EC-EF-008": "card_text",
+        "EC-MF-000": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer updates the desired settings: entering updated information into the 'My New Information",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-MF-001], [EC-MF-005], and [EC-MF-009], which collectively detail the specific input actions for personal information, payment method selection, and email notification preferences.",
+      "slot_fit_rationale": "The claim describes the primary user actions performed during the successful execution of the use case, which constitutes the main flow in Cockburn's notation.",
+      "evidence_refs": [
+        "EC-MF-001",
+        "EC-MF-005",
+        "EC-MF-009"
+      ],
+      "evidence_modalities": {
+        "EC-MF-001": "card_text",
+        "EC-MF-005": "card_text",
+        "EC-MF-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer clicks the 'Save Changes' button to submit the updated account settings.",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports clicking 'Save Changes' to submit updates or membership account information, but does not explicitly support the specific claim that the settings are 'account settings', creating a material gap in specificity.",
+      "slot_fit_rationale": "The claim describes a primary user action within the normal successful interaction path, which correctly aligns with the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-002",
+        "EC-MF-007"
+      ],
+      "evidence_modalities": {
+        "EC-MF-002": "card_text",
+        "EC-MF-007": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "After saving the changes, the system triggers an automated transactional confirmation email with a T",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-MF-003], which confirms the return to the My Account page, and Evidence [EC-PO-002], which confirms the triggering of the specific automated email with the described content upon saving changes.",
+      "slot_fit_rationale": "The claim describes the immediate system responses (sending an email and navigating the user) that occur as part of the normal successful interaction path after the save action, which constitutes a main flow step.",
+      "evidence_refs": [
+        "EC-MF-003",
+        "EC-PO-002"
+      ],
+      "evidence_modalities": {
+        "EC-MF-003": "card_text",
+        "EC-PO-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "In the address editing portion of the update step, the Customer may select the 'Same as Billing Addr",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-AF-001], which states that the Customer can select the 'Same as Billing Address' checkbox to auto-populate shipping fields.",
+      "slot_fit_rationale": "The claim describes a valid alternative interaction method (using a checkbox to avoid manual entry) that diverges from the standard main flow of manually entering address fields, fitting the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-001"
+      ],
+      "evidence_modalities": {
+        "EC-AF-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 3: Instead of using the email notification checkboxes, the Customer may opt out o",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-AF-005] and its context note, which explicitly describe the opt-out action via the specific link as an alternative path diverging from the main flow.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch that achieves the same success outcome through a different mechanism, which correctly fits the definition of an alternative_flow.",
+      "evidence_refs": [
+        "EC-AF-005"
+      ],
+      "evidence_modalities": {
+        "EC-AF-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If the customer attempts to change account information without first completing the required current",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that if the authorization step (entering current password) is not completed, the system prevents modification of account information, which directly supports the claim.",
+      "slot_fit_rationale": "The claim describes a validation failure condition and the system's blocking response, which constitutes an exception flow handling a deviation from the successful path.",
+      "evidence_refs": [
+        "EC-EF-000",
+        "EC-EF-008"
+      ],
+      "evidence_modalities": {
+        "EC-EF-000": "card_text",
+        "EC-EF-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If a duplicate email address is entered during verification, it constitutes an error condition requi",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-EF-003], which explicitly states that entering a duplicate email during verification constitutes an error condition requiring correction.",
+      "slot_fit_rationale": "The claim describes a validation failure and the required corrective action, which fits the definition of an exception_flow as an abnormal condition interrupting the main success path.",
+      "evidence_refs": [
+        "EC-EF-003"
+      ],
+      "evidence_modalities": {
+        "EC-EF-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If the customer attempts to set a Member ID/Handle that is not unique in the customer table, the sys",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that attempting to set a non-unique handle results in an error state, which directly supports the claim's condition and outcome.",
+      "slot_fit_rationale": "The claim describes an error condition (non-unique ID) and the system's resulting error state, which constitutes a substantive exception flow handling a validation failure.",
+      "evidence_refs": [
+        "EC-EF-005"
+      ],
+      "evidence_modalities": {
+        "EC-EF-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If a password field value is outside the 8-to-12 character range, the system triggers a validation e",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-EF-004], which states that entering a password outside the 8-to-12 character range triggers a validation error and prevents save.",
+      "slot_fit_rationale": "The claim describes an error condition (invalid input length) and the system's handling of it (validation error, prevent save), which fits the definition of an exception flow.",
+      "evidence_refs": [
+        "EC-EF-004"
+      ],
+      "evidence_modalities": {
+        "EC-EF-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If the user attempts to save changes while the 'Require user to change PW on next login' checkbox is",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence explicitly states that the rejection is 'not explicitly depicted' and relies on an implication from UI structure rather than direct textual support for the specific behavior.",
+      "slot_fit_rationale": "The claim describes a validation failure and the system's error handling response, which correctly fits the definition of an exception flow.",
+      "evidence_refs": [
+        "EC-EF-012"
+      ],
+      "evidence_modalities": {
+        "EC-EF-012": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If the address validation service returns correction suggestions and the customer rejects or ignores",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-EF-001] and [EC-EF-006], which collectively state that if correction suggestions are returned and rejected/ignored, the system may reject the input, block the save, or flag risk.",
+      "slot_fit_rationale": "The claim describes an abnormal condition (rejection of validation suggestions) and the system's corresponding error-handling responses (blocking save, flagging risk), which constitutes a substantive exception flow.",
+      "evidence_refs": [
+        "EC-EF-001",
+        "EC-EF-006",
+        "EC-EF-009"
+      ],
+      "evidence_modalities": {
+        "EC-EF-001": "card_text",
+        "EC-EF-006": "card_text",
+        "EC-EF-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If the customer's paytype is PayPal or Amazon, the 'Please notify me when I win an auction' checkbox",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-EF-002], which states that choosing PayPal or Amazon grays out the checkbox and prevents deselection.",
+      "slot_fit_rationale": "The claim describes a system-enforced constraint that prevents a specific user action (deselecting a preference) under certain conditions, which constitutes an exception flow handling a restricted interaction branch.",
+      "evidence_refs": [
+        "EC-EF-002"
+      ],
+      "evidence_modalities": {
+        "EC-EF-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The Customer's updated membership account information (First Name, Last Name, Member ID, E-mail Addr",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a verbatim match to Evidence [EC-PO-003], which explicitly states that the updated membership account information is saved and persisted.",
+      "slot_fit_rationale": "The claim describes the resulting state of data persistence after successful completion, which is the defining characteristic of a postcondition in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-PO-003"
+      ],
+      "evidence_modalities": {
+        "EC-PO-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": true
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The Customer's selected email notification preferences are saved and will govern future transactiona",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-PO-004], which explicitly states that the preferences are saved and will govern future behavior.",
+      "slot_fit_rationale": "The claim describes the resulting system state (preferences saved) and its enduring effect on future behavior, which constitutes a postcondition of the interaction.",
+      "evidence_refs": [
+        "EC-PO-004"
+      ],
+      "evidence_modalities": {
+        "EC-PO-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "After saving changes, the Customer is returned to the My Account page.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that upon saving changes, the user is returned to the My Account page, directly supporting the claim's assertion of the post-action navigation state.",
+      "slot_fit_rationale": "The claim describes the immediate system state (navigation destination) resulting from the successful completion of the use case, which is the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-001",
+        "EC-PO-005",
+        "EC-PO-006"
+      ],
+      "evidence_modalities": {
+        "EC-PO-001": "card_text",
+        "EC-PO-005": "card_text",
+        "EC-PO-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": true
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The system triggers an automated transactional confirmation email to the Customer after the save is ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that the system triggers an automated transactional email upon completing the save action, which directly supports the claim's description of the post-save behavior.",
+      "slot_fit_rationale": "The claim describes the immediate state change (email triggering) resulting from the successful completion of the use case, which aligns with the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-002"
+      ],
+      "evidence_modalities": {
+        "EC-PO-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

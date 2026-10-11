@@ -1,0 +1,1495 @@
+{
+  "use_case_name": "Exchange IFF and SIF Transponder Data",
+  "actor": "C2 JU",
+  "slots": {
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered when IFF/SIF surveillance data (Modes I, II, and III codes) becomes available to exchange in J3.1 and J3.5 (PTI = 0) messages; or when a J7.5 message with action values ACT = 0 (Clear), ACT = 1 (Difference Report), ACT = 2 (Update Request), or ACT = 3 (Special Code) is used to perform IFF/SIF data management and reporting functions; or when an R² unit reports No Data status (value 0) for one or more modes in a required IFF/SIF Surveillance data report; or when an operator transmits a J7.5 (ACT = 2) IFF/SIF Update Request message. Reporting of IFF/SIF data in conjunction with periodic surveillance data is the responsibility of the JU with R², while all other JUs without R² are responsible only for monitoring such data and reporting different data via the J7.5 message.",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-TR-000",
+            "EC-TR-002",
+            "EC-TR-003",
+            "EC-TR-004",
+            "EC-TR-005"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-TR-000",
+        "EC-TR-002",
+        "EC-TR-003",
+        "EC-TR-004",
+        "EC-TR-005"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-iff-data-available",
+          "trigger-j7-5-act",
+          "trigger-r2-no-data",
+          "trigger-operator-update-request",
+          "trigger-r2-role"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The IFF/SIF transponder data has been successfully exchanged in the applicable J-series message (e.g., J3.1/J3.5 for surveillance data or J7.5 for management actions).",
+          "evidence_refs": [
+            "EC-PO-022",
+            "EC-PO-010"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "When the exchange involves a J3 message, the PPLI IFF/SIF Indicator in that message is set to value 2 if all nonzero mode codes match those received in the J2 message, value 1 if only Mode II matches, and value 0 otherwise, based on actual responses rather than prior PPLI receipt.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ]
+        },
+        {
+          "content": "When the exchange is a J7.5 (ACT=2) IFF/SIF Update Request, the responding units transmit their local data codes, the requesting JU receives the updated transponder data, and locally held IFF/SIF codes are refreshed or replaced with the received values.",
+          "evidence_refs": [
+            "EC-PO-018",
+            "EC-PO-008"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "When the exchange is a J7.5 (ACT=0) Clear IFF/SIF message, the designated mode(s) for the specified track are set to No Data status on all receiving JUs, and the transmitting R² unit stops transmitting the periodic J3 message containing the continuation word for that track.",
+          "evidence_refs": [
+            "EC-PO-017",
+            "EC-PO-023"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "When the exchange is a J7.5 (ACT=1) Difference Report, the reported difference is communicated to the relevant units via the transmitted J7.5 message.",
+          "evidence_refs": [
+            "EC-PO-019"
+          ]
+        },
+        {
+          "content": "When a JU transmits a J7.5 (ACT=3) Special Code message to exchange special-meaning codes, all nonzero special codes for that track are reported as part of the completed transaction.",
+          "evidence_refs": [
+            "EC-PO-009"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-022",
+        "EC-PO-010",
+        "EC-PO-001",
+        "EC-PO-018",
+        "EC-PO-008",
+        "EC-PO-017",
+        "EC-PO-023",
+        "EC-PO-019",
+        "EC-PO-009"
+      ]
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "IFF/SIF data (Modes I, II, and III Codes) must be available to the system.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ]
+        },
+        {
+          "content": "The reporting of IFF/SIF surveillance data in the J3.2C1 and J3.3C1 words for Air and Surface tracks is the responsibility of the JU with R²; all other JUs without R² are responsible for monitoring such data and only reporting if they hold different data via the J7.5 message.",
+          "evidence_refs": [
+            "EC-PC-001",
+            "EC-PC-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000",
+        "EC-PC-001",
+        "EC-PC-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "iff-data-available",
+          "r2-reporting-responsibility"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "C2 JU exchanges IFF/SIF transponder data (Modes I, II, and III codes) with other JUs using the applicable J-series message.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-001",
+            "EC-G-002",
+            "EC-PO-010"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-001",
+        "EC-G-002",
+        "EC-PO-010"
+      ],
+      "scope_contract": {
+        "goal_statement": "C2 JU exchanges IFF/SIF transponder data (Modes I, II, and III codes) with other JUs using the applicable J-series message.",
+        "canonical_success_scenario": "A canonical successful instance consists of C2 JU exchanging available IFF/SIF transponder data (Modes I, II, and III codes) with other JUs in the applicable J-series message, completing one of the five IFF/SIF exchange functional areas.",
+        "start_boundary": "IFF/SIF transponder data (Modes I, II, and III codes) is available to be exchanged in an applicable J-series message.",
+        "success_boundary": "The IFF/SIF transponder data has been exchanged in the applicable J-series message.",
+        "in_scope_actions": [
+          "Transmitting IFF/SIF data (Modes I, II, and III codes) in J3.1 and J3.5 (PTI = 0) messages when available",
+          "Exchanging IFF/SIF modes and codes via the five functional areas: surveillance data reporting, unique Mode II code protection, clearing, difference resolution, and update request",
+          "Using the J7.5 (ACT = 2) message to exchange codes that have special meaning for implementing JUs"
+        ],
+        "excluded_adjacent_actions": [
+          "Post-exchange consequences on downstream systems",
+          "Adjacent administrative processes such as operator/account setup",
+          "Upstream generation or preparation of IFF/SIF data"
+        ],
+        "variant_dimensions": [
+          "IFF/SIF Surveillance Data Reporting",
+          "Unique Mode II Code Protection",
+          "Clearing IFF/SIF Data",
+          "IFF/SIF Difference Resolution",
+          "IFF/SIF Update Request",
+          "J-series message vehicle: J3.1/J3.5 (PTI=0) surveillance reporting vs. J7.5 exchange"
+        ],
+        "evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PO-010"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal-literal-exchange",
+          "goal-j-series-message",
+          "goal-five-functional-areas"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "During the main-flow IFF/SIF exchange, if no valid code is currently held for the subject local or remote track/mode, a 'No Data' condition exists and the applicable Mode Code field is reported as zeroes.",
+          "evidence_refs": [
+            "EC-EF-025"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "When an R² unit transmits a J3.XC1 message with a 'NO DATA' report (value 0) for one or more modes while local nonzero IFF/SIF is held, this triggers a difference resolution response from other units.",
+          "evidence_refs": [
+            "EC-EF-000"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If locally entered data changes from zero to nonzero or from nonzero to another nonzero value, or if a J3.XC1 'NO DATA' report is received on one or more mode/code while local nonzero IFF/SIF is held, the receiving unit may report the difference using J7.5 (ACT=1) IFF/SIF Difference Report in accordance with Table 4.7-5.",
+          "evidence_refs": [
+            "EC-EF-014"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the operator receives an IFF/SIF data conflict alert, the following manual actions are available for attempting resolution: (1) update local data manually or verify automatic inputs; (2) initiate a J7.5 (ACT=0) Clear IFF/SIF message (any mode); (3) initiate a J7.5 (ACT=1) IFF/SIF Difference Report message (any mode); (4) change local data to agree with remote data except in the case of Mode II code; (5) decorrelate the local data from the remote data, causing assignment of a new track number to local data; (6) clear the operator alert (any mode).",
+          "evidence_refs": [
+            "EC-EF-020"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the R² JU identifies that an ID conflict exists, the operator is alerted and the local ID data continues to be reported in the appropriate surveillance message with the Identity Difference Indicator set to value 1; the conflict is resolved by manual means.",
+          "evidence_refs": [
+            "EC-EF-016"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "For non-R² JUs, if a conflict is indicated, transmission of J7.0 (ACT=1) is inhibited until the surveillance message is received with the Identity Difference Indicator set to value 0.",
+          "evidence_refs": [
+            "EC-EF-017"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "If two or more tracks have the same Mode II code, operators may be alerted to the duplicate Mode II code condition.",
+          "evidence_refs": [
+            "EC-EF-006"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "If an all-zeroes code (00 or 0000) is used for an assigned operational IFF/SIF Mode I, II, or III code, it is illegal for use as an assigned operational code.",
+          "evidence_refs": [
+            "EC-EF-026"
+          ],
+          "step_number": 8
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-025",
+        "EC-EF-000",
+        "EC-EF-014",
+        "EC-EF-020",
+        "EC-EF-016",
+        "EC-EF-017",
+        "EC-EF-006",
+        "EC-EF-026"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-no-data-state",
+          "EF-r2-no-data-triggers-difference-resolution",
+          "EF-difference-report-trigger",
+          "EF-conflict-alert-manual-actions",
+          "EF-r2-id-conflict-indicator",
+          "EF-nonr2-conflict-inhibit",
+          "EF-duplicate-mode2-alert",
+          "EF-illegal-zero-code"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "IFF/SIF transponder data (Modes I, II, and III codes) is available to the C2 JU for exchange; when available, this data is carried in J3.1 and J3.5 (PTI = 0) messages.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The exchange proceeds according to the triggered IFF/SIF exchange function: IFF/SIF Surveillance Data Reporting (JU with R² reports in conjunction with periodic surveillance data; all other JUs monitor and report different data via J7.5 (ACT=1)), Clearing IFF/SIF Data (J7.5 ACT=0; all JUs set the designated mode(s) to No Data), IFF/SIF Difference Resolution (J7.5 ACT=1), IFF/SIF Update Request (J7.5 ACT=2; may be initiated by operator action), or Special Code reporting (J7.5 ACT=3; all nonzero special codes for the track are reported). If the R² unit reports No Data, units holding valid nonzero data respond as required by the IFF/SIF Difference Resolution Matrix.",
+          "evidence_refs": [
+            "EC-G-001",
+            "EC-MF-013",
+            "EC-MF-006",
+            "EC-MF-009",
+            "EC-MF-010",
+            "EC-MF-011",
+            "EC-MF-008",
+            "EC-MF-012",
+            "EC-MF-015",
+            "EC-MF-022",
+            "EC-TR-004",
+            "EC-AF-010"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU with R² transmits the available IFF/SIF surveillance data (Modes I, II, and III codes) periodically in J3.1 and J3.5 (PTI = 0) messages to report valid data held for a track.",
+          "evidence_refs": [
+            "EC-MF-005",
+            "EC-MF-003"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "JUs without R² monitor the reported IFF/SIF surveillance data.",
+          "evidence_refs": [
+            "EC-MF-013"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-003",
+        "EC-G-001",
+        "EC-MF-013",
+        "EC-MF-006",
+        "EC-MF-009",
+        "EC-MF-010",
+        "EC-MF-011",
+        "EC-MF-008",
+        "EC-MF-012",
+        "EC-MF-015",
+        "EC-MF-022",
+        "EC-TR-004",
+        "EC-AF-010",
+        "EC-MF-005"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2: instead of the exchange proceeding as IFF/SIF Surveillance Data Reporting, it proceeds as an IFF/SIF Update Request; the C2 JU may transmit a J7.5 (ACT = 2) IFF/SIF Update Request, initiated by operator action, and receiving units respond by transmitting their local data codes.",
+          "evidence_refs": [
+            "EC-AF-000",
+            "EC-AF-005",
+            "EC-AF-058"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 2: instead of the exchange proceeding as IFF/SIF Surveillance Data Reporting, it proceeds as an IFF/SIF Difference Report; the C2 JU may transmit a J7.5 (ACT = 1) Difference Report in accordance with the Difference Resolution Matrix, and this may be initiated by operator action at any time.",
+          "evidence_refs": [
+            "EC-AF-004"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 2: instead of the exchange proceeding as IFF/SIF Surveillance Data Reporting, the C2 JU may transmit a J7.5 (ACT = 3) Special Code message to exchange IFF/SIF codes that have special meaning.",
+          "evidence_refs": [
+            "EC-AF-001",
+            "EC-AF-042"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 3: instead of continuing to periodically transmit valid IFF/SIF surveillance data in J3.1/J3.5, the C2 JU with R² may initiate a J7.5 (ACT = 0) Clear IFF/SIF message to clear one or more modes on the specified track; this results in no IFF/SIF data being held on that track and causes the JU to stop transmitting the periodic J3 message containing the continuation word for that track.",
+          "evidence_refs": [
+            "EC-AF-006"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3: when transmitting a required J3.XC1 IFF/SIF Surveillance data report, the C2 JU with R² may report a No Data status (value 0) for one or more modes; receiving units holding valid nonzero data respond as required by the IFF/SIF Difference Resolution Matrix.",
+          "evidence_refs": [
+            "EC-AF-057",
+            "EC-AF-009"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3: if locally derived IFF/SIF data differs from IFF/SIF data being reported in the PPLI message, the locally derived data shall be reported.",
+          "evidence_refs": [
+            "EC-AF-017"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "Diverges from Step 4: instead of only monitoring the reported IFF/SIF surveillance data, upon receipt of a J7.5 (ACT = 0) Clear message, all JUs automatically set the designated mode(s) for the specified track to No Data status.",
+          "evidence_refs": [
+            "EC-AF-008"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-000",
+        "EC-AF-005",
+        "EC-AF-058",
+        "EC-AF-004",
+        "EC-AF-001",
+        "EC-AF-042",
+        "EC-AF-006",
+        "EC-AF-057",
+        "EC-AF-009",
+        "EC-AF-017",
+        "EC-AF-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "alt-update-request",
+          "alt-difference-report",
+          "alt-special-code",
+          "alt-clear-sender",
+          "alt-no-data-surveillance-report",
+          "alt-local-derived-data-priority",
+          "alt-clear-receiver"
+        ],
+        "missing_aspects": [
+          "unique-mode-II-code-protection-alternative-path"
+        ]
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "goal",
+      "detail": "[goal_mainflow_alignment] The goal slot's scope_contract lists 'Unique Mode II Code Protection' as one of the five in-scope IFF/SIF exchange functional areas, but main_flow step 2 enumerates the exchange functions as surveillance data reporting, clearing, difference resolution, update request, and special code reporting. The alternative_flow coverage_state also lists 'unique-mode-II-code-protection-alternative-path' as missing. The goal is therefore over-broad relative to the actual exchange use case: it conflates a separate unique-Mode II protection/assignment concern with the transponder-data exchange flow, so main_flow cannot align to the declared goal without adding an out-of-scope behavior. (atomic grounding: candidate remains incomplete (Evidence supports an IFF/SIF Difference Report message, not 'difference resolution'; 'difference resolution' is unsupported added detail.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[goal_mainflow_alignment] Main flow step 2 lists the triggered IFF/SIF exchange functions as Surveillance Data Reporting, Clearing, Difference Resolution, Update Request, and Special Code reporting (J7.5 ACT=3). The goal scope_contract instead identifies 'unique Mode II code protection' among the five functional areas and states that special-meaning codes are exchanged via J7.5 ACT=2. The functional-area lists and ACT mapping do not align, and the goal scope also references a unique-Mode-II alternative path that main flow does not cover.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow",
+        "postconditions"
+      ],
+      "inconsistency_hints": [
+        "The Trigger includes multiple entry points: IFF/SIF data available in J3.1/J3.5, J7.5 management messages with ACT=0/1/2/3, R² unit No Data reporting, and an operator J7.5 ACT=2 Update Request. The Main Flow, however, immediately selects only the 'IFF/SIF Surveillance Data Reporting' path and never continues the J7.5-triggered paths or the No Data reporting path. As a result, the flow does not continue from those triggers and the J7.5 postconditions are unreachable.",
+        "The trigger explicitly includes J7.5 ACT=3 (Special Code) as a triggering event, and main_flow step 2 includes 'Special Code reporting (J7.5 ACT=3; all nonzero special codes for the track are reported)' as one of the exchange branches. However, the postconditions slot contains no corresponding success state for the Special Code exchange variant; its coverage_state.missing_aspects even records 'postcondition for J7.5 ACT=3 Special Code exchange variant'. This leaves the vertical flow from the Special Code trigger/branch incomplete into the postconditions."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 155,
+    "cross_page_cards": 71,
+    "modalities": {
+      "text": 142,
+      "table": 13
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2611.99,
+    "llm_calls": 19.0,
+    "llm_seconds": 2488.276,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 123.467,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 7.0,
+    "judge_calls": 0,
+    "cards_collected": 155,
+    "cards_referenced": 42,
+    "evidence_reused": true,
+    "reused_card_count": 155,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/milstd6016b_sec4/C2_JU_Exchange_IFF_and_SIF_Transponder_Data-evidence.json",
+    "dra_elapsed_seconds": 1662.206,
+    "dra_llm_calls": 12,
+    "dra_llm_seconds": 1662.197,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_calls": 0,
+    "dra_judge_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The use case is triggered when IFF/SIF surveillance data (Modes I, II, and III codes) becomes available to exchange in J3.1 and J3.5 (PTI = 0) messages; or when a J7.5 message with action values ACT = 0 (Clear), ACT = 1 (Difference Report), ACT = 2 (Update Request), or ACT = 3 (Special Code) is used to perform IFF/SIF data management and reporting functions; or when an R² unit reports No Data status (value 0) for one or more modes in a required IFF/SIF Surveillance data report; or when an operator transmits a J7.5 (ACT = 2) IFF/SIF Update Request message. Reporting of IFF/SIF data in conjunction with periodic surveillance data is the responsibility of the JU with R², while all other JUs without R² are responsible only for monitoring such data and reporting different data via the J7.5 message.",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-TR-000",
+              "EC-TR-002",
+              "EC-TR-003",
+              "EC-TR-004",
+              "EC-TR-005"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The IFF/SIF transponder data has been successfully exchanged in the applicable J-series message (e.g., J3.1/J3.5 for surveillance data or J7.5 for management actions).",
+            "evidence_refs": [
+              "EC-PO-022",
+              "EC-PO-010"
+            ]
+          },
+          {
+            "content": "When the exchange involves a J3 message, the PPLI IFF/SIF Indicator in that message is set to value 2 if all nonzero mode codes match those received in the J2 message, value 1 if only Mode II matches, and value 0 otherwise, based on actual responses rather than prior PPLI receipt.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "When the exchange is a J7.5 (ACT=2) IFF/SIF Update Request, the responding units transmit their local data codes, the requesting JU receives the updated transponder data, and locally held IFF/SIF codes are refreshed or replaced with the received values.",
+            "evidence_refs": [
+              "EC-PO-018",
+              "EC-PO-008"
+            ]
+          },
+          {
+            "content": "When the exchange is a J7.5 (ACT=0) Clear IFF/SIF message, the designated mode(s) for the specified track are set to No Data status on all receiving JUs, and the transmitting R² unit stops transmitting the periodic J3 message containing the continuation word for that track.",
+            "evidence_refs": [
+              "EC-PO-017",
+              "EC-PO-023"
+            ]
+          },
+          {
+            "content": "When the exchange is a J7.5 (ACT=1) Difference Report, the reported difference is communicated to the relevant units via the transmitted J7.5 message.",
+            "evidence_refs": [
+              "EC-PO-019"
+            ]
+          },
+          {
+            "content": "When a JU transmits a J7.5 (ACT=3) Special Code message to exchange special-meaning codes, all nonzero special codes for that track are reported as part of the completed transaction.",
+            "evidence_refs": [
+              "EC-PO-009"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-AF-032",
+          "EC-AF-033",
+          "EC-AF-034",
+          "EC-AF-035",
+          "EC-AF-036",
+          "EC-AF-037",
+          "EC-AF-038",
+          "EC-AF-039",
+          "EC-AF-040",
+          "EC-AF-041",
+          "EC-AF-042",
+          "EC-AF-043",
+          "EC-AF-044",
+          "EC-AF-045",
+          "EC-AF-046",
+          "EC-AF-047",
+          "EC-AF-048",
+          "EC-AF-049",
+          "EC-AF-050",
+          "EC-AF-051",
+          "EC-AF-052",
+          "EC-AF-053",
+          "EC-AF-054",
+          "EC-AF-055",
+          "EC-AF-056",
+          "EC-AF-057",
+          "EC-AF-058",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-PO-025",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "IFF/SIF data (Modes I, II, and III Codes) must be available to the system.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          },
+          {
+            "content": "The reporting of IFF/SIF surveillance data in the J3.2C1 and J3.3C1 words for Air and Surface tracks is the responsibility of the JU with R²; all other JUs without R² are responsible for monitoring such data and only reporting if they hold different data via the J7.5 message.",
+            "evidence_refs": [
+              "EC-PC-001",
+              "EC-PC-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-PO-025",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "C2 JU exchanges IFF/SIF transponder data (Modes I, II, and III codes) with other JUs using the applicable J-series message.",
+            "evidence_refs": [
+              "EC-G-000",
+              "EC-G-001",
+              "EC-G-002",
+              "EC-PO-010"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-PO-025",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "During the main-flow IFF/SIF exchange, if no valid code is currently held for the subject local or remote track/mode, a 'No Data' condition exists and the applicable Mode Code field is reported as zeroes.",
+            "evidence_refs": [
+              "EC-EF-025"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "When an R² unit transmits a J3.XC1 message with a 'NO DATA' report (value 0) for one or more modes while local nonzero IFF/SIF is held, this triggers a difference resolution response from other units.",
+            "evidence_refs": [
+              "EC-EF-000"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If locally entered data changes from zero to nonzero or from nonzero to another nonzero value, or if a J3.XC1 'NO DATA' report is received on one or more mode/code while local nonzero IFF/SIF is held, the receiving unit may report the difference using J7.5 (ACT=1) IFF/SIF Difference Report in accordance with Table 4.7-5.",
+            "evidence_refs": [
+              "EC-EF-014"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the operator receives an IFF/SIF data conflict alert, the following manual actions are available for attempting resolution: (1) update local data manually or verify automatic inputs; (2) initiate a J7.5 (ACT=0) Clear IFF/SIF message (any mode); (3) initiate a J7.5 (ACT=1) IFF/SIF Difference Report message (any mode); (4) change local data to agree with remote data except in the case of Mode II code; (5) decorrelate the local data from the remote data, causing assignment of a new track number to local data; (6) clear the operator alert (any mode).",
+            "evidence_refs": [
+              "EC-EF-020"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If the R² JU identifies that an ID conflict exists, the operator is alerted and the local ID data continues to be reported in the appropriate surveillance message with the Identity Difference Indicator set to value 1; the conflict is resolved by manual means.",
+            "evidence_refs": [
+              "EC-EF-016"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "For non-R² JUs, if a conflict is indicated, transmission of J7.0 (ACT=1) is inhibited until the surveillance message is received with the Identity Difference Indicator set to value 0.",
+            "evidence_refs": [
+              "EC-EF-017"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "If two or more tracks have the same Mode II code, operators may be alerted to the duplicate Mode II code condition.",
+            "evidence_refs": [
+              "EC-EF-006"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "If an all-zeroes code (00 or 0000) is used for an assigned operational IFF/SIF Mode I, II, or III code, it is illegal for use as an assigned operational code.",
+            "evidence_refs": [
+              "EC-EF-026"
+            ],
+            "step_number": 8
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-PO-025",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "IFF/SIF transponder data (Modes I, II, and III codes) is available to the C2 JU for exchange; when available, this data is carried in J3.1 and J3.5 (PTI = 0) messages.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The exchange proceeds according to the triggered IFF/SIF exchange function: IFF/SIF Surveillance Data Reporting (JU with R² reports in conjunction with periodic surveillance data; all other JUs monitor and report different data via J7.5 (ACT=1)), Clearing IFF/SIF Data (J7.5 ACT=0; all JUs set the designated mode(s) to No Data), IFF/SIF Difference Resolution (J7.5 ACT=1), IFF/SIF Update Request (J7.5 ACT=2; may be initiated by operator action), or Special Code reporting (J7.5 ACT=3; all nonzero special codes for the track are reported). If the R² unit reports No Data, units holding valid nonzero data respond as required by the IFF/SIF Difference Resolution Matrix.",
+            "evidence_refs": [
+              "EC-G-001",
+              "EC-MF-013",
+              "EC-MF-006",
+              "EC-MF-009",
+              "EC-MF-010",
+              "EC-MF-011",
+              "EC-MF-008",
+              "EC-MF-012",
+              "EC-MF-015",
+              "EC-MF-022",
+              "EC-TR-004",
+              "EC-AF-010"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The C2 JU with R² transmits the available IFF/SIF surveillance data (Modes I, II, and III codes) periodically in J3.1 and J3.5 (PTI = 0) messages to report valid data held for a track.",
+            "evidence_refs": [
+              "EC-MF-005",
+              "EC-MF-003"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "JUs without R² monitor the reported IFF/SIF surveillance data.",
+            "evidence_refs": [
+              "EC-MF-013"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-AF-032",
+          "EC-AF-033",
+          "EC-AF-034",
+          "EC-AF-035",
+          "EC-AF-036",
+          "EC-AF-037",
+          "EC-AF-038",
+          "EC-AF-039",
+          "EC-AF-040",
+          "EC-AF-041",
+          "EC-AF-042",
+          "EC-AF-043",
+          "EC-AF-044",
+          "EC-AF-045",
+          "EC-AF-046",
+          "EC-AF-047",
+          "EC-AF-048",
+          "EC-AF-049",
+          "EC-AF-050",
+          "EC-AF-051",
+          "EC-AF-052",
+          "EC-AF-053",
+          "EC-AF-054",
+          "EC-AF-055",
+          "EC-AF-056",
+          "EC-AF-057",
+          "EC-AF-058",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-PO-025",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 2: instead of the exchange proceeding as IFF/SIF Surveillance Data Reporting, it proceeds as an IFF/SIF Update Request; the C2 JU may transmit a J7.5 (ACT = 2) IFF/SIF Update Request, initiated by operator action, and receiving units respond by transmitting their local data codes.",
+            "evidence_refs": [
+              "EC-AF-000",
+              "EC-AF-005",
+              "EC-AF-058"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 2: instead of the exchange proceeding as IFF/SIF Surveillance Data Reporting, it proceeds as an IFF/SIF Difference Report; the C2 JU may transmit a J7.5 (ACT = 1) Difference Report in accordance with the Difference Resolution Matrix, and this may be initiated by operator action at any time.",
+            "evidence_refs": [
+              "EC-AF-004"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 2: instead of the exchange proceeding as IFF/SIF Surveillance Data Reporting, the C2 JU may transmit a J7.5 (ACT = 3) Special Code message to exchange IFF/SIF codes that have special meaning.",
+            "evidence_refs": [
+              "EC-AF-001",
+              "EC-AF-042"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 3: instead of continuing to periodically transmit valid IFF/SIF surveillance data in J3.1/J3.5, the C2 JU with R² may initiate a J7.5 (ACT = 0) Clear IFF/SIF message to clear one or more modes on the specified track; this results in no IFF/SIF data being held on that track and causes the JU to stop transmitting the periodic J3 message containing the continuation word for that track.",
+            "evidence_refs": [
+              "EC-AF-006"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 3: when transmitting a required J3.XC1 IFF/SIF Surveillance data report, the C2 JU with R² may report a No Data status (value 0) for one or more modes; receiving units holding valid nonzero data respond as required by the IFF/SIF Difference Resolution Matrix.",
+            "evidence_refs": [
+              "EC-AF-057",
+              "EC-AF-009"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges from Step 3: if locally derived IFF/SIF data differs from IFF/SIF data being reported in the PPLI message, the locally derived data shall be reported.",
+            "evidence_refs": [
+              "EC-AF-017"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Diverges from Step 4: instead of only monitoring the reported IFF/SIF surveillance data, upon receipt of a J7.5 (ACT = 0) Clear message, all JUs automatically set the designated mode(s) for the specified track to No Data status.",
+            "evidence_refs": [
+              "EC-AF-008"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-AF-032",
+          "EC-AF-033",
+          "EC-AF-034",
+          "EC-AF-035",
+          "EC-AF-036",
+          "EC-AF-037",
+          "EC-AF-038",
+          "EC-AF-039",
+          "EC-AF-040",
+          "EC-AF-041",
+          "EC-AF-042",
+          "EC-AF-043",
+          "EC-AF-044",
+          "EC-AF-045",
+          "EC-AF-046",
+          "EC-AF-047",
+          "EC-AF-048",
+          "EC-AF-049",
+          "EC-AF-050",
+          "EC-AF-051",
+          "EC-AF-052",
+          "EC-AF-053",
+          "EC-AF-054",
+          "EC-AF-055",
+          "EC-AF-056",
+          "EC-AF-057",
+          "EC-AF-058",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-PO-025",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=71]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=71]",
+    "directory": "random_order/seed_071",
+    "seed": 71,
+    "slot_order": [
+      "primary_actor",
+      "trigger",
+      "postconditions",
+      "preconditions",
+      "goal",
+      "exception_flow",
+      "main_flow",
+      "alternative_flow"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "536f820ec7e944568244ee0d058a6656"
+}

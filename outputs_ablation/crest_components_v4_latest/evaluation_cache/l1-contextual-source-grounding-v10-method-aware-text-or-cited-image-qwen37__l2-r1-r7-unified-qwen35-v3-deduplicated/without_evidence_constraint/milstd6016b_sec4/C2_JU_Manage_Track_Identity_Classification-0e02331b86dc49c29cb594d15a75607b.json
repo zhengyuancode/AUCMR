@@ -1,0 +1,917 @@
+{
+  "use_case_name": "Manage Track Identity Classification",
+  "actor": "C2 JU",
+  "scg": 100.0,
+  "nli_g": 78.78787878787878,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 48.78048780487805,
+  "avg_cards": 43,
+  "total_claims": 33,
+  "total_cited_claims": 33,
+  "total_entailed_claims": 26,
+  "pre_constraint_claim_count": 33,
+  "pre_constraint_cited_claim_count": 33,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 123,
+  "cross_page_cards": 60,
+  "referenced_cards": 43,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 4,
+      "cited_claim_count": 4,
+      "evidence_ref_count": 7,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 4,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 8,
+      "cited_claim_count": 8,
+      "evidence_ref_count": 12,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 7,
+      "cited_claim_count": 7,
+      "evidence_ref_count": 7,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 7,
+      "cited_claim_count": 7,
+      "evidence_ref_count": 8,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 5,
+      "cited_claim_count": 5,
+      "evidence_ref_count": 8,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R2": 3,
+    "R5": 1
+  },
+  "l3_violations_pre_repair": {
+    "R1": 0,
+    "R2": 3,
+    "R3": 0,
+    "R4": 0,
+    "R5": 1,
+    "R6": 0,
+    "R7": 0
+  },
+  "l2_violations": {
+    "R1": 0,
+    "R2": 1,
+    "R3": 1,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 3
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R2": [
+        {
+          "rule_id": "R2",
+          "rule_name": "mainflow_trigger_continuity",
+          "offending_slot": "main_flow",
+          "offending_claim_index": 0,
+          "rationale": "Main Flow Step 1 describes receiving a message with a difference, which contradicts the Trigger's inclusion of operator-initiated actions (rejecting a report) and manual changes, creating a logical gap for those trigger paths."
+        }
+      ],
+      "R3": [
+        {
+          "rule_id": "R3",
+          "rule_name": "mainflow_postconditions_reachability",
+          "offending_slot": "postconditions",
+          "offending_claim_index": 0,
+          "rationale": "Postcondition [0] claims Environment/Category differences are resolved, but the Main Flow only resolves them in the specific path starting at Step 1, leaving the Correlation path (Step 8) and Operator Rejection path without a corresponding resolution step to support this claim."
+        }
+      ],
+      "R7": [
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 1,
+          "rationale": "The exit 'no further ID-conflict processing' describes a system state rather than a clear terminal failure, prevention, or hand-off outcome required by the rule."
+        },
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 5,
+          "rationale": "The exit 'the retention rule is not applied' describes an internal logic adjustment rather than a clear terminal failure, prevention, or hand-off outcome."
+        },
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 6,
+          "rationale": "The exit 'no mandatory alert is raised' describes the absence of an action rather than a clear terminal failure, prevention, or hand-off outcome."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 0,
+      "R2": 1,
+      "R3": 1,
+      "R4": 0,
+      "R5": 0,
+      "R6": 0,
+      "R7": 3
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The Trigger lists three initiating events: a C2 JU changes Environment/Category as specified, an operator rejects a difference report, and automatic acceptance via PPLI track report. Main Flow step 1 only continues the message-receipt path (Surveillance/J7.0 ACT=1 with E/C and ID differences); it does not continue from the operator-rejection or local E/C-change triggers. This is a restart with a different scenario rather than a continuation. (atomic grounding: candidate remains incomplete (Unsupported added detail 'C2' and 'live' before 'track' removed; no cited evidence supports those qualifiers.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The Trigger does not contain the initiating event used by Main Flow step 1: it lists an actor-initiated E/C change, an operator rejection of a difference report, a PPLI track-report auto-acceptance path, and a J7.2 correlation path, but Main Flow step 1 starts with the C2 JU receiving a conflicting J3.X/J7.0 message. The primary E/C/ID conflict path therefore appears to start from a different event than the Trigger.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The J7.2 path in Main Flow step 8 lists only three of the five exclusion conditions stated in Preconditions claim 4 for automatic correlation acceptance. The ID-difference conflict and different-current-Mode-II-code conditions are present in preconditions but absent from step8's exception list. The slots therefore disagree about the complete set of conditions that must hold for the J7.2 automatic-acceptance branch, leaving the vertical flow inconsistent.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[goal_mainflow_alignment] Main flow step 8 introduces automatic acceptance of a J7.2/RV=3 requested correlation. The goal and scope contract are about identity classification (exercise vs other live tracks) and environment/category/track-number continuity; nothing in the goal covers correlation acceptance. The main flow therefore contains behavior outside the goal, so the goal is not aligned with the complete behavior described in main_flow.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "The C2 JU wants to manage the identity classification of reported live tracks, distinguishing live t",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-G-000] and [EC-G-002], which collectively define the objectives of distinguishing exercise tracks and resolving environment/category differences with track number continuity.",
+      "slot_fit_rationale": "The claim explicitly states the actor's intended objective and success outcome, which aligns perfectly with the definition of the 'goal' slot in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-G-000",
+        "EC-G-002"
+      ],
+      "evidence_modalities": {
+        "EC-G-000": "card_text",
+        "EC-G-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The identity classification change to be managed is carried in a J3.X or J7.0 (ACT=1) message that i",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PC-004], which states that an ID change must include specific field evaluations and be included in a J3.X or J7.0 (ACT=1) message.",
+      "slot_fit_rationale": "The claim describes the necessary state of the incoming message (containing specific fields and type) that must exist for the use case to initiate, which aligns with the definition of a precondition.",
+      "evidence_refs": [
+        "EC-PC-004"
+      ],
+      "evidence_modalities": {
+        "EC-PC-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "For automatic acceptance of changes in Environment/Category, Identity, or Exercise Indicator, the C2",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim accurately reflects the conditions specified in Evidence [EC-PC-003] regarding the PPLI Track Number, Identity Indicator value, and identity states required for automatic acceptance.",
+      "slot_fit_rationale": "The claim describes the necessary state conditions (data values and local status) that must hold for the automated behavior to occur, which correctly fits the definition of a precondition.",
+      "evidence_refs": [
+        "EC-PC-003"
+      ],
+      "evidence_modalities": {
+        "EC-PC-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "For automatic correlation acceptance, the C2 JU has received a J7.2 message with the RV field set to",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PC-005], which confirms track eligibility recognition, and Evidence [EC-PC-006], which specifies the required J7.2 message with RV=3.",
+      "slot_fit_rationale": "The claim describes the necessary system states (message receipt and track recognition) that must hold before the interaction initiates, which aligns with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-005",
+        "EC-PC-006"
+      ],
+      "evidence_modalities": {
+        "EC-PC-005": "card_text",
+        "EC-PC-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "For automatic correlation acceptance, the two tracks are not of a different E/C, neither track has a",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PC-007], which lists four specific negative preconditions, and Evidence [EC-PC-001] and [EC-PC-002], which list two additional negative preconditions regarding ID differences and Mode II codes.",
+      "slot_fit_rationale": "The claim enumerates necessary state constraints that must hold (i.e., specific conflict conditions must be absent) for the automatic correlation process to initiate, which aligns precisely with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-001",
+        "EC-PC-002",
+        "EC-PC-007"
+      ],
+      "evidence_modalities": {
+        "EC-PC-001": "card_text",
+        "EC-PC-002": "card_text",
+        "EC-PC-007": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "Managing track identity classification is triggered when a C2 JU changes the Environment/Category of",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-TR-001], [EC-TR-002], and [EC-PC-006], which collectively define all four listed triggering events for managing track identity classification.",
+      "slot_fit_rationale": "The claim explicitly lists the specific events and conditions that initiate the use case interaction, which corresponds precisely to the definition of the 'trigger' slot in Cockburn's use-case structure.",
+      "evidence_refs": [
+        "EC-MF-021",
+        "EC-PC-006",
+        "EC-TR-001",
+        "EC-TR-002"
+      ],
+      "evidence_modalities": {
+        "EC-MF-021": "card_text",
+        "EC-PC-006": "card_text",
+        "EC-TR-001": "card_text",
+        "EC-TR-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "C2 JU receives a Surveillance message or a J7.0 (ACT = 1) message in which the air, surface (maritim",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence describes the system's response (processing conflicts) to a specific message condition, but does not explicitly state that the JU 'receives' such a message as a standalone factual event or precondition, making the claim's assertion of receipt unsupported by the text which focuses on the resolution logic.",
+      "slot_fit_rationale": "The claim describes a specific step in the normal interaction path where the system processes incoming data, which aligns with the definition of a main_flow step.",
+      "evidence_refs": [
+        "EC-MF-009"
+      ],
+      "evidence_modalities": {
+        "EC-MF-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "C2 JU processes and resolves the Environment/Category conflict and any Exercise Indicator conflict b",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-MF-009], which mandates resolving Environment/Category conflicts before ID conflicts, and Evidence [EC-MF-011], which mandates resolving Exercise Indicator conflicts before ID or Identity Amplifying Descriptor conflicts.",
+      "slot_fit_rationale": "The claim describes a specific sequential action and priority rule within the normal successful interaction path for conflict resolution, which constitutes a main flow step.",
+      "evidence_refs": [
+        "EC-MF-009",
+        "EC-MF-011"
+      ],
+      "evidence_modalities": {
+        "EC-MF-009": "card_text",
+        "EC-MF-011": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "Because the track's Exercise Indicator is set to value 1, C2 JU classifies the track as an exercise ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim's behavioral rules regarding identity classification when the Exercise Indicator is 1 are directly supported by Evidence [EC-MF-023].",
+      "slot_fit_rationale": "The claim describes a specific action/response in the normal successful interaction path for classifying an exercise track, which aligns with the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-023"
+      ],
+      "evidence_modalities": {
+        "EC-MF-023": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "C2 JU elects to automatically accept the received changes in Environment/Category, Identity, or Exer",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-MF-013], which explicitly states that a C2 JU may elect to automatically accept changes under the specified conditions (PPLI Track Number/Identity Indicator set to 1, new identity Friend, local identity not Hostile).",
+      "slot_fit_rationale": "The claim describes a specific action and decision logic within the normal successful interaction path for resolving differences, which aligns with the definition of a main_flow step.",
+      "evidence_refs": [
+        "EC-MF-013"
+      ],
+      "evidence_modalities": {
+        "EC-MF-013": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "On the Environment/Category change, C2 JU determines whether to retain the original Track Number or ",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim includes specific procedural steps (assigning a TN from an allocated block and holding R² at assignment) that are described in the evidence only as postconditions of successful track initiation, not as actions performed during the Environment/Category change flow.",
+      "slot_fit_rationale": "The claim describes the primary success path actions and decision logic for handling an Environment/Category change, which constitutes the main flow of the use case.",
+      "evidence_refs": [
+        "EC-MF-037",
+        "EC-MF-038",
+        "EC-PO-000",
+        "EC-PO-005"
+      ],
+      "evidence_modalities": {
+        "EC-MF-037": "card_text",
+        "EC-MF-038": "card_text",
+        "EC-PO-000": "card_text",
+        "EC-PO-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "C2 JU reports the resolved Environment/Category: if it has R², it transmits the local Environment/Ca",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-MF-036], which explicitly details the conditional transmission logic for Environment/Category based on R² capability.",
+      "slot_fit_rationale": "The claim describes a specific system action within the normal successful interaction path (reporting resolved data), which constitutes a substantive step in the main flow.",
+      "evidence_refs": [
+        "EC-MF-036"
+      ],
+      "evidence_modalities": {
+        "EC-MF-036": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "When accepting the remote Identity change, C2 JU includes the appropriate evaluation of the Platform",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-MF-014], which explicitly states the required actions for C2 JUs when accepting a remote ID change.",
+      "slot_fit_rationale": "The claim describes a specific system action within the normal successful interaction path (accepting the change), which aligns with the definition of a main_flow step.",
+      "evidence_refs": [
+        "EC-MF-014"
+      ],
+      "evidence_modalities": {
+        "EC-MF-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "When the C2 JU receives a J7.2 message with the RV field set to value 3, it automatically accepts th",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-MF-021], which explicitly states the system's behavior upon receiving a J7.2 message with RV=3.",
+      "slot_fit_rationale": "The claim describes the primary action (automatic acceptance) taken by the system in response to a specific input during the normal successful interaction path, which defines the main flow.",
+      "evidence_refs": [
+        "EC-MF-021"
+      ],
+      "evidence_modalities": {
+        "EC-MF-021": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 2: If an Environment/Category conflict is detected during processing of a receive",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-AF-005], which states that no further processing for ID conflict detection is needed if an Environment/Category conflict is detected.",
+      "slot_fit_rationale": "The claim describes a conditional branch where the process terminates early due to a specific conflict type, which constitutes a valid alternative flow diverging from the main success path.",
+      "evidence_refs": [
+        "EC-AF-005"
+      ],
+      "evidence_modalities": {
+        "EC-AF-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 3: When the Exercise Indicator is set to value 0 (Non-Exercise Track), C2 JU spec",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the behavioral rule regarding the Exercise Indicator value 0, but it does not contain the specific structural claim that this flow 'diverges from Step 3', making that part of the claim unsupported by the provided text.",
+      "slot_fit_rationale": "The claim describes a conditional branch (Exercise Indicator = 0) that handles a non-error scenario while pursuing the same general outcome, which correctly fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-000"
+      ],
+      "evidence_modalities": {
+        "EC-AF-000": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 3: In the exercise track handling path with Exercise Indicator set to value 1, C2",
+      "entailment": "entailment",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "entailed_but_slot_misfit",
+      "rationale": "The claim's core proposition regarding the treatment of data fields for tracks with Exercise Indicator 1 is directly supported by Evidence [EC-AF-001].",
+      "slot_fit_rationale": "The claim describes a static data processing rule or constraint rather than a distinct interaction branch or actor-system exchange that characterizes an alternative flow in Cockburn methodology.",
+      "evidence_refs": [
+        "EC-AF-001"
+      ],
+      "evidence_modalities": {
+        "EC-AF-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: When C2 JU receives ID data on a Track Number for which it does not have R2 an",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-AF-006] and its context note, which confirm that ID data is automatically accepted and stored when the JU lacks R2 and local positional data.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch where automatic acceptance occurs due to specific data conditions, fitting the definition of an alternative flow that pursues the same success outcome.",
+      "evidence_refs": [
+        "EC-AF-006"
+      ],
+      "evidence_modalities": {
+        "EC-AF-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 7: Difference resolution of the Platform/Platform Activity/Specific Type and Spec",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the non-mandatory nature of the resolution but does not explicitly state that the C2 JU actor may proceed or link this condition to a divergence from Step 7.",
+      "slot_fit_rationale": "The claim describes a conditional branch where the process continues despite unresolved differences, which characterizes an alternative flow in Cockburn use-case semantics.",
+      "evidence_refs": [
+        "EC-AF-008"
+      ],
+      "evidence_modalities": {
+        "EC-AF-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 7: When a Platform, Platform Activity, or Specific Type value of 0 (No Statement)",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-AF-009], which states that receiving a value of 0 while holding a non-zero value locally constitutes an exception to the standard retention rule.",
+      "slot_fit_rationale": "The claim describes a specific conditional branch (an exception to a general rule) that diverges from the main flow, which aligns with the definition of an alternative flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-AF-009"
+      ],
+      "evidence_modalities": {
+        "EC-AF-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 7: When a locally held Air Platform value is 6 (Tanker), 7 (Tanker Boom Only), or",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-AF-010], which states that an operator alert is optional when specific Air Platform values are held locally and a different value is received.",
+      "slot_fit_rationale": "The claim describes a conditional branch where the standard behavior (mandatory alert) is modified to be optional, which constitutes a substantive alternative flow diverging from the main success path.",
+      "evidence_refs": [
+        "EC-AF-010"
+      ],
+      "evidence_modalities": {
+        "EC-AF-010": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main flow Step 1, if the locally held Environment/Category of a track differs from the Environmen",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that the operator shall be alerted if the locally held Environment/Category differs from the received message, which directly supports the claim's condition and outcome.",
+      "slot_fit_rationale": "The claim describes a specific error condition (data mismatch) and its handling (operator alert), which constitutes a substantive exception flow branching from the main interaction path.",
+      "evidence_refs": [
+        "EC-EF-009"
+      ],
+      "evidence_modalities": {
+        "EC-EF-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main flow Step 2, if an Environment/Category conflict is detected when a Surveillance message or ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-023], which explicitly states that upon detecting an Environment/Category conflict, the system resolves it and halts further ID conflict processing.",
+      "slot_fit_rationale": "The claim describes a specific error condition (conflict detection) and its handling logic (resolving prior to ID resolution and exiting), which constitutes a substantive exception flow in Cockburn use-case semantics.",
+      "evidence_refs": [
+        "EC-EF-023"
+      ],
+      "evidence_modalities": {
+        "EC-EF-023": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main flow Step 2, if the Exercise Indicator in a received Surveillance message or J7.0 (ACT = 1) ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-024], which explicitly states that a conflict exists and the operator is alerted for manual resolution when the Exercise Indicator differs from local data in the specified messages.",
+      "slot_fit_rationale": "The claim describes an abnormal condition (data conflict) and its specific handling (operator alert for manual resolution), which correctly fits the definition of an exception flow.",
+      "evidence_refs": [
+        "EC-EF-024"
+      ],
+      "evidence_modalities": {
+        "EC-EF-024": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main flow Step 4, if the ID difference cannot be automatically accepted or rejected, an ID confli",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-010], which explicitly defines the ID conflict condition and the required operator evaluation and voice coordination resolution steps.",
+      "slot_fit_rationale": "The claim describes an abnormal condition (ID conflict) and its specific handling procedure (manual evaluation/voice coordination), which constitutes a substantive exception flow in a Cockburn use case.",
+      "evidence_refs": [
+        "EC-EF-010"
+      ],
+      "evidence_modalities": {
+        "EC-EF-010": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main flow Step 6, when a difference report is rejected by an operator action, the information is ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-011], which explicitly states the reporting actions (Surveillance report or J7.0 message) triggered when a difference report is rejected by an operator.",
+      "slot_fit_rationale": "The claim describes the system's specific response and handling logic for an abnormal condition (operator rejection), which correctly fits the definition of an exception flow.",
+      "evidence_refs": [
+        "EC-EF-011"
+      ],
+      "evidence_modalities": {
+        "EC-EF-011": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main flow Step 7, when a Platform, Platform Activity or Specific Type value of 0 (No Statement) i",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim includes a specific reference to 'main flow Step 7' which is not present in or supported by the provided evidence.",
+      "slot_fit_rationale": "The claim describes an abnormal condition and its handling (suspending a retention rule), which substantively belongs in the exception_flow slot.",
+      "evidence_refs": [
+        "EC-EF-027"
+      ],
+      "evidence_modalities": {
+        "EC-EF-027": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main flow Step 7, when an Air Platform value of 6 (Tanker), 7 (Tanker (Boom Only)), or 8 (Tanker ",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the condition and the optional nature of the alert, but does not explicitly support the claim's specific reference to 'main flow Step 7' or the explicit exit statement 'no mandatory alert is raised' as a distinct material proposition beyond the optionality already stated.",
+      "slot_fit_rationale": "The claim describes a handled deviation from normal notification behavior (optional alert instead of mandatory) under specific conditions, which substantively fits the definition of an exception flow.",
+      "evidence_refs": [
+        "EC-EF-013",
+        "EC-EF-028"
+      ],
+      "evidence_modalities": {
+        "EC-EF-013": "card_text",
+        "EC-EF-028": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "After successful completion, the C2 JU has updated the track's identity classification: live tracks ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PO-001], which explicitly states the system state after successful completion, including the specific updates to identity classification, exercise indicators, and track number continuity.",
+      "slot_fit_rationale": "The claim describes the resulting system state (updated classifications and resolved attributes) conditional on the successful completion of the use case, which is the precise definition of a postcondition in Cockburn's framework.",
+      "evidence_refs": [
+        "EC-PO-001",
+        "EC-PO-004",
+        "EC-PO-008"
+      ],
+      "evidence_modalities": {
+        "EC-PO-001": "card_text",
+        "EC-PO-004": "card_text",
+        "EC-PO-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "When the Environment/Category change is legal and the original Track Number is retained, the entity ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-PO-006], which explicitly states that the entity is reported with the same Track Number under the specified conditions.",
+      "slot_fit_rationale": "The claim describes the resulting state of the surveillance message after a successful legal change, which constitutes a postcondition.",
+      "evidence_refs": [
+        "EC-PO-006"
+      ],
+      "evidence_modalities": {
+        "EC-PO-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "When the proposed Environment/Category change is accepted and requires a new Track Number, the origi",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PO-005], which details the dropping of the original track and reporting of the new track upon acceptance, and Evidence [EC-PO-000], which establishes that the C2 JU assigns the Track Number from its block and holds R² responsibility at the time of assignment.",
+      "slot_fit_rationale": "The claim describes the immediate system state and effects (track dropped, new track assigned and reported, responsibility held) resulting from the successful completion of the interaction, which aligns with the definition of postconditions.",
+      "evidence_refs": [
+        "EC-PO-000",
+        "EC-PO-005"
+      ],
+      "evidence_modalities": {
+        "EC-PO-000": "card_text",
+        "EC-PO-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "After resolution of Environment/Category differences and determination of Track Number continuity, t",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-PO-003], which explicitly states that the C2 JU transmits the resolved Environment/Category via specific message types after successful resolution.",
+      "slot_fit_rationale": "The claim describes the resulting system state (data transmission) that occurs immediately after the successful completion of the resolution process, which fits the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-003"
+      ],
+      "evidence_modalities": {
+        "EC-PO-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "When a remote Identity change is accepted, the received values for Platform, Platform Activity, Spec",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PO-007], which states that the specified field values are retained after successful completion of the use case.",
+      "slot_fit_rationale": "The claim describes the resulting system state (data retention) immediately following the successful completion of the interaction, which aligns with the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-007"
+      ],
+      "evidence_modalities": {
+        "EC-PO-007": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

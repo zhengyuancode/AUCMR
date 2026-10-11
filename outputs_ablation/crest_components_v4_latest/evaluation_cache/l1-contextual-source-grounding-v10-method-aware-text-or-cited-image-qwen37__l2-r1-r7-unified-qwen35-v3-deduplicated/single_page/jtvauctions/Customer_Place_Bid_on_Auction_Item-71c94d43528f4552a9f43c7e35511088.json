@@ -1,0 +1,683 @@
+{
+  "use_case_name": "Place Bid on Auction Item",
+  "actor": "Customer",
+  "scg": 100.0,
+  "nli_g": 85.0,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 0.0,
+  "avg_cards": 49,
+  "total_claims": 20,
+  "total_cited_claims": 20,
+  "total_entailed_claims": 17,
+  "pre_constraint_claim_count": 20,
+  "pre_constraint_cited_claim_count": 20,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 148,
+  "cross_page_cards": 0,
+  "referenced_cards": 49,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 5,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 4,
+      "cited_claim_count": 4,
+      "evidence_ref_count": 10,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 5,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 5,
+      "cited_claim_count": 5,
+      "evidence_ref_count": 15,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 3,
+      "cited_claim_count": 3,
+      "evidence_ref_count": 9,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 2,
+      "cited_claim_count": 2,
+      "evidence_ref_count": 3,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 4,
+      "cited_claim_count": 4,
+      "evidence_ref_count": 11,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R1": 3,
+    "R2": 1
+  },
+  "l3_violations_pre_repair": {
+    "R1": 3,
+    "R2": 1,
+    "R3": 0,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 0
+  },
+  "l2_violations": {
+    "R1": 0,
+    "R2": 1,
+    "R3": 0,
+    "R4": 0,
+    "R5": 0,
+    "R6": 2,
+    "R7": 1
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R2": [
+        {
+          "rule_id": "R2",
+          "rule_name": "mainflow_trigger_continuity",
+          "offending_slot": "main_flow",
+          "offending_claim_index": 0,
+          "rationale": "Main Flow Step 1 describes entering a bid amount or clicking QuickBid, which duplicates the action already defined in the Trigger (selecting amount and clicking button), creating a logical redundancy rather than a continuation."
+        }
+      ],
+      "R6": [
+        {
+          "rule_id": "R6",
+          "rule_name": "altflow_diverge_points",
+          "offending_slot": "alternative_flow",
+          "offending_claim_index": 1,
+          "rationale": "Alternative flow [1] claims to diverge from Step 1 but describes a behavior (bypassing manual entry and confirmation) that contradicts the Main Flow Step 1 definition which includes QuickBid as part of the step's scope without explicitly separating the confirmation logic."
+        },
+        {
+          "rule_id": "R6",
+          "rule_name": "altflow_diverge_points",
+          "offending_slot": "alternative_flow",
+          "offending_claim_index": 2,
+          "rationale": "Alternative flow [2] claims to diverge from Step 1 but describes skipping the confirmation pop-up, which is defined in Main Flow Steps 2-4, making Step 1 an illogical attachment point for a confirmation-bypass branch."
+        }
+      ],
+      "R7": [
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 0,
+          "rationale": "Exception flow [0] ends with the customer being delivered to a page after sign-in but does not explicitly state that the bid placement process resumes or terminates, leaving the outcome of the original bid attempt ambiguous."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 0,
+      "R2": 1,
+      "R3": 0,
+      "R4": 0,
+      "R5": 0,
+      "R6": 2,
+      "R7": 1
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The Main Flow's bid confirmation popup displays 'a creditcard ending in 6744', but Preconditions do not state that the Customer has a valid payment method on file. That state must already exist before the confirmation can be displayed, so it is a missing precondition for the bid-placement path. (atomic grounding: candidate remains incomplete (The cited evidence does not support that bid confirmation references and completes against the stored payment method.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The Trigger supports QuickBid initiation from a Product Module on Browse/Search Result pages, but the Preconditions entry-context claim only states the Customer must already be on the Product Details Page. The precondition is narrower than the Trigger's actual entry contexts. (atomic grounding: candidate remains incomplete (No cited evidence supports that the system displays active bidding controls for the item in the QuickBid Product Module context; EC-PC-003 supports active bidding controls only on the Product Details Page.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The Trigger allows SmartBid, Single Bid, and QuickBid (from PDP or Browse/Search Product Modules), and Main Flow Step 1 also lists all three methods. However, the rest of the Main Flow is written as a single linear SmartBid/manual path: Step 2 requires a 'Place SmartBid' or 'Place Single Bid' action-button click after QuickBid has already been triggered, and Step 4 only offers a 'Yes, Place SmartBid' confirmation button. This is a real continuation gap/contradiction for the QuickBid and Single Bid trigger variants.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The Trigger includes initiation by clicking QuickBid in a Product Module on Browse or Search Result pages, but Preconditions claim 0 only states that the Customer is on the Product Details Page for the specific auction item. This leaves the QuickBid-from-Browse/Search trigger without a matching entry-context precondition.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "The Customer wants to place a bid on an auction item.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "Multiple evidence units explicitly state that the customer's goal or objective is to place a bid on an auction item.",
+      "slot_fit_rationale": "The claim defines the primary actor's intended success outcome, which is the precise definition of the 'goal' slot in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-G-000",
+        "EC-G-001",
+        "EC-G-002",
+        "EC-G-003",
+        "EC-G-004"
+      ],
+      "evidence_modalities": {
+        "EC-G-000": "card_text",
+        "EC-G-001": "card_text",
+        "EC-G-002": "card_text",
+        "EC-G-003": "card_text",
+        "EC-G-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The Customer is on the Product Details Page for the specific auction item on which they intend to bi",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of EC-PC-003, which confirms the display of active bidding controls on the Product Details Page, and EC-PC-005, which confirms the Customer must be on that page to place a bid.",
+      "slot_fit_rationale": "The claim describes the necessary system state and user location required before the interaction begins, which aligns with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-003",
+        "EC-PC-005"
+      ],
+      "evidence_modalities": {
+        "EC-PC-003": "card_text",
+        "EC-PC-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The auction item is active and accepting bids at the current time: the countdown timer is running an",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PC-028] and [EC-PC-033], which explicitly state that the auction item must be active with a running countdown timer and enabled bid buttons to allow bidding.",
+      "slot_fit_rationale": "The claim describes the necessary system state (active auction, enabled controls) that must hold before the bidding interaction can initiate, which aligns with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-028",
+        "EC-PC-033"
+      ],
+      "evidence_modalities": {
+        "EC-PC-028": "card_text",
+        "EC-PC-033": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The Customer is signed in and has agreed to be bound by the Terms of Use Agreement.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence collectively establishes that being signed in (EC-PC-014, EC-PC-015) and agreeing to the Terms of Use (EC-PC-036) are mandatory conditions that must hold before a user can place a bid.",
+      "slot_fit_rationale": "The claim describes necessary states that must exist prior to the initiation of the bidding interaction, which aligns with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-014",
+        "EC-PC-015",
+        "EC-PC-036"
+      ],
+      "evidence_modalities": {
+        "EC-PC-014": "card_text",
+        "EC-PC-015": "card_text",
+        "EC-PC-036": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The auction item has bid increment rules defined (e.g., Bid Increment $1.00), and the Customer has a",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units: EC-PC-019 confirms the credit card requirement, and EC-PC-029/EC-PC-032 confirm the existence of defined bid increment rules.",
+      "slot_fit_rationale": "Both the payment method availability and the defined bidding rules are necessary states that must hold before the bidding interaction can successfully initiate, fitting the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-019",
+        "EC-PC-029",
+        "EC-PC-032"
+      ],
+      "evidence_modalities": {
+        "EC-PC-019": "card_text",
+        "EC-PC-029": "card_text",
+        "EC-PC-032": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "The Customer triggers the use case by selecting a bid amount and clicking one of the bid method butt",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units EC-TR-000, EC-TR-001, EC-TR-003, EC-TR-005, and EC-TR-006, which collectively describe all three triggering actions (Smart/Single Bid on PDP, QuickBid Now, and QuickBid on Browse/Search).",
+      "slot_fit_rationale": "The claim describes the specific user actions that initiate the interaction, which is the precise definition of the trigger slot in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-TR-000",
+        "EC-TR-001",
+        "EC-TR-003",
+        "EC-TR-005",
+        "EC-TR-006"
+      ],
+      "evidence_modalities": {
+        "EC-TR-000": "card_text",
+        "EC-TR-001": "card_text",
+        "EC-TR-003": "card_text",
+        "EC-TR-005": "card_text",
+        "EC-TR-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer chooses a bid method: for a SmartBid or Single Bid, the Customer enters a bid amount in",
+      "entailment": "entailment",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "entailed_but_slot_misfit",
+      "rationale": "All material propositions in the claim (bid method selection, QuickBid mechanics, and post-bid navigation states) are directly supported by the union of the provided evidence units.",
+      "slot_fit_rationale": "The claim includes postconditions (navigation state after successful bid) which belong in the 'postconditions' slot, not the 'main_flow' slot, causing a material misfit.",
+      "evidence_refs": [
+        "EC-AF-008",
+        "EC-MF-006",
+        "EC-MF-007",
+        "EC-PO-002",
+        "EC-TR-000",
+        "EC-TR-001"
+      ],
+      "evidence_modalities": {
+        "EC-AF-008": "card_text",
+        "EC-MF-006": "card_text",
+        "EC-MF-007": "card_text",
+        "EC-PO-002": "card_text",
+        "EC-TR-000": "card_text",
+        "EC-TR-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer clicks the corresponding action button ('Place SmartBid' or 'Place Single Bid').",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "Evidence [EC-MF-006] explicitly states that the Customer clicks the associated action button ('Place SmartBid' or 'Place Single Bid') as part of the primary interaction steps.",
+      "slot_fit_rationale": "The claim describes a specific user action within the normal successful interaction path for placing a bid, which aligns with the definition of a main_flow step.",
+      "evidence_refs": [
+        "EC-MF-006",
+        "EC-TR-006"
+      ],
+      "evidence_modalities": {
+        "EC-MF-006": "card_text",
+        "EC-TR-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The system displays a 'Bid Confirmation Pop-up' that verifies the bid amount and bid method, asking ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-MF-003], which establishes the system displays a verification pop-up, and Evidence [EC-MF-008], which provides the specific example text and context cited in the claim.",
+      "slot_fit_rationale": "The claim describes a standard system response step within the normal successful interaction path, which correctly belongs in the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-003",
+        "EC-MF-008"
+      ],
+      "evidence_modalities": {
+        "EC-MF-003": "card_text",
+        "EC-MF-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer confirms the bid by clicking the green button labeled 'Yes, Place SmartBid'.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "Evidence [EC-MF-009] directly supports the specific action of clicking the green button labeled 'Yes, Place SmartBid' to confirm the bid.",
+      "slot_fit_rationale": "The claim describes a specific user action within the normal successful interaction path, which aligns with the definition of a main_flow step.",
+      "evidence_refs": [
+        "EC-MF-004",
+        "EC-MF-009"
+      ],
+      "evidence_modalities": {
+        "EC-MF-004": "card_text",
+        "EC-MF-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The system completes the bid placement successfully. If the bid was triggered from the Product Detai",
+      "entailment": "entailment",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "entailed_but_slot_misfit",
+      "rationale": "The claim is fully supported by the union of evidence units EC-MF-005, EC-MF-009, and EC-PO-002, which collectively confirm successful bid completion and the specific navigation outcomes for both Product Details Page and QuickBid contexts.",
+      "slot_fit_rationale": "The claim describes the system state and navigation context immediately after successful completion, which constitutes a postcondition rather than an action or response within the main interaction flow.",
+      "evidence_refs": [
+        "EC-MF-005",
+        "EC-MF-009",
+        "EC-PO-002"
+      ],
+      "evidence_modalities": {
+        "EC-MF-005": "card_text",
+        "EC-MF-009": "card_text",
+        "EC-PO-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 1. Instead of entering a SmartBid or Single Bid amount on the Product Details Pag",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units EC-AF-002, EC-AF-010, and EC-AF-014, which collectively describe the QuickBid action, its divergence from the standard flow, the bid calculation logic, and the confirmation popup behavior.",
+      "slot_fit_rationale": "The claim describes a valid alternative successful path that diverges from the main flow's bid entry step to achieve the same goal, which aligns with the definition of an alternative_flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-AF-002",
+        "EC-AF-010",
+        "EC-AF-014"
+      ],
+      "evidence_modalities": {
+        "EC-AF-002": "card_text",
+        "EC-AF-010": "card_text",
+        "EC-AF-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 1. Instead of starting on the Product Details Page and entering a SmartBid or Sin",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units: EC-AF-000 and EC-AF-009 confirm the trigger location and lack of navigation, while EC-AF-011 and EC-AF-013 confirm the automatic single-bid behavior without manual entry.",
+      "slot_fit_rationale": "The claim describes a valid alternative successful path that diverges from the main flow's starting precondition (Product Details Page) to achieve the same goal, which fits the definition of an alternative_flow.",
+      "evidence_refs": [
+        "EC-AF-000",
+        "EC-AF-009",
+        "EC-AF-011",
+        "EC-AF-013"
+      ],
+      "evidence_modalities": {
+        "EC-AF-000": "card_text",
+        "EC-AF-009": "card_text",
+        "EC-AF-011": "card_text",
+        "EC-AF-013": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 1. Instead of entering a SmartBid or Single Bid amount on the Product Details Pag",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-AF-008] and [EC-AF-014], which collectively confirm the button's location, the automatic bid calculation (last bid + increment), the bypass of manual entry, and the absence of a confirmation dialog.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch that achieves the same success outcome (placing a bid) via a different interaction path, which substantively fits the definition of an alternative_flow.",
+      "evidence_refs": [
+        "EC-AF-008",
+        "EC-AF-014"
+      ],
+      "evidence_modalities": {
+        "EC-AF-008": "card_text",
+        "EC-AF-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At the bid-submission action corresponding to Step 2 of the main flow, if the Customer is not signed",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the evidence, which describes the system's behavior (prompting for sign-in and redirecting) when an unauthenticated user attempts to QuickBid.",
+      "slot_fit_rationale": "The claim describes an abnormal condition (user not signed in) and the system's recovery handling, which constitutes a valid exception flow in Cockburn use-case modeling.",
+      "evidence_refs": [
+        "EC-EF-000",
+        "EC-EF-019"
+      ],
+      "evidence_modalities": {
+        "EC-EF-000": "card_text",
+        "EC-EF-019": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At the bid-submission action corresponding to Step 2 of the main flow, if the Customer is subject to",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim introduces a specific linkage to 'Step 2 of the main flow' and asserts that the bid attempt is blocked at that specific action, which are material propositions not supported by the evidence that only describes the general policy condition and consequence.",
+      "slot_fit_rationale": "The claim describes an error condition (escalation policy violation) and its handling (blocking the bid), which substantively belongs in the exception_flow slot.",
+      "evidence_refs": [
+        "EC-EF-012"
+      ],
+      "evidence_modalities": {
+        "EC-EF-012": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "After a successful bid placement, the Customer remains in the originating page context: if the bid w",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PO-002], which explicitly covers both the Product Details Page and catalog page contexts, and Evidence [EC-PO-000]/[EC-PO-003]/[EC-PO-004]/[EC-PO-007], which confirm the PDP retention.",
+      "slot_fit_rationale": "The claim describes the immediate system state and user context remaining after successful completion, which is the definition of a postcondition in Cockburn use-case structure.",
+      "evidence_refs": [
+        "EC-PO-000",
+        "EC-PO-002",
+        "EC-PO-003",
+        "EC-PO-004",
+        "EC-PO-007"
+      ],
+      "evidence_modalities": {
+        "EC-PO-000": "card_text",
+        "EC-PO-002": "card_text",
+        "EC-PO-003": "card_text",
+        "EC-PO-004": "card_text",
+        "EC-PO-007": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The system records the newly placed bid and immediately displays it in the Item Bid History table as",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PO-005], which confirms the table update with specific fields, and Evidence [EC-PO-008], which confirms the bid recording and association with the customer's account.",
+      "slot_fit_rationale": "The claim describes the immediate state changes (record persistence, UI update, and data association) resulting from successful bid placement, which constitutes a substantive postcondition.",
+      "evidence_refs": [
+        "EC-PO-005",
+        "EC-PO-008"
+      ],
+      "evidence_modalities": {
+        "EC-PO-005": "card_text",
+        "EC-PO-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "After successful bid placement via QuickBid or manual bid methods, the system dynamically updates th",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PO-001], which confirms the dynamic update without refresh after successful bid placement, and Evidence [EC-PO-006], which specifies that the 'Current High Bid' amount updates if the new bid exceeds the previous one.",
+      "slot_fit_rationale": "The claim describes the immediate state of the user interface (updated high bid display) resulting from the successful completion of the bid placement interaction, which constitutes a postcondition.",
+      "evidence_refs": [
+        "EC-PO-001",
+        "EC-PO-006"
+      ],
+      "evidence_modalities": {
+        "EC-PO-001": "card_text",
+        "EC-PO-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The system updates the SKU History table's 'High Bid' and 'Winner / High Bidder' columns to reflect ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PO-009], which confirms the update of 'High Bid' and 'Winner / High Bidder' columns, and Evidence [EC-PO-010], which confirms the incrementing of the '# of Bids' counter.",
+      "slot_fit_rationale": "The claim describes immediate state changes to system data (table updates and counter increments) that occur after successful completion, which defines the role of postconditions.",
+      "evidence_refs": [
+        "EC-PO-009",
+        "EC-PO-010"
+      ],
+      "evidence_modalities": {
+        "EC-PO-009": "card_text",
+        "EC-PO-010": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

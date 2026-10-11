@@ -1,0 +1,574 @@
+{
+  "use_case_name": "Manage Account Settings",
+  "actor": "Customer",
+  "scg": 100.0,
+  "nli_g": 64.70588235294117,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 0.0,
+  "avg_cards": 24,
+  "total_claims": 17,
+  "total_cited_claims": 17,
+  "total_entailed_claims": 11,
+  "pre_constraint_claim_count": 17,
+  "pre_constraint_cited_claim_count": 17,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 148,
+  "cross_page_cards": 0,
+  "referenced_cards": 24,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 3,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 8,
+      "cited_claim_count": 8,
+      "evidence_ref_count": 13,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 3,
+      "cited_claim_count": 3,
+      "evidence_ref_count": 5,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 2,
+      "cited_claim_count": 2,
+      "evidence_ref_count": 4,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R7": 3,
+    "R6": 1
+  },
+  "l3_violations_pre_repair": {
+    "R1": 0,
+    "R2": 0,
+    "R3": 0,
+    "R4": 0,
+    "R5": 0,
+    "R6": 1,
+    "R7": 3
+  },
+  "l2_violations": {
+    "R1": 1,
+    "R2": 0,
+    "R3": 0,
+    "R4": 0,
+    "R5": 1,
+    "R6": 1,
+    "R7": 1
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R1": [
+        {
+          "rule_id": "R1",
+          "rule_name": "trigger_preconditions_coverage",
+          "offending_slot": "preconditions",
+          "offending_claim_index": 0,
+          "rationale": "The precondition restricts the account to 'review status', but the trigger and main flow describe a general payment method update scenario that should be available to any logged-in customer, creating an unjustified constraint."
+        }
+      ],
+      "R5": [
+        {
+          "rule_id": "R5",
+          "rule_name": "goal_mainflow_alignment",
+          "offending_slot": "goal",
+          "offending_claim_index": 0,
+          "rationale": "The goal specifies changing settings while the account is in review status, but the main flow describes a generic update process without any logic or steps related to review status."
+        }
+      ],
+      "R6": [
+        {
+          "rule_id": "R6",
+          "rule_name": "altflow_diverge_points",
+          "offending_slot": "alternative_flow",
+          "offending_claim_index": 0,
+          "rationale": "The alternative flow claims to diverge from step 4 where the customer clicks 'Save Changes', but step 4 in the main flow only displays the new payment method section; the save action occurs in step 7."
+        }
+      ],
+      "R7": [
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 2,
+          "rationale": "The branch describing address validation failure ends with the system returning suggestions but does not specify a clear outcome such as termination, return to a step, or explicit failure state."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 1,
+      "R2": 0,
+      "R3": 0,
+      "R4": 0,
+      "R5": 1,
+      "R6": 1,
+      "R7": 1
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 3 (address-validation failure) ends with 'the Core web service returns address correction suggestions.' It does not state whether those suggestions are presented to the customer, how the customer acts on them, whether the flow continues at main flow step 6, or whether the use case terminates/hands off. The branch therefore lacks a clear exit outcome required by exceptionflow_exit_coverage. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow step 3 ends with 'Core web service returns address correction suggestions' after address validation fails. It does not specify whether the suggestions are presented to the customer, whether the customer accepts/rejects them, whether the flow returns to main_flow step 6, or whether the save is blocked. This is an intermediate service response, not a terminal failure state, a return to a main-flow step, or a clear handoff. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 1 says it diverges from main flow step 4 and describes that step as 'where the customer clicks Save Changes after entering the new credit card payment method'. In main_flow, step 4 only displays the 'My New Payment Method' section; clicking Save Changes after entering details is step 7 (or at least after step 6), so the referenced divergence point does not match an existing main flow step.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 3 ends with 'Core web service returns address correction suggestions' but does not state what happens after that: whether the suggestions are shown to the customer, whether the customer accepts/rejects, whether the flow returns to main flow step 6, or whether the change is blocked. This is not a clear terminal state or handoff.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "The customer can change account settings (for example, payment method) while their account is in rev",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "Evidence [EC-G-006] explicitly states that the goal of the use case is to allow a customer to change account settings while in review status, directly supporting every material proposition in the claim.",
+      "slot_fit_rationale": "The claim describes the primary actor's intended objective and success outcome, which is the precise definition of the 'goal' slot in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-G-006",
+        "EC-G-014"
+      ],
+      "evidence_modalities": {
+        "EC-G-006": "card_text",
+        "EC-G-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The customer is logged in and authenticated as a member, and the customer's account is in review sta",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PC-010], which establishes the login/authentication requirement, and Evidence [EC-PC-004] combined with its relevance note, which establishes the 'Review Status' condition as a necessary state before the interaction.",
+      "slot_fit_rationale": "The claim describes the specific system states (authenticated session and account status) that must hold true before the use case interaction can begin, which aligns precisely with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-004",
+        "EC-PC-010"
+      ],
+      "evidence_modalities": {
+        "EC-PC-004": "card_text",
+        "EC-PC-010": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "The customer accesses the 'Change Membership Account Information' page via the 'My Account' link in ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-TR-004] and [EC-TR-006], which collectively identify both the 'Customer History' page and the 'My Account' link navigation as triggers for accessing account settings.",
+      "slot_fit_rationale": "The claim explicitly describes the specific user actions and entry points that initiate the use case interaction, which is the precise definition of the trigger slot.",
+      "evidence_refs": [
+        "EC-TR-004",
+        "EC-TR-006",
+        "EC-TR-014"
+      ],
+      "evidence_modalities": {
+        "EC-TR-004": "card_text",
+        "EC-TR-006": "card_text",
+        "EC-TR-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The system displays the 'Change Membership Account Information' page with a personalized welcome mes",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-MF-013], which explicitly states that the system displays a personalized welcome message and the page headline 'Change Membership Account Information' as part of the main flow.",
+      "slot_fit_rationale": "The claim describes a specific system response (displaying UI elements) within the normal successful interaction path, which correctly belongs in the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-013"
+      ],
+      "evidence_modalities": {
+        "EC-MF-013": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The system displays the customer's current payment method information, including radio buttons for P",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "Evidence [EC-MF-013] explicitly states that the system displays the user's current payment method information including radio buttons for PayPal, Amazon, and credit cards as part of the main flow.",
+      "slot_fit_rationale": "The claim describes a specific system response (displaying UI elements) within the normal successful interaction path, which constitutes a main flow step in Cockburn's use-case structure.",
+      "evidence_refs": [
+        "EC-MF-013",
+        "EC-MF-014"
+      ],
+      "evidence_modalities": {
+        "EC-MF-013": "card_text",
+        "EC-MF-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The system requires the customer to enter their current password before any other account changes ar",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the system requirement for password entry but does not explicitly state that the customer performs the action of entering it, leaving the behavioral proposition unsupported.",
+      "slot_fit_rationale": "The claim describes a mandatory step in the normal successful interaction path where the user provides credentials to proceed, which fits the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-001"
+      ],
+      "evidence_modalities": {
+        "EC-MF-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The system displays a 'My New Payment Method' section with radio buttons for PayPal, Amazon Payments",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the display of radio buttons and conditional credit card fields, but it does not specify that the options are explicitly labeled 'PayPal' and 'Amazon Payments' within the 'My New Payment Method' section (it only mentions links to sign up for them), making the specific label claim unsupported.",
+      "slot_fit_rationale": "The claim describes a system response (displaying UI elements) during the normal successful interaction path, which correctly belongs in the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-013"
+      ],
+      "evidence_modalities": {
+        "EC-MF-013": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The customer selects the new payment method by choosing the appropriate radio button under 'My New P",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence states the customer selects a new option but does not specify the UI mechanism (radio button), making that specific detail unsupported.",
+      "slot_fit_rationale": "The claim describes a specific user action within the normal successful interaction path, which aligns with the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-015"
+      ],
+      "evidence_modalities": {
+        "EC-MF-015": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The customer enters the required details for the selected payment method, such as new credit card in",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that the customer enters required details such as card number or address fields after selecting a payment method, which directly supports the claim's description of entering payment information.",
+      "slot_fit_rationale": "The claim describes a core user action (entering data) within the normal successful interaction path, which aligns with the definition of a main_flow step in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-MF-015"
+      ],
+      "evidence_modalities": {
+        "EC-MF-015": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The customer clicks the 'SAVE CHANGES' button to submit the updated account information.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-MF-004] and [EC-MF-012], which explicitly state that the customer clicks the 'SAVE CHANGES' button to submit updated information.",
+      "slot_fit_rationale": "The claim describes a specific user action within the normal successful interaction path, which aligns with the definition of a main_flow step in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-MF-004",
+        "EC-MF-012",
+        "EC-MF-015"
+      ],
+      "evidence_modalities": {
+        "EC-MF-004": "card_text",
+        "EC-MF-012": "card_text",
+        "EC-MF-015": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "Upon saving the changes, the system returns the customer to the My Account page.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-MF-013] step (5) and corroborated by [EC-MF-009] and [EC-MF-029], which state that the system returns the user to the My Account page upon saving changes.",
+      "slot_fit_rationale": "The claim describes a specific system response action within the canonical success sequence of the interaction, which constitutes a main flow step in Cockburn's use-case structure.",
+      "evidence_refs": [
+        "EC-MF-009",
+        "EC-MF-013",
+        "EC-MF-029"
+      ],
+      "evidence_modalities": {
+        "EC-MF-009": "card_text",
+        "EC-MF-013": "card_text",
+        "EC-MF-029": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "A customer whose account is in Review Status can have the account removed from that status by updati",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-AF-011], which confirms the behavior and outcome of removing Review Status via credit card update, and Evidence [EC-MF-013], which establishes Step 4 as the 'Save Changes' action in the main flow.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch that resolves a specific condition (Review Status) while pursuing the same general success outcome, which aligns with the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-011",
+        "EC-MF-013"
+      ],
+      "evidence_modalities": {
+        "EC-AF-011": "card_text",
+        "EC-MF-013": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Divergence from main flow step 3: If the customer does not provide the correct current password, the",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence states that the current password is required before changes are allowed, but it does not explicitly state that providing an *incorrect* password prevents the change (as opposed to simply not proceeding until a correct one is entered), nor does it explicitly define the system's specific blocking behavior as an exception response rather than just a precondition check.",
+      "slot_fit_rationale": "The claim describes a failure condition (incorrect password) and the system's resulting restriction, which substantively fits the role of an exception flow handling a validation error.",
+      "evidence_refs": [
+        "EC-EF-013",
+        "EC-EF-015"
+      ],
+      "evidence_modalities": {
+        "EC-EF-013": "card_text",
+        "EC-EF-015": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Divergence from main flow step 2: If the customer's default payment method is a credit card on file ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-001], which confirms the condition (expired credit card), the system response (DIV layer with gray-out and prompt), and the user navigation options ('Yes' to edit page, 'No' to home page).",
+      "slot_fit_rationale": "The claim describes an abnormal condition (expired payment method) that interrupts the main flow and provides specific handling paths, which correctly fits the definition of an exception_flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-EF-001"
+      ],
+      "evidence_modalities": {
+        "EC-EF-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Divergence from main flow step 6: If address validation fails for a new or edited customer address, ",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports that the Core web service returns address correction suggestions for new or edited addresses, but it does not explicitly state that this occurs specifically upon 'validation failure' (as opposed to being part of the standard validation response) nor does it support the specific structural claim of diverging from 'main flow step 6'.",
+      "slot_fit_rationale": "The claim describes a system response to an error condition (address validation failure), which substantively fits the definition of an exception flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-EF-004",
+        "EC-EF-012"
+      ],
+      "evidence_modalities": {
+        "EC-EF-004": "card_text",
+        "EC-EF-012": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The customer has saved changes to the selected account setting (e.g., payment method).",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence states the system returns the customer to the My Account page upon saving, but does not explicitly confirm that the changes were successfully saved or persisted as claimed.",
+      "slot_fit_rationale": "The claim describes the resulting state of the data (saved changes) after the interaction completes, which is a substantive postcondition.",
+      "evidence_refs": [
+        "EC-PO-007"
+      ],
+      "evidence_modalities": {
+        "EC-PO-007": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The system returns the customer to the My Account page after the changes are saved.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by all three evidence units which state that the system returns the customer/user to the My Account page upon saving changes.",
+      "slot_fit_rationale": "The claim describes the immediate system state and navigation outcome following the successful completion of the action, which aligns with the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-002",
+        "EC-PO-005",
+        "EC-PO-007"
+      ],
+      "evidence_modalities": {
+        "EC-PO-002": "card_text",
+        "EC-PO-005": "card_text",
+        "EC-PO-007": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

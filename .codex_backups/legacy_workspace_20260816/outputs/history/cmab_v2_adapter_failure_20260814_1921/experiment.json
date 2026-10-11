@@ -1,0 +1,220 @@
+{
+  "paths": {
+    "output": "outputs",
+    "images": "data/images",
+    "pdfs": "data",
+    "mineru": "data/mineru",
+    "text_work": "data/text_pipeline",
+    "image_work": "data/image_pipeline_jobs",
+    "vendor_cache": "data/vendor_cache",
+    "embedder": "/home/dzy/.cache/huggingface/hub/models--jinaai--jina-embeddings-v4/snapshots/853c867b65b749f3c3c72a06868140d842e04f06",
+    "linucb": "models/linucb_model.pkl",
+    "pca": "models/pca_assets.pkl"
+  },
+  "services": {
+    "milvus": {
+      "uri": "http://127.0.0.1:19530",
+      "token": ""
+    },
+    "text_milvus": {
+      "collection_template": "{project}_text"
+    },
+    "minio": {
+      "endpoint": "127.0.0.1:9000",
+      "access_key_env": "minioadmin",
+      "secret_key_env": "minioadmin",
+      "bucket": "a-bucket",
+      "secure": false
+    }
+  },
+  "models": {
+    "llm": {
+      "base_url": "https://api.deepseek.com",
+      "model_name": "deepseek-v4-flash",
+      "api_key_env": "AUCMR_DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": null
+    },
+    "lvlm": {
+      "base_url": "https://llm-u6ipwkhac0q3wwtf.cn-beijing.maas.aliyuncs.com/compatible-mode/v1",
+      "model_name": "qwen3.5-plus",
+      "api_key_env": "AUCMR_DASHSCOPE_API_KEY",
+      "temperature": null,
+      "max_tokens": null
+    },
+    "nli_judge": {
+      "base_url": "https://api.deepseek.com",
+      "model_name": "deepseek-v4-pro",
+      "api_key_env": "AUCMR_DEEPSEEK_API_KEY",
+      "temperature": 0.0,
+      "max_tokens": null
+    },
+    "nli_vision_judge": {
+      "base_url": "https://llm-u6ipwkhac0q3wwtf.cn-beijing.maas.aliyuncs.com/compatible-mode/v1",
+      "model_name": "qwen3.5-plus",
+      "api_key_env": "AUCMR_DASHSCOPE_API_KEY",
+      "temperature": 0.0,
+      "max_tokens": null
+    },
+    "l2_judge": {
+      "base_url": "https://api.deepseek.com",
+      "model_name": "deepseek-v4-pro",
+      "api_key_env": "AUCMR_DEEPSEEK_API_KEY",
+      "temperature": 0.0,
+      "max_tokens": null
+    }
+  },
+  "runtime": {
+    "embedder_device": "cuda",
+    "hf_endpoint": "https://hf-mirror.com",
+    "log_level": "INFO",
+    "fail_fast": true
+  },
+  "algorithm": {
+    "topk": 5,
+    "max_slot_rounds": 3,
+    "page_count_ratio": 0.3,
+    "answer_convergence_repeat": 1,
+    "queries_per_round": 2,
+    "overlap_rate_max": 0.65,
+    "query_retry_max": 2,
+    "min_novel_pages_per_round": 2,
+    "max_page_chain": 3,
+    "goal_min_evidence_cards": 1,
+    "goal_min_confidence": 0.3,
+    "goal_cohesion_max_span_ratio": 0.4,
+    "dra_max_rounds": 2,
+    "active_card_budget": {
+      "goal": 6,
+      "primary_actor": 4,
+      "preconditions": 12,
+      "trigger": 6,
+      "main_flow": 24,
+      "alternative_flow": 16,
+      "exception_flow": 16,
+      "postconditions": 12
+    },
+    "n_arms": 10,
+    "n_features": 11,
+    "beta": 0.5
+  },
+  "baselines": {
+    "lvlm_direct": {
+      "composite_count": 8,
+      "columns": 3,
+      "page_width": 640,
+      "jpeg_quality": 90,
+      "gutter": 4
+    },
+    "vdocrag": {
+      "base_model": "microsoft/Phi-3-vision-128k-instruct",
+      "retriever_lora": "NTT-hil-insight/VDocRetriever-Phi3-vision",
+      "device": "cuda:0",
+      "dtype": "bfloat16",
+      "attn_implementation": "eager",
+      "local_files_only": false,
+      "pooling": "eos",
+      "normalize": true,
+      "image_size": 1344,
+      "top_k": 5
+    },
+    "vidorag": {
+      "candidate_top_k": 10,
+      "max_rounds": 5
+    }
+  },
+  "text_pipeline": {
+    "language": "English",
+    "chunk_size": 800,
+    "chunk_overlap": 0,
+    "strict_images": true,
+    "embedding_dimension": 128,
+    "insert_batch_rows": 2000,
+    "coarse_candidates": 100,
+    "mineru": {
+      "command": "mineru",
+      "source": null,
+      "extra_args": ["-b", "pipeline"]
+    },
+    "documents": [
+      {
+        "project": "jtvauctions",
+        "file_name": "jtvauctions",
+        "pdf": "data/jtvauctions.pdf",
+        "page_images": "data/images/jtvauctions",
+        "parse_dir": "data/mineru/jtvauctions"
+      }
+    ]
+  },
+  "experiment": {
+    "methods": [
+      "AUCMR (CREST full)",
+      "CREST w/o cross-slot",
+      "LVLM-Direct",
+      "TextRAG-Elaborate",
+      "VDocRAG-Elaborate",
+      "ViDoRAG-Elaborate",
+      "ReAct-Elaborate"
+    ],
+    "use_cases": [
+      {
+        "project": "jtvauctions",
+        "file_names": ["jtvauctions"],
+        "actor": "Auctioneer",
+        "use_case": "Schedule Auction Event"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": ["jtvauctions"],
+        "actor": "Customer Service Representative",
+        "use_case": "Resolve Customer Inquiry"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": ["jtvauctions"],
+        "actor": "Customer",
+        "use_case": "Browse and Search Products"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": ["jtvauctions"],
+        "actor": "Customer",
+        "use_case": "Complete Checkout and Payment"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": ["jtvauctions"],
+        "actor": "Customer",
+        "use_case": "Manage Account Settings"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": ["jtvauctions"],
+        "actor": "Customer",
+        "use_case": "Monitor Auction Status"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": ["jtvauctions"],
+        "actor": "Customer",
+        "use_case": "Register Customer Account"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": ["jtvauctions"],
+        "actor": "Manager",
+        "use_case": "Manage Product Inventory"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": ["jtvauctions"],
+        "actor": "Customer",
+        "use_case": "Place Bid on Auction Item"
+      }
+    ],
+    "evaluation": {
+      "run_nli": true,
+      "run_l2_judge": true
+    }
+  }
+}

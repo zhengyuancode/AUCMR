@@ -1,0 +1,469 @@
+{
+  "use_case_name": "Retract a Confirmed Bid",
+  "actor": "Customer",
+  "scg": 100.0,
+  "nli_g": 61.53846153846154,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 0.0,
+  "avg_cards": 19,
+  "total_claims": 13,
+  "total_cited_claims": 13,
+  "total_entailed_claims": 8,
+  "pre_constraint_claim_count": 13,
+  "pre_constraint_cited_claim_count": 13,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 107,
+  "cross_page_cards": 0,
+  "referenced_cards": 19,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 1,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 2,
+      "cited_claim_count": 2,
+      "evidence_ref_count": 3,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 3,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 3,
+      "cited_claim_count": 3,
+      "evidence_ref_count": 8,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 2,
+      "cited_claim_count": 2,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 3,
+      "cited_claim_count": 3,
+      "evidence_ref_count": 5,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R3": 2,
+    "R5": 1
+  },
+  "l3_violations_pre_repair": {
+    "R1": 0,
+    "R2": 0,
+    "R3": 2,
+    "R4": 0,
+    "R5": 1,
+    "R6": 0,
+    "R7": 0
+  },
+  "l2_violations": {
+    "R1": 0,
+    "R2": 1,
+    "R3": 0,
+    "R4": 0,
+    "R5": 0,
+    "R6": 1,
+    "R7": 1
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R2": [
+        {
+          "rule_id": "R2",
+          "rule_name": "mainflow_trigger_continuity",
+          "offending_slot": "main_flow",
+          "offending_claim_index": 0,
+          "rationale": "Main Flow step 1 duplicates the Trigger action instead of continuing from it, creating a logical redundancy rather than a sequential flow."
+        }
+      ],
+      "R6": [
+        {
+          "rule_id": "R6",
+          "rule_name": "altflow_diverge_points",
+          "offending_slot": "alternative_flow",
+          "offending_claim_index": 0,
+          "rationale": "The alternative flow describes accessing 'My Bid History', which is a distinct navigation path not present in or diverging from Main Flow Step 1 (clicking a button in a popup)."
+        }
+      ],
+      "R7": [
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 0,
+          "rationale": "The branch states the system does not allow cancellation but lacks an explicit terminal failure state description (e.g., error message displayed, action rejected) to satisfy exit coverage."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 0,
+      "R2": 1,
+      "R3": 0,
+      "R4": 0,
+      "R5": 0,
+      "R6": 1,
+      "R7": 1
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] The main flow describes the Customer clicking Cancel on a bid-confirmation popup and the system dismissing the popup without placing the bid. The postconditions, however, require an already-placed/confirmed bid to be cancelled and removed from active bidding, and one postcondition depends on retraction being performed via My Bid History. Since the main flow never reaches a placed-bid state and never goes through My Bid History, it cannot reach those postconditions. This is a scenario mismatch between 'declining a bid confirmation popup' and 'retracting a confirmed bid'. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] Preconditions state the Bid Confirmation popup is asking for final verification before the bid is committed, so clicking Cancel means the bid is never placed. Main Flow step 3 nevertheless has the system update the bid status to 'Order Cancelled' in Bid History, and Postcondition 3 repeats that state. There is no placed/confirmed bid to cancel, so the postcondition is not reachable from the pre-commit cancellation flow.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[goal_mainflow_alignment] The goal is to retract/cancel a confirmed bid. Main flow step 1 instead has the Customer click 'Cancel'/'No' in a bid confirmation popup — an action that refuses the confirmation rather than retracting an already confirmed bid — and step 3 completes with an 'Order Cancelled' status, shifting from bid retraction to order cancellation. The main flow therefore does not describe the actor action required by the goal.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "The Customer wants to retract (cancel) a bid.",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence defines 'Bid Retraction' generally as cancellation by a 'bidder', but does not explicitly support the specific actor label 'Customer' used in the claim.",
+      "slot_fit_rationale": "The claim describes the primary actor's intended objective (canceling a bid), which correctly corresponds to the 'goal' slot in a Cockburn use case.",
+      "evidence_refs": [
+        "EC-G-000"
+      ],
+      "evidence_modalities": {
+        "EC-G-000": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The Customer has initiated a bid (e.g., chosen to bid $75) and the Bid Confirmation popup is current",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PC-000] and [EC-PC-004], which both describe the specific system state where the Customer has placed a bid and the confirmation popup is displayed.",
+      "slot_fit_rationale": "The claim describes the necessary state that must hold before the interaction (bid retraction) can begin, which aligns with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-000",
+        "EC-PC-004"
+      ],
+      "evidence_modalities": {
+        "EC-PC-000": "card_text",
+        "EC-PC-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The bid is for an auction that is currently active; bid retraction is the cancellation of a bid by a",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly defines bid retraction as occurring 'during an auction', which directly supports the claim's definition and implies the precondition that the auction is active.",
+      "slot_fit_rationale": "The claim establishes the necessary state (an active auction) required before the interaction can validly begin, which aligns with the role of a precondition.",
+      "evidence_refs": [
+        "EC-PC-006"
+      ],
+      "evidence_modalities": {
+        "EC-PC-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "The use case is triggered when the Customer clicks the 'Cancel' (or 'No') button in the bid confirma",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence: EC-TR-000 and EC-TR-005 confirm the specific UI actions (clicking 'No' or 'Cancel') in the popup, while EC-TR-003 confirms the context of retracting a bid during an auction.",
+      "slot_fit_rationale": "The claim describes the specific user action and event that initiates the use case interaction, which is the precise definition of the trigger slot.",
+      "evidence_refs": [
+        "EC-TR-000",
+        "EC-TR-003",
+        "EC-TR-005"
+      ],
+      "evidence_modalities": {
+        "EC-TR-000": "card_text",
+        "EC-TR-003": "card_text",
+        "EC-TR-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer clicks the 'Cancel' (or 'No') button in the bid confirmation popup to retract/cancel th",
+      "entailment": "entailment",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "entailed_but_slot_misfit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-TR-005] (clicking 'Cancel') and Evidence [EC-TR-000] (clicking 'No' on the popup), which collectively confirm the specific user action described.",
+      "slot_fit_rationale": "The evidence units explicitly identify this action as the 'trigger' that initiates the use case, meaning it belongs in the trigger slot rather than the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-001",
+        "EC-TR-000",
+        "EC-TR-003",
+        "EC-TR-005"
+      ],
+      "evidence_modalities": {
+        "EC-MF-001": "card_text",
+        "EC-TR-000": "card_text",
+        "EC-TR-003": "card_text",
+        "EC-TR-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The system dismisses the bid confirmation popup dialog.",
+      "entailment": "neutral",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the dismissal action only under the specific condition of clicking 'CANCEL', whereas the claim omits this material precondition, making it an unsupported generalization.",
+      "slot_fit_rationale": "The described behavior is a response to a cancellation action, which constitutes an alternative or exception flow rather than the normal successful main flow.",
+      "evidence_refs": [
+        "EC-MF-000"
+      ],
+      "evidence_modalities": {
+        "EC-MF-000": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The system confirms the cancellation and updates the bid's status to 'Order Cancelled' in the Custom",
+      "entailment": "entailment",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "entailed_but_slot_misfit",
+      "rationale": "The evidence collectively supports that the system updates the bid status to 'Order Cancelled' in the history view as a result of successful retraction.",
+      "slot_fit_rationale": "The claim describes the resulting state of the data (status update) after the interaction completes, which constitutes a postcondition rather than an interactive step in the main flow.",
+      "evidence_refs": [
+        "EC-MF-011",
+        "EC-PO-008",
+        "EC-PO-015"
+      ],
+      "evidence_modalities": {
+        "EC-MF-011": "card_text",
+        "EC-PO-008": "card_text",
+        "EC-PO-015": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 1: The Customer accesses the 'My Bid History' page and retracts the confirmed bid",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is supported by the union of evidence: EC-AF-018 confirms the alternative path via 'My Bid History' for retracting a confirmed bid, and EC-AF-016 establishes that 'Bid Retraction' is defined as 'Bid Cancellation'.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch (retracting a bid via history) that achieves the same success outcome as the main flow, which correctly fits the definition of an alternative_flow.",
+      "evidence_refs": [
+        "EC-AF-016",
+        "EC-AF-018"
+      ],
+      "evidence_modalities": {
+        "EC-AF-016": "card_text",
+        "EC-AF-018": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Exception to Step 1: If the Customer attempts to retract a bid that has already been placed, the sys",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-010], which explicitly states that the system does not allow bid cancellation and instructs bidders to 'bid carefully'.",
+      "slot_fit_rationale": "The claim describes a specific error condition (attempting to retract a placed bid) and the system's refusal response, which constitutes a substantive exception flow in a Cockburn use case.",
+      "evidence_refs": [
+        "EC-EF-010"
+      ],
+      "evidence_modalities": {
+        "EC-EF-010": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Exception to Step 1: If an emergency circumstance exists, a Customer Service Representative can remo",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports that CSRs can remove bids in emergencies, but it does not explicitly state that this action causes the Customer's self-service retraction to terminate or define the specific exit handoff described in the claim.",
+      "slot_fit_rationale": "The claim describes an abnormal condition (emergency) and a deviation from the standard actor path (CSR intervention), which correctly characterizes an exception flow.",
+      "evidence_refs": [
+        "EC-EF-007"
+      ],
+      "evidence_modalities": {
+        "EC-EF-007": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The bid confirmation popup is dismissed and the Customer is returned to the Product Details Page wit",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that after clicking 'CANCEL', the system dismisses the popup and returns the user to the Product Details Page without placing the bid, which directly supports every material proposition in the claim.",
+      "slot_fit_rationale": "The claim describes the immediate state of the system and user interface (popup dismissed, user on specific page, no bid placed) resulting from the interaction, which constitutes a substantive postcondition.",
+      "evidence_refs": [
+        "EC-PO-001"
+      ],
+      "evidence_modalities": {
+        "EC-PO-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The retracted bid is cancelled and removed from the active bidding process; the system state reflect",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PO-007] and [EC-PO-013], which collectively state that the bid is cancelled/removed, the system reflects it was not placed, and the auction remains active.",
+      "slot_fit_rationale": "The claim describes the resulting system state and effects after the successful completion of the bid retraction interaction, which aligns precisely with the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-007",
+        "EC-PO-013"
+      ],
+      "evidence_modalities": {
+        "EC-PO-007": "card_text",
+        "EC-PO-013": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "In the Bid History table, the retracted bid is listed with status 'Order Cancelled' (or removed from",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PO-013], which confirms the bid is cancelled and removed from active bidding, and Evidence [EC-PO-015], which confirms the Bid History table displays the status 'Order Cancelled'.",
+      "slot_fit_rationale": "The claim describes the resulting system state and persistent data display after the successful completion of the use case, which aligns with the definition of postconditions.",
+      "evidence_refs": [
+        "EC-PO-013",
+        "EC-PO-015"
+      ],
+      "evidence_modalities": {
+        "EC-PO-013": "card_text",
+        "EC-PO-015": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

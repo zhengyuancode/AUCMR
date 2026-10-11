@@ -1,0 +1,1528 @@
+{
+  "use_case_name": "Publish Air and Surface Surveillance Tracks",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To share a common track number and shift R² between C² JUs for real-time air or surface tracks, ensuring automatic decorrelation capability is present.",
+          "evidence_refs": [
+            "EC-G-001",
+            "EC-G-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001",
+        "EC-G-000"
+      ],
+      "scope_contract": {
+        "goal_statement": "To share a common track number and shift R² between C² JUs for real-time air or surface tracks, ensuring automatic decorrelation capability is present.",
+        "canonical_success_scenario": "A C2 JU initiates and publishes a real-time air or surface surveillance track; the track is automatically decorrelated and is published as a common track with a common track number and R² shared between the relevant C2 JUs.",
+        "start_boundary": "A C2 JU is ready to initiate and publish a real-time air or surface surveillance track.",
+        "success_boundary": "A real-time air or surface surveillance track is published as a common track, automatically decorrelated, with a common track number and R² shared between C2 JUs.",
+        "in_scope_actions": [
+          "Initiating real-time air or surface surveillance tracks",
+          "Publishing air or surface surveillance tracks",
+          "Applying automatic decorrelation capability",
+          "Sharing a common track number and R² between C2 JUs"
+        ],
+        "excluded_adjacent_actions": [
+          "Upstream sensor data generation",
+          "Post-publication common-track updates",
+          "Administrative track-number management",
+          "Correlation/decorrelation algorithm configuration"
+        ],
+        "variant_dimensions": [
+          "Air tracks vs surface tracks",
+          "Which relevant C2 JUs share the common track number and R² in a given instance"
+        ],
+        "evidence_refs": [
+          "EC-G-001",
+          "EC-G-000"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has Active status, either initially or after returning to Active status from Inactive status or TDS Failure.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ]
+        },
+        {
+          "content": "The C2 JU is capable of assuming R² for air, surface, or land tracks.",
+          "evidence_refs": [
+            "EC-PC-001"
+          ]
+        },
+        {
+          "content": "The C2 JU has an automatic decorrelation capability for real-time air or surface tracks.",
+          "evidence_refs": [
+            "EC-G-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000",
+        "EC-PC-001",
+        "EC-G-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "active-status",
+          "r2-assumption-capability",
+          "decorrelation-capability"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "When a C2 JU recognizes that two tracks being reported to the interface are eligible for correlation, it initiates action, either automatically or manually, to resolve the dual designation.",
+          "evidence_refs": [
+            "EC-TR-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU performs sufficient reporting responsibility checks, correlation, and data registration before transmitting air or surface tracks.",
+          "evidence_refs": [
+            "EC-MF-011",
+            "EC-TR-000"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU commences correlation by comparing locally derived sensor data (position, velocity, and altitude) with the data received on the interface, and determines that the two tracks are eligible for automatic correlation because none of the automatic-correlation restrictions apply: there is no Identity difference constituting a conflict, no different Mode II codes while the local Mode II code is current, the tracks are not both locally derived real-time tracks, and neither track has a Strength field greater than 1.",
+          "evidence_refs": [
+            "EC-MF-003",
+            "EC-MF-005"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The C2 JU transmits the new local track if no tentative correlation is found on the initial test, if it tentatively correlates on the initial test but fails correlation on the next test, or if an operator action has selectively released the new local track for reporting. When a C2 JU recognizes that two tracks being reported to the interface are eligible for correlation, that JU shall initiate action, either automatically or manually, to resolve the dual designation. After successful decorrelation execution (automatic or manual), the system establishes the original local track (TN A) as a remote track.",
+          "evidence_refs": [
+            "EC-PO-003",
+            "EC-PO-002",
+            "EC-PO-006",
+            "EC-TR-001",
+            "EC-AF-020",
+            "EC-PO-009"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The recognizing C2 JU transmits the J7.2 Correlation message to all other C2 JUs requesting correlation of the two tracks; the message identifies the track number to be retained and the track number to be dropped.",
+          "evidence_refs": [
+            "EC-MF-013",
+            "EC-MF-014"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The receiving C2 JUs accept the requested correlation.",
+          "evidence_refs": [
+            "EC-MF-015"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "For each common local track, upon receipt of each J2 or J3 message on the track, the C2 JU performs automatic decorrelation tests.",
+          "evidence_refs": [
+            "EC-MF-007"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "On receipt of 2(1-5,1) consecutive remote track reports in which the remote track falls outside a distance of 1.5(1.0-2.0,0.1) times the maximum correlation distance, the C2 JU decorrelates the common local track.",
+          "evidence_refs": [
+            "EC-MF-008"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU automatically tests the local track once for correlation against remote tracks, not common local tracks.",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "Because the automatic correlation test fails, the C2 JU assigns a new track number (TN B) to the local track.",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 9,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU waits at least 12 seconds before reporting the air or surface track.",
+          "evidence_refs": [
+            "EC-MF-012"
+          ],
+          "step_number": 10,
+          "is_cross_page": true
+        },
+        {
+          "content": "A JU assumes R² on a common track if its local TQ at the time of transmission exceeds the received TQ by 2 or more; it relinquishes R² for a real-time Air, Surface (Maritime) or Land (Ground) track upon reception of a remote track report in which remote TQ is greater than the local TQ, or upon reception of a remote track report for the track which contains a TQ equal to the local TQ from a JU whose STN is greater than the local STN.",
+          "evidence_refs": [
+            "EC-MF-024",
+            "EC-MF-030"
+          ],
+          "step_number": 11,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU reports TN B in a J3.2 or J3.3 message with an initial ID of Pending.",
+          "evidence_refs": [
+            "EC-MF-009",
+            "EC-MF-001"
+          ],
+          "step_number": 12,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU establishes TN A as a remote track.",
+          "evidence_refs": [
+            "EC-MF-010"
+          ],
+          "step_number": 13,
+          "is_cross_page": true
+        },
+        {
+          "content": "After decorrelation, the C2 JU reports the PPLI Track Number and Identity Indicator field and the PPLI IFF/SIF Indicator field as No Statement.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 14
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-011",
+        "EC-TR-000",
+        "EC-MF-003",
+        "EC-MF-005",
+        "EC-PO-003",
+        "EC-PO-002",
+        "EC-PO-006",
+        "EC-TR-001",
+        "EC-AF-020",
+        "EC-PO-009",
+        "EC-MF-013",
+        "EC-MF-014",
+        "EC-MF-015",
+        "EC-MF-007",
+        "EC-MF-008",
+        "EC-MF-009",
+        "EC-MF-012",
+        "EC-MF-024",
+        "EC-MF-030",
+        "EC-MF-001",
+        "EC-MF-010",
+        "EC-MF-002"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2: When an ID difference cannot be automatically accepted or rejected, the C2 JU presents the differences to operators for evaluation, and these may require voice coordination for final resolution; if the ID conflict is resolved, the C2 JU tests the TN to be retained for decorrelation once before executing the correlation.",
+          "evidence_refs": [
+            "EC-AF-023",
+            "EC-AF-006"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 3: When a track is reported in a J7.4 message with both a TN greater than 07777 and a TN less than 07777, the C2 JU uses the TN greater than 07777 in the comparison for dropped-track selection.",
+          "evidence_refs": [
+            "EC-AF-008"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 4: If the J7.2 message is received with the RV field set to value 3 (requesting automatic acceptance and indicating manual initiation), the receiving C2 JU automatically accepts the correlation unless the tracks have different E/C or an existing conflict, one track is simulated and the other live, or both tracks are locally derived real-time tracks.",
+          "evidence_refs": [
+            "EC-AF-029",
+            "EC-AF-028"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 4: If the J7.2 RV field allows it (value 0), the receiving C2 JU may originate a reverse correlation request.",
+          "evidence_refs": [
+            "EC-AF-027"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges from Step 6: The C2 JU may also perform manual decorrelation, and may require manual confirmation of automatic decorrelations.",
+          "evidence_refs": [
+            "EC-AF-020"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Diverges from Step 6: When TN A is controlled by own unit (subject of a J10.5 Controlling Unit Report message), the C2 JU does not automatically decorrelate; if manual decorrelation is performed, it alerts the operator to report termination of control of TN A if appropriate, and reports commencement of control of TN B using J10.5 only if initiated by operator action.",
+          "evidence_refs": [
+            "EC-AF-011"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 6: When TN A has been paired by own unit (subject of a J10.6 message), the C2 JU decorrelates the track and alerts an operator as a cue to terminate the pairing on TN A and initiate pairing on TN B if appropriate.",
+          "evidence_refs": [
+            "EC-AF-012"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 7: If an operator action has been taken that selectively releases a new local track for reporting, the C2 JU transmits it regardless of the results of correlation testing.",
+          "evidence_refs": [
+            "EC-AF-000"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 7: As a system option, the C2 JU includes common local tracks in the automatic correlation tests performed upon receipt of remote real-time messages or prior to transmission of a local track.",
+          "evidence_refs": [
+            "EC-AF-001"
+          ],
+          "step_number": 9,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-023",
+        "EC-AF-006",
+        "EC-AF-008",
+        "EC-AF-029",
+        "EC-AF-028",
+        "EC-AF-027",
+        "EC-AF-020",
+        "EC-AF-011",
+        "EC-AF-012",
+        "EC-AF-000",
+        "EC-AF-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "ALT-ID-conflict-operator-resolution",
+          "ALT-retained-TN-decorrelation-test-once",
+          "ALT-dual-TN-dropped-track-comparison",
+          "ALT-RV3-automatic-acceptance",
+          "ALT-reverse-correlation-request",
+          "ALT-manual-decorrelation",
+          "ALT-controlled-track-manual-decorrelation",
+          "ALT-paired-track-decorrelation",
+          "ALT-operator-release-bypass",
+          "ALT-common-local-tracks-test-option"
+        ],
+        "missing_aspects": [
+          "No evidence-supported alternative paths describe the explicit R² shift between C2 JUs; the mechanics of shifting R² remain uncovered by the supplied evidence."
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2: If either track has the Strength field set to 'No Statement', the restriction on automatic correlation based on Strength values does not apply. (Exit: the Strength-based automatic-correlation restriction is waived; the correlation request is not rejected on Strength grounds.)",
+          "evidence_refs": [
+            "EC-EF-006"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 2: If a JU without R² receives a J3 message or a J7.5 (ACT=1) message with remote IFF/SIF data differing from locally held data, an IFF/SIF data conflict alert is raised as required in Table 4.7-5, and the operator may attempt resolution by updating local data manually or verifying automatic inputs; initiating J7.5 (ACT=0) Clear IFF/SIF; initiating J7.5 (ACT=1) IFF/SIF Difference Report; changing local data to agree with remote data except in the case of Mode II code; decorrelating the local data from the remote data (assigning a new track number to local data); or clearing the operator alert. (Exit: operator resolution of the difference.)",
+          "evidence_refs": [
+            "EC-EF-043",
+            "EC-EF-029"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 4: If the Retained TN and the Dropped TN will decorrelate (i.e., when subjected to the decorrelation criteria once, the tracks would decorrelate), the correlation shall be rejected. (Exit: correlation request rejected.)",
+          "evidence_refs": [
+            "EC-EF-009"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 4: When a correlation request is rejected for manual correlation, the JU originating the request shall provide an operator alert as a cue to conduct voice coordination. (Exit: operator voice coordination.)",
+          "evidence_refs": [
+            "EC-EF-039"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges from Step 4: If the J7.2 message has the RV field set to value 1, a reverse correlation request would be rejected. (Exit: reverse correlation request rejected.)",
+          "evidence_refs": [
+            "EC-EF-026"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Diverges from Step 10: If a J7.0 (ACT=0) message is received, the R² unit is declared inactive; a C2 JU receiving that message on a locally held track shall assume R² at the next opportunity to transmit the track if local reporting eligibility remains and a remote report has not been received on that track. (Exit: receiving JU assumes R² at the next transmission opportunity.)",
+          "evidence_refs": [
+            "EC-EF-014",
+            "EC-EF-022"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 10: If the C2 JU has not received a remote report on a locally held air or surface (maritime) track for approximately 40 seconds, it assumes R² for that track. (Exit: C2 JU assumes R².)",
+          "evidence_refs": [
+            "EC-EF-021"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-006",
+        "EC-EF-043",
+        "EC-EF-029",
+        "EC-EF-009",
+        "EC-EF-039",
+        "EC-EF-026",
+        "EC-EF-014",
+        "EC-EF-022",
+        "EC-EF-021"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-strength-no-statement-exception",
+          "EF-IFF-SIF-conflict-resolution",
+          "EF-retained-dropped-decorrelation-rejection",
+          "EF-manual-correlation-rejection-alert",
+          "EF-reverse-correlation-rejection",
+          "EF-R2-inactivation-assumption",
+          "EF-R2-timeout-assumption"
+        ],
+        "missing_aspects": [
+          "The IFF/SIF conflict-resolution branch does not specify an explicit return/continuation step after an operator resolution action; the card documents the manual actions but not the subsequent main-flow resumption.",
+          "The main_flow does not contain an explicit R²-shift step, so the R²-related exception branches are anchored to the track-reporting step (Step 10) by inference rather than to a dedicated R²-shift step."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "After successful decorrelation execution (automatic or manual), the original local track (TN A) is established as a remote track.",
+          "evidence_refs": [
+            "EC-PO-009"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the automatic correlation test fails during execution, the system assigns a new track number (TN B) to the local track and reports TN B in a J3.2 or J3.3 message with an initial ID of Pending.",
+          "evidence_refs": [
+            "EC-PO-010"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "A new local track that correlates with another track on each of the first two correlation tests is correlated and held as a common local track. A JU transmits a track report for such a track only when it has R² for that track. A JU assumes R² on a common track if its local TQ at the time of transmission exceeds the received TQ by 2 or more, and relinquishes R² upon reception of a remote track report in which remote TQ is greater than the local TQ, or equal TQ from a JU whose STN is greater than the local STN.",
+          "evidence_refs": [
+            "EC-PO-004",
+            "EC-MF-023",
+            "EC-MF-024",
+            "EC-MF-030"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The decorrelation rules thereafter apply to the track.",
+          "evidence_refs": [
+            "EC-PO-005"
+          ]
+        },
+        {
+          "content": "A new local track is transmitted when no tentative correlation is found on the initial test, when it tentatively correlates on the initial test but fails correlation on the next test, or when an operator has selectively released it for reporting.",
+          "evidence_refs": [
+            "EC-PO-003",
+            "EC-PO-002",
+            "EC-PO-006"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-009",
+        "EC-PO-010",
+        "EC-PO-004",
+        "EC-MF-023",
+        "EC-MF-024",
+        "EC-MF-030",
+        "EC-PO-005",
+        "EC-PO-003",
+        "EC-PO-002",
+        "EC-PO-006"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 2 ends with only 'Exit: operator resolution of the difference' and does not specify whether the branch returns to a main-flow step, terminates, or hands off to a defined continuation. The claim also lists 'clearing the operator alert' as an operator action, which is not a resolution and has no subsequent outcome, so the branch lacks a clear exit. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 2 (index 1) lists possible operator resolution actions for the IFF/SIF conflict alert and ends with 'Exit: operator resolution of the difference', but it does not specify an explicit return to a main_flow step, a handoff, or a terminal failure/prevention state. After resolution, the branch does not state whether correlation processing resumes at Step 2/3 or whether the exception flow simply ends.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 8 says 'Diverges from Step 7', but the claim describes an operator action that selectively releases a new local track for reporting so the C2 JU transmits it regardless of correlation-test results. Main_flow Step 7 is about decorrelating a common local track after consecutive remote track reports outside the maximum correlation distance; the selective-release condition is part of main_flow Step 3. The divergence point is logically unrelated to Step 7.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 9 says 'Diverges from Step 7', but the claim describes a system option to include common local tracks in automatic correlation tests upon receipt of remote real-time messages or prior to transmission. Main_flow Step 7 is about automatic decorrelation after out-of-distance remote reports; Step 8 is the step that limits automatic correlation tests to remote tracks, not common local tracks. The alternative branch is a direct alternative to Step 8 (or Step 6), not Step 7.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "trigger",
+        "main_flow",
+        "postconditions"
+      ],
+      "inconsistency_hints": [
+        "The Trigger states that reporting responsibility checks, correlation, and data registration have already been performed before the dual-designation resolution action begins, but Main Flow Step 1 has the C2 JU performing those same checks as its first action. This creates a temporal contradiction/restart: the scenario cannot both start after those checks and then perform them as the first step.",
+        "The Goal requires shifting/sharing R² between C2 JUs, but the Main Flow contains no step or evidence for an R²-shift. It only covers reporting-responsibility checks, correlation/decorrelation, and publishing the track (Steps 1-12). The R²-related exception branches are anchored to Step 10 only by inference, leaving the Main Flow incomplete against the Goal's success condition.",
+        "The use case goal and preconditions establish R² sharing/shifting as part of the success boundary, but the postconditions do not state that R² has been shifted/shared between C2 JUs. The main flow J7.2 correlation steps cover common track number sharing and decorrelation, but the R²-shift success outcome is not evidenced or reached in the vertical chain, so the required end state is incomplete.",
+        "The Trigger and Postcondition 0 permit a manual correlation/decorrelation path (manual initiation for dual designation and manual decorrelation resulting in TN A becoming remote), but the Main Flow only describes automatic correlation (steps 2-4) and automatic decorrelation tests/results (steps 5-8). No manual/operator-executed branch is present, so the manual postcondition is not reasonably reachable.",
+        "Postcondition 4 (0-based claim 4) says a new local track is transmitted when no tentative correlation is found on the initial test, when it tentatively correlates but fails the next test, or when an operator selectively releases it. The Main Flow only reaches the 'automatic correlation test fails' case (steps 8-11) and never models the no-tentative-correlation or operator-release reporting cases, so this postcondition is not reachable."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 135,
+    "cross_page_cards": 38,
+    "modalities": {
+      "text": 130,
+      "table": 5
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2767.949,
+    "lvlm_seconds": 211.233,
+    "llm_seconds": 2554.802,
+    "lvlm_retry_calls": 0,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "judge_calls": 0,
+    "llm_calls": 20.0,
+    "lvlm_calls": 18.0,
+    "cards_collected": 112,
+    "cards_referenced": 46,
+    "evidence_reused": true,
+    "reused_card_count": 112,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/milstd6016b_sec4/C2_JU_Publish_Air_and_Surface_Surveillance_Tracks-evidence.json",
+    "dra_elapsed_seconds": 1571.331,
+    "dra_lvlm_seconds": 99.756,
+    "dra_llm_seconds": 1469.694,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_seconds": 0.0,
+    "dra_judge_calls": 0,
+    "dra_llm_calls": 13,
+    "dra_lvlm_calls": 11
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "To share a common track number and shift R² between C² JUs for real-time air or surface tracks, ensuring automatic decorrelation capability is present.",
+            "evidence_refs": [
+              "EC-G-001",
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU has Active status, either initially or after returning to Active status from Inactive status or TDS Failure.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          },
+          {
+            "content": "The C2 JU is capable of assuming R² for air, surface, or land tracks.",
+            "evidence_refs": [
+              "EC-PC-001"
+            ]
+          },
+          {
+            "content": "The C2 JU has an automatic decorrelation capability for real-time air or surface tracks.",
+            "evidence_refs": [
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-PC-000",
+          "EC-PC-001"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "When a C2 JU recognizes that two tracks being reported to the interface are eligible for correlation, it initiates action, either automatically or manually, to resolve the dual designation.",
+            "evidence_refs": [
+              "EC-TR-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU performs sufficient reporting responsibility checks, correlation, and data registration before transmitting air or surface tracks.",
+            "evidence_refs": [
+              "EC-MF-011",
+              "EC-TR-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU commences correlation by comparing locally derived sensor data (position, velocity, and altitude) with the data received on the interface, and determines that the two tracks are eligible for automatic correlation because none of the automatic-correlation restrictions apply: there is no Identity difference constituting a conflict, no different Mode II codes while the local Mode II code is current, the tracks are not both locally derived real-time tracks, and neither track has a Strength field greater than 1.",
+            "evidence_refs": [
+              "EC-MF-003",
+              "EC-MF-005"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The C2 JU transmits the new local track if no tentative correlation is found on the initial test, if it tentatively correlates on the initial test but fails correlation on the next test, or if an operator action has selectively released the new local track for reporting. When a C2 JU recognizes that two tracks being reported to the interface are eligible for correlation, that JU shall initiate action, either automatically or manually, to resolve the dual designation. After successful decorrelation execution (automatic or manual), the system establishes the original local track (TN A) as a remote track.",
+            "evidence_refs": [
+              "EC-PO-003",
+              "EC-PO-002",
+              "EC-PO-006",
+              "EC-TR-001",
+              "EC-AF-020",
+              "EC-PO-009"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The recognizing C2 JU transmits the J7.2 Correlation message to all other C2 JUs requesting correlation of the two tracks; the message identifies the track number to be retained and the track number to be dropped.",
+            "evidence_refs": [
+              "EC-MF-013",
+              "EC-MF-014"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The receiving C2 JUs accept the requested correlation.",
+            "evidence_refs": [
+              "EC-MF-015"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "For each common local track, upon receipt of each J2 or J3 message on the track, the C2 JU performs automatic decorrelation tests.",
+            "evidence_refs": [
+              "EC-MF-007"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "On receipt of 2(1-5,1) consecutive remote track reports in which the remote track falls outside a distance of 1.5(1.0-2.0,0.1) times the maximum correlation distance, the C2 JU decorrelates the common local track.",
+            "evidence_refs": [
+              "EC-MF-008"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "The C2 JU automatically tests the local track once for correlation against remote tracks, not common local tracks.",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "Because the automatic correlation test fails, the C2 JU assigns a new track number (TN B) to the local track.",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 9
+          },
+          {
+            "content": "The C2 JU waits at least 12 seconds before reporting the air or surface track.",
+            "evidence_refs": [
+              "EC-MF-012"
+            ],
+            "step_number": 10
+          },
+          {
+            "content": "A JU assumes R² on a common track if its local TQ at the time of transmission exceeds the received TQ by 2 or more; it relinquishes R² for a real-time Air, Surface (Maritime) or Land (Ground) track upon reception of a remote track report in which remote TQ is greater than the local TQ, or upon reception of a remote track report for the track which contains a TQ equal to the local TQ from a JU whose STN is greater than the local STN.",
+            "evidence_refs": [
+              "EC-MF-024",
+              "EC-MF-030"
+            ],
+            "step_number": 11
+          },
+          {
+            "content": "The C2 JU reports TN B in a J3.2 or J3.3 message with an initial ID of Pending.",
+            "evidence_refs": [
+              "EC-MF-009",
+              "EC-MF-001"
+            ],
+            "step_number": 12
+          },
+          {
+            "content": "The C2 JU establishes TN A as a remote track.",
+            "evidence_refs": [
+              "EC-MF-010"
+            ],
+            "step_number": 13
+          },
+          {
+            "content": "After decorrelation, the C2 JU reports the PPLI Track Number and Identity Indicator field and the PPLI IFF/SIF Indicator field as No Statement.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 14
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 2: When an ID difference cannot be automatically accepted or rejected, the C2 JU presents the differences to operators for evaluation, and these may require voice coordination for final resolution; if the ID conflict is resolved, the C2 JU tests the TN to be retained for decorrelation once before executing the correlation.",
+            "evidence_refs": [
+              "EC-AF-023",
+              "EC-AF-006"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 3: When a track is reported in a J7.4 message with both a TN greater than 07777 and a TN less than 07777, the C2 JU uses the TN greater than 07777 in the comparison for dropped-track selection.",
+            "evidence_refs": [
+              "EC-AF-008"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 4: If the J7.2 message is received with the RV field set to value 3 (requesting automatic acceptance and indicating manual initiation), the receiving C2 JU automatically accepts the correlation unless the tracks have different E/C or an existing conflict, one track is simulated and the other live, or both tracks are locally derived real-time tracks.",
+            "evidence_refs": [
+              "EC-AF-029",
+              "EC-AF-028"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 4: If the J7.2 RV field allows it (value 0), the receiving C2 JU may originate a reverse correlation request.",
+            "evidence_refs": [
+              "EC-AF-027"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 6: The C2 JU may also perform manual decorrelation, and may require manual confirmation of automatic decorrelations.",
+            "evidence_refs": [
+              "EC-AF-020"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges from Step 6: When TN A is controlled by own unit (subject of a J10.5 Controlling Unit Report message), the C2 JU does not automatically decorrelate; if manual decorrelation is performed, it alerts the operator to report termination of control of TN A if appropriate, and reports commencement of control of TN B using J10.5 only if initiated by operator action.",
+            "evidence_refs": [
+              "EC-AF-011"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Diverges from Step 6: When TN A has been paired by own unit (subject of a J10.6 message), the C2 JU decorrelates the track and alerts an operator as a cue to terminate the pairing on TN A and initiate pairing on TN B if appropriate.",
+            "evidence_refs": [
+              "EC-AF-012"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "Diverges from Step 7: If an operator action has been taken that selectively releases a new local track for reporting, the C2 JU transmits it regardless of the results of correlation testing.",
+            "evidence_refs": [
+              "EC-AF-000"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "Diverges from Step 7: As a system option, the C2 JU includes common local tracks in the automatic correlation tests performed upon receipt of remote real-time messages or prior to transmission of a local track.",
+            "evidence_refs": [
+              "EC-AF-001"
+            ],
+            "step_number": 9
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 2: If either track has the Strength field set to 'No Statement', the restriction on automatic correlation based on Strength values does not apply. (Exit: the Strength-based automatic-correlation restriction is waived; the correlation request is not rejected on Strength grounds.)",
+            "evidence_refs": [
+              "EC-EF-006"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 2: If a JU without R² receives a J3 message or a J7.5 (ACT=1) message with remote IFF/SIF data differing from locally held data, an IFF/SIF data conflict alert is raised as required in Table 4.7-5, and the operator may attempt resolution by updating local data manually or verifying automatic inputs; initiating J7.5 (ACT=0) Clear IFF/SIF; initiating J7.5 (ACT=1) IFF/SIF Difference Report; changing local data to agree with remote data except in the case of Mode II code; decorrelating the local data from the remote data (assigning a new track number to local data); or clearing the operator alert. (Exit: operator resolution of the difference.)",
+            "evidence_refs": [
+              "EC-EF-043",
+              "EC-EF-029"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 4: If the Retained TN and the Dropped TN will decorrelate (i.e., when subjected to the decorrelation criteria once, the tracks would decorrelate), the correlation shall be rejected. (Exit: correlation request rejected.)",
+            "evidence_refs": [
+              "EC-EF-009"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 4: When a correlation request is rejected for manual correlation, the JU originating the request shall provide an operator alert as a cue to conduct voice coordination. (Exit: operator voice coordination.)",
+            "evidence_refs": [
+              "EC-EF-039"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 4: If the J7.2 message has the RV field set to value 1, a reverse correlation request would be rejected. (Exit: reverse correlation request rejected.)",
+            "evidence_refs": [
+              "EC-EF-026"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges from Step 10: If a J7.0 (ACT=0) message is received, the R² unit is declared inactive; a C2 JU receiving that message on a locally held track shall assume R² at the next opportunity to transmit the track if local reporting eligibility remains and a remote report has not been received on that track. (Exit: receiving JU assumes R² at the next transmission opportunity.)",
+            "evidence_refs": [
+              "EC-EF-014",
+              "EC-EF-022"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Diverges from Step 10: If the C2 JU has not received a remote report on a locally held air or surface (maritime) track for approximately 40 seconds, it assumes R² for that track. (Exit: C2 JU assumes R².)",
+            "evidence_refs": [
+              "EC-EF-021"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "After successful decorrelation execution (automatic or manual), the original local track (TN A) is established as a remote track.",
+            "evidence_refs": [
+              "EC-PO-009"
+            ]
+          },
+          {
+            "content": "If the automatic correlation test fails during execution, the system assigns a new track number (TN B) to the local track and reports TN B in a J3.2 or J3.3 message with an initial ID of Pending.",
+            "evidence_refs": [
+              "EC-PO-010"
+            ]
+          },
+          {
+            "content": "A new local track that correlates with another track on each of the first two correlation tests is correlated and held as a common local track. A JU transmits a track report for such a track only when it has R² for that track. A JU assumes R² on a common track if its local TQ at the time of transmission exceeds the received TQ by 2 or more, and relinquishes R² upon reception of a remote track report in which remote TQ is greater than the local TQ, or equal TQ from a JU whose STN is greater than the local STN.",
+            "evidence_refs": [
+              "EC-PO-004",
+              "EC-MF-023",
+              "EC-MF-024",
+              "EC-MF-030"
+            ]
+          },
+          {
+            "content": "The decorrelation rules thereafter apply to the track.",
+            "evidence_refs": [
+              "EC-PO-005"
+            ]
+          },
+          {
+            "content": "A new local track is transmitted when no tentative correlation is found on the initial test, when it tentatively correlates on the initial test but fails correlation on the next test, or when an operator has selectively released it for reporting.",
+            "evidence_refs": [
+              "EC-PO-003",
+              "EC-PO-002",
+              "EC-PO-006"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-monotonic-atomic-dra-v5-balanced",
+  "artifact_revision_id": "60f8da1d654e483c96d3ee5bf0ced21f"
+}

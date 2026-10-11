@@ -1,0 +1,809 @@
+{
+  "use_case_name": "Retract a Confirmed Bid",
+  "actor": "Customer",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Customer wants to cancel a bid during an auction.",
+          "evidence_refs": [
+            "EC-G-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Customer wants to cancel a bid during an auction.",
+        "canonical_success_scenario": "Customer cancels a confirmed bid during the auction.",
+        "start_boundary": "Customer has a confirmed bid and initiates its retraction during the auction.",
+        "success_boundary": "The confirmed bid has been cancelled.",
+        "in_scope_actions": [
+          "Cancel/retract a confirmed bid during an auction"
+        ],
+        "excluded_adjacent_actions": [
+          "Confirming or placing a bid",
+          "Payment or checkout after a bid",
+          "Post-auction settlement",
+          "Accepting a 2nd-chance offer"
+        ],
+        "variant_dimensions": [],
+        "evidence_refs": [
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Customer has a confirmed bid on an item in an auction that is currently active (the auction has not yet ended).",
+          "evidence_refs": [
+            "EC-PC-000",
+            "EC-PC-009",
+            "EC-PC-013"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000",
+        "EC-PC-009",
+        "EC-PC-013"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-confirmed-bid-active-auction",
+          "user_authentication",
+          "preconditions",
+          "bid-retraction eligibility conditions",
+          "system_context"
+        ],
+        "missing_aspects": [
+          "specific bid-retraction eligibility conditions (auction bids may not be cancelled in general)",
+          "preconditions"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Customer attempts to cancel a bid during an auction.",
+          "evidence_refs": [
+            "EC-TR-004",
+            "EC-TR-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-004",
+        "EC-TR-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-initiate-cancel",
+          "trigger-during-auction",
+          "trigger-confirmed-bid",
+          "trigger",
+          "explicit trigger event for retracting a confirmed bid after auction has started"
+        ],
+        "missing_aspects": [
+          "explicit trigger event for retracting a confirmed bid after auction has started"
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow"
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "coverage_state": {
+        "covered_aspect_ids": [],
+        "missing_aspects": [
+          "legal alternative-flow branches that diverge from a specified main-flow step and still reach the successful postcondition",
+          "alternative_flow for bid retraction"
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the Customer attempts to retract a confirmed bid, the system rejects the attempt because auction bids may not be cancelled; the retraction is not performed and the confirmed bid remains in effect.",
+          "evidence_refs": [
+            "EC-EF-003",
+            "EC-EF-014"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If a bid retraction is not possible because the auction has ended or the bid was already superseded by a higher bid, the system displays an error message to the Customer indicating that the bid cannot be retracted.",
+          "evidence_refs": [
+            "EC-EF-016"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The system prevents bid retraction if the user is currently the highest bidder on an item.",
+          "evidence_refs": [
+            "EC-EF-002"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-003",
+        "EC-EF-014",
+        "EC-EF-016",
+        "EC-EF-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-general-non-cancellable",
+          "EF-auction-ended-or-superseded",
+          "EF-high-bidder-block",
+          "EF-time-window-expiration",
+          "EF-system-rejection-response",
+          "explicit exception conditions specific to bid retraction (auction ended, bid superseded)",
+          "system response messages for failed retraction attempts",
+          "exception_outcome_for_non_payment",
+          "explicit exception conditions for bid retraction (fairness/shill prevention)",
+          "system limitations preventing recovery/notification after retraction",
+          "exception_flow for bid retraction",
+          "explicit exception conditions specific to bid retraction"
+        ],
+        "missing_aspects": [
+          "main_flow is not defined, so exception branches cannot be bound to a specific main-flow step number; main_flow should be extended with a bid-retraction validation step",
+          "post-rejection continuation or recovery behavior after a failed retraction is not documented",
+          "retry or recovery behavior after retraction failure",
+          "specific UI error messages displayed to the user",
+          "post-rejection continuation or recovery behavior",
+          "explicit_exception_conditions_specific_to_bid_retraction",
+          "system_response_messages_or_error_codes_for_failed_retraction_attempts",
+          "retry_or_recovery_behavior_after_retraction_failure",
+          "explicit exception conditions specific to bid retraction",
+          "system response messages or error codes for failed retraction attempts",
+          "explicit exception conditions specific to bid retraction (e.g., auction ended, bid already superseded, time window expired)",
+          "exception_flow for bid retraction",
+          "time window expiration as an explicit exception condition",
+          "The specific UI indicator ('You are the high bidder') cited as evidence for this state is not included in the claim."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The confirmed bid is cancelled and removed from effect.",
+          "evidence_refs": [
+            "EC-PO-002"
+          ]
+        },
+        {
+          "content": "The retracted bid is removed from the item's current bidding history.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "If the retracted bid was the displayed high bid, the displayed high bidder is updated to reflect the next highest valid bid.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-002",
+        "EC-PO-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postcondition-bid-cancelled",
+          "postcondition-bid-removed-from-history",
+          "postcondition-high-bidder-updated",
+          "exception_conditions_for_bid_retraction",
+          "system_response_to_failed_retraction",
+          "high_bidder_block",
+          "observable system state after successful bid retraction (next bidder becomes theoretical winner)",
+          "limitations on downstream effects (no automated notification or status update)"
+        ],
+        "missing_aspects": [
+          "explicit postcondition describing system state after successful bid retraction",
+          "whether bid is removed from active bids list upon successful retraction",
+          "confirmation message or UI indicator shown to user after successful retraction",
+          "whether bid is removed from active bids list",
+          "whether user’s bidding status or history is updated to reflect retraction",
+          "any visual or data-level confirmation shown to user post-retraction",
+          "postconditions for bid retraction use case",
+          "system state after successful bid retraction (e.g., bid removed from auction, bidder status updated)",
+          "confirmation of retraction to user or system logs",
+          "any downstream effects on auction visibility or bidding history",
+          "immediate observable system state after successful bid retraction",
+          "confirmation message or UI indicator that bid was retracted",
+          "update to auction status or bidder list reflecting removal of retracted bid",
+          "persistence of retraction in system records",
+          "observable system state after successful bid retraction (e.g., bid marked as retracted, removed from auction, customer released from obligation)",
+          "UI or data persistence confirmation following successful retraction",
+          "any downstream state changes directly resulting from successful retraction within scope",
+          "whether bid is removed from active bids list or marked as retracted",
+          "update to user’s bidding status or history reflecting retraction",
+          "downstream effects on auction visibility or bidder list"
+        ]
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "goal_evidence_missing",
+      "slot": "main_flow",
+      "detail": "Goal-alignment gate rejected all available evidence as describing adjacent (non-goal) processes. Missing: ['main_flow: step-by-step interaction sequence for successfully retracting/cancelling a confirmed bid during an active auction', 'evidence of any system-supported mechanism that removes or cancels a confirmed bid before auction end']",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "no_evidence",
+      "slot": "main_flow",
+      "detail": "No evidence found for slot 'main_flow'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No evidence found for slot 'alternative_flow'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The trigger initiates cancellation of a bid, but the preconditions only state that the customer has a confirmed bid in an active auction. They do not establish that this bid is actually retractable under the auction rules, despite the domain note that auction bids generally may not be cancelled. (atomic grounding: candidate remains incomplete (Evidence that the Customer's confirmed bid specifically satisfies the system's bid-retraction eligibility conditions; the cited cards do not define or verify those conditions for a particular bid.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The main_flow slot is empty, so there is no step 1 that continues from the trigger 'The Customer attempts to cancel a bid during an auction', and no subsequent actions that could lead to the postconditions. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[actor_mainflow_presence] The main_flow slot is empty/undefined, so the Primary Actor 'Customer' does not appear in any main-flow step. This same empty main_flow also prevents goal_mainflow_alignment from being satisfied, because the goal 'The Customer wants to cancel a bid during an auction' has no main-flow behavior to align with. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The main_flow slot is empty, so there is no step 1 that continues from the trigger 'The Customer attempts to cancel a bid during an auction', and no subsequent actions that could lead to the postconditions.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The trigger initiates cancellation of a bid, but the preconditions only state that the customer has a confirmed bid in an active auction. They do not establish that this bid is actually retractable under the auction rules, despite the domain note that auction bids generally may not be cancelled.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[actor_mainflow_presence] The main_flow slot is empty/undefined, so the Primary Actor 'Customer' does not appear in any main-flow step. This same empty main_flow also prevents goal_mainflow_alignment from being satisfied, because the goal 'The Customer wants to cancel a bid during an auction' has no main-flow behavior to align with.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 83,
+    "cross_page_cards": 0,
+    "modalities": {
+      "diagram": 10,
+      "table": 18,
+      "text": 55
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 3224.815,
+    "llm_retry_calls": 0,
+    "llm_calls": 48.0,
+    "lvlm_retry_calls": 0,
+    "lvlm_calls": 134.0,
+    "lvlm_seconds": 734.736,
+    "judge_seconds": 0.0,
+    "judge_calls": 0,
+    "llm_seconds": 2467.614,
+    "cards_collected": 83,
+    "cards_referenced": 12,
+    "dra_elapsed_seconds": 213.957,
+    "dra_llm_retry_calls": 0,
+    "dra_llm_calls": 4,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_calls": 0,
+    "dra_lvlm_seconds": 0.0,
+    "dra_judge_seconds": 0.0,
+    "dra_judge_calls": 0,
+    "dra_llm_seconds": 213.952
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer wants to cancel a bid during an auction.",
+            "evidence_refs": [
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer has a confirmed bid on an item in an auction that is currently active (the auction has not yet ended).",
+            "evidence_refs": [
+              "EC-PC-000",
+              "EC-PC-009",
+              "EC-PC-013"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer attempts to cancel a bid during an auction.",
+            "evidence_refs": [
+              "EC-TR-004",
+              "EC-TR-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-MF-000",
+          "EC-MF-006",
+          "EC-MF-013",
+          "EC-TR-000"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "If the Customer attempts to retract a confirmed bid, the system rejects the attempt because auction bids may not be cancelled; the retraction is not performed and the confirmed bid remains in effect.",
+            "evidence_refs": [
+              "EC-EF-003",
+              "EC-EF-014"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If a bid retraction is not possible because the auction has ended or the bid was already superseded by a higher bid, the system displays an error message to the Customer indicating that the bid cannot be retracted.",
+            "evidence_refs": [
+              "EC-EF-016"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system prevents bid retraction if the user is currently the highest bidder on an item.",
+            "evidence_refs": [
+              "EC-EF-002"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The confirmed bid is cancelled and removed from effect.",
+            "evidence_refs": [
+              "EC-PO-002"
+            ]
+          },
+          {
+            "content": "The retracted bid is removed from the item's current bidding history.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "If the retracted bid was the displayed high bid, the displayed high bidder is updated to reflect the next highest valid bid.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "900da249c1f24ba7b8180f669c868266",
+  "ablation": {
+    "key": "full",
+    "method": "AUCMR (CREST full)",
+    "directory": "full",
+    "seed": null,
+    "slot_order": null,
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "ablation_source": {
+    "kind": "validated_production_artifact",
+    "source_directory": "outputs/aucmr_full",
+    "source_mtime_ns": {
+      "main": 1786896834650630265,
+      "evidence": 1786896834651620409
+    }
+  },
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4"
+}

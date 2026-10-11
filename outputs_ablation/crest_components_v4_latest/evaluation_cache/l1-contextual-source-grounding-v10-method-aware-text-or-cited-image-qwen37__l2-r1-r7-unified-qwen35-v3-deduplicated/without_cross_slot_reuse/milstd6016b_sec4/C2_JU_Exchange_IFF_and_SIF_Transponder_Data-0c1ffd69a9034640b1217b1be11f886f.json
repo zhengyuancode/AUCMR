@@ -1,0 +1,798 @@
+{
+  "use_case_name": "Exchange IFF and SIF Transponder Data",
+  "actor": "C2 JU",
+  "scg": 100.0,
+  "nli_g": 69.23076923076923,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 42.51497005988024,
+  "avg_cards": 39,
+  "total_claims": 26,
+  "total_cited_claims": 26,
+  "total_entailed_claims": 18,
+  "pre_constraint_claim_count": 26,
+  "pre_constraint_cited_claim_count": 26,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 167,
+  "cross_page_cards": 71,
+  "referenced_cards": 39,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 1,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 4,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 5,
+      "cited_claim_count": 5,
+      "evidence_ref_count": 9,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 8,
+      "cited_claim_count": 8,
+      "evidence_ref_count": 11,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 6,
+      "cited_claim_count": 6,
+      "evidence_ref_count": 8,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 4,
+      "cited_claim_count": 4,
+      "evidence_ref_count": 8,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R3": 3,
+    "R2": 1,
+    "R7": 1,
+    "R1": 2
+  },
+  "l3_violations_pre_repair": {
+    "R1": 2,
+    "R2": 1,
+    "R3": 3,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 1
+  },
+  "l2_violations": {
+    "R1": 0,
+    "R2": 1,
+    "R3": 1,
+    "R4": 1,
+    "R5": 0,
+    "R6": 1,
+    "R7": 1
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R2": [
+        {
+          "rule_id": "R2",
+          "rule_name": "mainflow_trigger_continuity",
+          "offending_slot": "main_flow",
+          "offending_claim_index": 0,
+          "rationale": "Step 1 merely restates the precondition of data availability rather than logically continuing from the specific trigger events (No Data status or Update Request) defined in the Trigger."
+        }
+      ],
+      "R3": [
+        {
+          "rule_id": "R3",
+          "rule_name": "mainflow_postconditions_reachability",
+          "offending_slot": "postconditions",
+          "offending_claim_index": 2,
+          "rationale": "Postcondition [2] describes the result of a J7.5 (ACT=0) Clear message, which is neither mentioned in the Trigger nor executed in the Main Flow, making it unreachable in this scenario."
+        }
+      ],
+      "R4": [
+        {
+          "rule_id": "R4",
+          "rule_name": "actor_mainflow_presence",
+          "offending_slot": "main_flow",
+          "offending_claim_index": 0,
+          "rationale": "The Primary Actor 'C2 JU' is not present in step [0], which uses passive voice ('is available') without mentioning the actor."
+        }
+      ],
+      "R6": [
+        {
+          "rule_id": "R6",
+          "rule_name": "altflow_diverge_points",
+          "offending_slot": "alternative_flow",
+          "offending_claim_index": 6,
+          "rationale": "Alternative Flow step [6] (step 7) diverges from Main Flow Step 4, but describes an action ('sets... to No Data status') triggered by receiving a message, which is logically unrelated to the periodic transmission behavior described in Main Flow Step 4."
+        }
+      ],
+      "R7": [
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 1,
+          "rationale": "Exception Flow step [1] (step 2) describes a response by receiving units but lacks an explicit exit condition or outcome for the C2 JU branch."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 0,
+      "R2": 1,
+      "R3": 1,
+      "R4": 1,
+      "R5": 0,
+      "R6": 1,
+      "R7": 1
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] The main flow only describes J3.1/J3.5 (PTI=0) transmission of available/valid IFF/SIF data. It contains no J7.5 actions, so the postconditions for the J7.5 (ACT=2) Update Request, J7.5 (ACT=0) Clear, and J7.5 (ACT=1) Difference Report cannot be reached from the main flow. The same omission also leaves the J7.5 ACT=2 trigger path without a continuing main-flow sequence. (atomic grounding: candidate remains incomplete (Evidence supports No Data reported as zeroes in the applicable Mode Code field, but does not specify transmission for 'required modes' lacking data.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The trigger includes the case where an R² unit reports a No Data status (value 0) for one or more required IFF/SIF modes, but the main flow only handles available/valid data and never reports No Data (value 0) in J3.1/J3.5 messages. (atomic grounding: candidate remains incomplete (Evidence supports No Data reported as zeroes in the applicable Mode Code field, but does not specify transmission for 'required modes' lacking data.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 4 lists six manual resolution actions and exits with 'the operator selects one of the available manual resolution actions', but it does not state what happens after that selection. It does not return to a main_flow step, terminate/hand off, or reach a terminal failure/prevention state, so the branch lacks a clear outcome. (atomic grounding: candidate remains incomplete (Explicit exception-flow exit/recovery after the operator selects one of the manual resolution actions; cited cards support the available actions and some action effects but not an exit step.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The Trigger and Main Flow require C2 JU to be the R² reporting unit for the IFF/SIF exchange; Main Flow step 2 confirms that R² responsibility is a pre-existing role assignment rather than an outcome of the flow. Preconditions only assert IFF/SIF data availability, so this required external state is missing. (atomic grounding: candidate remains incomplete (Evidence does not identify the C2 JU specifically as the R² holder; 'C2 JU' is unsupported added detail.; The phrase 'track/report' is not supported by the cited card, which refers to reporting IFF/SIF data in conjunction with periodic surveillance data.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] Postconditions assert successful J7.5 (ACT=0) Clear and J7.5 (ACT=1) Difference Report exchanges, but neither the Trigger nor the Main Flow includes those messages. The Main Flow only transmits J3.1/J3.5 periodic IFF/SIF data, so these postconditions are unreachable and appear to belong to separate use cases. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] The main flow covers periodic J3.1/J3.5 transmission, No Data handling, and J7.5 (ACT=2) update requests, but contains no step that transmits or accepts a J7.5 (ACT=0) Clear IFF/SIF message. Therefore the postcondition that modes have been set to No Data and periodic J3 transmissions cease after an ACT=0 Clear cannot be reached from the narrated behavior.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The trigger (and main flow step 2) require C2 JU to be the unit with R² before it can report IFF/SIF data in J3.1/J3.5 messages, but the Preconditions slot only states that IFF/SIF data is available. The R² role/responsibility is an external state that must already hold for the primary actor to initiate the J3.1/J3.5 exchange path.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "C2 JU transmits available IFF/SIF Modes I, II, and III Codes in J3.1 and J3.5 (PTI=0) messages to ex",
+      "entailment": "entailment",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "entailed_but_slot_misfit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-G-000] and [EC-TR-000], which confirm that C2 JU transmits IFF/SIF Modes I, II, and III Codes in J3.1 and J3.5 messages when available.",
+      "slot_fit_rationale": "The claim describes a specific system action and message format (a main flow step or functional behavior) rather than stating the actor's high-level objective or success outcome required for the goal slot.",
+      "evidence_refs": [
+        "EC-G-000",
+        "EC-TR-000"
+      ],
+      "evidence_modalities": {
+        "EC-G-000": "card_text",
+        "EC-TR-000": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "IFF/SIF data (Modes I, II, and III Codes) are available to the system.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that IFF/SIF data must be available to the system, directly supporting the claim's proposition.",
+      "slot_fit_rationale": "The claim describes a necessary state of data availability that must hold before the interaction can proceed, which aligns with the definition of a precondition.",
+      "evidence_refs": [
+        "EC-PC-000"
+      ],
+      "evidence_modalities": {
+        "EC-PC-000": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "The use case is triggered when IFF/SIF transponder data (Modes I, II, and III Codes) becomes availab",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim's three triggering conditions are directly supported by the union of Evidence [EC-TR-001] (data availability), [EC-TR-004] (R² No Data status), and [EC-TR-005] (operator J7.5 request).",
+      "slot_fit_rationale": "The claim explicitly lists the specific events and actor actions that initiate the use case interaction, which is the precise definition of the trigger slot.",
+      "evidence_refs": [
+        "EC-TR-000",
+        "EC-TR-001",
+        "EC-TR-004",
+        "EC-TR-005"
+      ],
+      "evidence_modalities": {
+        "EC-TR-000": "card_text",
+        "EC-TR-001": "card_text",
+        "EC-TR-004": "card_text",
+        "EC-TR-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "IFF/SIF data (Modes I, II, and III Codes) is available to C2 JU for transmission in J3.1 and J3.5 (P",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence states that data is transmitted when available, but does not explicitly support the claim's specific proposition that the data is 'available to C2 JU' as a distinct state or precondition for that transmission.",
+      "slot_fit_rationale": "The claim describes a core action of transmitting data within the normal successful interaction path, which aligns with the definition of a main flow step.",
+      "evidence_refs": [
+        "EC-MF-003"
+      ],
+      "evidence_modalities": {
+        "EC-MF-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "C2 JU determines that it is the JU with R² and is therefore responsible for reporting IFF/SIF data i",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence establishes the general rule that the JU with R² is responsible for reporting, but it does not provide evidence that C2 JU specifically possesses the R² role in this context.",
+      "slot_fit_rationale": "The claim describes a specific action (determining responsibility and reporting) within the normal successful interaction path, which aligns with the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-013"
+      ],
+      "evidence_modalities": {
+        "EC-MF-013": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "C2 JU transmits the available IFF/SIF Modes I, II, and III Codes in J3.1 and J3.5 (PTI=0) messages.",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the transmission of IFF/SIF data in J3.1 and J3.5 messages but does not specify that 'C2 JU' is the actor performing this action, leaving a material proposition unsupported.",
+      "slot_fit_rationale": "The claim describes a primary action of transmitting data during the normal interaction path, which aligns with the definition of a main flow step.",
+      "evidence_refs": [
+        "EC-MF-003"
+      ],
+      "evidence_modalities": {
+        "EC-MF-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "C2 JU periodically transmits IFF/SIF surveillance data (Modes I, II, and III codes) in J3.1/J3.5 mes",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-MF-005], which explicitly states that the C2 JU transmits IFF/SIF surveillance data periodically in J3.1/J3.5 messages.",
+      "slot_fit_rationale": "The claim describes a specific action performed by the system during the normal successful interaction path, which constitutes a main flow step.",
+      "evidence_refs": [
+        "EC-MF-005"
+      ],
+      "evidence_modalities": {
+        "EC-MF-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "Alternatively, when the R² unit reports a No Data status (value 0) for one or more modes in a requir",
+      "entailment": "entailment",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "entailed_but_slot_misfit",
+      "rationale": "The claim is fully supported by the union of evidence units EC-AF-010, EC-MF-008, EC-MF-019, EC-MF-020, and EC-TR-004, which collectively describe the spontaneous update trigger and the operator-initiated request/response sequence.",
+      "slot_fit_rationale": "The claim explicitly labels the described behaviors as 'Alternatively' and cites an alternative flow evidence unit (EC-AF-010), indicating these are exception or alternative branches rather than steps in the primary success path.",
+      "evidence_refs": [
+        "EC-AF-010",
+        "EC-MF-008",
+        "EC-MF-019",
+        "EC-MF-020",
+        "EC-TR-004"
+      ],
+      "evidence_modalities": {
+        "EC-AF-010": "card_text",
+        "EC-MF-008": "card_text",
+        "EC-MF-019": "card_text",
+        "EC-MF-020": "card_text",
+        "EC-TR-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 3: The C2 JU may transmit a Special Code message (J7.5 with ACT=3) to exchange sp",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-AF-001], which states the C2 JU may transmit a Special Code message to exchange special-meaning codes.",
+      "slot_fit_rationale": "The evidence collector note explicitly identifies this action as an alternative successful path distinct from the main flow, fitting the definition of an alternative_flow.",
+      "evidence_refs": [
+        "EC-AF-001"
+      ],
+      "evidence_modalities": {
+        "EC-AF-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 3: If locally derived IFF/SIF data differs from IFF/SIF data that was being repor",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-AF-017], which explicitly states the condition and required action for reporting locally derived data when it differs from PPLI data.",
+      "slot_fit_rationale": "The claim describes a conditional branch that handles a specific data discrepancy while still pursuing the primary goal of accurate data reporting, which characterizes an alternative flow in Cockburn use-case semantics.",
+      "evidence_refs": [
+        "EC-AF-017"
+      ],
+      "evidence_modalities": {
+        "EC-AF-017": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: Instead of continuing the periodic J3.1/J3.5 report, the C2 JU (initiated by o",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units EC-AF-000, EC-AF-005, and EC-AF-058, which collectively confirm the operator-initiated J7.5 transmission, the specific message parameters, and the receiving units' response.",
+      "slot_fit_rationale": "The claim explicitly describes a divergent path from the main flow (periodic reporting) to an alternative interaction (on-demand request), which aligns with the definition of an alternative_flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-AF-000",
+        "EC-AF-005",
+        "EC-AF-058"
+      ],
+      "evidence_modalities": {
+        "EC-AF-000": "card_text",
+        "EC-AF-005": "card_text",
+        "EC-AF-058": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: Instead of only periodically reporting held data, the C2 JU transmits a J7.5 (",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-AF-004], which confirms the transmission of a J7.5 Difference Report initiated by operator action at any time.",
+      "slot_fit_rationale": "The claim describes a non-standard, operator-initiated branch that diverges from the periodic reporting main flow, which correctly fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-004"
+      ],
+      "evidence_modalities": {
+        "EC-AF-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: In a required J3.XC1 surveillance data report, the R² unit reports a No Data s",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "Evidence [EC-AF-057] directly supports the claim by stating that an alternative flow occurs when the R² unit reports a No Data status and receiving units respond according to the Difference Resolution Matrix.",
+      "slot_fit_rationale": "The claim explicitly describes a divergent path labeled as an 'alternative flow' triggered by a specific condition (No Data status) rather than the main periodic schedule, which fits the definition of an alternative_flow slot.",
+      "evidence_refs": [
+        "EC-AF-009",
+        "EC-AF-057"
+      ],
+      "evidence_modalities": {
+        "EC-AF-009": "card_text",
+        "EC-AF-057": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: Instead of continuing to transmit valid data in the periodic J3 message, a JU ",
+      "entailment": "neutral",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim specifies a divergence from 'Step 4', but the evidence explicitly states the alternative flow diverges from 'main_flow step 2', creating an unsupported material proposition regarding the reference point.",
+      "slot_fit_rationale": "The claim is labeled as an alternative flow, but it contains a material factual error regarding the divergence point (Step 4 vs Step 2) which misrepresents the structural relationship defined in the evidence.",
+      "evidence_refs": [
+        "EC-AF-006"
+      ],
+      "evidence_modalities": {
+        "EC-AF-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: On receipt of a J7.5 (ACT=0) message, the C2 JU automatically sets the designa",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim attributes the action to 'C2 JU' while the evidence states 'all JUs', and introduces an unsupported divergence point ('Step 4') not present in the evidence.",
+      "slot_fit_rationale": "The claim describes a variant behavior triggered by a specific message that alters the normal flow, which substantively fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-008"
+      ],
+      "evidence_modalities": {
+        "EC-AF-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: When an operator receives an IFF/SIF data conflict alert, they may manually up",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-AF-028], which explicitly states that upon receiving an IFF/SIF data conflict alert, the operator may manually update local data or verify automatic inputs.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch for resolving a specific condition (data conflict) while still pursuing the overall success goal, which aligns with the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-028"
+      ],
+      "evidence_modalities": {
+        "EC-AF-028": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from main_flow step 3: If no valid code is currently held for the subject local or remote t",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the definition of the 'No Data' condition and the zero-value reporting, but does not explicitly support the claim's specific procedural assertions that this diverges from 'main_flow step 3' or that the exit action is the transmission of the report.",
+      "slot_fit_rationale": "The claim describes an abnormal condition ('No Data') and its specific handling/reporting outcome, which substantively fits the role of an exception flow in a Cockburn use case.",
+      "evidence_refs": [
+        "EC-EF-025"
+      ],
+      "evidence_modalities": {
+        "EC-EF-025": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from main_flow step 4: If the C2 JU with R² transmits a J3.XC1 message with a 'NO DATA' rep",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-EF-000] and [EC-EF-014], which collectively establish that a 'NO DATA' report triggers a difference resolution response in accordance with the specified matrix.",
+      "slot_fit_rationale": "The claim describes a specific deviation from the normal flow triggered by an exceptional condition ('NO DATA' report) and defines the system's corrective response, which aligns with the definition of an exception flow.",
+      "evidence_refs": [
+        "EC-EF-000",
+        "EC-EF-014"
+      ],
+      "evidence_modalities": {
+        "EC-EF-000": "card_text",
+        "EC-EF-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from main_flow step 4: If C2 JU is a receiving unit and locally entered IFF/SIF data change",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-014], which details the specific conditions (data changes or 'NO DATA' reports) under which a receiving unit initiates a J7.5 Difference Report.",
+      "slot_fit_rationale": "The claim describes an abnormal condition (discrepancy or missing data) and its specific handling response, which constitutes a substantive exception flow diverging from the normal monitoring path.",
+      "evidence_refs": [
+        "EC-EF-014"
+      ],
+      "evidence_modalities": {
+        "EC-EF-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from main_flow step 4: If C2 JU receives an IFF/SIF data conflict alert, the operator shall",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim's list of manual resolution actions and the triggering condition (IFF/SIF data conflict alert) are directly supported by Evidence [EC-EF-007] and [EC-EF-020].",
+      "slot_fit_rationale": "The claim describes specific operator actions taken to handle an abnormal error condition (data conflict), which constitutes a substantive exception flow.",
+      "evidence_refs": [
+        "EC-EF-007",
+        "EC-EF-020"
+      ],
+      "evidence_modalities": {
+        "EC-EF-007": "card_text",
+        "EC-EF-020": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from main_flow step 4: If the C2 JU with R² identifies an ID conflict, the operator is aler",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-016], which explicitly states that upon ID conflict detection, the operator is alerted, reporting continues with the Identity Difference Indicator set to 1, and resolution is manual.",
+      "slot_fit_rationale": "The claim describes a specific error condition (ID conflict) and the system's handling of it (alerting, setting an indicator, requiring manual resolution), which constitutes a substantive exception flow in Cockburn use-case modeling.",
+      "evidence_refs": [
+        "EC-EF-016"
+      ],
+      "evidence_modalities": {
+        "EC-EF-016": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from main_flow step 2: If the C2 JU is a NonR² JU and an IFF/SIF conflict is indicated, it ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-017], which explicitly states that NonR² JUs must inhibit J7.0 transmission upon conflict indication until the Identity Difference Indicator is 0.",
+      "slot_fit_rationale": "The claim describes a conditional error-handling behavior (inhibiting transmission due to a conflict) that diverges from the normal flow, which correctly fits the definition of an exception_flow.",
+      "evidence_refs": [
+        "EC-EF-017"
+      ],
+      "evidence_modalities": {
+        "EC-EF-017": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The IFF/SIF transponder data has been successfully exchanged in the applicable J-series message.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PO-022], which explicitly states that the IFF/SIF transponder data has been successfully exchanged in the applicable J-series message.",
+      "slot_fit_rationale": "The claim describes the terminal observable state after successful completion of the use case, which aligns with the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-010",
+        "EC-PO-022"
+      ],
+      "evidence_modalities": {
+        "EC-PO-010": "card_text",
+        "EC-PO-022": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "Upon successful exchange of IFF/SIF data via a J7.5 (ACT=2) Update Request message, the receiving un",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-PO-008], which explicitly states that receiving units respond by transmitting local data codes upon successful exchange.",
+      "slot_fit_rationale": "The claim describes the immediate system state or effect resulting from the successful completion of the interaction, which aligns with the definition of postconditions.",
+      "evidence_refs": [
+        "EC-PO-008"
+      ],
+      "evidence_modalities": {
+        "EC-PO-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "After successful transmission and acceptance of a J7.5 (ACT=0) Clear IFF/SIF message, the designated",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units EC-PO-017 and EC-PO-023, which explicitly state that upon successful transmission/acceptance of the J7.5 message, modes are set to No Data and periodic J3 transmissions cease.",
+      "slot_fit_rationale": "The claim describes the immediate system state changes (modes set to No Data, transmissions ceased) resulting from the successful completion of the interaction, which defines the postconditions slot.",
+      "evidence_refs": [
+        "EC-PO-002",
+        "EC-PO-004",
+        "EC-PO-017",
+        "EC-PO-023"
+      ],
+      "evidence_modalities": {
+        "EC-PO-002": "card_text",
+        "EC-PO-004": "card_text",
+        "EC-PO-017": "card_text",
+        "EC-PO-023": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "After successful completion of a J7.5 (ACT=1) Difference Report transmission, the reported differenc",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PO-019], which explicitly states that after successful completion of the transmission, the reported difference is communicated to relevant units.",
+      "slot_fit_rationale": "The claim describes the immediate state/effect resulting from the successful completion of the use case, which aligns precisely with the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-019"
+      ],
+      "evidence_modalities": {
+        "EC-PO-019": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

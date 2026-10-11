@@ -1,0 +1,690 @@
+{
+  "use_case_name": "Publish Air and Surface Surveillance Tracks",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To exchange air and surface surveillance tracks on the Link 16 network by providing an optimum exchange of data that is complete, accurate, and timely, while minimizing dual designations.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-001"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has initially achieved Active status, or has returned to Active status from Inactive status or TDS Failure.",
+          "evidence_refs": [
+            "EC-PC-010",
+            "EC-PC-021",
+            "EC-PC-058"
+          ]
+        },
+        {
+          "content": "The C2 JU is configured to transmit surveillance information in the Surveillance Network PG.",
+          "evidence_refs": [
+            "EC-PC-023",
+            "EC-PC-042"
+          ]
+        },
+        {
+          "content": "The C2 JU has correlated local sensor data for the track.",
+          "evidence_refs": [
+            "EC-PC-000",
+            "EC-PC-011",
+            "EC-PC-052"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Track identity is defined and exchangeable according to the relevant specifications.",
+          "evidence_refs": [
+            "EC-PC-009"
+          ]
+        },
+        {
+          "content": "The system interface is configured to provide optimum exchange of data that is complete, accurate, and timely, and minimize dual designations.",
+          "evidence_refs": [
+            "EC-PC-036"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-010",
+        "EC-PC-021",
+        "EC-PC-058",
+        "EC-PC-023",
+        "EC-PC-042",
+        "EC-PC-000",
+        "EC-PC-011",
+        "EC-PC-052",
+        "EC-PC-009",
+        "EC-PC-036"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger"
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "After initially achieving Active status, or after returning to Active status from Inactive status or TDS Failure, the C2 JU performs sufficient reporting responsibility checks, correlation, and data registration. The C2 JU waits a minimum of 12 seconds (for air/surface) or 48 seconds (for land) before beginning transmission.",
+          "evidence_refs": [
+            "EC-MF-012",
+            "EC-MF-013",
+            "EC-PC-059"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The C2 JU receives PPLI track reports with data from another C2 JU or surveillance tracks for which it has Reporting Responsibility (R²). The C2 JU performs correlation and reporting procedures to minimize dual designations and ensure an optimum exchange of data that is complete, accurate, and timely.",
+          "evidence_refs": [
+            "EC-MF-002",
+            "EC-PC-025",
+            "EC-MF-029",
+            "EC-G-001"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU attempts to correlate the received tracks with local tracks. Automatic correlation is inhibited if: (a) local/remote data indicates an Identity (ID) conflict, (b) the tracks have different Mode II codes and the local code is current, (c) both tracks are locally derived real-time tracks, or (d) either track has a Strength field value greater than 1.",
+          "evidence_refs": [
+            "EC-MF-006",
+            "EC-MF-007",
+            "EC-MF-008",
+            "EC-MF-009",
+            "EC-MF-032",
+            "EC-MF-033",
+            "EC-MF-034",
+            "EC-MF-035",
+            "EC-MF-036",
+            "EC-PC-028",
+            "EC-PC-029",
+            "EC-PC-030",
+            "EC-PC-031"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If a correlation is found with a track for which the C2 JU has R² and the Track Numbers (TNs) are different, the C2 JU transmits a J7.2 (RV = 1) Correlation message (Source TN as Retained TN, surveillance TN as Dropped TN), ceases reporting the track, and transmits a J7.0 (ACT = 0) Drop Track message.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a correlation is found with a track for which another C2 JU has R² and the TNs are different, the C2 JU transmits a J7.2 (RV = 1) Correlation message (Source TN as Retained TN, surveillance TN as Dropped TN).",
+          "evidence_refs": [
+            "EC-MF-004"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a correlation is found with a track for which another C2 JU has R² and the TNs are the same, the C2 JU accepts the PPLI information into its surveillance database and disregards the J31 surveillance data on that specific track, unless Geodetic Position values in the PPLI message are below 0, in which case the track number and identity are maintained from the J31.",
+          "evidence_refs": [
+            "EC-MF-005"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "When receiving a J12.6 Target Sorting message from a non-C2 JU, the C2 JU assigns a Target Quality (TQ) value to the track not locally acquired, extrapolating the position to the time of transmission; this step is skipped if the C2 JU has already correlated local sensor data for the track.",
+          "evidence_refs": [
+            "EC-MF-010",
+            "EC-MF-011"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "The C2 JU transmits the air and surface surveillance data in Network PGs using the J3.2 Air Track message and the J3.3 Surface (Maritime) Track message.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-001"
+          ],
+          "step_number": 8
+        },
+        {
+          "content": "The C2 JU completes the correlation processing, reporting responsibility assignment, and data registration, ensuring all correlation outcomes (including R² status and track retention/dropping) are committed to the local surveillance database and the network state is updated prior to the final transmission of surveillance tracks.",
+          "evidence_refs": [
+            "EC-PO-002",
+            "EC-PO-003",
+            "EC-PO-011",
+            "EC-PO-013",
+            "EC-PO-058",
+            "EC-PO-059"
+          ],
+          "step_number": 9,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-012",
+        "EC-MF-013",
+        "EC-PC-059",
+        "EC-MF-002",
+        "EC-PC-025",
+        "EC-MF-029",
+        "EC-G-001",
+        "EC-MF-006",
+        "EC-MF-007",
+        "EC-MF-008",
+        "EC-MF-009",
+        "EC-MF-032",
+        "EC-MF-033",
+        "EC-MF-034",
+        "EC-MF-035",
+        "EC-MF-036",
+        "EC-PC-028",
+        "EC-PC-029",
+        "EC-PC-030",
+        "EC-PC-031",
+        "EC-MF-003",
+        "EC-MF-004",
+        "EC-MF-005",
+        "EC-MF-010",
+        "EC-MF-011",
+        "EC-MF-000",
+        "EC-MF-001",
+        "EC-PO-002",
+        "EC-PO-003",
+        "EC-PO-011",
+        "EC-PO-013",
+        "EC-PO-058",
+        "EC-PO-059"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 3 (Correlation Inhibition due to Data Conflicts): If automatic correlation is inhibited because local/remote data indicates an Identity (ID) conflict, the tracks have different Mode II codes (with local code current), both tracks are locally derived real-time tracks, or either track has a Strength field value greater than 1, the C2 JU does not merge the tracks. Instead, it reports the track using the rules for dual designations to minimize the duration and occurrence of the dual designation. This path may be overridden by initialization parameters or operator capability to allow manual correlation.",
+          "evidence_refs": [
+            "EC-AF-004",
+            "EC-AF-028",
+            "EC-AF-029",
+            "EC-AF-030",
+            "EC-AF-031",
+            "EC-AF-005",
+            "EC-AF-006",
+            "EC-AF-007",
+            "EC-AF-008",
+            "EC-AF-032",
+            "EC-AF-033",
+            "EC-AF-034"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3 (J2.0 Indirect PPLI Processing): If the remote report being tested for correlation is a J2.0 Indirect PPLI message with the Originator E/C field set to value 0 (Surface) or 3 (Air), the C2 JU processes it for correlation like a J3.2 air or J3.3 surface (maritime) track with TQ = 7, diverging from the standard PPLI handling logic.",
+          "evidence_refs": [
+            "EC-AF-009",
+            "EC-AF-055"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 3 (Decorrelation and Correlation Failure): If a common local track satisfies criteria for decorrelation and the subsequent test for correlation against remote tracks fails (or if a track report with different TNs is received for a track where the C2 JU has R²), the C2 JU assigns a new Track Number (TN B) to the local track and reports TN B in a J3.2 or J3.3 message. Alternatively, if a correlation request fails to complete (e.g., no J7.0 message received within 60 seconds), the C2 JU retains the Dropped TN as a remote track and shall not reattempt correlation for 60 seconds.",
+          "evidence_refs": [
+            "EC-AF-010",
+            "EC-AF-039",
+            "EC-AF-037",
+            "EC-AF-038",
+            "EC-AF-002"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3 (Handover Delay): If a track is the subject of a handover in progress, the C2 JU delays the decorrelation process until the handover completes or terminates. Upon completion, the C2 JU executes the decorrelation, provides an operator display of the pending decorrelation, and alerts the operator as a cue to report control in the J10.5 Center Being Yielded Report message as appropriate.",
+          "evidence_refs": [
+            "EC-AF-011"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 8 (Subsurface Track Reporting): For Subsurface tracks, the C2 JU shall not automatically correlate with Integration Units (IUs). Additionally, when reporting a Subsurface track via J3.4 where another JU reports the same contact with a different TN, the C2 JU reports only locally derived data; data derived solely by receiving remote data from other IUs is excluded.",
+          "evidence_refs": [
+            "EC-AF-003",
+            "EC-AF-018",
+            "EC-AF-027",
+            "EC-PO-014"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3 (Subsurface Track Reporting): For Subsurface tracks, the C2 JU shall not automatically correlate with Integration Units (IUs). Additionally, when reporting a Subsurface track via J3.4 where another JU reports the same contact with a different TN, the C2 JU reports only locally derived data; data derived solely by receiving remote data from other IUs is excluded.",
+          "evidence_refs": [
+            "EC-AF-003",
+            "EC-AF-018",
+            "EC-AF-027",
+            "EC-PO-014"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-004",
+        "EC-AF-028",
+        "EC-AF-029",
+        "EC-AF-030",
+        "EC-AF-031",
+        "EC-AF-005",
+        "EC-AF-006",
+        "EC-AF-007",
+        "EC-AF-008",
+        "EC-AF-032",
+        "EC-AF-033",
+        "EC-AF-034",
+        "EC-AF-009",
+        "EC-AF-055",
+        "EC-AF-010",
+        "EC-AF-039",
+        "EC-AF-037",
+        "EC-AF-038",
+        "EC-AF-002",
+        "EC-AF-011",
+        "EC-AF-003",
+        "EC-AF-018",
+        "EC-AF-027",
+        "EC-PO-014"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2 (PPLI Validation Failure): If the position or other data in a received PPLI meet the system's data validation criteria but are deemed unacceptable, the C2 JU does not correlate the PPLI with its locally held data. Instead, it creates a new surveillance track report with a new Track Number and Identity.",
+          "evidence_refs": [
+            "EC-EF-001"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3 (Correlation Timeout): If a correlation request is transmitted and no J7.0 (ACT = 0) message is received for the dropped Track Number (TN) within a period of 60 seconds, the correlation is deemed to have failed. The C2 JU cancels all associated processing for the correlation, effectively terminating the processing for this specific track instance. If the C2 JU holds Reporting Responsibility (R²) for the Dropped TN, it transmits a J7.0 (ACT = 0) Drop Track message to the Surveillance Network PG, thereby exiting the reporting flow for that track. If the Dropped TN is subsequently reported by another IU after this transmission, the C2 JU retains the Dropped TN as a remote track and shall not reattempt to correlate the Retained TN and the Dropped TN for a period of 60 seconds. The C2 JU then resumes normal processing for subsequent tracks, effectively returning to the main flow to await further surveillance updates.",
+          "evidence_refs": [
+            "EC-EF-011",
+            "EC-EF-029",
+            "EC-EF-039",
+            "EC-EF-030",
+            "EC-EF-038",
+            "EC-MF-060"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 3 (Correlation Extrapolation Timeout): If a correlation test is not completed within 6 seconds after the extrapolation time in response to a correlation request, the C2 JU does not correlate. Instead, it considers the local track to correlate to the closest remote track or IU that meets all correlation tests and restrictions.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 3 (Manual Correlation Inhibition): Manual correlation is inhibited (exception condition) if: (a) the tracks are of different Environment/Category (E/C); (b) one track is simulated and the other is live; or (c) both tracks are remote. In these cases, the C2 JU does not perform manual correlation and treats the tracks as uncorrelated, adhering to the rules for dual designations to minimize dual designation occurrences.",
+          "evidence_refs": [
+            "EC-EF-006",
+            "EC-EF-027"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 3 (Local Track Correlation Failure): If a local track fails a correlation test against a remote track or IU (and no other correlation is found), it is considered uncorrelated and treated as a new local track, triggering a new reporting cycle with a new Track Number. If a local track tentatively correlates but subsequently fails the correlation test, or if a second correlation attempt with the same remote track fails, the local track is treated as a new local track.",
+          "evidence_refs": [
+            "EC-EF-023",
+            "EC-EF-024"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 4 (R² Conflict Resolution on Drop): If a J7.0 (ACT = 0) Drop Track message is received from the Friend JU (FJU) for a PU, RU, or IU, and a correlation is found with a track for which another C2 JU has R² (and TNs are different), the C2 JU transmits a J7.2 (RV = 1) Correlation message (Source TN as Retained TN, surveillance TN as Dropped TN) and ceases reporting the track.",
+          "evidence_refs": [
+            "EC-EF-002",
+            "EC-EF-020"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 4 (R² Drop Track Execution): When the C2 JU receives a J7.0 (ACT = 0) Drop Track message for a track for which it has R², it shall cease reporting the track and transmit a J7.0 (ACT = 0) Drop Track message to the Surveillance Network PG.",
+          "evidence_refs": [
+            "EC-EF-021"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 6 (Track Loss via J12.6): When a J12.6 message is received on the Surveillance Network PG and the Track Quality values indicate the track has been lost, the C2 JU discards the message. However, if another C2 JU assumes R² of the IU, the track number and identity are maintained.",
+          "evidence_refs": [
+            "EC-EF-003",
+            "EC-EF-022"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 7 (Data Conflict Resolution): In the event of a conflict between locally derived information and information reported on the interface, the C2 JU resolves the difference by transmitting the appropriate J7 message, by operator procedure, or by voice coordination.",
+          "evidence_refs": [
+            "EC-EF-014",
+            "EC-EF-068",
+            "EC-EF-083"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 8 (EW Fix AOP Reporting Exception): When reporting an Area of Probability (AOP) based on a single EW fix, the C2 JU transmits a J3.7I word with FIX BRG set to value 1, and includes a J3.7C2 word to define the AOP. If an AOP results from two or more previously reported fixes of differing TNs, it is assigned a new TN; however, if an EW fix is changed by the AOP, the TN of the previously reported fix is used.",
+          "evidence_refs": [
+            "EC-EF-015",
+            "EC-EF-016",
+            "EC-EF-017"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 8 (Subsurface Nonreal-Time Purge Exception): Under conditions of irregular reporting of nonreal-time tracks, the C2 JU does not transmit a J7.0 (ACT = 0) message to purge the track.",
+          "evidence_refs": [
+            "EC-EF-013",
+            "EC-EF-067"
+          ],
+          "step_number": 8
+        },
+        {
+          "content": "Diverges from Step 8 (EW Reporting Responsibility Constraint): The unit originating a J3.7 EW Fix, AOP, or LOB report always retains reporting responsibility; it is illegal to assume reporting responsibility for another unit's AOP.",
+          "evidence_refs": [
+            "EC-EF-018"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 8 (EW Track Number Assignment): Initiating a J3.7 EW Fix, AOP, or LOB report requires the unit to assign a Track Number (TN) not known to be in use on the network to avoid duplicates, except when the unit is tracking a target reported by another JU with the same TN.",
+          "evidence_refs": [
+            "EC-EF-019"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 8 (Ballistic Missile Reporting Constraints): The C2 JU shall not report a TQ value which has an associated positional accuracy which is better than that associated with own unit's current geodetic position quality. Additionally, a JU shall not report an initial surveillance report on a ballistic missile if the predicted time to impact is less than 16 seconds or if the altitude is less than 8 data miles.",
+          "evidence_refs": [
+            "EC-EF-044",
+            "EC-EF-052"
+          ],
+          "step_number": 8
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-001",
+        "EC-EF-011",
+        "EC-EF-029",
+        "EC-EF-039",
+        "EC-EF-030",
+        "EC-EF-038",
+        "EC-MF-060",
+        "EC-EF-005",
+        "EC-EF-006",
+        "EC-EF-027",
+        "EC-EF-023",
+        "EC-EF-024",
+        "EC-EF-002",
+        "EC-EF-020",
+        "EC-EF-021",
+        "EC-EF-003",
+        "EC-EF-022",
+        "EC-EF-014",
+        "EC-EF-068",
+        "EC-EF-083",
+        "EC-EF-015",
+        "EC-EF-016",
+        "EC-EF-017",
+        "EC-EF-013",
+        "EC-EF-067",
+        "EC-EF-018",
+        "EC-EF-019",
+        "EC-EF-044",
+        "EC-EF-052"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has successfully transmitted the air and surface surveillance data in Network PGs using the J3.2 Air Track message and the J3.3 Surface (Maritime) Track message.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "If the C2 JU assumed Reporting Responsibility (R²), it has reported the track in a J7.2 message, establishing the Source TN as determined.",
+          "evidence_refs": [
+            "EC-PO-002"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Subsurface tracks have not been correlated with Integration Units (IUs).",
+          "evidence_refs": [
+            "EC-PO-001",
+            "EC-PO-014"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If correlation was inhibited or rejected (e.g., due to Identity conflict, Mode II mismatch, Strength > 1, or correlation restriction enabled), the tracks remain distinct (uncorrelated) and the rejection was processed in accordance with operational constraints.",
+          "evidence_refs": [
+            "EC-PO-003",
+            "EC-PO-015",
+            "EC-PO-019"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If Reporting Responsibility (R²) for a real-time track was relinquished to another JU, the C2 JU has transmitted a J7.0 (ACT=0) message to indicate relinquishment and no longer assumes responsibility for the track.",
+          "evidence_refs": [
+            "EC-PO-043",
+            "EC-MF-052",
+            "EC-MF-059"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "All uncorrelated local ballistic missile tracks have been reported to the Surveillance NPG, and the C2 JU has assumed R² for those tracks.",
+          "evidence_refs": [
+            "EC-PO-008"
+          ]
+        },
+        {
+          "content": "Conflicts between locally derived information and interface information have been resolved.",
+          "evidence_refs": [
+            "EC-PO-009"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-PO-002",
+        "EC-PO-001",
+        "EC-PO-014",
+        "EC-PO-003",
+        "EC-PO-015",
+        "EC-PO-019",
+        "EC-PO-043",
+        "EC-MF-052",
+        "EC-MF-059",
+        "EC-PO-008",
+        "EC-PO-009"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "trigger",
+      "detail": "No evidence found for slot 'trigger'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The Main Flow step 1 explicitly states that the C2 JU waits a minimum of 12 or 48 seconds before beginning transmission. This delay is a significant operational behavior that should be triggered or acknowledged by the Use Case Trigger. The Trigger slot is empty, implying the action starts immediately upon the actor's intent, which contradicts the mandatory cooldown period described in the Main Flow. The Trigger should capture the condition that initiates this specific reporting cycle, including the context of the delay. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[trigger_preconditions_coverage] The 'trigger' slot is completely empty. The main flow begins with initialization logic ('After initially achieving Active status... waits... before beginning transmission'), which implies a trigger event (such as status change or timer expiry) that is not explicitly defined in the trigger slot. Furthermore, preconditions require 'Active status' but do not explicitly state the trigger that causes this transition or initiates the specific reporting cycle described in step 1.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 3 describes a divergence from 'Step 3 (Handover Delay)'. However, the main_flow slot only has 9 steps, and none of them describe a 'Handover Delay' process. Step 3 in main_flow is about correlation inhibition conditions. The alternative flow claims to diverge from a step that does not exist in the main flow.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 4 describes a divergence from 'Step 8 (Subsurface Track Reporting)'. While main_flow Step 8 exists, the main_flow content for Step 8 only mentions transmitting air/surface data. It does not mention subsurface tracks or Integration Units (IUs). The alternative flow introduces specific subsurface logic that implies a precondition or branch point not explicitly defined in the main flow's description of Step 8, creating a disconnect in the defined behavior flow for subsurface tracks.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 1 (Correlation Timeout) describes a complex exit scenario: if correlation fails, the C2 JU terminates processing for that track instance. If it holds R², it transmits a Drop message. It then states the C2 JU 'resumes normal processing for subsequent tracks, effectively returning to the main flow'. However, the main flow is a sequential list of steps (1-9) for a single track's lifecycle/reporting cycle. There is no explicit 'loop' or 'return to step 2/3' mechanism defined in main_flow to handle 'subsequent tracks'. The main_flow ends at Step 9 (completing processing and updating state). This creates an ambiguity in how the system transitions from the exception's 'resume' action back into the main flow's loop for the next track.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 5 is a duplicate of claim 4 (Subsurface Track Reporting) and also references 'Step 8'. As identified in claim 4, the main_flow Step 8 description does not adequately cover the subsurface context required for this divergence, leading to the same alignment issue.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow",
+        "alternative_flow",
+        "exception_flow",
+        "postconditions"
+      ],
+      "inconsistency_hints": [
+        "The final step of the Main Flow (Step 8) only describes the transmission of air and surface surveillance data. However, the Postconditions include several complex states resulting from correlation actions (Steps 4-6) and target sorting (Step 7), such as 'Reporting Responsibility assumed', 'tracks remain distinct', or 'subsurface tracks not correlated'. Step 8 does not explicitly confirm that the correlation logic and R² handling performed in earlier steps have been finalized and committed to the system state as required by the postconditions. Specifically, postconditions like EC-PO-002 (R² established) and EC-PO-003 (rejection processed) are side-effects of steps 4-6, but the flow ends at step 8 (transmission). The Main Flow needs a final consolidation or confirmation step that ensures all correlation outcomes are reflected in the system state before the use case concludes.",
+        "Alternative flow claim 4 diverges from Step 8 (Subsurface Track Reporting), but the main_flow only defines steps 1 through 8. While Step 8 exists, the description of the alternative flow implies a specific branching logic for 'Subsurface tracks' that is not explicitly defined as a conditional branch within the main_flow's Step 8. More critically, looking at the step numbering, the main_flow has 8 steps. Claim 4 says 'Diverges from Step 8'. This is a valid step number. However, Claim 2 says 'Diverges from Step 3' (valid). Claim 3 says 'Diverges from Step 3' (valid). Claim 5 says 'Diverges from Step 8' (valid). Claim 6 says 'Diverges from Step 8' (valid). Wait, let's look closer. Main flow has steps 1-8. All divergence points in alt_flow (steps 3 and 8) exist in main_flow. Let's re-read the main_flow carefully. Step 8 is 'transmits air and surface surveillance data'. The alternative flows at step 8 discuss Subsurface and Kinematic data. These are specific variations of the transmission logic. This seems consistent. Let's look at Exception Flow.",
+        "Alternative flow claim 2 says 'Diverges from Step 3 (Decorrelation and Correlation Failure)'. It describes assigning a new Track Number (TN B) if decorrelation criteria are met and correlation fails. However, Main Flow Step 3 only describes the *inhibition* of automatic correlation. It does not describe the *successful* correlation path that would lead to a subsequent decorrelation step, nor does it explicitly cover the case of 'decorrelation criteria satisfied'. Main Flow Step 3 is strictly about *inhibiting* correlation. The *act* of correlating (and then potentially decorrelating) is not explicitly a step in the main flow provided; Step 2 is 'receives PPLI', Step 3 is 'attempts to correlate... inhibited if...'. The main flow implies correlation happens unless inhibited. But the alternative flow explicitly diverges from a step labeled 'Decorrelation'. Main Flow Step 3 is labeled 'Correlation Inhibition'. This is a misalignment in step naming and logical coverage. The main flow should ideally have a step for 'Correlation Attempt/Success' or the alternative should diverge from the implicit correlation logic. More critically, the alternative flow mentions 'Diverges from Step 3', but the content is about *Decorrelation*, which is a different phase than the *Correlation Inhibition* described in Main Flow Step 3.",
+        "Exception flow claim 1 describes a 'Correlation Timeout' where the C2 JU cancels processing and transmits a J7.0 Drop Track. It states that if the Dropped TN is subsequently reported, the JU retains it as a remote track and shall not reattempt correlation for 60 seconds. This describes a state change and a future restriction (the 60-second ban). It does not clearly specify how the use case instance terminates or returns to a previous step. Does it terminate? Does it go back to waiting for new tracks? The main flow ends at Step 8 (transmission). If this exception happens during Step 3 (correlation), the flow of *this specific track's processing* ends, but the use case (Publishing Tracks) continues for other tracks. The claim says 'cancels all associated processing for the correlation'. This implies the branch for *this* track ends. However, does it exit the use case or just the step? The rule requires a clear exit: 'return to a Main Flow step, terminate the use case, or hand off'. Canceling processing for one track effectively means that track's flow ends, but the user story 'Publish Air and Surface Surveillance Tracks' is an ongoing process. The exception doesn't define what happens to the *next* track or if the use case stops. More importantly, it doesn't link back to the main flow's loop or termination condition. It's a local error handling path that leaves the state ambiguous regarding the overall use case flow.",
+        "Exception flow claim 3 describes 'Manual Correlation Inhibition'. It lists conditions where manual correlation is inhibited. It does not describe what the C2 JU *does* instead. Does it log an error? Does it stop processing that track? Does it alert the operator? The main flow Step 3 attempts automatic correlation. If manual is inhibited, the flow doesn't specify the resulting action or exit. It just says it's inhibited. This is a missing exit/behavior description.",
+        "The goal states the objective is to 'minimize dual designations'. While the main flow mentions handling dual designations (Step 4, 5, 6), and alternative flows discuss minimizing dual designation duration, the main flow does not explicitly describe the *mechanism* or *steps* taken to actively minimize dual designations beyond the correlation and reporting rules. Specifically, the goal implies an optimization objective ('optimum exchange... minimizing dual designations'), but the main flow is a procedural sequence. The alignment is weak because the 'minimization' is largely achieved through the Alternative Flows (e.g., Step 3 AF regarding dual designation rules) rather than the Main Flow itself. The Main Flow should ideally reflect the primary strategy for achieving the goal, but here the goal's 'minimization' aspect relies heavily on the exception/alternative logic not present in the main flow description.",
+        "Alternative flow claim 5 diverges from Step 8 (Subsurface Track Reporting). However, main_flow step 8 describes transmitting air and surface surveillance data. It does not mention Subsurface tracks. Furthermore, main_flow step 9 describes completing correlation processing. There is no Step 8 in main_flow that deals with Subsurface logic or acts as a divergence point for the Subsurface alternative flow claim. The main_flow steps are 1-9, but Step 8 is generic transmission, not specific to Subsurface handling which would require a specific precondition or branch context not present in the linear main_flow description.",
+        "Alternative flow claim 6 diverges from Step 8 (Kinematic Data Reporting). Similar to the previous issue, main_flow step 8 is a generic transmission step. It does not contain specific logic for Kinematic Data or J12.67 messages that would serve as a clear divergence point for this specific exception handling. The main_flow does not explicitly handle J12.67 in the steps provided, making 'Step 8' an ambiguous divergence point for this specialized behavior.",
+        "Exception flow claim 1 (Correlation Timeout) states that if correlation fails, the C2 JU terminates processing for that track instance. If it holds R², it transmits a Drop Track message. However, the claim does not clearly specify the exit path for the *overall* use case or the next step in the flow for the C2 JU. Does it resume listening for new tracks (loop back to Step 2)? Does it terminate the entire use case execution for this transaction? The main_flow ends with a completion step (Step 9), but the exception flow's 'terminating processing for this specific track instance' implies a return to the main loop (Step 2/9) or termination. The ambiguity lies in whether 'resumes normal processing' implies continuing the main flow or exiting. Given the main_flow is a sequence of operations per track/transaction, the exit should be explicit: either 'return to waiting for new tracks' or 'end use case'.",
+        "Main Flow Step 4 dictates that when relinquishing Reporting Responsibility (R²), the C2 JU transmits a J7.0 (ACT=0) Drop Track message (after a J7.2 Correlation message). However, Postcondition Claim 5 asserts that a J7.2 (ACT=0) message is transmitted to indicate relinquishment. J7.2 is a Correlation/Reporting message, whereas J7.0 is the Drop Track message. This creates a factual contradiction between the action defined in the Main Flow and the state described in the Postcondition."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 442,
+    "cross_page_cards": 171,
+    "modalities": {
+      "text": 436,
+      "table": 6
+    }
+  }
+}

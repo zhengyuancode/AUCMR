@@ -1,0 +1,1233 @@
+{
+  "use_case_name": "Manage Track Identity Classification",
+  "actor": "C2 JU",
+  "slots": {
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered when a JU changes the Environment/Category of a track (e.g., Space to air, Air to space/surface/land), when an operator rejects a difference report, or when a C2 JU elects to automatically accept changes in Environment/Category, Identity, or Exercise Indicator received in a track report with the PPLI Track Number and Identity Indicator set to value 1.",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-TR-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-TR-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "operator-category-change",
+          "difference-report-rejection",
+          "auto-accept-track-report"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The objective is to resolve Environment/Category differences and determine Track Number continuity when an entity type changes.",
+          "evidence_refs": [
+            "EC-G-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002"
+      ],
+      "scope_contract": {
+        "goal_statement": "The objective is to resolve Environment/Category differences and determine Track Number continuity when an entity type changes.",
+        "evidence_refs": [
+          "EC-G-002"
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Divergence at main-flow step 2: If an Environment/Category conflict is detected upon receipt of a Surveillance message or J7.0 (ACT=1) message with differing air/surface/land classification, the C2 JU processes and resolves the Environment/Category conflict prior to ID conflict resolution; once detected, no further processing to detect an ID conflict occurs. Exit: continue with Environment/Category conflict resolution; ID-conflict detection is skipped.",
+          "evidence_refs": [
+            "EC-EF-023"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Divergence at main-flow step 2: If the locally held Environment/Category differs from the Environment/Category received in a J3.X or J7.0 (ACT=1) message for that track, the operator is alerted. Exit: operator alert is issued.",
+          "evidence_refs": [
+            "EC-EF-009"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Divergence at main-flow step 3: If a Platform, Platform Activity or Specific Type value of 0 (No Statement) is received and a non-zero value is held locally, the C2 JU treats this as an exception to the rule requiring retention of received values during remote ID change acceptance. Exit: the default receive-value retention rule does not apply for this received No Statement value.",
+          "evidence_refs": [
+            "EC-EF-027"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Divergence at main-flow step 3: When an Air Platform value of 6 (Tanker), 7 (Tanker (Boom Only)), or 8 (Tanker (Drogue Only)) is held locally and a different value is received, an operator alert is optional; the system may proceed without alerting. Exit: processing proceeds without an alert.",
+          "evidence_refs": [
+            "EC-EF-013"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Divergence at main-flow step 3: If an ID conflict cannot be automatically accepted or rejected, the differences are presented to the operators for evaluation and may require voice coordination for final resolution. Exit: manual operator evaluation/voice coordination is used for resolution.",
+          "evidence_refs": [
+            "EC-EF-010"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "Divergence at main-flow step 4: C2 JUs shall not automatically correlate two tracks if local/remote data held indicates that the two tracks have an Identity (ID) difference that constitutes a conflict. Exit: automatic correlation is inhibited for the conflicting tracks.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "Divergence at main-flow step 4: Automatic acceptance of a requested correlation (RV=3) is rejected if the tracks have different Environment/Category or an existing Environment/Category conflict, if one track is simulated and the other live, or if both tracks are locally derived real-time tracks. Exit: the requested correlation is not automatically accepted.",
+          "evidence_refs": [
+            "EC-EF-018"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "Divergence at main-flow step 4: If the Retained TN and Dropped TN decorrelate when subjected to decorrelation criteria once, the correlation shall be rejected. Exit: the correlation is rejected.",
+          "evidence_refs": [
+            "EC-EF-014"
+          ],
+          "step_number": 8
+        },
+        {
+          "content": "Divergence at main-flow step 4: If the C2 JU receives a J7.0 (ACT=0) message for the Dropped TN and the dropped TN is subsequently reported by another IU after that transmission, the own unit retains the Dropped TN as a remote track and shall not reattempt to correlate the Retained TN and Dropped TN for 60 seconds. Exit: the Dropped TN is retained as a remote track; correlation reattempt is suspended for 60 seconds.",
+          "evidence_refs": [
+            "EC-EF-019"
+          ],
+          "step_number": 9
+        },
+        {
+          "content": "Divergence at main-flow step 4: If either track has the Strength field set to a value greater than 1, C2 JUs shall not inhibit correlation; systems shall also not inhibit correlation if either track has Strength set to No Statement. Exit: correlation proceeds without Strength-based inhibition.",
+          "evidence_refs": [
+            "EC-EF-008"
+          ],
+          "step_number": 10
+        },
+        {
+          "content": "Divergence at main-flow step 5: When a Surveillance message or J7.0 (ACT=1) message is received in which the Exercise Indicator differs from local data, an Exercise Indicator conflict exists and the operator shall be alerted for manual resolution. Exit: manual resolution by the operator is required.",
+          "evidence_refs": [
+            "EC-EF-024"
+          ],
+          "step_number": 11,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-023",
+        "EC-EF-009",
+        "EC-EF-027",
+        "EC-EF-013",
+        "EC-EF-010",
+        "EC-EF-005",
+        "EC-EF-018",
+        "EC-EF-014",
+        "EC-EF-019",
+        "EC-EF-008",
+        "EC-EF-024"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "ec-conflict-precedence",
+          "ec-difference-operator-alert",
+          "no-statement-retention-exception",
+          "tanker-alert-optional",
+          "id-conflict-manual-resolution",
+          "id-conflict-auto-correlation-inhibit",
+          "correlation-auto-accept-rejection",
+          "decorrelation-rejection",
+          "dropped-tn-remote-retention",
+          "strength-field-no-inhibit",
+          "exercise-indicator-conflict"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "After successful completion, the C2 JU has updated the track's identity classification: Environment/Category differences are resolved, and exercise-involved live tracks are distinguished from other live tracks via the Exercise Indicator and Identity Amplifying Descriptor.",
+          "evidence_refs": [
+            "EC-PO-001",
+            "EC-PO-008"
+          ]
+        },
+        {
+          "content": "After successful completion, Track Number continuity for the entity is determined in accordance with Table 4.7-1 when the entity type changes, yielding either retention of the original Track Number or a new Track Number decision as applicable.",
+          "evidence_refs": [
+            "EC-PO-001",
+            "EC-PO-004"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-001",
+        "EC-PO-008",
+        "EC-PO-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "identity-classification-updated",
+          "ec-difference-resolved",
+          "exercise-vs-live-distinguished",
+          "tn-continuity-determined"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 3: The C2 JU may elect to automatically accept changes in Environment/Category, Identity or Exercise Indicator received in a track report with the PPLI Track Number and Identity Indicator set to value 1, provided the new identity is Friend and the locally held identity is not Hostile.",
+          "evidence_refs": [
+            "EC-AF-007"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 5: When the Exercise Indicator is set to value 0 (Non-Exercise Track), the standard identity of the track shall be specified in the Identity field.",
+          "evidence_refs": [
+            "EC-AF-000"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 5: For any track with Exercise Indicator set to value 1, data concerning the track must be considered artificial for exercise purposes, except for Track Number, Tracking Data (Latitude, Longitude, Altitude/Elevation/Depth, Course, Speed, Minute, Hour, Track Quality), Simulation Indicator, Environment/Category, Status Data on Air Tracks, and Status Data on Surface (Maritime) Tracks.",
+          "evidence_refs": [
+            "EC-AF-001"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-007",
+        "EC-AF-000",
+        "EC-AF-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "auto-accept-classification-changes",
+          "non-exercise-standard-identity",
+          "exercise-artificial-data"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has correlated local sensor data.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ]
+        },
+        {
+          "content": "Two tracks that are being reported to the interface are eligible for correlation.",
+          "evidence_refs": [
+            "EC-PC-005"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000",
+        "EC-PC-005"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "correlated-local-sensor-data",
+          "correlation-eligibility"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU receives a Surveillance message or J7.0 (ACT = 1) message in which the air, surface (maritime), or land (ground) Environment/Category and ID are different from the local Environment/Category and ID, and the track report has the PPLI Track Number and Identity Indicator set to value 1, the new identity is Friend, and the locally held identity is not Hostile.",
+          "evidence_refs": [
+            "EC-MF-009",
+            "EC-MF-013"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU processes and resolves the Environment/Category conflict prior to the resolution of the ID conflict.",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU elects to automatically accept the received changes in Environment/Category, Identity, or Exercise Indicator because the track report has the PPLI Track Number and Identity Indicator set to value 1, the new identity is Friend, and the locally held identity is not Hostile. When the accepted change sets the Exercise Indicator to value 1, the C2 JU sets the standard identity of the track to Friend and specifies the exercise identity in the Identity Amplifying Descriptor field.",
+          "evidence_refs": [
+            "EC-MF-013",
+            "EC-MF-023"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Acting as the R² JU that changes the Environment/Category of the surveillance entity, the C2 JU determines Track Number continuity by applying the Environment/Category Difference Resolution and Track Number Continuity rules in Table 4.7-1 to the specific entity-type transition.",
+          "evidence_refs": [
+            "EC-MF-037",
+            "EC-MF-038"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "In accordance with the Table 4.7-1 determination, the C2 JU retains the original Track Number or assigns a new Track Number to the entity, completing Track Number continuity determination.",
+          "evidence_refs": [
+            "EC-MF-037",
+            "EC-MF-038"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-009",
+        "EC-MF-013",
+        "EC-MF-023",
+        "EC-MF-037",
+        "EC-MF-038"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Main Flow step 4 requires the C2 JU to act as the R² JU when changing Environment/Category, and the trigger's EC-change and auto-accept paths depend on that reporting responsibility. The preconditions only state that local sensor data is correlated and that two tracks are eligible for correlation; they do not establish that the C2 JU already has R²/reporting responsibility for the track, which is an enabling state that must hold before the trigger can be initiated. (atomic grounding: candidate remains incomplete (The cited cards do not identify the responsible JU as 'C2 JU'; they refer to 'R² JU'.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[goal_mainflow_alignment] Main_flow covers Environment/Category difference resolution and Track Number continuity, but the goal explicitly includes distinguishing live exercise tracks from other live tracks. The exercise-indicator rules in Alternative_flow (claims 2 and 3) are anchored to Step 5, which is the TN-continuity decision step, so they have no coherent main-flow attachment point. This is a main_flow gap affecting both goal_mainflow_alignment and altflow_diverge_points. (atomic grounding: candidate remains incomplete (The cited evidence does not explicitly identify C2 JU as the actor handling the Exercise Indicator.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The Trigger explicitly includes an operator rejection of a difference report as an entry event. The Main Flow, however, begins with receipt of a Surveillance/J7.0 message and then proceeds to automatic acceptance; it never models the difference-report rejection path. Thus the Main Flow does not continue from all Trigger events. (atomic grounding: candidate remains incomplete (The evidence says 'a JU', not 'C2 JU'; 'C2' is an unsupported added detail.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The Trigger lists three distinct starting situations: manual JU Environment/Category change, operator rejection of a difference report, and C2 JU election to automatically accept track-report changes. Main Flow Step 1 only continues the automatic-acceptance situation by requiring receipt of a Surveillance/J7.0 message with PPLI Track Number and Identity Indicator set to value 1, Friend identity, and a non-Hostile local identity. The manual-change and difference-report-rejection triggers are not continued, and the Trigger's Exercise Indicator-only acceptance is also not represented because Step 1 requires both Environment/Category and ID differences.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The Trigger includes an operator rejecting a difference report, which requires a difference report to already exist and be presented to the operator. The Preconditions only state that local sensor data are correlated and that two tracks are eligible for correlation; correlation eligibility is not the same as a generated/presented difference report, so the rejection trigger is not vertically supported.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 2 says 'Diverges from Step 5' and describes ExInd=0 standard identity in the Identity field. Main flow step 5 is exclusively about Track Number continuity determination; the Exercise Indicator/identity specification branch is a consequence of step 3's Exercise Indicator acceptance, so step 5 is a logically unrelated attachment point.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 3 attaches to step 5, but its ExInd=1 artificial-data rule is an Exercise Indicator handling consequence, not a Track Number continuity consequence. Main flow step 5 deals with retaining/assigning the Track Number and has no logical connection to the exercise-data exception list.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow",
+        "goal"
+      ],
+      "inconsistency_hints": [
+        "Trigger declares three initiation paths (manual Environment/Category change by a JU, operator rejection of a difference report, and automatic acceptance of a track report). Main Flow step 1 instead starts with a different scenario: receipt of a Surveillance/J7.0 message with EC/ID differences and subsequent auto-acceptance. The manual-change and operator-rejection paths are never continued, so the main flow does not continue from the trigger.",
+        "Goal claim 0 includes 'distinguish between live tracks that are involved in an exercise and other live tracks being reported', but the main flow contains no step or evidence for such a distinction. Main flow step 3 only mentions accepting an Exercise Indicator change as part of automatic acceptance; it does not describe the C2 JU distinguishing exercise tracks from non-exercise live tracks. This makes the goal over-broad relative to the enclosed main flow and suggests a separate/variant concern.",
+        "Postcondition 1 states that exercise-involved live tracks are distinguished from other live tracks via the Exercise Indicator and Identity Amplifying Descriptor. Main Flow step 3 mentions accepting an Exercise Indicator change, but no Main Flow step establishes or updates the Identity Amplifying Descriptor or explicitly produces the exercise-vs-live distinction. The full postcondition is therefore not reachable from the described Main Flow."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 123,
+    "cross_page_cards": 60,
+    "modalities": {
+      "text": 120,
+      "table": 3
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2578.326,
+    "llm_calls": 25.0,
+    "llm_seconds": 2481.454,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 96.647,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 7.0,
+    "judge_calls": 0,
+    "cards_collected": 123,
+    "cards_referenced": 27,
+    "evidence_reused": true,
+    "reused_card_count": 123,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/milstd6016b_sec4/C2_JU_Manage_Track_Identity_Classification-evidence.json",
+    "dra_elapsed_seconds": 1602.554,
+    "dra_llm_calls": 18,
+    "dra_llm_seconds": 1602.518,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_calls": 0,
+    "dra_judge_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The use case is triggered when a JU changes the Environment/Category of a track (e.g., Space to air, Air to space/surface/land), when an operator rejects a difference report, or when a C2 JU elects to automatically accept changes in Environment/Category, Identity, or Exercise Indicator received in a track report with the PPLI Track Number and Identity Indicator set to value 1.",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-TR-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The objective is to resolve Environment/Category differences and determine Track Number continuity when an entity type changes.",
+            "evidence_refs": [
+              "EC-G-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-MF-040",
+          "EC-MF-041",
+          "EC-MF-042",
+          "EC-MF-043",
+          "EC-MF-044",
+          "EC-MF-045",
+          "EC-MF-046",
+          "EC-MF-047",
+          "EC-MF-048",
+          "EC-MF-049",
+          "EC-MF-050",
+          "EC-MF-051",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Divergence at main-flow step 2: If an Environment/Category conflict is detected upon receipt of a Surveillance message or J7.0 (ACT=1) message with differing air/surface/land classification, the C2 JU processes and resolves the Environment/Category conflict prior to ID conflict resolution; once detected, no further processing to detect an ID conflict occurs. Exit: continue with Environment/Category conflict resolution; ID-conflict detection is skipped.",
+            "evidence_refs": [
+              "EC-EF-023"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Divergence at main-flow step 2: If the locally held Environment/Category differs from the Environment/Category received in a J3.X or J7.0 (ACT=1) message for that track, the operator is alerted. Exit: operator alert is issued.",
+            "evidence_refs": [
+              "EC-EF-009"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Divergence at main-flow step 3: If a Platform, Platform Activity or Specific Type value of 0 (No Statement) is received and a non-zero value is held locally, the C2 JU treats this as an exception to the rule requiring retention of received values during remote ID change acceptance. Exit: the default receive-value retention rule does not apply for this received No Statement value.",
+            "evidence_refs": [
+              "EC-EF-027"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Divergence at main-flow step 3: When an Air Platform value of 6 (Tanker), 7 (Tanker (Boom Only)), or 8 (Tanker (Drogue Only)) is held locally and a different value is received, an operator alert is optional; the system may proceed without alerting. Exit: processing proceeds without an alert.",
+            "evidence_refs": [
+              "EC-EF-013"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Divergence at main-flow step 3: If an ID conflict cannot be automatically accepted or rejected, the differences are presented to the operators for evaluation and may require voice coordination for final resolution. Exit: manual operator evaluation/voice coordination is used for resolution.",
+            "evidence_refs": [
+              "EC-EF-010"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Divergence at main-flow step 4: C2 JUs shall not automatically correlate two tracks if local/remote data held indicates that the two tracks have an Identity (ID) difference that constitutes a conflict. Exit: automatic correlation is inhibited for the conflicting tracks.",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Divergence at main-flow step 4: Automatic acceptance of a requested correlation (RV=3) is rejected if the tracks have different Environment/Category or an existing Environment/Category conflict, if one track is simulated and the other live, or if both tracks are locally derived real-time tracks. Exit: the requested correlation is not automatically accepted.",
+            "evidence_refs": [
+              "EC-EF-018"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "Divergence at main-flow step 4: If the Retained TN and Dropped TN decorrelate when subjected to decorrelation criteria once, the correlation shall be rejected. Exit: the correlation is rejected.",
+            "evidence_refs": [
+              "EC-EF-014"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "Divergence at main-flow step 4: If the C2 JU receives a J7.0 (ACT=0) message for the Dropped TN and the dropped TN is subsequently reported by another IU after that transmission, the own unit retains the Dropped TN as a remote track and shall not reattempt to correlate the Retained TN and Dropped TN for 60 seconds. Exit: the Dropped TN is retained as a remote track; correlation reattempt is suspended for 60 seconds.",
+            "evidence_refs": [
+              "EC-EF-019"
+            ],
+            "step_number": 9
+          },
+          {
+            "content": "Divergence at main-flow step 4: If either track has the Strength field set to a value greater than 1, C2 JUs shall not inhibit correlation; systems shall also not inhibit correlation if either track has Strength set to No Statement. Exit: correlation proceeds without Strength-based inhibition.",
+            "evidence_refs": [
+              "EC-EF-008"
+            ],
+            "step_number": 10
+          },
+          {
+            "content": "Divergence at main-flow step 5: When a Surveillance message or J7.0 (ACT=1) message is received in which the Exercise Indicator differs from local data, an Exercise Indicator conflict exists and the operator shall be alerted for manual resolution. Exit: manual resolution by the operator is required.",
+            "evidence_refs": [
+              "EC-EF-024"
+            ],
+            "step_number": 11
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "After successful completion, the C2 JU has updated the track's identity classification: Environment/Category differences are resolved, and exercise-involved live tracks are distinguished from other live tracks via the Exercise Indicator and Identity Amplifying Descriptor.",
+            "evidence_refs": [
+              "EC-PO-001",
+              "EC-PO-008"
+            ]
+          },
+          {
+            "content": "After successful completion, Track Number continuity for the entity is determined in accordance with Table 4.7-1 when the entity type changes, yielding either retention of the original Track Number or a new Track Number decision as applicable.",
+            "evidence_refs": [
+              "EC-PO-001",
+              "EC-PO-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 3: The C2 JU may elect to automatically accept changes in Environment/Category, Identity or Exercise Indicator received in a track report with the PPLI Track Number and Identity Indicator set to value 1, provided the new identity is Friend and the locally held identity is not Hostile.",
+            "evidence_refs": [
+              "EC-AF-007"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 5: When the Exercise Indicator is set to value 0 (Non-Exercise Track), the standard identity of the track shall be specified in the Identity field.",
+            "evidence_refs": [
+              "EC-AF-000"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges from Step 5: For any track with Exercise Indicator set to value 1, data concerning the track must be considered artificial for exercise purposes, except for Track Number, Tracking Data (Latitude, Longitude, Altitude/Elevation/Depth, Course, Speed, Minute, Hour, Track Quality), Simulation Indicator, Environment/Category, Status Data on Air Tracks, and Status Data on Surface (Maritime) Tracks.",
+            "evidence_refs": [
+              "EC-AF-001"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU has correlated local sensor data.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          },
+          {
+            "content": "Two tracks that are being reported to the interface are eligible for correlation.",
+            "evidence_refs": [
+              "EC-PC-005"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU receives a Surveillance message or J7.0 (ACT = 1) message in which the air, surface (maritime), or land (ground) Environment/Category and ID are different from the local Environment/Category and ID, and the track report has the PPLI Track Number and Identity Indicator set to value 1, the new identity is Friend, and the locally held identity is not Hostile.",
+            "evidence_refs": [
+              "EC-MF-009",
+              "EC-MF-013"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU processes and resolves the Environment/Category conflict prior to the resolution of the ID conflict.",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The C2 JU elects to automatically accept the received changes in Environment/Category, Identity, or Exercise Indicator because the track report has the PPLI Track Number and Identity Indicator set to value 1, the new identity is Friend, and the locally held identity is not Hostile. When the accepted change sets the Exercise Indicator to value 1, the C2 JU sets the standard identity of the track to Friend and specifies the exercise identity in the Identity Amplifying Descriptor field.",
+            "evidence_refs": [
+              "EC-MF-013",
+              "EC-MF-023"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Acting as the R² JU that changes the Environment/Category of the surveillance entity, the C2 JU determines Track Number continuity by applying the Environment/Category Difference Resolution and Track Number Continuity rules in Table 4.7-1 to the specific entity-type transition.",
+            "evidence_refs": [
+              "EC-MF-037",
+              "EC-MF-038"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "In accordance with the Table 4.7-1 determination, the C2 JU retains the original Track Number or assigns a new Track Number to the entity, completing Track Number continuity determination.",
+            "evidence_refs": [
+              "EC-MF-037",
+              "EC-MF-038"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-MF-040",
+          "EC-MF-041",
+          "EC-MF-042",
+          "EC-MF-043",
+          "EC-MF-044",
+          "EC-MF-045",
+          "EC-MF-046",
+          "EC-MF-047",
+          "EC-MF-048",
+          "EC-MF-049",
+          "EC-MF-050",
+          "EC-MF-051",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=13]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=13]",
+    "directory": "random_order/seed_013",
+    "seed": 13,
+    "slot_order": [
+      "trigger",
+      "goal",
+      "exception_flow",
+      "postconditions",
+      "primary_actor",
+      "alternative_flow",
+      "preconditions",
+      "main_flow"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "a8c3b879029b46188cfe23d09a5eb6d8"
+}

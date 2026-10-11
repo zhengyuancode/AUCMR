@@ -1,0 +1,1074 @@
+{
+  "use_case_name": "Register Customer Account",
+  "actor": "Customer",
+  "slots": {
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At the Terms-of-Use acceptance point, if the user has not checked the Terms-of-Use checkbox, the 'finish now' and 'I Want to Sign in Now!' buttons are grayed out; if the user clicks the grayed-out 'finish now' button before checking the checkbox, a popup message tells the user that they must read and agree to the Terms of Use before they can proceed. If the customer does not agree to be bound by the Terms of Use, they cannot access or use the Website or submit an order or bid. Exit: registration cannot proceed.",
+          "evidence_refs": [
+            "EC-EF-009",
+            "EC-EF-010",
+            "EC-EF-016"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "At Member ID ('Handle') validation, if the Member ID is not unique in the customer table, registration cannot proceed. Exit: account creation is rejected.",
+          "evidence_refs": [
+            "EC-EF-001",
+            "EC-EF-004"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "At password validation, if the password is outside the required 8 to 12 character range, the input is invalid and registration cannot proceed. Exit: account creation is rejected.",
+          "evidence_refs": [
+            "EC-EF-002"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "At Email Address validation, if the email address already exists in the customer table, the registrant is notified that the email address is already in use and registration cannot proceed. Upon notification, the system asks whether the registrant needs to reset the password for that account; if the registrant indicates 'yes', the system generates an email with a temporary password. Exit: no account is created; an optional password-reset email may be generated.",
+          "evidence_refs": [
+            "EC-EF-000",
+            "EC-EF-005",
+            "EC-EF-011",
+            "EC-EF-012"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "When a new customer tries to create an account, the Consumer Protection negative file is cross-referenced; if there is a match, the registrant receives the message: \"We are sorry, we are unable to create an auction account for you at this time. If you believe this message to be in error, please contact our Customer Service team at: 800-550-8393.\" Exit: account creation is denied.",
+          "evidence_refs": [
+            "EC-EF-013"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "At registration/site interaction, the system assumes cookies are enabled by default (default is 'On'); if cookies are disabled, the website will not function correctly and registration will fail unless the customer manually corrects the cookie setting. Exit: registration fails unless the user corrects cookie settings.",
+          "evidence_refs": [
+            "EC-EF-014"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "At eligibility validation, use of the Website is restricted to individuals age 18 or over, or individuals between the ages of 13 and 18 using the Website with the permission of a parent or guardian. By using the Website, the customer represents that they are in one of these categories. Exit: a customer who is not in one of these categories is not permitted to use the Website.",
+          "evidence_refs": [
+            "EC-EF-017"
+          ],
+          "step_number": 7
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-009",
+        "EC-EF-010",
+        "EC-EF-016",
+        "EC-EF-001",
+        "EC-EF-004",
+        "EC-EF-002",
+        "EC-EF-000",
+        "EC-EF-005",
+        "EC-EF-011",
+        "EC-EF-012",
+        "EC-EF-013",
+        "EC-EF-014",
+        "EC-EF-017"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "terms-not-accepted",
+          "member-id-uniqueness",
+          "password-format",
+          "email-uniqueness",
+          "duplicate-email-password-reset",
+          "consumer-negative-file-match",
+          "cookies-disabled",
+          "age-eligibility"
+        ],
+        "missing_aspects": [
+          "After a duplicate-email notification, the path when the registrant declines the password-reset offer is not documented.",
+          "A numbered main_flow was not supplied, so the exception branch divergence points are expressed by validation point rather than a numbered main-flow step."
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The customer has access to a valid email address and phone number for use during account creation.",
+          "evidence_refs": [
+            "EC-PC-005"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer's browser has cookies enabled (or retains the default 'On' cookie setting).",
+          "evidence_refs": [
+            "EC-EF-014"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-005",
+        "EC-EF-014"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "customer-contact-details",
+          "cookies-enabled"
+        ],
+        "missing_aspects": [
+          "Evidence is required to support the claim that this condition is necessary for the website to function correctly."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The system completes the short registration process when the customer clicks the 'I Want to Sign in Now!' button without providing additional optional information. If the customer instead chooses the optional full-registration path to Registration Page 2, then upon successful completion of Registration Page 2 the system saves all provided optional information (billing/shipping addresses, shipping preferences) to the customer's account profile.",
+          "evidence_refs": [
+            "EC-MF-010",
+            "EC-AF-000",
+            "EC-PO-005"
+          ]
+        },
+        {
+          "content": "After the registration process is completed (via short or full registration), the system displays a 'Welcome Back!' message and presents the Sign In page with fields for Member ID/Email and Password.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "Completing the registration process triggers an automated transactional email containing a 'Thank You' message for registering and instructing the customer to enable cookies and add appropriate email addresses to their whitelist or Safe Senders list.",
+          "evidence_refs": [
+            "EC-PO-004",
+            "EC-PO-001"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Upon successful registration completion, the system displays a pop-up message instructing the user to add shop@jewelryTV.rsys1.com to their address book or safe senders list and to enable cookies in their browser.",
+          "evidence_refs": [
+            "EC-PO-003"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-010",
+        "EC-AF-000",
+        "EC-PO-005",
+        "EC-PO-000",
+        "EC-PO-004",
+        "EC-PO-001",
+        "EC-PO-003"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "On Registration Page 1, the customer enters their First Name and Last Name into the designated text fields.",
+          "evidence_refs": [
+            "EC-MF-005",
+            "EC-MF-003"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The customer provides an E-mail Address, enters it twice to verify it, and creates a unique Member ID ('Handle').",
+          "evidence_refs": [
+            "EC-MF-007",
+            "EC-MF-003"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The customer creates a password (8 to 12 characters) and verifies it by re-entering it.",
+          "evidence_refs": [
+            "EC-MF-006",
+            "EC-MF-003"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The customer selects a payment method (PayPal, Amazon Payments, or Credit Card).",
+          "evidence_refs": [
+            "EC-MF-008"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The customer checks the box to accept and agree to the Terms of Use.",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The customer clicks the 'I Want to Sign in Now!' button to finish the short registration process immediately without providing additional optional information.",
+          "evidence_refs": [
+            "EC-MF-010",
+            "EC-MF-000"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "Upon completion of the short registration process, the system triggers an automated transactional 'Thank You' email instructing the customer to enable cookies and add the appropriate email address(es) to their whitelist or Safe Senders list.",
+          "evidence_refs": [
+            "EC-MF-004"
+          ],
+          "step_number": 7
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-005",
+        "EC-MF-003",
+        "EC-MF-007",
+        "EC-MF-006",
+        "EC-MF-008",
+        "EC-MF-009",
+        "EC-MF-010",
+        "EC-MF-000",
+        "EC-MF-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-page1-personal-information",
+          "MF-email-handle",
+          "MF-password",
+          "MF-payment-selection",
+          "MF-terms-acceptance",
+          "MF-short-process-submit",
+          "MF-success-email"
+        ],
+        "missing_aspects": [
+          "billing details entry for credit card selection",
+          "clarification that this option skips shipping/email preferences collection defined in full registration"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered when a NEW customer tries to create a new JTVauctions.com account.",
+          "evidence_refs": [
+            "EC-TR-004"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-new-customer",
+          "trigger-decision-to-register",
+          "trigger-register-now-click",
+          "trigger-registration-page-entry"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The customer wants to create a new free membership account on JTVauctions.com as quickly as possible, with confidence that their data is secure and with access to their preferred payment type.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-001",
+            "EC-G-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-001",
+        "EC-G-002"
+      ],
+      "scope_contract": {
+        "goal_statement": "The customer wants to create a new free membership account on JTVauctions.com as quickly as possible, with confidence that their data is secure and with access to their preferred payment type.",
+        "canonical_success_scenario": "A new customer registers a free membership account on JTVauctions.com.",
+        "start_boundary": "A new customer initiates JTVauctions.com account registration.",
+        "success_boundary": "The customer successfully creates the JTVauctions.com account.",
+        "in_scope_actions": [
+          "Create the JTVauctions.com account",
+          "Select a preferred payment type during registration"
+        ],
+        "excluded_adjacent_actions": [
+          "Bid on auction items",
+          "Place an order or pay for won items",
+          "Sign in after registration",
+          "Manage an existing account",
+          "Admin review or approval of registrations"
+        ],
+        "variant_dimensions": [
+          "Preferred payment type"
+        ],
+        "evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal-account-creation",
+          "goal-free-membership",
+          "goal-speed",
+          "goal-data-security",
+          "goal-preferred-payment"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 6: Instead of clicking 'I Want to Sign in Now!' to finish the short registration, the customer chooses to continue to Registration Page 2, where they may optionally provide additional information such as billing/shipping addresses, shipping preferences, and email preferences; the customer then clicks 'Finish Now' to complete the full registration process immediately, and the system saves the provided optional information to the customer's account profile.",
+          "evidence_refs": [
+            "EC-AF-000",
+            "EC-AF-001",
+            "EC-PO-005"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-000",
+        "EC-AF-001",
+        "EC-PO-005"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "alt-full-registration-page2",
+          "alt-optional-information",
+          "alt-finish-now"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] Postcondition 1 introduces an optional full-registration path to Registration Page 2 that saves billing/shipping information, but the Main Flow only describes the short-registration path and never presents the choice to continue to Registration Page 2. The full-registration outcome is therefore not reachable from the Main Flow as written.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Preconditions assert that cookies are already enabled before registration, but Main Flow step 7 and Postconditions 3 and 4 instruct the customer to enable cookies after registration. This is a vertical contradiction: if cookies must already be enabled, the downstream enable-cookies instructions are unnecessary, while if cookies may be disabled, the precondition is too strong.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The precondition requires a valid phone number, but neither the Trigger, Main Flow, nor Postconditions collect or use a phone number in this registration flow. The phone-number requirement is therefore not a necessary external state for the vertical flow; only the email address is supported by downstream steps.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": [
+        "The main flow is the short registration path ('I Want to Sign in Now!' and no optional information), but postcondition 1 states that when the full registration path is used billing/shipping addresses and shipping preferences are saved. The main flow does not include that full path or its optional-information collection, so the postcondition is not reachable from the described main flow.",
+        "The main flow defines only the short registration path, ending with the 'I Want to Sign in Now!' action and the thank-you email. It never includes Registration Page 2 or a full-registration branch. Postcondition 1 nevertheless guarantees that in the full registration path optional billing/shipping/shipping-preference data is saved, which is not reachable from the main flow as written."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 58,
+    "cross_page_cards": 29,
+    "modalities": {
+      "text": 49,
+      "diagram": 9
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1740.356,
+    "llm_calls": 17.0,
+    "llm_seconds": 1640.221,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 99.784,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 7.0,
+    "judge_calls": 0,
+    "cards_collected": 58,
+    "cards_referenced": 34,
+    "evidence_reused": true,
+    "reused_card_count": 58,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/jtvauctions/Customer_Register_Customer_Account-evidence.json",
+    "dra_elapsed_seconds": 1024.242,
+    "dra_llm_calls": 10,
+    "dra_llm_seconds": 1024.236,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_calls": 0,
+    "dra_judge_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "At the Terms-of-Use acceptance point, if the user has not checked the Terms-of-Use checkbox, the 'finish now' and 'I Want to Sign in Now!' buttons are grayed out; if the user clicks the grayed-out 'finish now' button before checking the checkbox, a popup message tells the user that they must read and agree to the Terms of Use before they can proceed. If the customer does not agree to be bound by the Terms of Use, they cannot access or use the Website or submit an order or bid. Exit: registration cannot proceed.",
+            "evidence_refs": [
+              "EC-EF-009",
+              "EC-EF-010",
+              "EC-EF-016"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At Member ID ('Handle') validation, if the Member ID is not unique in the customer table, registration cannot proceed. Exit: account creation is rejected.",
+            "evidence_refs": [
+              "EC-EF-001",
+              "EC-EF-004"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "At password validation, if the password is outside the required 8 to 12 character range, the input is invalid and registration cannot proceed. Exit: account creation is rejected.",
+            "evidence_refs": [
+              "EC-EF-002"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "At Email Address validation, if the email address already exists in the customer table, the registrant is notified that the email address is already in use and registration cannot proceed. Upon notification, the system asks whether the registrant needs to reset the password for that account; if the registrant indicates 'yes', the system generates an email with a temporary password. Exit: no account is created; an optional password-reset email may be generated.",
+            "evidence_refs": [
+              "EC-EF-000",
+              "EC-EF-005",
+              "EC-EF-011",
+              "EC-EF-012"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "When a new customer tries to create an account, the Consumer Protection negative file is cross-referenced; if there is a match, the registrant receives the message: \"We are sorry, we are unable to create an auction account for you at this time. If you believe this message to be in error, please contact our Customer Service team at: 800-550-8393.\" Exit: account creation is denied.",
+            "evidence_refs": [
+              "EC-EF-013"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "At registration/site interaction, the system assumes cookies are enabled by default (default is 'On'); if cookies are disabled, the website will not function correctly and registration will fail unless the customer manually corrects the cookie setting. Exit: registration fails unless the user corrects cookie settings.",
+            "evidence_refs": [
+              "EC-EF-014"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "At eligibility validation, use of the Website is restricted to individuals age 18 or over, or individuals between the ages of 13 and 18 using the Website with the permission of a parent or guardian. By using the Website, the customer represents that they are in one of these categories. Exit: a customer who is not in one of these categories is not permitted to use the Website.",
+            "evidence_refs": [
+              "EC-EF-017"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The customer has access to a valid email address and phone number for use during account creation.",
+            "evidence_refs": [
+              "EC-PC-005"
+            ]
+          },
+          {
+            "content": "The customer's browser has cookies enabled (or retains the default 'On' cookie setting).",
+            "evidence_refs": [
+              "EC-EF-014"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The system completes the short registration process when the customer clicks the 'I Want to Sign in Now!' button without providing additional optional information. If the customer instead chooses the optional full-registration path to Registration Page 2, then upon successful completion of Registration Page 2 the system saves all provided optional information (billing/shipping addresses, shipping preferences) to the customer's account profile.",
+            "evidence_refs": [
+              "EC-MF-010",
+              "EC-AF-000",
+              "EC-PO-005"
+            ]
+          },
+          {
+            "content": "After the registration process is completed (via short or full registration), the system displays a 'Welcome Back!' message and presents the Sign In page with fields for Member ID/Email and Password.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "Completing the registration process triggers an automated transactional email containing a 'Thank You' message for registering and instructing the customer to enable cookies and add appropriate email addresses to their whitelist or Safe Senders list.",
+            "evidence_refs": [
+              "EC-PO-004",
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "Upon successful registration completion, the system displays a pop-up message instructing the user to add shop@jewelryTV.rsys1.com to their address book or safe senders list and to enable cookies in their browser.",
+            "evidence_refs": [
+              "EC-PO-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "On Registration Page 1, the customer enters their First Name and Last Name into the designated text fields.",
+            "evidence_refs": [
+              "EC-MF-005",
+              "EC-MF-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The customer provides an E-mail Address, enters it twice to verify it, and creates a unique Member ID ('Handle').",
+            "evidence_refs": [
+              "EC-MF-007",
+              "EC-MF-003"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The customer creates a password (8 to 12 characters) and verifies it by re-entering it.",
+            "evidence_refs": [
+              "EC-MF-006",
+              "EC-MF-003"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The customer selects a payment method (PayPal, Amazon Payments, or Credit Card).",
+            "evidence_refs": [
+              "EC-MF-008"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The customer checks the box to accept and agree to the Terms of Use.",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The customer clicks the 'I Want to Sign in Now!' button to finish the short registration process immediately without providing additional optional information.",
+            "evidence_refs": [
+              "EC-MF-010",
+              "EC-MF-000"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Upon completion of the short registration process, the system triggers an automated transactional 'Thank You' email instructing the customer to enable cookies and add the appropriate email address(es) to their whitelist or Safe Senders list.",
+            "evidence_refs": [
+              "EC-MF-004"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The use case is triggered when a NEW customer tries to create a new JTVauctions.com account.",
+            "evidence_refs": [
+              "EC-TR-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The customer wants to create a new free membership account on JTVauctions.com as quickly as possible, with confidence that their data is secure and with access to their preferred payment type.",
+            "evidence_refs": [
+              "EC-G-000",
+              "EC-G-001",
+              "EC-G-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 6: Instead of clicking 'I Want to Sign in Now!' to finish the short registration, the customer chooses to continue to Registration Page 2, where they may optionally provide additional information such as billing/shipping addresses, shipping preferences, and email preferences; the customer then clicks 'Finish Now' to complete the full registration process immediately, and the system saves the provided optional information to the customer's account profile.",
+            "evidence_refs": [
+              "EC-AF-000",
+              "EC-AF-001",
+              "EC-PO-005"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=47]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=47]",
+    "directory": "random_order/seed_047",
+    "seed": 47,
+    "slot_order": [
+      "exception_flow",
+      "primary_actor",
+      "preconditions",
+      "postconditions",
+      "main_flow",
+      "trigger",
+      "goal",
+      "alternative_flow"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "936046fc235e4f93b642c4a1cb16f365"
+}

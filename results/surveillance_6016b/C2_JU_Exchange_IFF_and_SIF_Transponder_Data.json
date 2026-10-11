@@ -1,0 +1,696 @@
+{
+  "use_case_name": "Exchange IFF and SIF Transponder Data",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To exchange IFF/SIF modes and codes, including surveillance data reporting, unique Mode II code protection, data updating, and clearing of IFF/SIF data.",
+          "evidence_refs": [
+            "EC-G-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU system has achieved Active status (or is returning to Active status from Inactive status or TDS Failure).",
+          "evidence_refs": [
+            "EC-PC-007",
+            "EC-PC-039"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "A minimum time delay has elapsed since the C2 JU achieved Active status (12 seconds for Air or Surface tracks; 48 seconds for Land tracks).",
+          "evidence_refs": [
+            "EC-PC-039",
+            "EC-PC-040"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU has completed sufficient reporting responsibility checks, correlation, and data registration.",
+          "evidence_refs": [
+            "EC-PC-008",
+            "EC-PC-038"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU is participating in the exchange of J3 Surveillance messages and is configured to transmit surveillance information in Network PGs.",
+          "evidence_refs": [
+            "EC-PC-022",
+            "EC-PC-042"
+          ]
+        },
+        {
+          "content": "The track is an established track with locally held IFF/SIF data (either 'Valid Data' or 'No Data'), defined as valid code responses from own sensors on two or more successive interrogations (Modes I, II, III), one interrogation (Mode IV), manual entry, acceptance from the Difference Resolution Matrix, or simply held locally for data exchange purposes.",
+          "evidence_refs": [
+            "EC-PC-002",
+            "EC-PC-003",
+            "EC-PC-006",
+            "EC-PC-033",
+            "EC-PC-037",
+            "EC-PC-054"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The track is an established track with locally held IFF/SIF valid data, defined as valid code responses from own sensors on two or more successive interrogations (Modes I, II, III), one interrogation (Mode IV), manual entry, or acceptance from the Difference Resolution Matrix.",
+          "evidence_refs": [
+            "EC-PC-002",
+            "EC-PC-003",
+            "EC-PC-006",
+            "EC-PC-033"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "IFF/SIF data (Modes I, II, III, and IF) is available to the C2 JU for transmission.",
+          "evidence_refs": [
+            "EC-PC-001",
+            "EC-PC-035"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU is the R2 unit, it must hold R2 (Receiver/Tracker) capability for the track type.",
+          "evidence_refs": [
+            "EC-PC-004",
+            "EC-PC-005"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU is not the R2 unit, it must be holding data that is different or non-zero compared to the R2 unit, or have locally entered data changes requiring reporting.",
+          "evidence_refs": [
+            "EC-PC-021"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU has the capability to indicate simulated tracks via the Simulation Indicator in J2 or J3 messages, and has coordinated with interface participants to ensure simulated tracks are not assigned TNs from other systems.",
+          "evidence_refs": [
+            "EC-PC-012",
+            "EC-PC-013",
+            "EC-PC-043"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-007",
+        "EC-PC-039",
+        "EC-PC-040",
+        "EC-PC-008",
+        "EC-PC-038",
+        "EC-PC-022",
+        "EC-PC-042",
+        "EC-PC-002",
+        "EC-PC-003",
+        "EC-PC-006",
+        "EC-PC-033",
+        "EC-PC-037",
+        "EC-PC-054",
+        "EC-PC-001",
+        "EC-PC-035",
+        "EC-PC-004",
+        "EC-PC-005",
+        "EC-PC-021",
+        "EC-PC-012",
+        "EC-PC-013",
+        "EC-PC-043"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU receives a J2 PPLI report containing Mode III codes from the responsible unit, a J7.0 (ACT = 0) Drop Track message, a J7.5 (ACT = 1) Difference Report, a J7.1 (ACT = 1) Data Update Request, or an operator initiates a change, update, or clearing of IFF/SIF data.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-TR-002",
+            "EC-TR-008",
+            "EC-TR-009",
+            "EC-TR-013"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-TR-002",
+        "EC-TR-008",
+        "EC-TR-009",
+        "EC-TR-013"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow"
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow"
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a J2 PPLI message is not received for 40 to 60 seconds, or if the C2 JU (as R2) receives a J7.0 (ACT = 0) Drop Track message, the C2 JU assumes no responsibility for reporting the subject JU on the Surveillance Network PG.",
+          "evidence_refs": [
+            "EC-EF-000",
+            "EC-EF-025"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "If all IFF/SIF nonzero mode codes are zero, the PPLI and IFF/SIF indicators are de-correlated. The C2 JU initiates a Mode III track report with locally held data. If all nonzero mode codes were not received or there is no Mode III code, the C2 JU initiates a Mode II track report with locally held data using the Mode III code as the track number.",
+          "evidence_refs": [
+            "EC-EF-001",
+            "EC-EF-026",
+            "EC-AF-032"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU is not the R2 unit and holds local sensor data that conflicts with data from the R2 unit, reporting by the C2 JU is halted.",
+          "evidence_refs": [
+            "EC-EF-002"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU receives a J7.0 (ACT = 0) Drop Track message and finds a correlation with a track for which another C2 JU has R2 responsibility with different Track Numbers, the C2 JU transmits a J7.2 (RV = 1) Correlation message (Source TN as Retained TN, surveillance TN as Dropped TN) and stops reporting IFF/SIF data for the track.",
+          "evidence_refs": [
+            "EC-AF-003",
+            "EC-AF-010",
+            "EC-AF-063"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU receives a J7.0 (ACT = 0) Drop Track message but does not find a correlation with a track where another C2 JU has R2, the C2 JU assumes R2 responsibility for the next transmission opportunity (after performing a correlation test for Air/Surface tracks).",
+          "evidence_refs": [
+            "EC-AF-059",
+            "EC-AF-074",
+            "EC-AF-080"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "If the automatic correlation test fails against remote tracks, the C2 JU assigns a new Track Number (TNb) to the Dropped TN (TNd) for Air, Surface, or Land tracks.",
+          "evidence_refs": [
+            "EC-EF-013"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU holds locally derived data that differs from the value accepted for retransmission (when assuming R2), the C2 JU reports the locally derived data instead of the received values. This includes retransmitting non-NS data for Platform, Platform Activity, and Specific Type fields received from the controlling unit regardless of locally derived data, and retransmitting Special Interest Indicator as value 1 if set.",
+          "evidence_refs": [
+            "EC-AF-019",
+            "EC-TR-004",
+            "EC-AF-020",
+            "EC-AF-021"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "If a track with Valid Data fails to respond to interrogations, it is not changed to No Data status unless a Clear action (J7.5 ACT = 0) is taken by an operator. Changes from Valid Data to No Data status due to the clearing function do not cause the transmission of a change report.",
+          "evidence_refs": [
+            "EC-EF-016",
+            "EC-EF-017",
+            "EC-AF-005",
+            "EC-AF-023",
+            "EC-AF-024",
+            "EC-AF-055"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a JU receives a J7.0 (ACT = 0) message on an emergency point, the unit is declared inactive, or no periodic update is received for three consecutive intervals, another JU may assume R2 for the point via operator action only.",
+          "evidence_refs": [
+            "EC-EF-007",
+            "EC-AF-013",
+            "EC-AF-034"
+          ],
+          "step_number": 9
+        },
+        {
+          "content": "If a JU receives a J2 PPLI message from a unit with R2 that has the NPS Indicator set to Inactive, Conditional Radio Silence, or TDS Failure, the receiving JU may assume R2 for the next transmission opportunity if local reporting eligibility remains.",
+          "evidence_refs": [
+            "EC-EF-021",
+            "EC-AF-044",
+            "EC-AF-061",
+            "EC-AF-076"
+          ],
+          "step_number": 10,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a JU has not received a remote report on a locally held Air/Surface track for ~40 seconds, or a Land track for ~120 seconds, the JU assumes R2.",
+          "evidence_refs": [
+            "EC-EF-018",
+            "EC-AF-043",
+            "EC-AF-058",
+            "EC-AF-073"
+          ],
+          "step_number": 11,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a JU without R2 for a nonreal-time track with TQ=0 receives a local nonreal-time update, it assumes R2 for that track.",
+          "evidence_refs": [
+            "EC-EF-020",
+            "EC-AF-060",
+            "EC-AF-075",
+            "EC-AF-081"
+          ],
+          "step_number": 12
+        },
+        {
+          "content": "If a JU with R2 receives a remote track report where the remote Track Quality (TQ) is greater than local TQ, or TQ is equal but from a JU with a higher Station Number (STN), the JU relinquishes R2.",
+          "evidence_refs": [
+            "EC-EF-022",
+            "EC-AF-045",
+            "EC-AF-062",
+            "EC-AF-077",
+            "EC-AF-082",
+            "EC-AF-083"
+          ],
+          "step_number": 13,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a C2 JU is not the R2 unit and receives a J3.XC1 'No Data' report from the R2 unit while holding local nonzero IFF/SIF data, the C2 JU transmits a J7.5 (ACT = 1) Difference Report to resolve the discrepancy.",
+          "evidence_refs": [
+            "EC-AF-006",
+            "EC-AF-041",
+            "EC-AF-056"
+          ],
+          "step_number": 14,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the automatic correlation test fails against remote tracks and the identities of the Retained and Dropped TNs are different, the last identity reported for the Dropped TN is processed as a J7.0 (ACT = 1) Identity Difference Report for the Retained TN. During this period, the C2 JU retains the Dropped TN as a remote track and does not reattempt correlation for 60 seconds.",
+          "evidence_refs": [
+            "EC-EF-014",
+            "EC-AF-039",
+            "EC-AF-048"
+          ],
+          "step_number": 15,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU receives a J7.0 (ACT = 0) message on a locally held track and correlation is found with a track where the C2 JU holds R2 and the TNs are the same, the C2 JU accepts the PPLI information as its own surveillance data, disregarding local J3 surveillance data (except Geodetic Position values).",
+          "evidence_refs": [
+            "EC-AF-004",
+            "EC-AF-064"
+          ],
+          "step_number": 16,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a C2 JU receives a J7.5 (ACT = 1) Difference Report indicating an unresolved IFF/SIF data difference, the JU does not generate a J7.0 (ACT = 0) message to relinquish R2.",
+          "evidence_refs": [
+            "EC-AF-026"
+          ],
+          "step_number": 17,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU is not the R2 unit, it shall not automatically correlate two tracks if the local and remote tracks have an Identity (ID) difference which constitutes a conflict, if they have different Mode II codes and the local Mode II code is current, or if both tracks are locally derived real-time tracks.",
+          "evidence_refs": [
+            "EC-EF-009",
+            "EC-EF-010",
+            "EC-EF-011",
+            "EC-AF-035",
+            "EC-AF-052"
+          ],
+          "step_number": 18
+        },
+        {
+          "content": "If a C2 JU receives a J7.0 or J7.2 Correlation message where either track has a Strength field set to a value greater than 1, or if both tracks have the Strength field set to 'No Statement' (for J7.2), the C2 JU shall reject the correlation.",
+          "evidence_refs": [
+            "EC-EF-012",
+            "EC-AF-036",
+            "EC-AF-042"
+          ],
+          "step_number": 19,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-000",
+        "EC-EF-025",
+        "EC-EF-001",
+        "EC-EF-026",
+        "EC-AF-032",
+        "EC-EF-002",
+        "EC-AF-003",
+        "EC-AF-010",
+        "EC-AF-063",
+        "EC-AF-059",
+        "EC-AF-074",
+        "EC-AF-080",
+        "EC-EF-013",
+        "EC-AF-019",
+        "EC-TR-004",
+        "EC-AF-020",
+        "EC-AF-021",
+        "EC-EF-016",
+        "EC-EF-017",
+        "EC-AF-005",
+        "EC-AF-023",
+        "EC-AF-024",
+        "EC-AF-055",
+        "EC-EF-007",
+        "EC-AF-013",
+        "EC-AF-034",
+        "EC-EF-021",
+        "EC-AF-044",
+        "EC-AF-061",
+        "EC-AF-076",
+        "EC-EF-018",
+        "EC-AF-043",
+        "EC-AF-058",
+        "EC-AF-073",
+        "EC-EF-020",
+        "EC-AF-060",
+        "EC-AF-075",
+        "EC-AF-081",
+        "EC-EF-022",
+        "EC-AF-045",
+        "EC-AF-062",
+        "EC-AF-077",
+        "EC-AF-082",
+        "EC-AF-083",
+        "EC-AF-006",
+        "EC-AF-041",
+        "EC-AF-056",
+        "EC-EF-014",
+        "EC-AF-039",
+        "EC-AF-048",
+        "EC-AF-004",
+        "EC-AF-064",
+        "EC-AF-026",
+        "EC-EF-009",
+        "EC-EF-010",
+        "EC-EF-011",
+        "EC-AF-035",
+        "EC-AF-052",
+        "EC-EF-012",
+        "EC-AF-036",
+        "EC-AF-042"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "IFF/SIF data is reported in J3.1 messages when available, and in J3.3 messages if the data differs from previously reported values. For established tracks, Valid Data (defined by two or more successive successful interrogations for Modes I, II, III, or one for Mode IV) is maintained even if responses fail, unless a Clear action is taken.",
+          "evidence_refs": [
+            "EC-PO-021",
+            "EC-PO-022",
+            "EC-PO-050",
+            "EC-PO-051"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU reports the most current IFF/SIF data. If all nonzero mode codes are zero, the PPLI and IFF/SIF indicators are de-correlated, and the C2 JU initiates a Mode III track report with locally held data (using Mode III code as track number if none received), reporting PPLI Track Number and Identity Indicator as No Statement (value 0).",
+          "evidence_refs": [
+            "EC-PO-001",
+            "EC-PO-038",
+            "EC-PO-055"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Surveillance reporting responsibility (R2) is assumed by the C2 JU when it has not received a remote report for ~40 seconds (Air/Surface) or ~120 seconds (Land), or upon specific triggers like a J7.0 Drop Track message, NPS Indicator set to Inactive/Conditional Radio Silence/TDS Failure, or local nonreal-time updates. The R2 unit reports IFF/SIF data in J3.2C1 (Air) and J3.3C1 (Surface) words; other JUs report only if holding different data.",
+          "evidence_refs": [
+            "EC-PO-005",
+            "EC-PO-015",
+            "EC-PO-017",
+            "EC-PO-018",
+            "EC-PO-059"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Upon assuming R2 for an IU, the C2 JU reports the Identity as 'Friend', and the PPLI Track Number and Identity Indicator as value 1. If locally derived data differs from accepted retransmission values (except for Platform, Platform Activity, Specific Type, and Special Interest Indicator fields which are retransmitted as received), the locally derived data is reported instead.",
+          "evidence_refs": [
+            "EC-PO-029",
+            "EC-PO-030",
+            "EC-PO-031",
+            "EC-PO-037",
+            "EC-PO-057",
+            "EC-PO-081"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "IFF/SIF data cleared via J7.0 (ACT = 0) is reported for the first Reference TN and applies to the entire line or area. Subsequent unclosed segments match the time the C2 JU ceased reporting.",
+          "evidence_refs": [
+            "EC-PO-023",
+            "EC-PO-024"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Track Number (TN) status is determined (retain original or assign new TN). If a new TN is assigned, a Drop Track Report is transmitted on the old TN. If correlation succeeds, the Retained TN is used for reporting, the Dropped TN is reported as dropped (via J7.0 ACT=0 by R2), and nonzero IFF/SIF data from the Dropped TN is adopted as local surveillance data and transmitted in the next message.",
+          "evidence_refs": [
+            "EC-PO-008",
+            "EC-PO-027",
+            "EC-PO-028",
+            "EC-PO-043",
+            "EC-PO-046"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "When a JU ceases reporting a point, line, or area for which it held reporting responsibility, it transmits a J7.0 (ACT = 0) message, except when relinquishing R2 to another JU, the track becomes an Active IU on the network, or the track is automatically purged after a specified time interval without a remote report.",
+          "evidence_refs": [
+            "EC-PO-004",
+            "EC-PO-009",
+            "EC-PO-036",
+            "EC-PO-039",
+            "EC-PO-053"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The system implements 'Reset to No Statement' value transmission; upon receipt, the locally held value for that field automatically reverts to 'No Statement'.",
+          "evidence_refs": [
+            "EC-PO-006",
+            "EC-PO-007"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-021",
+        "EC-PO-022",
+        "EC-PO-050",
+        "EC-PO-051",
+        "EC-PO-001",
+        "EC-PO-038",
+        "EC-PO-055",
+        "EC-PO-005",
+        "EC-PO-015",
+        "EC-PO-017",
+        "EC-PO-018",
+        "EC-PO-059",
+        "EC-PO-029",
+        "EC-PO-030",
+        "EC-PO-031",
+        "EC-PO-037",
+        "EC-PO-057",
+        "EC-PO-081",
+        "EC-PO-023",
+        "EC-PO-024",
+        "EC-PO-008",
+        "EC-PO-027",
+        "EC-PO-028",
+        "EC-PO-043",
+        "EC-PO-046",
+        "EC-PO-004",
+        "EC-PO-009",
+        "EC-PO-036",
+        "EC-PO-039",
+        "EC-PO-053",
+        "EC-PO-006",
+        "EC-PO-007"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "main_flow",
+      "detail": "No evidence found for slot 'main_flow'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No evidence found for slot 'alternative_flow'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The Main Flow slot is empty. Without any steps defined, the main flow cannot demonstrate continuity with the trigger (which includes multiple disparate inputs like J2 PPLI, J7.0, J7.5, J7.1, and Operator). The system cannot proceed from the trigger to the postconditions (e.g., updating data, dropping tracks, assuming R2) without explicit processing steps. This is a structural failure of the use case description. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The Main Flow slot is empty. The Trigger specifies multiple distinct events (J2 PPLI report, J7.0 Drop Track, J7.5 Difference Report, J7.1 Data Update Request, operator action) that initiate the exchange. Without Main Flow steps, there is no defined sequence of actions to process these specific triggers, violating the continuity requirement between Trigger and Postconditions. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[goal_mainflow_alignment] The main_flow slot is empty. While the Goal (EC-G-002) states the purpose is to 'exchange IFF/SIF modes and codes', the main_flow provides no steps describing how the actor performs this exchange. Without defined actions in main_flow, the goal cannot be realized, and exception flows (like dropping tracks or handling data conflicts) lack a context to diverge from or return to. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[actor_mainflow_presence] The main_flow is empty, so the primary actor 'C2 JU' does not appear in it. Per the rule, the primary actor must appear in the main flow. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] The main_flow slot is empty. The postconditions describe complex state changes (assuming R2 responsibility, tracking TN status, handling J7.0/J7.5 messages, specific reporting formats like J3.2C1/J3.3C1) that cannot be reached without defined steps in the main flow to handle the triggers listed (e.g., receiving J2 PPLI, J7.0, J7.5). Without main flow steps, the system has no defined behavior to transition from the preconditions/trigger state to the postcondition state.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[actor_mainflow_presence] The main_flow slot is empty/undefined. It contains no text or steps where the Primary Actor 'C2 JU' can be verified to appear. Per rule actor_mainflow_presence, the Primary Actor must appear (by name or pronoun) in Main Flow.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[goal_mainflow_alignment] The main_flow slot is empty/undefined. It contains no steps to verify against the goal. Per rule goal_mainflow_alignment, the Goal must be consistent with the complete behavior described in Main Flow. Without main_flow content, alignment cannot be established, effectively failing the check.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[exceptionflow_exit_coverage] The main_flow slot is empty/undefined. Per rule exceptionflow_exit_coverage, every branch in Exception Flow must have a clear exit (return to a Main Flow step, terminate, or hand off). With no main_flow steps defined, it is impossible to verify that exception flows (e.g., Step 1: assume no responsibility, Step 7: report locally derived data) have valid exit points or return paths.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "preconditions",
+        "exception_flow"
+      ],
+      "inconsistency_hints": [
+        "The Trigger specifies that a J7.5 (Difference Report) or J7.1 (Data Update Request) can initiate the use case. A J7.5 implies that the C2 JU holds IFF/SIF data that differs from the R2 unit (or vice versa, depending on direction, but specifically 'Difference Report' implies a discrepancy or update need). However, Preconditions Claim 4 ('A previously reported track... exists') only asserts the existence of a track, not the specific state required for a difference report (i.e., that local data differs from remote data or that a change has occurred). More critically, Trigger Claim 1 includes 'operator initiates a change... of IFF/SIF data'. Preconditions Claim 4 requires a track to exist, but does not explicitly preclude an operator clearing data on a track that might be in a state where clearing is restricted, or it fails to capture the precondition that the track must be 'established' with locally held data (Claim 5) which is necessary to have 'data' to change/clear. The most direct gap is that for a J7.5 (Difference Report) to be valid/relevant, the C2 JU must be holding data that is different from the R2 unit (as stated in Preconditions Claim 9). If the C2 JU is not the R2 unit, this precondition is critical. If the C2 JU *is* the R2 unit, a J7.5 from the R2 to non-R2 is a data update. The trigger lists J7.5 as a trigger, but Preconditions Claim 9 says 'If the C2 JU is not the R2 unit, it must be holding data that is different...'. If the C2 JU *is* the R2 unit, it doesn't need to hold different data from itself to send a J7.5 (it sends it to others). However, if the C2 JU receives a J7.5, it implies the sender has data that differs or updates. The trigger lists 'receiving a J7.5' as a trigger. Preconditions Claim 9 covers the 'not R2' case but doesn't explicitly cover the 'is R2' case for *receiving* updates (though Claim 8 covers R2 capability). The bigger issue is the operator trigger. Preconditions Claim 5 requires 'established track with locally held IFF/SIF valid data'. If an operator wants to 'clear' IFF/SIF data, the track must exist and have data. This is covered. However, the Trigger lists 'J7.0 (ACT=0) Drop Track' as a trigger. Preconditions Claim 7 says 'If C2 JU is R2... hold R2 capability'. But if the C2 JU receives a J7.0 (Drop Track) from an R2, it needs to have been tracking that track. Preconditions Claim 4 covers existence. The most significant gap is that the Trigger includes 'J7.5 (ACT=1) Difference Report'. This message type is typically sent by the R2 to non-R2 JUs to update their data. If the C2 JU receives this, it becomes the updater for that specific field. Preconditions Claim 9 states: 'If the C2 JU is not the R2 unit, it must be holding data that is different or non-zero compared to the R2 unit'. This precondition is for *reporting* differences (sending J7.5/7.1). It is not a precondition for *receiving* a difference report. Receiving a difference report requires the C2 JU to have a correlation/track (Claim 4) and valid data to potentially overwrite or update. However, the most critical missing precondition is related to the 'J7.0 Drop Track' trigger. If the C2 JU receives a J7.0 Drop Track, it implies the R2 is dropping the track. The C2 JU must have a track that matches. Preconditions Claim 4 covers this. But look at Preconditions Claim 2: 'Minimum time delay... elapsed'. If the trigger is a J7.0 Drop Track, does the time delay matter? Likely not, as it's a command. But Preconditions Claim 1 requires 'Active status'. This is covered. The real issue is the Trigger lists 'J7.5 ... Difference Report'. Preconditions Claim 9 is a *sending* precondition for non-R2 units. It is not a precondition for *receiving* a difference report. However, if the C2 JU is the R2 unit, it doesn't receive J7.5s from itself. It receives J7.1s? No, J7.1 is Data Update Request. The trigger lists 'J7.1 ... Data Update Request'. This is usually sent by a non-R2 to R2. If C2 JU receives J7.1, it must be R2. Preconditions Claim 8 covers 'If C2 JU is R2...'. So that's covered. What about J7.5 received by C2 JU? If C2 JU is not R2, it receives J7.5 from R2. Preconditions Claim 9 says 'If not R2, must hold data different...'. This is a precondition for *sending* a J7.5 (Difference Report). It is NOT a precondition for *receiving* one. The receiver just needs to have the track. So Claim 9 is misapplied or insufficiently broad if it's intended to govern the scenario where the C2 JU is involved in a difference exchange. But actually, the rule is `trigger_preconditions_coverage`. The trigger is 'Receive J7.5'. The precondition 'Hold data different' is not required to *receive* a J7.5. It is required to *send* one. So the trigger is valid without that specific precondition for the receiver. However, the trigger also includes 'Operator initiates a change'. Preconditions Claim 5 requires 'locally held IFF/SIF valid data'. If the operator clears the data, does the track need to be 'established'? Yes. This is covered. The most glaring omission is that the Trigger includes 'J7.0 (ACT=0) Drop Track'. This action clears the track. Preconditions Claim 7 says 'If C2 JU is R2... hold R2 capability'. If C2 JU is NOT R2, and receives a Drop Track from R2, it needs to have a track. Claim 4 covers this. But what if the C2 JU is the one *sending* the Drop Track? The trigger says 'C2 JU receives...'. So we are looking at inbound messages. The trigger is 'C2 JU receives a J7.0...'. If C2 JU receives a J7.0, it means the R2 (or another JU) is dropping the track. C2 JU needs to have that track. Claim 4 covers this. Why is this an issue? Let's look at Preconditions Claim 6: 'IFF/SIF data ... is available to the C2 JU for transmission.' If the trigger is 'Receive J7.0 Drop Track', the C2 JU doesn't necessarily need to transmit IFF/SIF data immediately; it needs to update its local state (drop the track or stop reporting). However, the Use Case is 'Exchange IFF and SIF Transponder Data'. The postconditions discuss reporting. If the track is dropped, reporting stops. The precondition 'IFF/SIF data is available' might not be necessary if the action is just to drop. But the use case goal is 'exchange IFF/SIF modes... including ... clearing'. Clearing implies data existed. Claim 5 says 'locally held IFF/SIF valid data'. This is better. Claim 6 is redundant for the drop scenario? No, it's a precondition for the *use case* generally. The issue is that the Trigger includes 'J7.0 Drop Track' but the Preconditions do not explicitly state that the C2 JU's track is currently active/valid enough to be dropped (Claim 4 says 'previously reported track exists'). This seems sufficient. Let's look closer at the 'J7.5' trigger. If C2 JU receives a J7.5, it updates its data. Preconditions Claim 5 requires 'established track with locally held IFF/SIF valid data'. Does a J7.5 require the local data to be 'valid' (2 successive interrogations)? Or just 'held'? Claim 5 says 'valid data, defined as...'. If the C2 JU has only 'suspect' data (1 interrogation), can it receive a J7.5? Yes, and it should update. But Claim 5 restricts to 'valid data'. This is a restriction that might block the use case for tracks that are not yet fully valid but are being updated by the R2. Therefore, Preconditions Claim 5 is too restrictive for the 'Receive J7.5' trigger path. It should allow 'locally held IFF/SIF data' regardless of validity status, or the trigger for J7.5 should not apply to invalid tracks, or the precondition should be broader. Given the strict definition of 'valid' in Claim 5, this is a coverage gap for tracks that are not 'valid' but are tracked.",
+        "[slot_rewrite] The exception_flow describes multiple complex behaviors (e.g., Step 0: assume no responsibility, Step 1: initiate track reports, Step 4: transmit correlation messages). However, since main_flow is empty, these exception branches have no defined entry points (divergence steps) or exit points (return steps). It is impossible to verify exit coverage or alignment to main_flow."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 345,
+    "cross_page_cards": 185,
+    "modalities": {
+      "text": 326,
+      "table": 19
+    }
+  }
+}

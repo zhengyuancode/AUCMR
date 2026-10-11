@@ -1,0 +1,1401 @@
+{
+  "use_case_name": "List Personal Jewelry for Auction",
+  "actor": "Customer",
+  "slots": {
+    "trigger": {
+      "slot": "trigger",
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger",
+          "primary_actor"
+        ],
+        "missing_aspects": [
+          "trigger"
+        ]
+      }
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Customer aims to list personal jewelry items for auction by configuring parameters such as schedule date, product type, cost range, and auction duration.",
+          "evidence_refs": [
+            "EC-G-005"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-005"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Customer aims to list personal jewelry items for auction by configuring parameters such as schedule date, product type, cost range, and auction duration.",
+        "evidence_refs": [
+          "EC-G-005"
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the personal jewelry item does not have an available image in the JTV SuperNova system, the item is not eligible for listing, is not counted in auction inventory, and is not eligible to appear on product details pages, search results, or catalog pages.",
+          "evidence_refs": [
+            "EC-EF-008",
+            "EC-EF-015"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-008",
+        "EC-EF-015"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "exception-missing-image",
+          "exception-listing-eligibility",
+          "exception_flow",
+          "exception_trigger_condition"
+        ],
+        "missing_aspects": [
+          "Recovery/continuation after the missing-image rejection (e.g., whether the Customer can upload an image and retry the listing)",
+          "exception_flow",
+          "system_response_to_missing_image",
+          "retry_or_recovery_path"
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The system creates an auction event for all selected items with their applied and/or manually input data parameters.",
+          "evidence_refs": [
+            "EC-PO-021"
+          ]
+        },
+        {
+          "content": "The system sets the listed item's status to 'Scheduled' and assigns specific start date/time and end date/time for the auction.",
+          "evidence_refs": [
+            "EC-PO-013"
+          ]
+        },
+        {
+          "content": "The listed item appears in the Search Results table with its configured auction attributes displayed, including Product ID, Auction #, Description, Open Bid, High Bid, Unit Cost, Starts, Ends, Duration, Product Type, Increase, and Increment.",
+          "evidence_refs": [
+            "EC-PO-007",
+            "EC-PO-005"
+          ]
+        },
+        {
+          "content": "The listed item is assigned a Product Details page with a Product SKU and populated attributes such as Brand, Metal Type, and Primary Stone Type.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "The item appears in the Search Results for Item section with inventory availability status fields (e.g., Auction Available, Red Available, White Physical) and an Active Date.",
+          "evidence_refs": [
+            "EC-PO-019"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-021",
+        "EC-PO-013",
+        "EC-PO-007",
+        "EC-PO-005",
+        "EC-PO-000",
+        "EC-PO-019"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "pc-auction-event-created",
+          "pc-status-scheduled",
+          "pc-search-results-visible",
+          "pc-product-details-assigned",
+          "pc-inventory-and-active-date",
+          "pc-successful-listing",
+          "postconditions-observable-system-state",
+          "post-auction_offer_capability",
+          "payment_settlement_options",
+          "system_state_after_listing",
+          "item_status_change",
+          "inventory_update_confirmation",
+          "postconditions"
+        ],
+        "missing_aspects": [
+          "system_state_after_listing",
+          "inventory_update_confirmation",
+          "item_status_change",
+          "item_status_change_to_active",
+          "listing_visibility_state",
+          "Qty Avail"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1 (single-item selection): instead of manually configuring each item's opening bid, bid increment, duration, and ending time, the Customer may select a group of jewelry SKUs at once, apply a predefined event profile (e.g., Sitewide Default, Bella Luce, Night Owl) selected from the available event-profiles list, and create a schedule and parameters for the group in one operation.",
+          "evidence_refs": [
+            "EC-AF-001",
+            "EC-AF-004",
+            "EC-AF-016",
+            "EC-AF-020"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1: after selecting multiple jewelry items, the Customer may use the bulk 'Action:' dropdown to edit reserve amounts, edit bid increment amounts, edit duration, apply starting/ending time to all, or create a grouping/event for the selected items, rather than editing each item's auction parameters individually.",
+          "evidence_refs": [
+            "EC-AF-005",
+            "EC-AF-017",
+            "EC-AF-018"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1: instead of manually selecting and configuring a product, the Customer may use the Auto-Scheduler capability, which randomly chooses a product and schedules it over a timeframe chosen by the Customer, using parameters such as cost ranges and categories.",
+          "evidence_refs": [
+            "EC-AF-012"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1: instead of applying an existing event profile unchanged, the Customer may create a new auction event profile (e.g., Crazy Auctions) by entering a name and defining cost tiers with specific opening bids, increments, and durations.",
+          "evidence_refs": [
+            "EC-AF-013"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1: alternatively, the Customer may edit an existing event profile by selecting it from the 'Choose Profile to Edit' list, modifying the previously entered values, and saving with 'Apply' before applying it to the selected items.",
+          "evidence_refs": [
+            "EC-AF-010"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3 (schedule-date configuration): the Customer may schedule the jewelry item according to one of the predefined recurring auction event patterns defined in the system (e.g., Night Owl Auctions, Breakfast Bonanza Auctions, Lunchtime Lunacy Auctions, Bella Luce Auctions, Weekend Wackiness Auctions, Gemstone Collector Auctions), each having its own specific time window or schedule pattern.",
+          "evidence_refs": [
+            "EC-AF-006"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 3 (auction-duration configuration): the Auctioneer may select one of the standard auction duration presets (e.g., 20-Minute, 1-hour, 1 Day), or may define an alternative duration by manually choosing the starting and ending dates/times.",
+          "evidence_refs": [
+            "EC-AF-003"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-001",
+        "EC-AF-004",
+        "EC-AF-016",
+        "EC-AF-020",
+        "EC-AF-005",
+        "EC-AF-017",
+        "EC-AF-018",
+        "EC-AF-012",
+        "EC-AF-013",
+        "EC-AF-010",
+        "EC-AF-006",
+        "EC-AF-003"
+      ]
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The actor is in the Auction Administration workspace, as indicated by the header text and the 'Welcome Back, Auctioneer!' greeting.",
+          "evidence_refs": [
+            "EC-PC-003"
+          ]
+        },
+        {
+          "content": "A search for a list of auction products has been performed, and the system displays a Search Results table containing those items, with Action checkboxes available for selecting items.",
+          "evidence_refs": [
+            "EC-PC-002",
+            "EC-PC-011",
+            "EC-MF-012"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-003",
+        "EC-PC-002",
+        "EC-PC-011",
+        "EC-MF-012"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Customer selects one or more jewelry items from the Search Results table by checking the 'Action' checkbox next to each item.",
+          "evidence_refs": [
+            "EC-MF-012"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The Customer edits the selected auction items in fields shown in gray, navigating from field to field using the TAB key, arrow keys, or mouse.",
+          "evidence_refs": [
+            "EC-MF-008",
+            "EC-MF-030",
+            "EC-MF-009"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Customer configures the auction parameters for the selected items by selecting a Schedule Date (Start/End), Auction Duration, and Product Type from the dropdown menus.",
+          "evidence_refs": [
+            "EC-MF-037"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The Customer configures the cost-range/reserve parameters for the selected items using the 'Action:' dropdown, which includes options such as 'Edit Reserve Amounts' and 'Edit Bid Increment Amounts'.",
+          "evidence_refs": [
+            "EC-MF-013"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Once the duration and ending time are filled in for an item, the system automatically generates (calculates) the opening time.",
+          "evidence_refs": [
+            "EC-MF-010"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "After configuring the parameters, the Customer finalizes the listing by clicking the 'Apply Changes' button located at the bottom right of the interface.",
+          "evidence_refs": [
+            "EC-MF-015"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "The Customer clicks the 'Create New Auction' button under the search results to create an auction event of all the selected items with their applied and/or manually input data parameters.",
+          "evidence_refs": [
+            "EC-MF-011"
+          ],
+          "step_number": 7
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-012",
+        "EC-MF-008",
+        "EC-MF-030",
+        "EC-MF-009",
+        "EC-MF-037",
+        "EC-MF-013",
+        "EC-MF-010",
+        "EC-MF-015",
+        "EC-MF-011"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-select-items",
+          "MF-edit-gray-fields",
+          "MF-navigate-input",
+          "MF-configure-schedule-date",
+          "MF-configure-auction-duration",
+          "MF-configure-product-type",
+          "MF-configure-cost-range",
+          "MF-system-generates-opening-time",
+          "MF-apply-changes",
+          "MF-create-auction-event",
+          "main_flow_access_admin_menu",
+          "main_flow_initiate_listing",
+          "main_flow_configure_defaults",
+          "main_flow_configure_overtime",
+          "main_flow_configure_shipping",
+          "main_flow_access_admin",
+          "main_flow_configure_global_defaults",
+          "main_flow_create_event_profile",
+          "main_flow_define_cost_tiers",
+          "main_flow_set_opening_bid",
+          "main_flow_set_bid_increment",
+          "main_flow_set_duration",
+          "main_flow_set_eligibility",
+          "main_flow_save_profile",
+          "main_flow_steps",
+          "user_input_sequence",
+          "system_response_sequence",
+          "search_capabilities",
+          "search_filter_criteria",
+          "result_display_columns",
+          "attribute_visibility",
+          "main_flow_configuration_steps",
+          "main_flow_system_response",
+          "main_flow_interaction_sequence"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "goal_evidence_missing",
+      "slot": "trigger",
+      "detail": "Goal-alignment gate rejected all available evidence as describing adjacent (non-goal) processes. Missing: ['trigger (Customer action that starts listing personal jewelry for auction)']",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "no_evidence",
+      "slot": "trigger",
+      "detail": "No evidence found for slot 'trigger'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The trigger slot has no claim content. The main flow starts with 'The Customer selects one or more jewelry items...' but no trigger event is defined to initiate the use case, so the vertical chain preconditions -> trigger -> main_flow is broken. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 6 says it diverges from 'Step 5 (auction-duration configuration)', but main_flow Step 5 is the system-generated opening time calculation; the Customer configures auction duration in main_flow Step 3. (atomic grounding: candidate remains incomplete (No cited evidence supports the recovery/exit from this alternative flow after the duration selection/scheduling action.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The trigger slot contains no trigger claim. The preconditions establish that the actor is in the Auction Administration workspace with search results and Action checkboxes visible, and Main Flow step 1 starts by selecting jewelry items from that table, but there is no stated user action or system event that initiates the use case. This is a vertical continuity gap between the upstream state and the main flow. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 6 states 'Diverges from Step 3 (schedule-date configuration)' but its step_number field is 2. Main Flow step 2 is about editing gray fields and navigation, not schedule-date configuration, so the step_number metadata is mislabeled. (atomic grounding: candidate remains incomplete (Evidence that the Customer may schedule a jewelry item according to one of these predefined auction event patterns; Evidence of divergence from manual item editing/navigation through editable gray fields at Step 2))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The Trigger slot is empty: its coverage_state lists 'trigger' as missing, so there is no explicit initiating event for the use case. Main Flow step 1 ('The Customer selects one or more jewelry items...') is not anchored to any Trigger, leaving a real gap in the vertical flow from Preconditions through Trigger to Main Flow.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative-flow claim at target_claim_index 5 has step_number 2, but its content states it diverges from Step 3 (schedule-date configuration). Main flow Step 2 is about editing gray-field item attributes, not schedule-date configuration; the attachment point is logically unrelated/inconsistent. The intended divergence is Step 3, where schedule date is configured.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative-flow claim at target_claim_index 6 has step_number 5, but its content states it diverges from Step 3 (auction-duration configuration). Main flow Step 5 is the system-generated opening-time calculation, not an actor duration-configuration step; the attachment point is logically unrelated/inconsistent. The intended divergence is Step 3, where auction duration is configured.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "goal",
+        "preconditions",
+        "alternative_flow"
+      ],
+      "inconsistency_hints": [
+        "Goal claim 0 names 'Auctioneer' as the actor, but main_flow is written throughout from the Customer's actions, and the primary_actor slot is Customer. The goal statement must be aligned with the primary actor who performs the main flow.",
+        "Precondition 2 states the actor 'has already searched for and selected a list of auction products, providing the selected auction items', but Main Flow step 1 has the Customer selecting items by checking the Action checkbox. The selection cannot be both an already-satisfied precondition and the first main-flow action; this is a real contradiction in the vertical flow.",
+        "Alternative flow claim 5 says it diverges from 'Step 2 (schedule-date configuration)', but main_flow Step 2 is the gray-field editing step; schedule-date configuration is in main_flow Step 3.",
+        "Alternative flow claim 7 says 'Diverges from Step 5 (auction-duration configuration)', but Main Flow step 5 is the system automatically generating the opening time once duration and ending time are filled in; it is not a Customer-facing step for configuring auction duration. Auction duration is configured in Main Flow step 3, so Step 5 is a logically unrelated attachment point."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 136,
+    "cross_page_cards": 5,
+    "modalities": {
+      "text": 117,
+      "table": 14,
+      "diagram": 5
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 4307.043,
+    "llm_calls": 65,
+    "llm_seconds": 3321.13,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 933.462,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 140,
+    "judge_calls": 0,
+    "cards_collected": 136,
+    "cards_referenced": 33
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer aims to list personal jewelry items for auction by configuring parameters such as schedule date, product type, cost range, and auction duration.",
+            "evidence_refs": [
+              "EC-G-005"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "If the personal jewelry item does not have an available image in the JTV SuperNova system, the item is not eligible for listing, is not counted in auction inventory, and is not eligible to appear on product details pages, search results, or catalog pages.",
+            "evidence_refs": [
+              "EC-EF-008",
+              "EC-EF-015"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The system creates an auction event for all selected items with their applied and/or manually input data parameters.",
+            "evidence_refs": [
+              "EC-PO-021"
+            ]
+          },
+          {
+            "content": "The system sets the listed item's status to 'Scheduled' and assigns specific start date/time and end date/time for the auction.",
+            "evidence_refs": [
+              "EC-PO-013"
+            ]
+          },
+          {
+            "content": "The listed item appears in the Search Results table with its configured auction attributes displayed, including Product ID, Auction #, Description, Open Bid, High Bid, Unit Cost, Starts, Ends, Duration, Product Type, Increase, and Increment.",
+            "evidence_refs": [
+              "EC-PO-007",
+              "EC-PO-005"
+            ]
+          },
+          {
+            "content": "The listed item is assigned a Product Details page with a Product SKU and populated attributes such as Brand, Metal Type, and Primary Stone Type.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "The item appears in the Search Results for Item section with inventory availability status fields (e.g., Auction Available, Red Available, White Physical) and an Active Date.",
+            "evidence_refs": [
+              "EC-PO-019"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 1 (single-item selection): instead of manually configuring each item's opening bid, bid increment, duration, and ending time, the Customer may select a group of jewelry SKUs at once, apply a predefined event profile (e.g., Sitewide Default, Bella Luce, Night Owl) selected from the available event-profiles list, and create a schedule and parameters for the group in one operation.",
+            "evidence_refs": [
+              "EC-AF-001",
+              "EC-AF-004",
+              "EC-AF-016",
+              "EC-AF-020"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: after selecting multiple jewelry items, the Customer may use the bulk 'Action:' dropdown to edit reserve amounts, edit bid increment amounts, edit duration, apply starting/ending time to all, or create a grouping/event for the selected items, rather than editing each item's auction parameters individually.",
+            "evidence_refs": [
+              "EC-AF-005",
+              "EC-AF-017",
+              "EC-AF-018"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: instead of manually selecting and configuring a product, the Customer may use the Auto-Scheduler capability, which randomly chooses a product and schedules it over a timeframe chosen by the Customer, using parameters such as cost ranges and categories.",
+            "evidence_refs": [
+              "EC-AF-012"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: instead of applying an existing event profile unchanged, the Customer may create a new auction event profile (e.g., Crazy Auctions) by entering a name and defining cost tiers with specific opening bids, increments, and durations.",
+            "evidence_refs": [
+              "EC-AF-013"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: alternatively, the Customer may edit an existing event profile by selecting it from the 'Choose Profile to Edit' list, modifying the previously entered values, and saving with 'Apply' before applying it to the selected items.",
+            "evidence_refs": [
+              "EC-AF-010"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 3 (schedule-date configuration): the Customer may schedule the jewelry item according to one of the predefined recurring auction event patterns defined in the system (e.g., Night Owl Auctions, Breakfast Bonanza Auctions, Lunchtime Lunacy Auctions, Bella Luce Auctions, Weekend Wackiness Auctions, Gemstone Collector Auctions), each having its own specific time window or schedule pattern.",
+            "evidence_refs": [
+              "EC-AF-006"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 3 (auction-duration configuration): the Auctioneer may select one of the standard auction duration presets (e.g., 20-Minute, 1-hour, 1 Day), or may define an alternative duration by manually choosing the starting and ending dates/times.",
+            "evidence_refs": [
+              "EC-AF-003"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The actor is in the Auction Administration workspace, as indicated by the header text and the 'Welcome Back, Auctioneer!' greeting.",
+            "evidence_refs": [
+              "EC-PC-003"
+            ]
+          },
+          {
+            "content": "A search for a list of auction products has been performed, and the system displays a Search Results table containing those items, with Action checkboxes available for selecting items.",
+            "evidence_refs": [
+              "EC-PC-002",
+              "EC-PC-011",
+              "EC-MF-012"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer selects one or more jewelry items from the Search Results table by checking the 'Action' checkbox next to each item.",
+            "evidence_refs": [
+              "EC-MF-012"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Customer edits the selected auction items in fields shown in gray, navigating from field to field using the TAB key, arrow keys, or mouse.",
+            "evidence_refs": [
+              "EC-MF-008",
+              "EC-MF-030",
+              "EC-MF-009"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Customer configures the auction parameters for the selected items by selecting a Schedule Date (Start/End), Auction Duration, and Product Type from the dropdown menus.",
+            "evidence_refs": [
+              "EC-MF-037"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The Customer configures the cost-range/reserve parameters for the selected items using the 'Action:' dropdown, which includes options such as 'Edit Reserve Amounts' and 'Edit Bid Increment Amounts'.",
+            "evidence_refs": [
+              "EC-MF-013"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Once the duration and ending time are filled in for an item, the system automatically generates (calculates) the opening time.",
+            "evidence_refs": [
+              "EC-MF-010"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "After configuring the parameters, the Customer finalizes the listing by clicking the 'Apply Changes' button located at the bottom right of the interface.",
+            "evidence_refs": [
+              "EC-MF-015"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "The Customer clicks the 'Create New Auction' button under the search results to create an auction event of all the selected items with their applied and/or manually input data parameters.",
+            "evidence_refs": [
+              "EC-MF-011"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=13]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=13]",
+    "directory": "random_order/seed_013",
+    "seed": 13,
+    "slot_order": [
+      "trigger",
+      "goal",
+      "exception_flow",
+      "postconditions",
+      "primary_actor",
+      "alternative_flow",
+      "preconditions",
+      "main_flow"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "c1b93ad32bc54d39bb391824338076fc"
+}

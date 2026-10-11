@@ -1,0 +1,645 @@
+{
+  "use_case_name": "Receive Situational Awareness Data",
+  "actor": "Non-C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To support its platform mission, the Non-C2 JU wants to receive situational awareness information from the Surveillance NPG, including track and Reference Point data.",
+          "evidence_refs": [
+            "EC-G-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000"
+      ],
+      "scope_contract": {
+        "goal_statement": "To support its platform mission, the Non-C2 JU wants to receive situational awareness information from the Surveillance NPG, including track and Reference Point data.",
+        "canonical_success_scenario": "The Non-C2 JU successfully receives situational awareness information from the Surveillance NPG; the received information includes track and Reference Point data.",
+        "start_boundary": "The Non-C2 JU is ready to receive situational awareness information from the Surveillance NPG.",
+        "success_boundary": "The Non-C2 JU has received situational awareness information containing track and Reference Point data from the Surveillance NPG.",
+        "in_scope_actions": [
+          "Receive situational awareness information from the Surveillance NPG",
+          "Receive track data",
+          "Receive Reference Point data"
+        ],
+        "excluded_adjacent_actions": [
+          "Continuously monitoring the Surveillance NPG as a broader activity",
+          "Processing, displaying, or exploiting the received situational awareness data",
+          "Sending or relaying situational awareness data to other units or systems",
+          "Planning or executing the platform mission using the received data"
+        ],
+        "variant_dimensions": [],
+        "evidence_refs": [
+          "EC-G-000"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Non-C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Non-C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "Remote surveillance track and point data are available in the J3 series messages on the Surveillance NPG.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The availability of situational awareness information from the Surveillance NPG (including track and Reference Point data), specifically remote surveillance track and point data available in the J3 series messages, triggers the Non-C2 JU to receive the data.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-TR-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-TR-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Non-C2 JU receives situational awareness information from the Surveillance NPG.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The received situational awareness information includes track data and Reference Point data.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The track and Reference Point data are supplied as remote surveillance track and point data available in the J3 series messages, providing the Non-C2 JU with situational awareness and early warning information.",
+          "evidence_refs": [
+            "EC-MF-005"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-MF-005"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-receive-sa",
+          "MF-track-reference-point",
+          "MF-j3-message-source"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: Instead of receiving live situational awareness information, the Non-C2 JU receives simulated tracks provided solely for training or test; the Simulation Indicator in the appropriate J3 message (and J2 message when applicable) is set to indicate that the track is simulated.",
+          "evidence_refs": [
+            "EC-AF-006",
+            "EC-AF-007"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 1: The track data received by the Non-C2 JU may be a track that was not locally acquired, but was obtained by a C² JU via a J12.6 Target Sorting message from a non-C² JU and then reported on the Surveillance NPG, rather than originating from the C² JU's local sensors.",
+          "evidence_refs": [
+            "EC-AF-010"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 2: If the Reference TN is being reported in a J3.7 message, the reporting JU transmits all data held in a J3.7 message, providing the Reference Point data to the Non-C2 JU.",
+          "evidence_refs": [
+            "EC-AF-005"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-006",
+        "EC-AF-007",
+        "EC-AF-010",
+        "EC-AF-005"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "alt-simulated-track",
+          "alt-indirect-track-via-c2",
+          "alt-reference-point-via-j3.7"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 3: If the Non-C2 JU does not receive a J7.0 (ACT = 0) message for a remote track and receives no further updates on that track (for example, because the reporting JU ceased reporting after relinquishing R² to another JU, or because the track became an Active IU on the network with the same TN), the Non-C2 JU's system must have the capability to automatically purge the track after a specific time interval.",
+          "evidence_refs": [
+            "EC-EF-007",
+            "EC-EF-008"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3: If a remote track/point has not been reported for a specified time interval, the Non-C2 JU may automatically drop the remote track/point after the specified time interval has elapsed (purging).",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 2: If the Non-C2 JU receives a J7.5 (ACT = 0) message for a specified track, it shall automatically set the designated mode(s) for that track to the No Data status.",
+          "evidence_refs": [
+            "EC-EF-011"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-007",
+        "EC-EF-008",
+        "EC-EF-005",
+        "EC-EF-011"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EX-lost-track-no-termination-purge",
+          "EX-remote-track-point-timeout-purge",
+          "EX-j7.5-clear-modes-no-data"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "After successful receipt, the Non-C2 JU holds the updated remote track and point data in its local database; the held data may include force tell and emergency alert indicators that override operator-controllable filters.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-PO-001"
+          ]
+        },
+        {
+          "content": "Simulated tracks, if received, are maintained with unchanged Simulation Indicator status unless explicitly dropped and re-reported.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "The Non-C2 JU possesses situational awareness and early warning information derived from the received remote surveillance track and point data available in J3 series messages.",
+          "evidence_refs": [
+            "EC-PO-003"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-PO-001",
+        "EC-PO-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PO-data-held",
+          "PO-alert-override",
+          "PO-simulated-track-status",
+          "PO-sa-ew-possession"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The trigger is the availability of situational awareness information from the Surveillance NPG causing the Non-C2 JU to receive it. For that trigger to be possible, the Non-C2 JU must already be ready to receive / participating in the Surveillance NPG, but the Preconditions slot only states that remote track and point data are available in J3 series messages; it does not assert the Non-C2 JU's receiving readiness or Surveillance NPG participation. (atomic grounding: candidate remains incomplete (Readiness of the Non-C2 JU to receive is not supported by the cited evidence.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Preconditions duplicates the Trigger instead of covering the state that must hold before it. The precondition claim says remote track/point data are already available on the Surveillance NPG, while the Trigger says that very availability triggers the use case. This collapses the preconditions/trigger boundary and leaves the Non-C2 JU's readiness to receive (e.g., participating in or monitoring the Surveillance NPG) uncovered. (atomic grounding: candidate remains incomplete (Readiness to receive situational awareness information from the Surveillance NPG is not supported by the cited evidence.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Preconditions duplicates the Trigger instead of covering the state that must hold before it. The precondition claim says remote track/point data are already available on the Surveillance NPG, while the Trigger says that very availability triggers the use case. This collapses the preconditions/trigger boundary and leaves the Non-C2 JU's readiness to receive (e.g., participating in or monitoring the Surveillance NPG) uncovered.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": [
+        "The trigger and main flow treat J3 series messages as the Surveillance NPG messages, but the precondition only states that remote track and point data are available in J3 series messages and lacks evidence specifically linking J3 series messages to the Surveillance NPG. The coverage state explicitly calls out this missing link."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 41,
+    "cross_page_cards": 12,
+    "modalities": {
+      "text": 39,
+      "table": 2
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1305.913,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 76.005,
+    "llm_retry_calls": 0,
+    "judge_calls": 0,
+    "llm_calls": 18.0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 1229.706,
+    "lvlm_calls": 7.0,
+    "cards_collected": 41,
+    "cards_referenced": 17,
+    "evidence_reused": true,
+    "reused_card_count": 41,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/milstd6016b_sec4/Non-C2_JU_Receive_Situational_Awareness_Data-evidence.json",
+    "dra_elapsed_seconds": 630.761,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_calls": 0,
+    "dra_llm_calls": 10,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_seconds": 630.756,
+    "dra_lvlm_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "To support its platform mission, the Non-C2 JU wants to receive situational awareness information from the Surveillance NPG, including track and Reference Point data.",
+            "evidence_refs": [
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Remote surveillance track and point data are available in the J3 series messages on the Surveillance NPG.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-PC-000",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The availability of situational awareness information from the Surveillance NPG (including track and Reference Point data), specifically remote surveillance track and point data available in the J3 series messages, triggers the Non-C2 JU to receive the data.",
+            "evidence_refs": [
+              "EC-TR-000",
+              "EC-TR-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Non-C2 JU receives situational awareness information from the Surveillance NPG.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The received situational awareness information includes track data and Reference Point data.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The track and Reference Point data are supplied as remote surveillance track and point data available in the J3 series messages, providing the Non-C2 JU with situational awareness and early warning information.",
+            "evidence_refs": [
+              "EC-MF-005"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: Instead of receiving live situational awareness information, the Non-C2 JU receives simulated tracks provided solely for training or test; the Simulation Indicator in the appropriate J3 message (and J2 message when applicable) is set to indicate that the track is simulated.",
+            "evidence_refs": [
+              "EC-AF-006",
+              "EC-AF-007"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: The track data received by the Non-C2 JU may be a track that was not locally acquired, but was obtained by a C² JU via a J12.6 Target Sorting message from a non-C² JU and then reported on the Surveillance NPG, rather than originating from the C² JU's local sensors.",
+            "evidence_refs": [
+              "EC-AF-010"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 2: If the Reference TN is being reported in a J3.7 message, the reporting JU transmits all data held in a J3.7 message, providing the Reference Point data to the Non-C2 JU.",
+            "evidence_refs": [
+              "EC-AF-005"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 3: If the Non-C2 JU does not receive a J7.0 (ACT = 0) message for a remote track and receives no further updates on that track (for example, because the reporting JU ceased reporting after relinquishing R² to another JU, or because the track became an Active IU on the network with the same TN), the Non-C2 JU's system must have the capability to automatically purge the track after a specific time interval.",
+            "evidence_refs": [
+              "EC-EF-007",
+              "EC-EF-008"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 3: If a remote track/point has not been reported for a specified time interval, the Non-C2 JU may automatically drop the remote track/point after the specified time interval has elapsed (purging).",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 2: If the Non-C2 JU receives a J7.5 (ACT = 0) message for a specified track, it shall automatically set the designated mode(s) for that track to the No Data status.",
+            "evidence_refs": [
+              "EC-EF-011"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "After successful receipt, the Non-C2 JU holds the updated remote track and point data in its local database; the held data may include force tell and emergency alert indicators that override operator-controllable filters.",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "Simulated tracks, if received, are maintained with unchanged Simulation Indicator status unless explicitly dropped and re-reported.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "The Non-C2 JU possesses situational awareness and early warning information derived from the received remote surveillance track and point data available in J3 series messages.",
+            "evidence_refs": [
+              "EC-PO-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003"
+        ]
+      }
+    }
+  },
+  "method": "CREST - cross-slot evidence reuse",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "without_cross_slot_reuse",
+    "method": "CREST - cross-slot evidence reuse",
+    "directory": "without_cross_slot_reuse",
+    "seed": null,
+    "slot_order": null,
+    "reuse_prior_evidence": false,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "5c7a284dd88c4fdb8891e6d108409f02"
+}

@@ -1,0 +1,1096 @@
+{
+  "use_case_name": "Browse and Search Products",
+  "actor": "Customer",
+  "slots": {
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At the main-flow step where the Customer submits a search query, if the search yields no matches (e.g., for 'belly button'), the system displays a 'No Results Found' page with an apology message stating that no matches were found, a 'Search Tips' section containing five suggestions (check typos, remove unnecessary words, try plural/singular forms, use fewer/generic keywords, contact support), and a 'May We Suggest'/'Popular Searches' section with separate static lists of popular gemstone and popular jewelry searches plus dynamically updated search terms/phrases using Omniture data.",
+          "evidence_refs": [
+            "EC-EF-000",
+            "EC-EF-006",
+            "EC-EF-015"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At the main-flow step where the Customer selects a category/product link, if the link contains no product (which happens routinely for collectibles), the system serves a 'No Results Found' page.",
+          "evidence_refs": [
+            "EC-EF-013"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "At the main-flow step where the system assembles products for display in search results, catalog pages, or product details, if a matching product has no available image, the system prevents it from being eligible to appear; if all matching products lack images, the result set is empty or incomplete.",
+          "evidence_refs": [
+            "EC-EF-001",
+            "EC-EF-007",
+            "EC-EF-012"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "At the main-flow step where the Customer clicks a product module in the search/browse results (anywhere except the QuickBid button), if the Customer is not signed in, the system presents the sign-in page; after the Customer completes sign-in, the system delivers the Customer to the Product Details page.",
+          "evidence_refs": [
+            "EC-EF-010"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-000",
+        "EC-EF-006",
+        "EC-EF-015",
+        "EC-EF-013",
+        "EC-EF-001",
+        "EC-EF-007",
+        "EC-EF-012",
+        "EC-EF-010"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "no-search-matches",
+          "empty-category-link",
+          "image-less-product-filter",
+          "unauthenticated-product-module-click"
+        ],
+        "missing_aspects": [
+          "Exit/recovery action after the No Results Found page is displayed is not specified.",
+          "Display behavior when the image filter removes all matching results is not specified."
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: Instead of submitting a search query, the Customer may access the browse/search capability via a Site Map page that lists all available Categories (Jewelry, Gemstones, Collectibles, Watches), Product Types (e.g., Rings, Necklaces, Bracelets), and Gemstone Types (e.g., Tanzanite, Diamond, Ruby) as direct links to specific pages or Endeca results pages.",
+          "evidence_refs": [
+            "EC-AF-009"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer uses radio buttons to choose between 'Items currently online only' and 'All sellable auction inventory'; this selection does not impact the results of the 'Red status' columns.",
+          "evidence_refs": [
+            "EC-AF-019"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Customer uses radio buttons to enable choosing between 'Showing items with or without images' and 'Showing items with or without a valid (sellable) location.'",
+          "evidence_refs": [
+            "EC-AF-031"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The Customer groups results using a scrolling list box with options including Retail Category, Product Type, Gemstone, Material, Material Purity, Product Group, Brand, Inventory Realm (Red, White), Inventory Aging Bucket, J/G Score, and Ring Size; each grouping option generates corresponding columns in the Results section.",
+          "evidence_refs": [
+            "EC-AF-021"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges from Step 4: The Customer switches between List View and Catalog View display modes for the product results.",
+          "evidence_refs": [
+            "EC-AF-022",
+            "EC-AF-034"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The Customer navigates through paginated results using 'Previous' and 'Next' buttons, or selects a specific page number via the 'Go To Page' dropdown.",
+          "evidence_refs": [
+            "EC-AF-024"
+          ],
+          "step_number": 6
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-009",
+        "EC-AF-019",
+        "EC-AF-031",
+        "EC-AF-021",
+        "EC-AF-022",
+        "EC-AF-034",
+        "EC-AF-024"
+      ]
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The system allows users to browse and search auction inventory items by filtering based on criteria such as Retail Category, Product Type, Gemstone, Material Type, Brand, and Location.",
+          "evidence_refs": [
+            "EC-G-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "The system allows users to browse and search auction inventory items by filtering based on criteria such as Retail Category, Product Type, Gemstone, Material Type, Brand, and Location.",
+        "canonical_success_scenario": "The Customer enters the product browse/search area, applies one or more filter criteria, and views the matching auction inventory items.",
+        "start_boundary": "The Customer begins interacting with the product browse/search capability.",
+        "success_boundary": "The Customer has viewed product results matching the selected browse/search criteria.",
+        "in_scope_actions": [
+          "Browse auction inventory items",
+          "Search auction inventory items",
+          "Filter products by Retail Category, Product Type, Gemstone, Material Type, Brand, and Location"
+        ],
+        "excluded_adjacent_actions": [
+          "Auction administration search by Product ID, Customer Email Address, Schedule Date range, or Auction Duration",
+          "Bidding/QuickBid",
+          "Checkout and payment"
+        ],
+        "variant_dimensions": [
+          "Selectable filter criteria: Retail Category, Product Type, Gemstone, Material Type, Brand, Location"
+        ],
+        "evidence_refs": [
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The system displays a filtered product list of auction inventory items that match the selected browse/search criteria. Each item is represented by a Product Module containing a thumbnail image, a short description (On-Air Description), a countdown timer in D:HH:MM:SS format showing time remaining, the current high bid, and a QuickBid button.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-G-001"
+          ]
+        },
+        {
+          "content": "The system displays only products with an available image in search results and catalog pages; products without an available image are excluded from the displayed results.",
+          "evidence_refs": [
+            "EC-EF-007"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-G-001",
+        "EC-EF-007"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "filtered-product-list",
+          "product-module-fields",
+          "image-availability-filter"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "Inventory data is populated and available in the system for access by the 'Auctioneer' (or Customer).",
+          "evidence_refs": [
+            "EC-PC-001"
+          ]
+        },
+        {
+          "content": "Products must be marked as both 'Auction Available' and 'Auction Eligible' in the JTV enterprise systems to be included in the browseable/searchable inventory set.",
+          "evidence_refs": [
+            "EC-PC-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-001",
+        "EC-PC-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "inventory-data-available",
+          "product-eligibility-status"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Customer begins product browsing by using the Endeca or Endeca-like search and navigation capability to browse auction inventory.",
+          "evidence_refs": [
+            "EC-MF-005"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer configures the search parameters by applying multiple filter criteria simultaneously; available criteria include Retail Category, Product Type, Gemstone Type, Material Type, Material Purity, Brand, and Location. Multi-selection is enabled via the Control key for the scrolling list boxes for Retail Category, Product Type, Gemstone Type, Material Type, Material Purity, and Brand.",
+          "evidence_refs": [
+            "EC-MF-009",
+            "EC-G-001"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "After configuring the search parameters, the Customer clicks the 'Find Product' button to execute the search.",
+          "evidence_refs": [
+            "EC-MF-011",
+            "EC-MF-001"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system displays a filtered product list, excluding any product without an available image from the search results; each item is represented by a Product Module containing a thumbnail image, a short description (On-Air Description), a countdown timer in D:HH:MM:SS format showing time remaining, the current high bid, and a 'QuickBid' button.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-EF-007"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-005",
+        "EC-MF-009",
+        "EC-G-001",
+        "EC-MF-011",
+        "EC-MF-001",
+        "EC-PO-000",
+        "EC-EF-007"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Customer initiates a product search by entering or selecting search criteria and clicking the 'Go' button or the 'Find Product' button.",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-MF-003"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-MF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-search-submission"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The Trigger claim summarizes the completed search submission (entering/selecting criteria and clicking Go/Find Product), while Main Flow step 1 begins with the Customer starting to browse and step 3 repeats the Find Product click. The Main Flow therefore restarts before the Trigger rather than continuing from it. (atomic grounding: candidate remains incomplete (The cited card supports browsing inventory, not specifically beginning browsing or auction inventory.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The Trigger is over-specified: it already includes entering/selecting search criteria and clicking 'Go' or 'Find Product'. The Main Flow then begins with a broad browsing step and repeats those same actions in steps 2-3 (configure criteria, click 'Find Product'). This creates a restart/duplication of the initiating action instead of continuing from the Trigger event.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow",
+        "alternative_flow"
+      ],
+      "inconsistency_hints": [
+        "Main Flow step 4 displays an admin Auction Administration 'Search Results' table (EC-MF-012/EC-MF-003), but Postconditions require a customer-facing Product Module list with thumbnail image, On-Air Description, countdown timer in D:HH:MM:SS, current high bid, and QuickBid. The main flow therefore ends in a different UI artifact/workflow and cannot reasonably reach Postcondition 1.",
+        "Goal's in-scope filter set includes Location and omits Material Purity, while main_flow step 2 lists Retail Category, Product Type, Gemstone Type, Material Type, Material Purity, and Brand but does not list Location. The main flow therefore does not fully align with the goal's stated filter capabilities.",
+        "Main Flow step 4 displays a filtered product list, but neither that step nor any earlier step mentions or applies the image-availability filter required by Postcondition 2 (products without an available image are excluded). The postcondition's evidence EC-EF-007 is not referenced in the Main Flow, so the Main Flow does not establish that only products with available images are displayed.",
+        "Alternative flow claims 2-6 describe branch behaviors (online-only scope filter, image/location filter, grouping results, view switching, pagination) but do not identify the main_flow step from which they diverge. Only claim 1 explicitly references a divergence point, so the remaining branches are not laterally aligned with the main_flow anchor and cannot be validated against it."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 89,
+    "cross_page_cards": 17,
+    "modalities": {
+      "text": 74,
+      "table": 9,
+      "ui_element": 1,
+      "diagram": 5
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2250.174,
+    "llm_calls": 24.0,
+    "llm_seconds": 2137.957,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 111.003,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 12.0,
+    "judge_calls": 0,
+    "cards_collected": 78,
+    "cards_referenced": 25,
+    "evidence_reused": true,
+    "reused_card_count": 78,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/jtvauctions/Customer_Browse_and_Search_Products-evidence.json",
+    "dra_elapsed_seconds": 1505.95,
+    "dra_llm_calls": 17,
+    "dra_llm_seconds": 1460.489,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 44.442,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_calls": 5,
+    "dra_judge_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "At the main-flow step where the Customer submits a search query, if the search yields no matches (e.g., for 'belly button'), the system displays a 'No Results Found' page with an apology message stating that no matches were found, a 'Search Tips' section containing five suggestions (check typos, remove unnecessary words, try plural/singular forms, use fewer/generic keywords, contact support), and a 'May We Suggest'/'Popular Searches' section with separate static lists of popular gemstone and popular jewelry searches plus dynamically updated search terms/phrases using Omniture data.",
+            "evidence_refs": [
+              "EC-EF-000",
+              "EC-EF-006",
+              "EC-EF-015"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At the main-flow step where the Customer selects a category/product link, if the link contains no product (which happens routinely for collectibles), the system serves a 'No Results Found' page.",
+            "evidence_refs": [
+              "EC-EF-013"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "At the main-flow step where the system assembles products for display in search results, catalog pages, or product details, if a matching product has no available image, the system prevents it from being eligible to appear; if all matching products lack images, the result set is empty or incomplete.",
+            "evidence_refs": [
+              "EC-EF-001",
+              "EC-EF-007",
+              "EC-EF-012"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "At the main-flow step where the Customer clicks a product module in the search/browse results (anywhere except the QuickBid button), if the Customer is not signed in, the system presents the sign-in page; after the Customer completes sign-in, the system delivers the Customer to the Product Details page.",
+            "evidence_refs": [
+              "EC-EF-010"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: Instead of submitting a search query, the Customer may access the browse/search capability via a Site Map page that lists all available Categories (Jewelry, Gemstones, Collectibles, Watches), Product Types (e.g., Rings, Necklaces, Bracelets), and Gemstone Types (e.g., Tanzanite, Diamond, Ruby) as direct links to specific pages or Endeca results pages.",
+            "evidence_refs": [
+              "EC-AF-009"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Customer uses radio buttons to choose between 'Items currently online only' and 'All sellable auction inventory'; this selection does not impact the results of the 'Red status' columns.",
+            "evidence_refs": [
+              "EC-AF-019"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Customer uses radio buttons to enable choosing between 'Showing items with or without images' and 'Showing items with or without a valid (sellable) location.'",
+            "evidence_refs": [
+              "EC-AF-031"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The Customer groups results using a scrolling list box with options including Retail Category, Product Type, Gemstone, Material, Material Purity, Product Group, Brand, Inventory Realm (Red, White), Inventory Aging Bucket, J/G Score, and Ring Size; each grouping option generates corresponding columns in the Results section.",
+            "evidence_refs": [
+              "EC-AF-021"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 4: The Customer switches between List View and Catalog View display modes for the product results.",
+            "evidence_refs": [
+              "EC-AF-022",
+              "EC-AF-034"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The Customer navigates through paginated results using 'Previous' and 'Next' buttons, or selects a specific page number via the 'Go To Page' dropdown.",
+            "evidence_refs": [
+              "EC-AF-024"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-AF-032",
+          "EC-AF-033",
+          "EC-AF-034",
+          "EC-AF-035",
+          "EC-AF-036",
+          "EC-AF-037",
+          "EC-AF-038",
+          "EC-AF-039",
+          "EC-AF-040",
+          "EC-AF-041",
+          "EC-AF-042",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The system allows users to browse and search auction inventory items by filtering based on criteria such as Retail Category, Product Type, Gemstone, Material Type, Brand, and Location.",
+            "evidence_refs": [
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The system displays a filtered product list of auction inventory items that match the selected browse/search criteria. Each item is represented by a Product Module containing a thumbnail image, a short description (On-Air Description), a countdown timer in D:HH:MM:SS format showing time remaining, the current high bid, and a QuickBid button.",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-G-001"
+            ]
+          },
+          {
+            "content": "The system displays only products with an available image in search results and catalog pages; products without an available image are excluded from the displayed results.",
+            "evidence_refs": [
+              "EC-EF-007"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Inventory data is populated and available in the system for access by the 'Auctioneer' (or Customer).",
+            "evidence_refs": [
+              "EC-PC-001"
+            ]
+          },
+          {
+            "content": "Products must be marked as both 'Auction Available' and 'Auction Eligible' in the JTV enterprise systems to be included in the browseable/searchable inventory set.",
+            "evidence_refs": [
+              "EC-PC-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer begins product browsing by using the Endeca or Endeca-like search and navigation capability to browse auction inventory.",
+            "evidence_refs": [
+              "EC-MF-005"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Customer configures the search parameters by applying multiple filter criteria simultaneously; available criteria include Retail Category, Product Type, Gemstone Type, Material Type, Material Purity, Brand, and Location. Multi-selection is enabled via the Control key for the scrolling list boxes for Retail Category, Product Type, Gemstone Type, Material Type, Material Purity, and Brand.",
+            "evidence_refs": [
+              "EC-MF-009",
+              "EC-G-001"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "After configuring the search parameters, the Customer clicks the 'Find Product' button to execute the search.",
+            "evidence_refs": [
+              "EC-MF-011",
+              "EC-MF-001"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system displays a filtered product list, excluding any product without an available image from the search results; each item is represented by a Product Module containing a thumbnail image, a short description (On-Air Description), a countdown timer in D:HH:MM:SS format showing time remaining, the current high bid, and a 'QuickBid' button.",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-EF-007"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer initiates a product search by entering or selecting search criteria and clicking the 'Go' button or the 'Find Product' button.",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-MF-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=101]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=101]",
+    "directory": "random_order/seed_101",
+    "seed": 101,
+    "slot_order": [
+      "primary_actor",
+      "exception_flow",
+      "alternative_flow",
+      "goal",
+      "postconditions",
+      "preconditions",
+      "main_flow",
+      "trigger"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "e25febf3b8514b368b16381d5453e16c"
+}

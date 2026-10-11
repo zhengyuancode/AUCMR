@@ -1,0 +1,730 @@
+{
+  "use_case_name": "Register Customer Account",
+  "actor": "Customer",
+  "slots": {
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "A new customer starts the use case by clicking the 'Register Now' link/button on the JTVauctions.com website (e.g., in the top navigation bar or on the Sign in page).",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-TR-002",
+            "EC-TR-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-TR-002",
+        "EC-TR-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-event",
+          "actor-initiative",
+          "entry-point-location"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Customer wants to register a customer account on the JTVauctions.com website by creating a new account.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-002",
+            "EC-G-004"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-002",
+        "EC-G-004"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Customer wants to register a customer account on the JTVauctions.com website by creating a new account.",
+        "canonical_success_scenario": "A new customer creates a new JTVauctions.com account through the website's account registration process, and thereby registers a customer account.",
+        "start_boundary": "The use case starts when the customer initiates registration for a new account.",
+        "success_boundary": "The use case ends successfully when the customer has registered a customer account on the website.",
+        "in_scope_actions": [
+          "Customer initiates account registration",
+          "Customer creates a new JTVauctions.com account",
+          "Customer registers a customer account on the website"
+        ],
+        "excluded_adjacent_actions": [
+          "Changing membership account information",
+          "Managing payment methods or billing addresses",
+          "Post-registration administrative processing",
+          "Signing in or any downstream use case after registration"
+        ],
+        "variant_dimensions": [
+          "Registration entry point/link placement (e.g., header vs. sign-in page) is a potential UI variant; the canonical instance is one registration completion."
+        ],
+        "evidence_refs": [
+          "EC-G-000",
+          "EC-G-002",
+          "EC-G-004"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At the start of registration (main flow step 1), if the customer's browser has cookies disabled, the website will not function and the registration process cannot proceed; the use case terminates.",
+          "evidence_refs": [
+            "EC-EF-008"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At the main-flow step where the system validates the submitted registration data (main flow step 4), if the password is not between 8 and 12 characters, the system rejects the submission and prompts the customer to enter a valid password; the use case returns to the password entry point.",
+          "evidence_refs": [
+            "EC-EF-002"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "At the same main-flow validation step (main flow step 4), if the email address is already in use, the system notifies the registrant that the email address is already in use and asks whether they need to reset the password for that account. If the registrant indicates yes, the system emails a temporary password and advises the user to change it, and the use case hands off to password reset (no new account is created). If the registrant indicates no, the registrant must provide a different email address and returns to the registration form.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "At the same main-flow validation step (main flow step 4), if the Member Handle is not unique, the system rejects it and prompts the registrant to choose a unique handle; the use case returns to the handle entry point.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Before the new account is established (main flow step 5), the system cross-references the Consumer Protection negative file. If the registrant matches the negative file, the system displays: 'We are sorry, we are unable to create an auction account for you at this time. If you believe this message to be in error, please contact our Customer Service team at: 800-550-8393.' and the use case terminates without creating an account.",
+          "evidence_refs": [
+            "EC-EF-006"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-008",
+        "EC-EF-002",
+        "EC-EF-005",
+        "EC-EF-003",
+        "EC-EF-006"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-cookies-disabled",
+          "EF-password-length",
+          "EF-duplicate-email",
+          "EF-duplicate-handle",
+          "EF-negative-file-match"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "A new JTVauctions.com customer account is established in the system with the customer's name, email address, password, and Member Handle.",
+          "evidence_refs": [
+            "EC-PO-004",
+            "EC-MF-014"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The system triggers an automated transactional email to the customer containing a Thank You message for registering, instructions to enable cookies, and guidance to add the appropriate email address(es) to their whitelist or Safe Senders list.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-PO-003"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "After successful registration, the system directs the customer to the destination appropriate to the selected option: the second registration page to collect additional shipping information if the customer selects 'Finish Now', or the sign-in page if the customer selects 'I Want to Sign in Now!'.",
+          "evidence_refs": [
+            "EC-PO-001",
+            "EC-PO-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-004",
+        "EC-MF-014",
+        "EC-PO-000",
+        "EC-PO-003",
+        "EC-PO-001",
+        "EC-PO-002"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 3: At the end of Registration Page 1, after the customer has entered user info and payment method, the customer chooses to finish account creation immediately by clicking 'Finish Now'. The system directs the customer to the second registration page to provide additional shipping information; the account registration is still successfully completed.",
+          "evidence_refs": [
+            "EC-AF-001",
+            "EC-PO-001"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3: At the same end-of-Registration-Page-1 decision point, the customer chooses not to complete additional information now and clicks 'I Want to Sign in Now!'. The system directs the customer to the sign-in page; the registration is still completed successfully, and the use case hands off to sign-in.",
+          "evidence_refs": [
+            "EC-AF-002"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-001",
+        "EC-PO-001",
+        "EC-AF-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-finish-now",
+          "AF-sign-in-now"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The customer is a new JTVauctions.com customer (does not already have an existing registered customer account).",
+          "evidence_refs": [
+            "EC-TR-002",
+            "EC-EF-006"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-002",
+        "EC-EF-006"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-new-customer"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "After the customer initiates registration by clicking the 'Register Now' button in the Sign-in section or the 'Register Now' link in the top navigation bar, the system displays Registration Page 1.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-TR-001",
+            "EC-MF-013"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer fills in Registration Page 1 by entering required user information (First Name, Last Name, Email Address twice, Password twice, and a unique Member ID 'Handle'), selecting a default payment method (Credit card, PayPal, or Amazon Payments), and checking the Terms of Use checkbox.",
+          "evidence_refs": [
+            "EC-MF-014",
+            "EC-MF-001",
+            "EC-MF-002",
+            "EC-MF-003",
+            "EC-MF-004",
+            "EC-MF-006"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer submits the registration data by clicking either 'Finish Now' or 'I Want to Sign in Now!' to complete the registration process.",
+          "evidence_refs": [
+            "EC-MF-018",
+            "EC-MF-007"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system validates the submitted registration data, including the 8–12 character password, unique email address, unique Member Handle, and acceptance of the Terms of Use.",
+          "evidence_refs": [
+            "EC-MF-002",
+            "EC-MF-001",
+            "EC-MF-003",
+            "EC-MF-017"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "The registration process completes and the new JTVauctions.com customer account is established.",
+          "evidence_refs": [
+            "EC-MF-018"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-TR-001",
+        "EC-MF-013",
+        "EC-MF-014",
+        "EC-MF-001",
+        "EC-MF-002",
+        "EC-MF-003",
+        "EC-MF-004",
+        "EC-MF-006",
+        "EC-MF-018",
+        "EC-MF-007",
+        "EC-MF-017"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] Main Flow's last step only says the registration process completes and the account is established. It does not include the system sending the automated transactional email or routing the customer to Registration Page 2 / the sign-in page based on the selected button, so the last step does not lead to the full Postconditions state (Postconditions 2 and 3).",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "postconditions",
+        "main_flow"
+      ],
+      "inconsistency_hints": [
+        "Main Flow ends with the new account being established, but it never collects or validates a billing address, shipping address, or shipping preferences. Postcondition 1 therefore asserts an end state (account established with those fields) that the last Main Flow step cannot reasonably reach.",
+        "Trigger explicitly allows the customer to start by clicking the Register Now link/button in the top navigation bar or on the Sign in page, but Main Flow step 1 narrows that to clicking the Register Now button in the Sign-in section and repeats the click instead of continuing from it. A customer entering from the top navigation bar is not carried into the Main Flow, breaking trigger-to-main-flow continuity."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 52,
+    "cross_page_cards": 32,
+    "modalities": {
+      "text": 45,
+      "diagram": 7
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2350.573,
+    "llm_calls": 27,
+    "lvlm_calls": 50,
+    "llm_seconds": 2087.044,
+    "llm_retry_calls": 0,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 251.485,
+    "cards_collected": 52,
+    "cards_referenced": 28
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Structured author candidates captured before deterministic evidence-reference validation. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "A new customer starts the use case by clicking the 'Register Now' link/button on the JTVauctions.com website (e.g., in the top navigation bar or on the Sign in page).",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-TR-002",
+              "EC-TR-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer wants to register a customer account on the JTVauctions.com website by creating a new account.",
+            "evidence_refs": [
+              "EC-G-000",
+              "EC-G-002",
+              "EC-G-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-TR-001"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "At the start of registration (main flow step 1), if the customer's browser has cookies disabled, the website will not function and the registration process cannot proceed; the use case terminates.",
+            "evidence_refs": [
+              "EC-EF-008"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At the main-flow step where the system validates the submitted registration data (main flow step 4), if the password is not between 8 and 12 characters, the system rejects the submission and prompts the customer to enter a valid password; the use case returns to the password entry point.",
+            "evidence_refs": [
+              "EC-EF-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "At the same main-flow validation step (main flow step 4), if the email address is already in use, the system notifies the registrant that the email address is already in use and asks whether they need to reset the password for that account. If the registrant indicates yes, the system emails a temporary password and advises the user to change it, and the use case hands off to password reset (no new account is created). If the registrant indicates no, the registrant must provide a different email address and returns to the registration form.",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "At the same main-flow validation step (main flow step 4), if the Member Handle is not unique, the system rejects it and prompts the registrant to choose a unique handle; the use case returns to the handle entry point.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Before the new account is established (main flow step 5), the system cross-references the Consumer Protection negative file. If the registrant matches the negative file, the system displays: 'We are sorry, we are unable to create an auction account for you at this time. If you believe this message to be in error, please contact our Customer Service team at: 800-550-8393.' and the use case terminates without creating an account.",
+            "evidence_refs": [
+              "EC-EF-006"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-G-000",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "A new JTVauctions.com customer account is established in the system with the provided personal information, billing address, shipping address, and selected shipping preferences (USPS Standard or Expedited).",
+            "evidence_refs": [
+              "EC-PO-004"
+            ]
+          },
+          {
+            "content": "The system triggers an automated transactional email to the customer containing a Thank You message for registering, instructions to enable cookies, and guidance to add the appropriate email address(es) to their whitelist or Safe Senders list.",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-PO-003"
+            ]
+          },
+          {
+            "content": "After successful registration, the system directs the customer to the destination appropriate to the selected option: the second registration page to collect additional shipping information if the customer selects 'Finish Now', or the sign-in page if the customer selects 'I Want to Sign in Now!'.",
+            "evidence_refs": [
+              "EC-PO-001",
+              "EC-PO-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-005",
+          "EC-G-000",
+          "EC-G-002",
+          "EC-G-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from Step 3: At the end of Registration Page 1, after the customer has entered user info and payment method, the customer chooses to finish account creation immediately by clicking 'Finish Now'. The system directs the customer to the second registration page to provide additional shipping information; the account registration is still successfully completed.",
+            "evidence_refs": [
+              "EC-AF-001",
+              "EC-PO-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 3: At the same end-of-Registration-Page-1 decision point, the customer chooses not to complete additional information now and clicks 'I Want to Sign in Now!'. The system directs the customer to the sign-in page; the registration is still completed successfully, and the use case hands off to sign-in.",
+            "evidence_refs": [
+              "EC-AF-002"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-EF-002",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-G-000",
+          "EC-G-002",
+          "EC-G-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-003",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The customer is a new JTVauctions.com customer (does not already have an existing registered customer account).",
+            "evidence_refs": [
+              "EC-TR-002",
+              "EC-EF-006"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-EF-003",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-G-002",
+          "EC-G-004",
+          "EC-PO-000",
+          "EC-PO-003",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "The customer clicks the 'Register Now' button in the Sign-in section to initiate registration of a new JTVauctions.com account.",
+            "evidence_refs": [
+              "EC-MF-013"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The customer fills in Registration Page 1 by entering required user information (First Name, Last Name, Email Address twice, Password twice, and a unique Member ID 'Handle'), selecting a default payment method (Credit card, PayPal, or Amazon Payments), and checking the Terms of Use checkbox.",
+            "evidence_refs": [
+              "EC-MF-014",
+              "EC-MF-001",
+              "EC-MF-002",
+              "EC-MF-003",
+              "EC-MF-004",
+              "EC-MF-006"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The customer submits the registration data by clicking either 'Finish Now' or 'I Want to Sign in Now!' to complete the registration process.",
+            "evidence_refs": [
+              "EC-MF-018",
+              "EC-MF-007"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system validates the submitted registration data, including the 8–12 character password, unique email address, unique Member Handle, and acceptance of the Terms of Use.",
+            "evidence_refs": [
+              "EC-MF-002",
+              "EC-MF-001",
+              "EC-MF-003",
+              "EC-MF-017"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The registration process completes and the new JTVauctions.com customer account is established.",
+            "evidence_refs": [
+              "EC-MF-018"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=13]",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=13]",
+    "directory": "random_order/seed_013",
+    "seed": 13,
+    "slot_order": [
+      "trigger",
+      "goal",
+      "exception_flow",
+      "postconditions",
+      "primary_actor",
+      "alternative_flow",
+      "preconditions",
+      "main_flow"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  }
+}

@@ -1,0 +1,553 @@
+{
+  "use_case_name": "Retract a Confirmed Bid",
+  "actor": "Customer",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Customer wants to cancel/retract a bid they have already confirmed during an auction.",
+          "evidence_refs": [
+            "EC-G-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Customer cancels a confirmed bid during an auction.",
+        "canonical_success_scenario": "The Customer retracts a confirmed bid, and the bid is cancelled.",
+        "start_boundary": "The Customer has a confirmed bid that is eligible to be retracted during the auction.",
+        "success_boundary": "The confirmed bid has been cancelled/retracted.",
+        "in_scope_actions": [
+          "Retracting/cancelling a confirmed bid"
+        ],
+        "excluded_adjacent_actions": [
+          "Placing a bid",
+          "Auction settlement or payment",
+          "Post-auction processes",
+          "Administrative bid cancellation by the auctioneer"
+        ],
+        "variant_dimensions": [],
+        "evidence_refs": [
+          "EC-G-000"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Customer, as the bidder, has a confirmed bid in the auction.",
+          "evidence_refs": [
+            "EC-G-000"
+          ]
+        },
+        {
+          "content": "The confirmed bid is eligible to be retracted (i.e., it is an exception to the otherwise applicable rule that auction bids may not be cancelled).",
+          "evidence_refs": [
+            "EC-PC-002"
+          ]
+        },
+        {
+          "content": "The auction is still ongoing at the time of the retraction request.",
+          "evidence_refs": [
+            "EC-G-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-PC-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "precondition-bid-exists",
+          "precondition-eligibility",
+          "precondition-auction-ongoing"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Customer initiates cancellation of a confirmed bid during the auction.",
+          "evidence_refs": [
+            "EC-TR-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Customer requests cancellation of the confirmed bid; the system cancels the confirmed bid via the Bid Retraction/Bid Cancellation feature. If the retracted bid was the winning bid, the system does not automatically notify or offer the item to the next-highest bidder, completing the retraction.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-PC-001",
+            "EC-TR-001",
+            "EC-MF-003"
+          ],
+          "step_number": 1
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-PC-001",
+        "EC-TR-001",
+        "EC-MF-003"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: Auction bids may not generally be cancelled; however, the Customer's retraction is permitted as an allowed exception (e.g., the bidder no longer wants the item, or to prevent shill bidding), so the cancellation proceeds.",
+          "evidence_refs": [
+            "EC-AF-001",
+            "EC-AF-002"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1: If the retracted bid is the current winning bid, the system cancels the bid, but the next-highest bidder is not notified or offered the item; the retraction is still completed.",
+          "evidence_refs": [
+            "EC-MF-003",
+            "EC-MF-002"
+          ],
+          "step_number": 2
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-001",
+        "EC-AF-002",
+        "EC-MF-003",
+        "EC-MF-002"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from main flow Step 2: If the Customer's retraction request is not within one of the specific exceptions to the general rule that auction bids may not be cancelled (e.g., preventing shill bidding or ensuring fairness), the system rejects the cancellation attempt. Exit: the use case terminates, and the confirmed bid remains in force.",
+          "evidence_refs": [
+            "EC-EF-000",
+            "EC-AF-001"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from main flow Step 2: If the retracted bid is or would be the winning bid, the system cancels the bid, but the next-highest bidder would in theory be the winner and the system has no mechanism to notify or offer the item to that bidder, so no automatic succession occurs. Exit: the retraction is completed and the use case terminates.",
+          "evidence_refs": [
+            "EC-EF-001",
+            "EC-MF-002",
+            "EC-MF-003"
+          ],
+          "step_number": 2
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-000",
+        "EC-AF-001",
+        "EC-EF-001",
+        "EC-MF-002",
+        "EC-MF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-ineligible-retraction-rejected",
+          "EF-winning-bid-no-successor-notification"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The confirmed bid is cancelled.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "If the retracted bid was the winning bid, the system does not automatically notify or offer the item to the next-highest bidder (the second-place finisher).",
+          "evidence_refs": [
+            "EC-PO-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-PO-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PO-bid-cancelled",
+          "PO-no-automatic-succession"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[altflow_diverge_points] main_flow defines only Step 1, but downstream branches reference Step 2: alternative_flow claim 2 has step_number 2, and exception_flow claims diverge from 'main flow Step 2'. Since no Step 2 exists in main_flow, these branches are not laterally aligned with the main flow.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow",
+        "alternative_flow"
+      ],
+      "inconsistency_hints": [
+        "Main Flow step 1 simply restates the Trigger: the Customer initiates cancellation. The Trigger already establishes that initiation event, so the first main-flow step should pick up after that point rather than duplicate it.",
+        "The Main Flow contains only one step: the system cancels the confirmed bid and completes the retraction. It does not establish the conditional Postcondition that, if the retracted bid was the winning bid, the system does not automatically notify or offer the item to the next-highest bidder. Therefore the last Main Flow step does not reasonably lead to all stated Postconditions.",
+        "main_flow Step 1 names only the system as the performer ('The system cancels...'); the Primary Actor Customer does not appear as subject, object, or pronoun anywhere in the main flow.",
+        "Alternative flow claim 2 says 'Diverges from Step 2', but main_flow contains only Step 1 and has no Step 2; the referenced divergence point does not exist."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 17,
+    "cross_page_cards": 0,
+    "modalities": {
+      "table": 13,
+      "diagram": 2,
+      "text": 2
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2410.425,
+    "llm_seconds": 2152.554,
+    "lvlm_seconds": 241.074,
+    "llm_calls": 34.0,
+    "lvlm_calls": 79.0,
+    "lvlm_retry_calls": 0,
+    "llm_retry_calls": 0,
+    "cards_collected": 17,
+    "cards_referenced": 13,
+    "dra_elapsed_seconds": 747.111,
+    "dra_llm_seconds": 747.087,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_calls": 9,
+    "dra_lvlm_calls": 0,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_retry_calls": 0
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Structured author candidates captured before deterministic evidence-reference validation. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer wants to cancel/retract a bid they have already confirmed during an auction.",
+            "evidence_refs": [
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer, as the bidder, has a confirmed bid in the auction.",
+            "evidence_refs": [
+              "EC-G-000"
+            ]
+          },
+          {
+            "content": "The confirmed bid is eligible to be retracted (i.e., it is an exception to the otherwise applicable rule that auction bids may not be cancelled).",
+            "evidence_refs": [
+              "EC-PC-002"
+            ]
+          },
+          {
+            "content": "The auction is still ongoing at the time of the retraction request.",
+            "evidence_refs": [
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer initiates cancellation of a confirmed bid during the auction.",
+            "evidence_refs": [
+              "EC-TR-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer, as the bidder, initiates cancellation of a confirmed bid during the ongoing auction.",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-G-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system cancels the confirmed bid via the Bid Retraction/Bid Cancellation feature, completing the retraction.",
+            "evidence_refs": [
+              "EC-G-000",
+              "EC-MF-000",
+              "EC-PC-001"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: Auction bids may not generally be cancelled; however, the Customer's retraction is permitted as an allowed exception (e.g., the bidder no longer wants the item, or to prevent shill bidding), so the cancellation proceeds.",
+            "evidence_refs": [
+              "EC-AF-001",
+              "EC-AF-002"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 2: If the retracted bid is the current winning bid, the system cancels the bid, but the next-highest bidder is not notified or offered the item; the retraction is still completed.",
+            "evidence_refs": [
+              "EC-MF-003",
+              "EC-MF-002"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from main flow Step 2: If the Customer's retraction request is not within one of the specific exceptions to the general rule that auction bids may not be cancelled (e.g., preventing shill bidding or ensuring fairness), the system rejects the cancellation attempt. Exit: the use case terminates, and the confirmed bid remains in force.",
+            "evidence_refs": [
+              "EC-EF-000",
+              "EC-AF-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from main flow Step 2: If the retracted bid is or would be the winning bid, the system cancels the bid, but the next-highest bidder would in theory be the winner and the system has no mechanism to notify or offer the item to that bidder, so no automatic succession occurs. Exit: the retraction is completed and the use case terminates.",
+            "evidence_refs": [
+              "EC-EF-001",
+              "EC-MF-002",
+              "EC-MF-003"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The confirmed bid is cancelled.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "If the retracted bid was the winning bid, the system does not automatically notify or offer the item to the next-highest bidder (the second-place finisher).",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-002",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-TR-001"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)"
+}

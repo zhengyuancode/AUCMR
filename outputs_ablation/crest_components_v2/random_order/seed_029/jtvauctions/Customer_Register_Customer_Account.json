@@ -1,0 +1,788 @@
+{
+  "use_case_name": "Register Customer Account",
+  "actor": "Customer",
+  "slots": {
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "A new customer accesses the first page of the two-page JTVauctions.com registration flow to create a new account.",
+          "evidence_refs": [
+            "EC-TR-002",
+            "EC-TR-003"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-002",
+        "EC-TR-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-event"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "After successful registration, the system state includes a new JTVauctions.com account with the customer's First Name, Last Name, Handle, E-mail Address, password credentials, and configured billing/shipping addresses.",
+          "evidence_refs": [
+            "EC-PO-003"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The system displays a pop-up message instructing the customer to add 'shop@jewelrytv.rsys1.com' to their email address book and ensure cookies are enabled.",
+          "evidence_refs": [
+            "EC-PO-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-003",
+        "EC-PO-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postcondition-account-created",
+          "postcondition-account-data-persisted",
+          "postcondition-instructional-popup"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Customer wants to create a new JTVauctions.com account.",
+          "evidence_refs": [
+            "EC-TR-002",
+            "EC-TR-003"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-002",
+        "EC-TR-003"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Customer wants to create a new JTVauctions.com account.",
+        "canonical_success_scenario": "A new customer accesses the first page of the two-page JTVauctions.com registration flow and completes the register-account flow, resulting in a new JTVauctions.com account.",
+        "start_boundary": "The new customer accesses the first page of the two-page registration flow with the intent to create an account.",
+        "success_boundary": "The register-customer-account action is complete when the new customer has successfully created a new JTVauctions.com account.",
+        "in_scope_actions": [
+          "Access the first page of the two-page registration flow",
+          "Complete the register-customer-account flow to create a new JTVauctions.com account"
+        ],
+        "excluded_adjacent_actions": [
+          "Signing in after registration",
+          "Post-registration navigation to product details or home page",
+          "Sending or reading confirmation emails",
+          "Enabling cookies or whitelisting the sender",
+          "Bidding or browsing after account creation"
+        ],
+        "variant_dimensions": [],
+        "evidence_refs": [
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges at the main-flow step that validates the Member ID ('Handle'): if the entered Handle is not unique in the customer table, the system rejects it and requires the customer to choose a different Handle. Exit: return to the Handle-entry step.",
+          "evidence_refs": [
+            "EC-EF-001"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges at the main-flow step that validates the E-mail Address fields: if either the Create or Verify email field is missing, or the two values do not match, the system displays an error and requires the customer to correct the E-mail Address fields. Exit: return to the email-entry step.",
+          "evidence_refs": [
+            "EC-EF-002"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges at the main-flow step that checks the email address for duplicates: if the entered email address already exists in the customer table, the system notifies the registrant that the email address is already in use and asks whether they need to reset the password for that account. Exit: if the registrant requests a password reset, hand off to the password-reset flow/use case; otherwise, return to the email-entry step to provide a different email address.",
+          "evidence_refs": [
+            "EC-EF-002",
+            "EC-EF-007"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges at the main-flow step that validates the Password fields: if the Create and Verify passwords are not 8 to 12 characters long or do not match, the system displays an error and requires the customer to re-enter valid passwords. Exit: return to the password-entry step.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges when the customer clicks the grayed-out 'finish now' button: if the Terms of Use checkbox has not been checked, the system displays a popup telling the customer they must read and agree to the Terms of Use before proceeding. Exit: return to the Terms-of-Use step; account creation does not proceed until the checkbox is checked.",
+          "evidence_refs": [
+            "EC-EF-006"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges at the main-flow step that validates the customer's address: the system invokes the Core web service for address validation; if the entered address is invalid or ambiguous, the service returns address-correction suggestions and the customer must correct/confirm the address before proceeding. Exit: return to the address entry/confirmation step until the address is validated/corrected.",
+          "evidence_refs": [
+            "EC-EF-000"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges at the main-flow step where the Consumer Protection negative file is cross-referenced before account creation: if the new customer's information matches the negative file, the system displays 'We are sorry, we are unable to create an auction account for you at this time. If you believe this message to be in error, please contact our Customer Service team at: 800-550-8393.' Exit: the use case terminates; no account is created.",
+          "evidence_refs": [
+            "EC-EF-004",
+            "EC-EF-008"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-001",
+        "EC-EF-002",
+        "EC-EF-007",
+        "EC-EF-003",
+        "EC-EF-006",
+        "EC-EF-000",
+        "EC-EF-004",
+        "EC-EF-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EX-handle-uniqueness",
+          "EX-email-required-mismatch",
+          "EX-email-duplicate-password-reset-offer",
+          "EX-password-length-match",
+          "EX-terms-of-use-not-checked",
+          "EX-address-validation-correction",
+          "EX-negative-file-block-terminate"
+        ],
+        "missing_aspects": [
+          "main_flow_step_number_binding_for_exception_divergence_points"
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "coverage_state": {
+        "covered_aspect_ids": [],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The system displays the registration form and the customer enters the required personal information and credentials: First Name, Last Name, Member ID/Handle, E-mail Address (entered twice), and Password (8-12 characters, entered twice).",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer checks the Terms of Use Agreement checkbox, as required by the system before proceeding.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system presents radio buttons for payment method selection (Credit card, PayPal, or Amazon Payments), and the customer selects a payment method.",
+          "evidence_refs": [
+            "EC-MF-001"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system provides the completion options 'Finish Now' and 'Browse Now'; the customer chooses 'Finish Now' to continue to the second registration page.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system populates the second registration page with data from the previous page (except phone number) and requests Phone Number, Billing Address, and Shipping Address.",
+          "evidence_refs": [
+            "EC-MF-004"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer enters the phone number and billing address details (Address lines, Suite/Apt, City, State, Zip Code, and Country).",
+          "evidence_refs": [
+            "EC-MF-005",
+            "EC-MF-006"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer enters the shipping address details or selects the 'Same as Billing Address' checkbox to copy the billing information.",
+          "evidence_refs": [
+            "EC-MF-007"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer selects a shipping preference by choosing either 'USPS Standard' or 'Expedited (5-day, add $5.00)'.",
+          "evidence_refs": [
+            "EC-MF-008"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer clicks the 'Save Changes' button.",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 9,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system validates the submitted data, including Handle uniqueness, email uniqueness/matching, password length/matching, address validity, and the Consumer Protection negative-file check; all checks pass in the successful case.",
+          "evidence_refs": [
+            "EC-EF-001",
+            "EC-EF-002",
+            "EC-EF-003",
+            "EC-EF-000",
+            "EC-EF-004"
+          ],
+          "step_number": 10,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system completes the registration process, creates the new JTVauctions.com account with the entered personal, billing, and shipping information, and displays a pop-up instructing the user to add 'shop@jewelryTV.rsys1.com' to their address book/whitelist and to enable cookies in their web browser.",
+          "evidence_refs": [
+            "EC-MF-009",
+            "EC-PO-003",
+            "EC-PO-004"
+          ],
+          "step_number": 11,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-MF-002",
+        "EC-MF-001",
+        "EC-MF-003",
+        "EC-MF-004",
+        "EC-MF-005",
+        "EC-MF-006",
+        "EC-MF-007",
+        "EC-MF-008",
+        "EC-MF-009",
+        "EC-EF-001",
+        "EC-EF-002",
+        "EC-EF-003",
+        "EC-EF-000",
+        "EC-EF-004",
+        "EC-PO-003",
+        "EC-PO-004"
+      ]
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The person initiating the use case is a new JTVauctions.com customer; they do not already have an existing JTVauctions.com account.",
+          "evidence_refs": [
+            "EC-TR-003"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "precondition-customer-is-new"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No evidence found for slot 'alternative_flow'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[altflow_diverge_points] The exception_flow coverage_state explicitly lists missing aspect 'main_flow_step_number_binding_for_exception_divergence_points'. All exception-flow branches describe their divergence points only semantically (e.g., 'the main-flow step that validates the Member ID') and do not bind to a main_flow step_number or use 'diverges from step N', so the branch-to-main_flow step mapping is incomplete.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "postconditions",
+        "main_flow"
+      ],
+      "inconsistency_hints": [
+        "[slot_rewrite] The Main Flow's final step (step 12) completes registration, creates the account, and displays the whitelist/cookies pop-up. It does not send the transactional confirmation email, it does not establish a bidding-enabled/return-later-to-finish state, and it does not perform the Finish Now/Browse Now final navigation claimed by the Postconditions. Because the Browse Now branch and post-registration navigation are absent from the Main Flow, the Postconditions assert end states that the last Main Flow step cannot lead to.",
+        "The Trigger is the new customer accessing the first page of the registration flow. Main Flow step 1 restates that same access event instead of starting with the state/action that immediately follows it, so the main flow does not pick up where the Trigger left off."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 31,
+    "cross_page_cards": 26,
+    "modalities": {
+      "diagram": 8,
+      "text": 23
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2351.244,
+    "llm_calls": 29,
+    "lvlm_calls": 34,
+    "llm_seconds": 2177.11,
+    "llm_retry_calls": 0,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 164.943,
+    "cards_collected": 31,
+    "cards_referenced": 22
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Structured author candidates captured before deterministic evidence-reference validation. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "A new customer accesses the first page of the two-page JTVauctions.com registration flow to create a new account.",
+            "evidence_refs": [
+              "EC-TR-002",
+              "EC-TR-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "After successful registration, the system state includes a new JTVauctions.com account with the customer's First Name, Last Name, Handle, E-mail Address, password credentials, and configured billing/shipping addresses.",
+            "evidence_refs": [
+              "EC-PO-003"
+            ]
+          },
+          {
+            "content": "The system displays a pop-up message instructing the customer to add 'shop@jewelrytv.rsys1.com' to their email address book and ensure cookies are enabled.",
+            "evidence_refs": [
+              "EC-PO-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-004",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-MF-003",
+          "EC-MF-009",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer wants to create a new JTVauctions.com account.",
+            "evidence_refs": [
+              "EC-TR-002",
+              "EC-TR-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges at the main-flow step that validates the Member ID ('Handle'): if the entered Handle is not unique in the customer table, the system rejects it and requires the customer to choose a different Handle. Exit: return to the Handle-entry step.",
+            "evidence_refs": [
+              "EC-EF-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges at the main-flow step that validates the E-mail Address fields: if either the Create or Verify email field is missing, or the two values do not match, the system displays an error and requires the customer to correct the E-mail Address fields. Exit: return to the email-entry step.",
+            "evidence_refs": [
+              "EC-EF-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges at the main-flow step that checks the email address for duplicates: if the entered email address already exists in the customer table, the system notifies the registrant that the email address is already in use and asks whether they need to reset the password for that account. Exit: if the registrant requests a password reset, hand off to the password-reset flow/use case; otherwise, return to the email-entry step to provide a different email address.",
+            "evidence_refs": [
+              "EC-EF-002",
+              "EC-EF-007"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges at the main-flow step that validates the Password fields: if the Create and Verify passwords are not 8 to 12 characters long or do not match, the system displays an error and requires the customer to re-enter valid passwords. Exit: return to the password-entry step.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges when the customer clicks the grayed-out 'finish now' button: if the Terms of Use checkbox has not been checked, the system displays a popup telling the customer they must read and agree to the Terms of Use before proceeding. Exit: return to the Terms-of-Use step; account creation does not proceed until the checkbox is checked.",
+            "evidence_refs": [
+              "EC-EF-006"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges at the main-flow step that validates the customer's address: the system invokes the Core web service for address validation; if the entered address is invalid or ambiguous, the service returns address-correction suggestions and the customer must correct/confirm the address before proceeding. Exit: return to the address entry/confirmation step until the address is validated/corrected.",
+            "evidence_refs": [
+              "EC-EF-000"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Diverges at the main-flow step where the Consumer Protection negative file is cross-referenced before account creation: if the new customer's information matches the negative file, the system displays 'We are sorry, we are unable to create an auction account for you at this time. If you believe this message to be in error, please contact our Customer Service team at: 800-550-8393.' Exit: the use case terminates; no account is created.",
+            "evidence_refs": [
+              "EC-EF-004",
+              "EC-EF-008"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-PO-000",
+          "EC-PO-003",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-PO-000",
+          "EC-PO-002"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "The new customer accesses the first page of the two-page JTVauctions.com registration flow with the intent to create an account.",
+            "evidence_refs": [
+              "EC-TR-002",
+              "EC-TR-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system displays the registration form and the customer enters the required personal information and credentials: First Name, Last Name, Member ID/Handle, E-mail Address (entered twice), and Password (8-12 characters, entered twice).",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The customer checks the Terms of Use Agreement checkbox, as required by the system before proceeding.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system presents radio buttons for payment method selection (Credit card, PayPal, or Amazon Payments), and the customer selects a payment method.",
+            "evidence_refs": [
+              "EC-MF-001"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The system provides the completion options 'Finish Now' and 'Browse Now'; the customer chooses 'Finish Now' to continue to the second registration page.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The system populates the second registration page with data from the previous page (except phone number) and requests Phone Number, Billing Address, and Shipping Address.",
+            "evidence_refs": [
+              "EC-MF-004"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "The customer enters the phone number and billing address details (Address lines, Suite/Apt, City, State, Zip Code, and Country).",
+            "evidence_refs": [
+              "EC-MF-005",
+              "EC-MF-006"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "The customer enters the shipping address details or selects the 'Same as Billing Address' checkbox to copy the billing information.",
+            "evidence_refs": [
+              "EC-MF-007"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "The customer selects a shipping preference by choosing either 'USPS Standard' or 'Expedited (5-day, add $5.00)'.",
+            "evidence_refs": [
+              "EC-MF-008"
+            ],
+            "step_number": 9
+          },
+          {
+            "content": "The customer clicks the 'Save Changes' button.",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 10
+          },
+          {
+            "content": "The system validates the submitted data, including Handle uniqueness, email uniqueness/matching, password length/matching, address validity, and the Consumer Protection negative-file check; all checks pass in the successful case.",
+            "evidence_refs": [
+              "EC-EF-001",
+              "EC-EF-002",
+              "EC-EF-003",
+              "EC-EF-000",
+              "EC-EF-004"
+            ],
+            "step_number": 11
+          },
+          {
+            "content": "The system completes the registration process, creates the new JTVauctions.com account with the entered personal, billing, and shipping information, and displays a pop-up instructing the user to add 'shop@jewelryTV.rsys1.com' to their address book/whitelist and to enable cookies in their web browser.",
+            "evidence_refs": [
+              "EC-MF-009",
+              "EC-PO-003",
+              "EC-PO-004"
+            ],
+            "step_number": 12
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The person initiating the use case is a new JTVauctions.com customer; they do not already have an existing JTVauctions.com account.",
+            "evidence_refs": [
+              "EC-TR-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-MF-009",
+          "EC-PO-000",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=29]",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=29]",
+    "directory": "random_order/seed_029",
+    "seed": 29,
+    "slot_order": [
+      "trigger",
+      "postconditions",
+      "goal",
+      "exception_flow",
+      "alternative_flow",
+      "main_flow",
+      "preconditions",
+      "primary_actor"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  }
+}

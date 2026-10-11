@@ -1,0 +1,976 @@
+{
+  "use_case_name": "Resolve Dual Designations via Track Correlation",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "C2 JU resolves dual designations via track correlation.",
+          "evidence_refs": [
+            "EC-G-001",
+            "EC-G-002",
+            "EC-G-003"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001",
+        "EC-G-002",
+        "EC-G-003"
+      ],
+      "scope_contract": {
+        "goal_statement": "C2 JU resolves dual designations via track correlation.",
+        "canonical_success_scenario": "C2 JU compares a remote track with a local track to determine whether a dual designation has occurred, processes the tracks for dual designation resolution after they pass the second correlation test, and thereby eliminates the dual designation.",
+        "start_boundary": "C2 JU has remote and local tracks available to compare for a potential dual designation.",
+        "success_boundary": "The dual designation is eliminated/resolved through track correlation.",
+        "in_scope_actions": [
+          "Comparing remote tracks with local tracks to determine whether a dual designation has occurred",
+          "Processing tracks that pass the second correlation test for dual designation resolution",
+          "Resolving/eliminating the dual designation through track correlation"
+        ],
+        "excluded_adjacent_actions": [
+          "Broader protocol-level objective of minimizing the occurrence and duration of dual designations",
+          "Administrative or downstream follow-up after the dual designation is resolved"
+        ],
+        "variant_dimensions": [
+          "Optional comparison against common local tracks in addition to local tracks"
+        ],
+        "evidence_refs": [
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The system has remote and local tracks available for comparison to determine whether a dual designation has occurred.",
+          "evidence_refs": [
+            "EC-PC-002"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "C2 JU has recognized that two tracks being reported to the interface are eligible for correlation.",
+          "evidence_refs": [
+            "EC-PC-005"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-002",
+        "EC-PC-005"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "precondition-track-availability",
+          "precondition-correlation-eligibility"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "Upon receipt of a remote real-time J3.2/J3.3 track or J2.0 (Originator E/C = 0 or 3), J2.2, or J2.3 PPLI report that is not confirmed to have an existing correlation to a local track, or immediately prior to each transmission of a local track, the automatic correlation test runs.",
+          "evidence_refs": [
+            "EC-TR-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "C2 JU performs an automatic correlation test for a remote track that is not already correlated to a local track, comparing the remote track data received on the interface with the local track's locally derived sensor data after both are extrapolated to the same time; the test occurs no more than 6 seconds after the extrapolation time.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-001",
+            "EC-MF-002",
+            "EC-MF-013"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "C2 JU performs the Position Test, calculating the distance D between the two tracks and checking that D ≤ [a*SQRT(L²+R²)+b] dm, where L and R are the positional errors derived from the Track Quality (TQ) values using Table 4.4-2.",
+          "evidence_refs": [
+            "EC-MF-004",
+            "EC-MF-005"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "C2 JU performs the Velocity Test, checking that the remote track's reported course is within f degrees of the local track's calculated course and that the speed of the slower track is within g percent of the faster track.",
+          "evidence_refs": [
+            "EC-MF-007"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the altitude source is valid (Sensor or Aircraft Automatic), C2 JU performs the Altitude Test and checks that the altitude differential is not greater than h; otherwise, altitude is not used in the correlation test.",
+          "evidence_refs": [
+            "EC-MF-008"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "C2 JU determines that the local track correlates to the closest remote track or IU that meets all the correlation tests and is not subject to a correlation restriction; having passed the correlation tests once, the two tracks are deemed a tentative correlation.",
+          "evidence_refs": [
+            "EC-MF-003",
+            "EC-MF-009"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "The tentatively correlated tracks successfully pass the second correlation test with no correlation restriction, so C2 JU processes them for dual designation resolution.",
+          "evidence_refs": [
+            "EC-MF-011"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "C2 JU initiates action to resolve the dual designation and transmits a J7.2 Correlation message requesting all other C2 IUs to perform a correlation of the two tracks, indicating in the RV field any constraint that would prohibit accepting a reverse correlation.",
+          "evidence_refs": [
+            "EC-MF-015",
+            "EC-MF-016"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "The requested correlation is automatically accepted by the receiving C2 JUs when the J7.2 RV field is set to value 3 and none of the automatic-acceptance restrictions applies, thereby eliminating the dual designation.",
+          "evidence_refs": [
+            "EC-MF-020",
+            "EC-MF-014"
+          ],
+          "step_number": 8
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-MF-001",
+        "EC-MF-002",
+        "EC-MF-013",
+        "EC-MF-004",
+        "EC-MF-005",
+        "EC-MF-007",
+        "EC-MF-008",
+        "EC-MF-003",
+        "EC-MF-009",
+        "EC-MF-011",
+        "EC-MF-015",
+        "EC-MF-016",
+        "EC-MF-020",
+        "EC-MF-014"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-entry-test",
+          "MF-position-test",
+          "MF-velocity-test",
+          "MF-altitude-test",
+          "MF-tentative-correlation",
+          "MF-second-test",
+          "MF-correlation-request",
+          "MF-acceptance",
+          "MF-success"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: C2 JUs perform correlation tests in response to explicit correlation requests from other units, rather than initiating them automatically upon track receipt.",
+          "evidence_refs": [
+            "EC-AF-004"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1: C2 JU may additionally compare the remote track against common local tracks, in addition to local tracks, when checking whether a dual designation has occurred.",
+          "evidence_refs": [
+            "EC-G-003"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 1: The operator may manually initiate the correlation of any two tracks irrespective of standard correlation test criteria, restrictions, or requirements, provided the tracks are not of a different E/C, one is not simulated while the other is live, and neither is remote.",
+          "evidence_refs": [
+            "EC-AF-003"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 5: If conflicting IDs is the only correlation restriction preventing automatic correlation, the operator may resolve the restriction by changing the local ID or the Exercise Indicator and ID, or by transmitting an ID Difference Report and having the remote ID or Exercise Indicator and ID subsequently changed, thereby allowing automatic correlation to proceed.",
+          "evidence_refs": [
+            "EC-AF-005",
+            "EC-AF-006"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 7: If a correlation is found with a track for which the C2 JU has R², or for which another C2 JU has R² and the TNs are different, the J7.2 Correlation message is transmitted with RV=1, using the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "EC-AF-000",
+            "EC-AF-001"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Diverges from Step 7: If a correlation is found with a track for which another C2 JU has R² and the TNs are the same, the receiving JU accepts the PPLI information into its surveillance database and disregards the J3 surveillance data on that track; however, if Geodetic Position Quality in the PPLI message is set to 0, it accepts the surveillance track and discards the PPLI message.",
+          "evidence_refs": [
+            "EC-AF-002"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "Diverges from Step 8: When a receiving C2 JU holds the Dropped TN but not the Retained TN, and the Dropped TN does not have an OCC, the JU executes the correlation using the Dropped TN data and the Retained TN track number.",
+          "evidence_refs": [
+            "EC-AF-009"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 8: When a receiving C2 JU holds the Dropped TN but not the Retained TN, and the Dropped TN has an OCC while the received RV is set to 0, the JU transmits a reverse correlation request with RV set to 1 instead of accepting the original request.",
+          "evidence_refs": [
+            "EC-AF-008"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-004",
+        "EC-G-003",
+        "EC-AF-003",
+        "EC-AF-005",
+        "EC-AF-006",
+        "EC-AF-000",
+        "EC-AF-001",
+        "EC-AF-002",
+        "EC-AF-009",
+        "EC-AF-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-external-request-triggered-tests",
+          "AF-common-local-comparison",
+          "AF-manual-correlation",
+          "AF-conflicting-id-resolution",
+          "AF-R2-RV1-correlation-message",
+          "AF-R2-same-TN-PPLI-acceptance",
+          "AF-dropped-only-no-OCC-execution",
+          "AF-dropped-only-OCC-reverse-request"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At Step 1, if one track is a subsurface track and the other is an IU, C2 JU shall not correlate them; the correlation attempt terminates without entering the correlation tests.",
+          "evidence_refs": [
+            "EC-EF-001"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At Step 1, if the received report is a J2.2 or J2.3 PPLI with Geodetic Position Quality (Qpg) = 0, the PPLI shall not be correlated automatically; the automatic correlation attempt for that PPLI terminates.",
+          "evidence_refs": [
+            "EC-EF-009"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "At Step 3, if the speed of either track is less than 10 dmh, the course differential test is skipped; the Velocity Test continues without the course differential test and then proceeds to Step 4.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "At Step 4, if this is a surface track correlation, the Altitude Differential test is not applicable and is skipped; C2 JU proceeds to Step 5.",
+          "evidence_refs": [
+            "EC-EF-004"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "At Step 5, if either track has a Track Quality (TQ) less than or equal to 'e' (Restricted TQ) and is not a new local real-time track, the tracks are not eligible for correlation; automatic correlation terminates.",
+          "evidence_refs": [
+            "EC-EF-002"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "At Step 5, C2 JU shall not automatically correlate the tracks if they have an Identity (ID) difference that constitutes a conflict, have different Mode II codes while the local Mode II code is current, are both locally derived real-time tracks, or either track has a Strength field greater than 1; the automatic correlation attempt terminates.",
+          "evidence_refs": [
+            "EC-EF-005",
+            "EC-EF-006",
+            "EC-EF-007",
+            "EC-EF-008"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "At Step 8, when a receiving C2 JU receives a J7.2 message with RV=3 (manually initiated correlation), it does not automatically accept the correlation if the tracks are of different E/C or have an existing E/C conflict, one track is simulated and the other is live, or both tracks are locally derived real-time tracks; automatic acceptance terminates without establishing the correlation.",
+          "evidence_refs": [
+            "EC-EF-015"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "At Step 8, if a C2 JU receiving a J7.2 message with RV=0 or 1 detects from local/remote data that a correlation restriction exists, it rejects the requested correlation and transmits a J7.2 message with Retained/Dropped TNs set as received and RV set to 2 (Correlation Rejection).",
+          "evidence_refs": [
+            "EC-EF-010",
+            "EC-EF-014"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "At Step 8, if a C2 JU receiving a J7.2 message determines that the Retained TN and Dropped TN will decorrelate immediately upon application of decorrelation criteria, it rejects the correlation; no correlation is established.",
+          "evidence_refs": [
+            "EC-EF-011"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "At Step 8, if a C2 JU receives a J7.2 message with RV=0 and both the Retained TN and Dropped TN have an OCC, it rejects the correlation rather than executing a reverse correlation.",
+          "evidence_refs": [
+            "EC-EF-012"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        },
+        {
+          "content": "At Step 8, if a C2 JU receives a J7.2 message with RV=1 and there is an OCC on the Dropped TN, it rejects the correlation; no correlation is established.",
+          "evidence_refs": [
+            "EC-EF-013"
+          ],
+          "step_number": 8,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-001",
+        "EC-EF-009",
+        "EC-EF-003",
+        "EC-EF-004",
+        "EC-EF-002",
+        "EC-EF-005",
+        "EC-EF-006",
+        "EC-EF-007",
+        "EC-EF-008",
+        "EC-EF-015",
+        "EC-EF-010",
+        "EC-EF-014",
+        "EC-EF-011",
+        "EC-EF-012",
+        "EC-EF-013"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-subsurface-IU-block",
+          "EF-Qpg0-PPLI-no-auto",
+          "EF-low-speed-course-skip",
+          "EF-surface-altitude-skip",
+          "EF-restricted-TQ-ineligible",
+          "EF-auto-correlation-restrictions",
+          "EF-manual-request-acceptance-restrictions",
+          "EF-rv01-restriction-reject",
+          "EF-immediate-decorrelation-reject",
+          "EF-rv0-both-OCC-reject",
+          "EF-rv1-dropped-OCC-reject"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The dual designation is eliminated/resolved through track correlation by establishing a single Retained Track Number (TN) and designating the other track as the Dropped TN.",
+          "evidence_refs": [
+            "EC-PO-005",
+            "EC-PO-002"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The Dropped TN is either deleted or retained as a remote track; if the own unit has R² for the Dropped TN, it is retained as a remote track rather than fully discarded.",
+          "evidence_refs": [
+            "EC-PO-002",
+            "EC-PO-004"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Specific data fields from the Dropped TN (Latitude, Longitude, Course, Speed, Altitude, TQ, Strength, and potentially Identification/IFF data) are transferred to the Retained TN.",
+          "evidence_refs": [
+            "EC-PO-003"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-005",
+        "EC-PO-002",
+        "EC-PO-004",
+        "EC-PO-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postcondition-dual-designation-eliminated",
+          "postcondition-dropped-track-disposition",
+          "postcondition-data-transfer"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": [
+        "The trigger restates the second precondition ('C2 JU has recognized ... eligible') as the initiating clause ('C2 JU recognizes ... eligible'), instead of being a separate event that occurs after preconditions hold. This makes the start boundary ambiguous and leaves the actual trigger events (receipt of an uncorrelated remote track/PPLI report or imminent local track transmission) subordinated to a state that is already required by preconditions."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 70,
+    "cross_page_cards": 39,
+    "modalities": {
+      "text": 69,
+      "table": 1
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2037.332,
+    "llm_seconds": 1791.807,
+    "lvlm_seconds": 237.122,
+    "llm_calls": 20.0,
+    "lvlm_calls": 37.0,
+    "lvlm_retry_calls": 0,
+    "llm_retry_calls": 0,
+    "cards_collected": 70,
+    "cards_referenced": 50,
+    "dra_elapsed_seconds": 710.66,
+    "dra_llm_seconds": 710.656,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_calls": 5,
+    "dra_lvlm_calls": 0,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_retry_calls": 0
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Structured author candidates captured before deterministic evidence-reference validation. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "C2 JU resolves dual designations via track correlation.",
+            "evidence_refs": [
+              "EC-G-001",
+              "EC-G-002",
+              "EC-G-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The system has remote and local tracks available for comparison to determine whether a dual designation has occurred.",
+            "evidence_refs": [
+              "EC-PC-002"
+            ]
+          },
+          {
+            "content": "C2 JU has recognized that two tracks being reported to the interface are eligible for correlation.",
+            "evidence_refs": [
+              "EC-PC-005"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "C2 JU recognizes that two tracks being reported to the interface are eligible for correlation, which triggers an automatic correlation test either upon receipt of a remote real-time J3.2/J3.3 track or J2.0 (Originator E/C = 0 or 3), J2.2, or J2.3 PPLI report that is not confirmed to have an existing correlation to a local track, or immediately prior to each transmission of a local track.",
+            "evidence_refs": [
+              "EC-TR-000",
+              "EC-TR-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-PC-005",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "C2 JU performs an automatic correlation test for a remote track that is not already correlated to a local track, comparing the remote track data received on the interface with the local track's locally derived sensor data after both are extrapolated to the same time; the test occurs no more than 6 seconds after the extrapolation time.",
+            "evidence_refs": [
+              "EC-MF-000",
+              "EC-MF-001",
+              "EC-MF-002",
+              "EC-MF-013"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "C2 JU performs the Position Test, calculating the distance D between the two tracks and checking that D ≤ [a*SQRT(L²+R²)+b] dm, where L and R are the positional errors derived from the Track Quality (TQ) values using Table 4.4-2.",
+            "evidence_refs": [
+              "EC-MF-004",
+              "EC-MF-005"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "C2 JU performs the Velocity Test, checking that the remote track's reported course is within f degrees of the local track's calculated course and that the speed of the slower track is within g percent of the faster track.",
+            "evidence_refs": [
+              "EC-MF-007"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the altitude source is valid (Sensor or Aircraft Automatic), C2 JU performs the Altitude Test and checks that the altitude differential is not greater than h; otherwise, altitude is not used in the correlation test.",
+            "evidence_refs": [
+              "EC-MF-008"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "C2 JU determines that the local track correlates to the closest remote track or IU that meets all the correlation tests and is not subject to a correlation restriction; having passed the correlation tests once, the two tracks are deemed a tentative correlation.",
+            "evidence_refs": [
+              "EC-MF-003",
+              "EC-MF-009"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The tentatively correlated tracks successfully pass the second correlation test with no correlation restriction, so C2 JU processes them for dual designation resolution.",
+            "evidence_refs": [
+              "EC-MF-011"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "C2 JU initiates action to resolve the dual designation and transmits a J7.2 Correlation message requesting all other C2 IUs to perform a correlation of the two tracks, indicating in the RV field any constraint that would prohibit accepting a reverse correlation.",
+            "evidence_refs": [
+              "EC-MF-015",
+              "EC-MF-016"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "The requested correlation is automatically accepted by the receiving C2 JUs when the J7.2 RV field is set to value 3 and none of the automatic-acceptance restrictions applies, thereby eliminating the dual designation.",
+            "evidence_refs": [
+              "EC-MF-020",
+              "EC-MF-014"
+            ],
+            "step_number": 8
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: C2 JUs perform correlation tests in response to explicit correlation requests from other units, rather than initiating them automatically upon track receipt.",
+            "evidence_refs": [
+              "EC-AF-004"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: C2 JU may additionally compare the remote track against common local tracks, in addition to local tracks, when checking whether a dual designation has occurred.",
+            "evidence_refs": [
+              "EC-G-003"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 1: The operator may manually initiate the correlation of any two tracks irrespective of standard correlation test criteria, restrictions, or requirements, provided the tracks are not of a different E/C, one is not simulated while the other is live, and neither is remote.",
+            "evidence_refs": [
+              "EC-AF-003"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 5: If conflicting IDs is the only correlation restriction preventing automatic correlation, the operator may resolve the restriction by changing the local ID or the Exercise Indicator and ID, or by transmitting an ID Difference Report and having the remote ID or Exercise Indicator and ID subsequently changed, thereby allowing automatic correlation to proceed.",
+            "evidence_refs": [
+              "EC-AF-005",
+              "EC-AF-006"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 7: If a correlation is found with a track for which the C2 JU has R², or for which another C2 JU has R² and the TNs are different, the J7.2 Correlation message is transmitted with RV=1, using the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+            "evidence_refs": [
+              "EC-AF-000",
+              "EC-AF-001"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges from Step 7: If a correlation is found with a track for which another C2 JU has R² and the TNs are the same, the receiving JU accepts the PPLI information into its surveillance database and disregards the J3 surveillance data on that track; however, if Geodetic Position Quality in the PPLI message is set to 0, it accepts the surveillance track and discards the PPLI message.",
+            "evidence_refs": [
+              "EC-AF-002"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Diverges from Step 8: When a receiving C2 JU holds the Dropped TN but not the Retained TN, and the Dropped TN does not have an OCC, the JU executes the correlation using the Dropped TN data and the Retained TN track number.",
+            "evidence_refs": [
+              "EC-AF-009"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "Diverges from Step 8: When a receiving C2 JU holds the Dropped TN but not the Retained TN, and the Dropped TN has an OCC while the received RV is set to 0, the JU transmits a reverse correlation request with RV set to 1 instead of accepting the original request.",
+            "evidence_refs": [
+              "EC-AF-008"
+            ],
+            "step_number": 8
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-G-001",
+          "EC-G-003",
+          "EC-MF-011",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "At Step 1, if one track is a subsurface track and the other is an IU, C2 JU shall not correlate them; the correlation attempt terminates without entering the correlation tests.",
+            "evidence_refs": [
+              "EC-EF-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At Step 1, if the received report is a J2.2 or J2.3 PPLI with Geodetic Position Quality (Qpg) = 0, the PPLI shall not be correlated automatically; the automatic correlation attempt for that PPLI terminates.",
+            "evidence_refs": [
+              "EC-EF-009"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At Step 3, if the speed of either track is less than 10 dmh, the course differential test is skipped; the Velocity Test continues without the course differential test and then proceeds to Step 4.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "At Step 4, if this is a surface track correlation, the Altitude Differential test is not applicable and is skipped; C2 JU proceeds to Step 5.",
+            "evidence_refs": [
+              "EC-EF-004"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "At Step 5, if either track has a Track Quality (TQ) less than or equal to 'e' (Restricted TQ) and is not a new local real-time track, the tracks are not eligible for correlation; automatic correlation terminates.",
+            "evidence_refs": [
+              "EC-EF-002"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "At Step 5, C2 JU shall not automatically correlate the tracks if they have an Identity (ID) difference that constitutes a conflict, have different Mode II codes while the local Mode II code is current, are both locally derived real-time tracks, or either track has a Strength field greater than 1; the automatic correlation attempt terminates.",
+            "evidence_refs": [
+              "EC-EF-005",
+              "EC-EF-006",
+              "EC-EF-007",
+              "EC-EF-008"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "At Step 8, when a receiving C2 JU receives a J7.2 message with RV=3 (manually initiated correlation), it does not automatically accept the correlation if the tracks are of different E/C or have an existing E/C conflict, one track is simulated and the other is live, or both tracks are locally derived real-time tracks; automatic acceptance terminates without establishing the correlation.",
+            "evidence_refs": [
+              "EC-EF-015"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "At Step 8, if a C2 JU receiving a J7.2 message with RV=0 or 1 detects from local/remote data that a correlation restriction exists, it rejects the requested correlation and transmits a J7.2 message with Retained/Dropped TNs set as received and RV set to 2 (Correlation Rejection).",
+            "evidence_refs": [
+              "EC-EF-010",
+              "EC-EF-014"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "At Step 8, if a C2 JU receiving a J7.2 message determines that the Retained TN and Dropped TN will decorrelate immediately upon application of decorrelation criteria, it rejects the correlation; no correlation is established.",
+            "evidence_refs": [
+              "EC-EF-011"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "At Step 8, if a C2 JU receives a J7.2 message with RV=0 and both the Retained TN and Dropped TN have an OCC, it rejects the correlation rather than executing a reverse correlation.",
+            "evidence_refs": [
+              "EC-EF-012"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "At Step 8, if a C2 JU receives a J7.2 message with RV=1 and there is an OCC on the Dropped TN, it rejects the correlation; no correlation is established.",
+            "evidence_refs": [
+              "EC-EF-013"
+            ],
+            "step_number": 8
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The dual designation is eliminated/resolved through track correlation by establishing a single Retained Track Number (TN) and designating the other track as the Dropped TN.",
+            "evidence_refs": [
+              "EC-PO-005",
+              "EC-PO-002"
+            ]
+          },
+          {
+            "content": "The Dropped TN is either deleted or retained as a remote track; if the own unit has R² for the Dropped TN, it is retained as a remote track rather than fully discarded.",
+            "evidence_refs": [
+              "EC-PO-002",
+              "EC-PO-004"
+            ]
+          },
+          {
+            "content": "Specific data fields from the Dropped TN (Latitude, Longitude, Course, Speed, Altitude, TQ, Strength, and potentially Identification/IFF data) are transferred to the Retained TN.",
+            "evidence_refs": [
+              "EC-PO-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-001",
+          "EC-G-001",
+          "EC-G-003",
+          "EC-MF-011",
+          "EC-PC-002",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)"
+}

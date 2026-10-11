@@ -1,0 +1,522 @@
+{
+  "use_case_name": "Exchange IFF and SIF Transponder Data",
+  "actor": "C2 JU",
+  "method": "TextRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "Exchange IFF/SIF modes and codes to insure commonality of data between the IUs.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P44#C144",
+            "milstd6016b_sec4:P118#C395"
+          ]
+        }
+      ],
+      "raw_text": "Exchange IFF/SIF modes and codes to insure commonality of data between the IUs.",
+      "evidence_card_ids": [
+        "milstd6016b_sec4:P44#C144",
+        "milstd6016b_sec4:P118#C395"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU is the JU with R² for the Air or Surface track.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P47#C154",
+            "milstd6016b_sec4:P46#C146"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The C2 JU has correlated local sensor data.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P8#C20"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "IFF/SIF valid data locally held for that track.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P47#C154"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The applicable mode indicators are set.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P123#C415"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "milstd6016b_sec4:P47#C154",
+        "milstd6016b_sec4:P46#C146",
+        "milstd6016b_sec4:P8#C20",
+        "milstd6016b_sec4:P123#C415"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU manually initiates a J7.5 (ACT = 2) IFF/SIF Update Request message with the applicable mode indicators set when requesting update of IFF/SIF data.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P123#C415",
+            "milstd6016b_sec4:P46#C149"
+          ]
+        }
+      ],
+      "raw_text": "The C2 JU manually initiates a J7.5 (ACT = 2) IFF/SIF Update Request message with the applicable mode indicators set when requesting update of IFF/SIF data.",
+      "evidence_card_ids": [
+        "milstd6016b_sec4:P123#C415",
+        "milstd6016b_sec4:P46#C149"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU manually initiates a J7.5 (ACT = 2) IFF/SIF Update Request message with the applicable mode indicators set.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P123#C415"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "R² units receiving the J7.5 (ACT = 2) message will respond by initiating a J3.XC1 message regardless of the No Data status.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P123#C415"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "NonR² units receiving the J7.5 (ACT = 2) message from the R² unit will respond by initiating a J7.5 (ACT = 1) message if valid local data (nonzero codes) are held for the requested mode(s).",
+          "evidence_refs": [
+            "milstd6016b_sec4:P123#C415"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The JU with R² reports IFF/SIF data in conjunction with periodic surveillance data.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P118#C395"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "JUs without R² are responsible for monitoring such data and only reporting different data with the J7.5 message.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P118#C395"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The JU with R² can be assumed to be reporting the most current data available on the interface.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P118#C395"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "milstd6016b_sec4:P123#C415",
+        "milstd6016b_sec4:P118#C395"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [],
+      "raw_text": ""
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If an R² unit receiving the J7.5 (ACT = 2) message has No Data status, it still responds by initiating a J3.XC1 message. Exit: The J3.XC1 message is initiated.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P123#C415"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If a nonR² unit receiving the J7.5 (ACT = 2) message does not hold valid local data (nonzero codes) for the requested mode(s), it does not initiate a J7.5 (ACT = 1) message. Exit: No J7.5 (ACT = 1) difference report is generated by that unit.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P123#C415"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "When updating local data to agree with remote data, if the data is a Mode II code, the local data is not changed to agree with remote data; instead, decorrelate the local data from the remote data, causing the assignment of a new track number to local data. Exit: The local data is decorrelated and a new track number is assigned.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P122#C412",
+            "milstd6016b_sec4:P44#C144"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "milstd6016b_sec4:P123#C415",
+        "milstd6016b_sec4:P122#C412",
+        "milstd6016b_sec4:P44#C144"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "Units receiving the J7.5 (ACT = 2) message have responded by transmitting their local data codes.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P123#C415"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "R² units receiving the J7.5 (ACT = 2) message have responded by initiating a J3.XC1 message regardless of the No Data status.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P123#C415"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "NonR² units receiving the J7.5 (ACT = 2) message from the R² unit have responded by initiating a J7.5 (ACT = 1) message if valid local data (nonzero codes) are held for the requested mode(s).",
+          "evidence_refs": [
+            "milstd6016b_sec4:P123#C415"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Local data has been changed to agree with remote data except in the case of Mode II code.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P122#C412"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "In the case of Mode II code, local data has been decorrelated from the remote data, causing the assignment of a new track number to local data.",
+          "evidence_refs": [
+            "milstd6016b_sec4:P122#C412"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The operator alert has been cleared (any mode).",
+          "evidence_refs": [
+            "milstd6016b_sec4:P122#C412"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "milstd6016b_sec4:P123#C415",
+        "milstd6016b_sec4:P122#C412"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No content produced for slot 'alternative_flow' by TextRAG-Elaborate."
+    }
+  ],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "Exchange IFF/SIF modes and codes to insure commonality of data between the IUs.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P44#C144",
+              "milstd6016b_sec4:P118#C395"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "milstd6016b_sec4:P46#C150",
+          "milstd6016b_sec4:P46#C146",
+          "milstd6016b_sec4:P44#C144",
+          "milstd6016b_sec4:P123#C415",
+          "milstd6016b_sec4:P8#C20",
+          "milstd6016b_sec4:P20#C56",
+          "milstd6016b_sec4:P9#C22",
+          "milstd6016b_sec4:P46#C148",
+          "milstd6016b_sec4:P45#C145",
+          "milstd6016b_sec4:P118#C395"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The C2 JU is the JU with R² for the Air or Surface track.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P47#C154",
+              "milstd6016b_sec4:P46#C146"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU has correlated local sensor data.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P8#C20"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "IFF/SIF valid data locally held for that track.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P47#C154"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The applicable mode indicators are set.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P123#C415"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "milstd6016b_sec4:P46#C149",
+          "milstd6016b_sec4:P123#C415",
+          "milstd6016b_sec4:P46#C146",
+          "milstd6016b_sec4:P46#C150",
+          "milstd6016b_sec4:P8#C20",
+          "milstd6016b_sec4:P44#C144",
+          "milstd6016b_sec4:P20#C56",
+          "milstd6016b_sec4:P47#C154",
+          "milstd6016b_sec4:P124#C417",
+          "milstd6016b_sec4:P122#C411"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The C2 JU manually initiates a J7.5 (ACT = 2) IFF/SIF Update Request message with the applicable mode indicators set when requesting update of IFF/SIF data.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P123#C415",
+              "milstd6016b_sec4:P46#C149"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "milstd6016b_sec4:P46#C148",
+          "milstd6016b_sec4:P46#C150",
+          "milstd6016b_sec4:P123#C415",
+          "milstd6016b_sec4:P46#C146",
+          "milstd6016b_sec4:P8#C20",
+          "milstd6016b_sec4:P44#C144",
+          "milstd6016b_sec4:P122#C412",
+          "milstd6016b_sec4:P46#C149",
+          "milstd6016b_sec4:P20#C56",
+          "milstd6016b_sec4:P9#C22"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU manually initiates a J7.5 (ACT = 2) IFF/SIF Update Request message with the applicable mode indicators set.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P123#C415"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "R² units receiving the J7.5 (ACT = 2) message will respond by initiating a J3.XC1 message regardless of the No Data status.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P123#C415"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "NonR² units receiving the J7.5 (ACT = 2) message from the R² unit will respond by initiating a J7.5 (ACT = 1) message if valid local data (nonzero codes) are held for the requested mode(s).",
+            "evidence_refs": [
+              "milstd6016b_sec4:P123#C415"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The JU with R² reports IFF/SIF data in conjunction with periodic surveillance data.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P118#C395"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "JUs without R² are responsible for monitoring such data and only reporting different data with the J7.5 message.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P118#C395"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The JU with R² can be assumed to be reporting the most current data available on the interface.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P118#C395"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "milstd6016b_sec4:P46#C150",
+          "milstd6016b_sec4:P46#C146",
+          "milstd6016b_sec4:P44#C144",
+          "milstd6016b_sec4:P20#C56",
+          "milstd6016b_sec4:P123#C415",
+          "milstd6016b_sec4:P118#C395",
+          "milstd6016b_sec4:P46#C149",
+          "milstd6016b_sec4:P9#C22",
+          "milstd6016b_sec4:P122#C411",
+          "milstd6016b_sec4:P122#C412"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "milstd6016b_sec4:P46#C146",
+          "milstd6016b_sec4:P47#C154",
+          "milstd6016b_sec4:P46#C150",
+          "milstd6016b_sec4:P44#C144",
+          "milstd6016b_sec4:P45#C145",
+          "milstd6016b_sec4:P123#C415",
+          "milstd6016b_sec4:P46#C149",
+          "milstd6016b_sec4:P122#C411",
+          "milstd6016b_sec4:P122#C412",
+          "milstd6016b_sec4:P118#C395"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If an R² unit receiving the J7.5 (ACT = 2) message has No Data status, it still responds by initiating a J3.XC1 message. Exit: The J3.XC1 message is initiated.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P123#C415"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If a nonR² unit receiving the J7.5 (ACT = 2) message does not hold valid local data (nonzero codes) for the requested mode(s), it does not initiate a J7.5 (ACT = 1) message. Exit: No J7.5 (ACT = 1) difference report is generated by that unit.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P123#C415"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "When updating local data to agree with remote data, if the data is a Mode II code, the local data is not changed to agree with remote data; instead, decorrelate the local data from the remote data, causing the assignment of a new track number to local data. Exit: The local data is decorrelated and a new track number is assigned.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P122#C412",
+              "milstd6016b_sec4:P44#C144"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "milstd6016b_sec4:P46#C146",
+          "milstd6016b_sec4:P46#C150",
+          "milstd6016b_sec4:P44#C144",
+          "milstd6016b_sec4:P123#C415",
+          "milstd6016b_sec4:P122#C412",
+          "milstd6016b_sec4:P20#C56",
+          "milstd6016b_sec4:P8#C20",
+          "milstd6016b_sec4:P46#C149",
+          "milstd6016b_sec4:P118#C395",
+          "milstd6016b_sec4:P47#C154"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "Units receiving the J7.5 (ACT = 2) message have responded by transmitting their local data codes.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P123#C415"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "R² units receiving the J7.5 (ACT = 2) message have responded by initiating a J3.XC1 message regardless of the No Data status.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P123#C415"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "NonR² units receiving the J7.5 (ACT = 2) message from the R² unit have responded by initiating a J7.5 (ACT = 1) message if valid local data (nonzero codes) are held for the requested mode(s).",
+            "evidence_refs": [
+              "milstd6016b_sec4:P123#C415"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Local data has been changed to agree with remote data except in the case of Mode II code.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P122#C412"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "In the case of Mode II code, local data has been decorrelated from the remote data, causing the assignment of a new track number to local data.",
+            "evidence_refs": [
+              "milstd6016b_sec4:P122#C412"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The operator alert has been cleared (any mode).",
+            "evidence_refs": [
+              "milstd6016b_sec4:P122#C412"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "milstd6016b_sec4:P46#C146",
+          "milstd6016b_sec4:P46#C150",
+          "milstd6016b_sec4:P123#C415",
+          "milstd6016b_sec4:P46#C149",
+          "milstd6016b_sec4:P20#C56",
+          "milstd6016b_sec4:P44#C144",
+          "milstd6016b_sec4:P122#C412",
+          "milstd6016b_sec4:P8#C20",
+          "milstd6016b_sec4:P45#C145",
+          "milstd6016b_sec4:P119#C398"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 815.3
+}

@@ -1,0 +1,55 @@
+2026-08-14 15:59:05,877 INFO services.model_registry: Connecting to Milvus collection 'jtvauctions'...
+2026-08-14 15:59:05,879 INFO services.model_registry: Milvus retriever ready.
+2026-08-14 15:59:05,881 INFO services.model_registry: Collection ready. Project='jtvauctions', Files=['jtvauctions'], Total pages=145, TopK=5
+2026-08-14 15:59:08,072 INFO services.model_registry: Loading Jina embedding model (v4, multi-vector): device=cuda, hip=7.1.25424, aotriton=0
+`torch_dtype` is deprecated! Use `dtype` instead!
+`torch_dtype` is deprecated! Use `dtype` instead!
+The tokenizer you are loading from '/home/dzy/.cache/huggingface/hub/models--jinaai--jina-embeddings-v4/snapshots/853c867b65b749f3c3c72a06868140d842e04f06' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+Config: /home/dzy/code/TOSEM2026/AUCMR/experiment_gbea_dev.json
+Methods: AUCMR (CREST full), CREST w/o cross-slot
+Use cases: 1
+Preflight: PASS
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  4.17it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  6.12it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  5.72it/s]
+2026-08-14 15:59:11,348 INFO services.model_registry: Embedding model ready (device=cuda).
+2026-08-14 15:59:11,348 INFO services.model_registry: Loading CMAB-TopN (LinUCB) model...
+2026-08-14 15:59:11,349 INFO services.model_registry: LinUCB model ready.
+2026-08-14 15:59:11,349 INFO services.model_registry: Loading PCA assets...
+2026-08-14 15:59:11,365 INFO services.model_registry: PCA assets ready.
+2026-08-14 15:59:11,365 INFO services.model_registry: Retrieval adapter created (embeder + linucb + pca + retriever injected).
+2026-08-14 15:59:11,365 INFO services.model_registry: Creating LLM client (llama.cpp OpenAI-compatible)...
+2026-08-14 15:59:11,549 INFO services.model_registry: LLM client ready.
+2026-08-14 15:59:11,549 INFO services.model_registry: ModelProvider created (think=False).
+2026-08-14 15:59:11,549 INFO crest.orchestrator: === CREST Elaboration: 'Auctioneer' — 'Schedule Auction Event' ===
+2026-08-14 15:59:11,549 INFO crest.orchestrator: Phase: Filling slot 'goal'...
+2026-08-14 15:59:11,549 INFO crest.agents: [goal] === DCRRM Loop START ===
+2026-08-14 15:59:11,549 INFO crest.agents: [goal] Round 1/3
+2026-08-14 15:59:11,825 INFO httpx: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 401 Authorization Required"
+2026-08-14 15:59:11,825 ERROR services.model_service: API call failed: Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****cede is invalid', 'type': 'authentication_error', 'param': None, 'code': 'invalid_request_error'}}
+Traceback (most recent call last):
+  File "/home/dzy/code/TOSEM2026/AUCMR/run.py", line 976, in <module>
+    raise SystemExit(main())
+  File "/home/dzy/code/TOSEM2026/AUCMR/run.py", line 969, in main
+    run_generation(config, config_path, methods, resume=args.resume)
+  File "/home/dzy/code/TOSEM2026/AUCMR/run.py", line 813, in run_generation
+    without_dra = orchestrator.elaborate(item["actor"], item["use_case"])
+  File "/home/dzy/code/TOSEM2026/AUCMR/crest/orchestrator.py", line 149, in elaborate
+    slot_content, cards = per_slot_dcrrm_loop(
+  File "/home/dzy/code/TOSEM2026/AUCMR/crest/agents.py", line 2428, in per_slot_dcrrm_loop
+    plan = query_designer(
+  File "/home/dzy/code/TOSEM2026/AUCMR/crest/agents.py", line 355, in query_designer
+    raw = provider.llm(base_prompt)
+  File "/home/dzy/code/TOSEM2026/AUCMR/crest/agents.py", line 172, in llm
+    result = self._llm(prompt, image_paths or [], "", False)
+  File "/home/dzy/code/TOSEM2026/AUCMR/services/model_registry.py", line 299, in llm_fn
+    return qwen_call(_client, image_paths or [], prompt,
+  File "/home/dzy/code/TOSEM2026/AUCMR/services/model_service.py", line 168, in qwen
+    completion = client.chat.completions.create(**completion_kwargs)
+  File "/home/dzy/miniconda3/envs/aucmr/lib/python3.10/site-packages/openai/_utils/_utils.py", line 286, in wrapper
+    return func(*args, **kwargs)
+  File "/home/dzy/miniconda3/envs/aucmr/lib/python3.10/site-packages/openai/resources/chat/completions/completions.py", line 1211, in create
+    return self._post(
+  File "/home/dzy/miniconda3/envs/aucmr/lib/python3.10/site-packages/openai/_base_client.py", line 1297, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+  File "/home/dzy/miniconda3/envs/aucmr/lib/python3.10/site-packages/openai/_base_client.py", line 1070, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.AuthenticationError: Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****cede is invalid', 'type': 'authentication_error', 'param': None, 'code': 'invalid_request_error'}}

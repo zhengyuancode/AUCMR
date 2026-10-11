@@ -1,0 +1,662 @@
+{
+  "use_case_name": "Browse and Search Products",
+  "actor": "Customer",
+  "scg": 100.0,
+  "nli_g": 90.47619047619048,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 20.238095238095237,
+  "avg_cards": 29,
+  "total_claims": 21,
+  "total_cited_claims": 21,
+  "total_entailed_claims": 19,
+  "pre_constraint_claim_count": 21,
+  "pre_constraint_cited_claim_count": 21,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 84,
+  "cross_page_cards": 17,
+  "referenced_cards": 29,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 1,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 4,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 5,
+      "cited_claim_count": 5,
+      "evidence_ref_count": 12,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 7,
+      "cited_claim_count": 7,
+      "evidence_ref_count": 9,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 4,
+      "cited_claim_count": 4,
+      "evidence_ref_count": 8,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 2,
+      "cited_claim_count": 2,
+      "evidence_ref_count": 3,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R1": 3,
+    "R6": 1,
+    "R3": 1,
+    "R7": 1
+  },
+  "l3_violations_pre_repair": {
+    "R1": 3,
+    "R2": 0,
+    "R3": 1,
+    "R4": 0,
+    "R5": 0,
+    "R6": 1,
+    "R7": 1
+  },
+  "l2_violations": {
+    "R1": 1,
+    "R2": 1,
+    "R3": 0,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 0
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R1": [
+        {
+          "rule_id": "R1",
+          "rule_name": "trigger_preconditions_coverage",
+          "offending_slot": "preconditions",
+          "offending_claim_index": -1,
+          "rationale": "The trigger describes a Customer action, but the precondition only specifies data availability for an Auctioneer, failing to establish the necessary system state or access rights for the Customer actor."
+        }
+      ],
+      "R2": [
+        {
+          "rule_id": "R2",
+          "rule_name": "mainflow_trigger_continuity",
+          "offending_slot": "main_flow",
+          "offending_claim_index": 0,
+          "rationale": "The trigger explicitly states the session is initiated by submitting a search (clicking 'Go'), but Main Flow step 1 restarts the scenario with browsing, creating a logical discontinuity where the submission event in the trigger is ignored."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 1,
+      "R2": 1,
+      "R3": 0,
+      "R4": 0,
+      "R5": 0,
+      "R6": 0,
+      "R7": 0
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The Trigger has the Customer searching auction inventory, but the only Precondition says the auction inventory data is populated and available for the Auctioneer to access. It does not establish that the Customer-facing browse/search interface has access to that populated inventory before the Trigger. (atomic grounding: candidate remains incomplete (Explicit evidence for 'browse' in the original 'browse/search interface' is not cited; only search and filtering are supported.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 7 (0-based 6) says 'Diverges from Step 4', but it describes grouping displayed results and generating columns in the Results section. That is a post-results display action that belongs after main_flow Step 5, not at the Step 4 submit action. The claim is also unsupported as a customer action: the coverage_state notes the cited evidence is about an internal 'Inventory Performance & Aging Report', not a customer-facing search interface. (atomic grounding: candidate remains incomplete (The cited card does not state that the 'Create grouping / event' option creates a grouping/event from selected items.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] Main Flow Step 5 ends with a 'Search Results' table whose columns are Action, Image, Product ID, Auction #, Description, Open Bid, High Bid, Unit Cost, Starts, Ends, Duration, Product Type, and Increment. It does not produce the Product Module representation described in Postcondition 1, which contains a countdown timer and QuickBid button. Thus that postcondition is not reachable from the flow as written. (atomic grounding: candidate remains incomplete (The cited cards support the Catalog/List View switch and the Product Module display separately, but do not explicitly establish that switching to Catalog View is the trigger for displaying the Product Module list.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The Trigger is initiated by the Customer, but the only precondition says the auction inventory data is available 'for the Auctioneer to access'. That wording does not establish the required customer-facing availability of the inventory data for the Customer's browse/search Trigger, so the precondition is not vertically aligned with the Trigger and primary actor. (atomic grounding: candidate remains incomplete (The customer-facing browse/search interface detail is not supported by the cited evidence.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The Trigger requires the Customer to initiate browsing/searching of auction inventory, but the only Precondition states that the inventory data is populated and available for the Auctioneer to access. The Customer-facing browse/search capability therefore lacks a covered prerequisite: the populated inventory must be available to the Customer or to the Customer-facing search service, not merely to the Auctioneer.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 3 describes the image-availability hard filter and states it may cause empty or incomplete result sets, but it does not specify a clear terminal outcome for that branch. It does not say whether a 'No Results Found' page is shown, a prevention message is displayed, or the Customer is returned to the browse/search flow.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "The primary actor (Customer) wants to browse and search auction inventory items by applying filters ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-G-000] and [EC-G-001], which collectively list all the specific search criteria and filtering parameters mentioned in the claim.",
+      "slot_fit_rationale": "The claim describes the primary actor's intended objective and success outcome (browsing and searching inventory), which correctly defines the 'goal' slot in a Cockburn use case.",
+      "evidence_refs": [
+        "EC-G-000",
+        "EC-G-001"
+      ],
+      "evidence_modalities": {
+        "EC-G-000": "card_text",
+        "EC-G-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The system has auction inventory data populated and available for the Auctioneer to access.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PC-001], which states that the system must have inventory data populated and available for the Auctioneer to access.",
+      "slot_fit_rationale": "The claim describes a necessary system state (data availability) that must hold before the interaction begins, which aligns with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-001"
+      ],
+      "evidence_modalities": {
+        "EC-PC-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "The Customer initiates the browse/search session by accessing the product browse/search capability (",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units: EC-TR-001 confirms the specific input actions and button clicks, while EC-AF-009, EC-AF-010, and EC-MF-005 collectively confirm the various entry points (Site Map, SEO pages, Endeca capability) for initiating the session.",
+      "slot_fit_rationale": "The claim describes the specific user actions and entry events that start the interaction, which aligns precisely with the definition of the 'trigger' slot in a Cockburn use case.",
+      "evidence_refs": [
+        "EC-AF-009",
+        "EC-AF-010",
+        "EC-MF-005",
+        "EC-TR-001"
+      ],
+      "evidence_modalities": {
+        "EC-AF-009": "card_text",
+        "EC-AF-010": "card_text",
+        "EC-MF-005": "card_text",
+        "EC-TR-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer browses the auction inventory using the Endeca or Endeca-like search and navigation cap",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-MF-005], which states that the Customer uses the specified search capability to browse inventory.",
+      "slot_fit_rationale": "The claim describes a primary action performed by the actor during the normal successful interaction path, which aligns with the definition of a main_flow step.",
+      "evidence_refs": [
+        "EC-MF-005"
+      ],
+      "evidence_modalities": {
+        "EC-MF-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": true
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer applies one or more filters from the available browse/filter controls, including Retail",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-G-001], which lists the filter criteria, and Evidence [EC-MF-009], which details the UI controls (scrolling list boxes) and interaction mechanism (Control key for multi-selection).",
+      "slot_fit_rationale": "The claim describes a specific user action (applying filters) within the normal successful interaction path, which constitutes a substantive step in the main flow.",
+      "evidence_refs": [
+        "EC-G-001",
+        "EC-MF-009"
+      ],
+      "evidence_modalities": {
+        "EC-G-001": "card_text",
+        "EC-MF-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer additionally enters or selects search criteria such as Product ID (wildcards * or % all",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim's specific search criteria and wildcard details are directly supported by the union of Evidence [EC-G-000] and [EC-MF-010].",
+      "slot_fit_rationale": "Entering search parameters is a substantive action performed by the actor during the normal successful interaction path, fitting the main_flow slot.",
+      "evidence_refs": [
+        "EC-G-000",
+        "EC-MF-010",
+        "EC-TR-001"
+      ],
+      "evidence_modalities": {
+        "EC-G-000": "card_text",
+        "EC-MF-010": "card_text",
+        "EC-TR-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer combines the selected filters and search criteria and submits the search by clicking th",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units EC-MF-007, EC-MF-011, and EC-TR-001, which collectively confirm that the Customer combines search criteria and submits the search using either the 'Go' or 'Find Product' button.",
+      "slot_fit_rationale": "The claim describes a specific user action (submitting the search) that constitutes a core step in the normal successful interaction path, fitting the definition of a main_flow step.",
+      "evidence_refs": [
+        "EC-G-000",
+        "EC-MF-007",
+        "EC-MF-011",
+        "EC-TR-001"
+      ],
+      "evidence_modalities": {
+        "EC-G-000": "card_text",
+        "EC-MF-007": "card_text",
+        "EC-MF-011": "card_text",
+        "EC-TR-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The system displays a table titled 'Search Results' containing rows for matching auction items, with",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-MF-003], which explicitly lists the table title 'Search Results', the specific columns (Action, Image, Product ID, etc.), and the presence of rows with thumbnail images for matching auction items.",
+      "slot_fit_rationale": "The claim describes the system's immediate response action in the normal success path after a search trigger, which constitutes a substantive step in the main flow.",
+      "evidence_refs": [
+        "EC-MF-003",
+        "EC-MF-013"
+      ],
+      "evidence_modalities": {
+        "EC-MF-003": "card_text",
+        "EC-MF-013": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 1: Instead of using the standard browse/search entry point, the Customer may acce",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-AF-009], which explicitly states that the Customer may access browse/search via a Site Map page with the specified categories and links.",
+      "slot_fit_rationale": "The claim describes an alternative entry point for achieving the same browsing goal, which fits the definition of an alternative flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-AF-009"
+      ],
+      "evidence_modalities": {
+        "EC-AF-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 1: The Customer may instead enter product browsing via SEO-optimized landing page",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-AF-010], which explicitly states that the customer may enter product browsing via SEO-optimized landing pages.",
+      "slot_fit_rationale": "The claim describes a valid alternative entry point into the use case that achieves the same goal as the main flow, fitting the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-010"
+      ],
+      "evidence_modalities": {
+        "EC-AF-010": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 2: Before submitting the search, the Customer may choose either 'Items currently ",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim includes the specific procedural constraint 'Before submitting the search' and the divergence point 'Diverges from Step 2', neither of which is supported by the cited evidence units that only describe the availability and effect of the radio buttons.",
+      "slot_fit_rationale": "The claim describes a user choice that creates a variant path in the interaction while still pursuing the same success outcome, which substantively fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-019",
+        "EC-AF-030"
+      ],
+      "evidence_modalities": {
+        "EC-AF-019": "card_text",
+        "EC-AF-030": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 2: The Customer may set combinable radio-button filters to show items with or wit",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly supports that the customer can use combinable radio buttons to filter by image presence and valid location, which are described as alternative successful paths.",
+      "slot_fit_rationale": "The claim describes a non-error branching path where the user modifies search constraints while still pursuing the main goal of browsing, which fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-020",
+        "EC-AF-031"
+      ],
+      "evidence_modalities": {
+        "EC-AF-020": "card_text",
+        "EC-AF-031": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 5: The Customer may switch between 'List View' and 'Catalog View' display modes f",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that the customer can switch between display modes, and the context note confirms this is a legal alternative path diverging from the main flow.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch where the user changes display preferences while continuing to pursue the primary goal of browsing products, which fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-022"
+      ],
+      "evidence_modalities": {
+        "EC-AF-022": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 5: The Customer may sort the product results by 'Current Price: low to high' usin",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that the customer can sort product results by 'Current Price: low to high' using a dropdown menu, which directly supports the material proposition in the claim.",
+      "slot_fit_rationale": "The claim describes an optional user action (sorting) that modifies the interaction path without causing an error or changing the ultimate goal, which fits the definition of an alternative flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-AF-023"
+      ],
+      "evidence_modalities": {
+        "EC-AF-023": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": true
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 5: The Customer may group the displayed results using a scrolling list box with o",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim includes a specific divergence point ('Diverges from Step 5') that is not supported by the provided evidence, which only describes the grouping functionality and its classification as an alternative flow without referencing specific step numbers.",
+      "slot_fit_rationale": "The claim describes a non-error branching path for organizing results that still pursues the main success goal, which aligns with the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-021"
+      ],
+      "evidence_modalities": {
+        "EC-AF-021": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "While browsing auction inventory links, if the Customer clicks a link that contains no product (whic",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-005], which explicitly states that clicking a link with no product results in a 'no results found' page.",
+      "slot_fit_rationale": "The claim describes an abnormal condition (empty product link) and the system's specific handling response, which correctly fits the definition of an exception flow.",
+      "evidence_refs": [
+        "EC-EF-005"
+      ],
+      "evidence_modalities": {
+        "EC-EF-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If the submitted search returns no matches, the system displays a 'No Results Found' page that inclu",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-EF-000], [EC-EF-006], and [EC-EF-015], which collectively detail the 'No Results Found' page content, including the apology, specific search tips, and the composition of the suggestion section.",
+      "slot_fit_rationale": "The claim describes the system's specific response to an error condition (zero search matches), which constitutes a substantive exception flow in Cockburn use-case terminology.",
+      "evidence_refs": [
+        "EC-EF-000",
+        "EC-EF-006",
+        "EC-EF-015"
+      ],
+      "evidence_modalities": {
+        "EC-EF-000": "card_text",
+        "EC-EF-006": "card_text",
+        "EC-EF-015": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Products without an available image are never eligible to appear on product details pages, search re",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units EC-EF-001, EC-EF-007, and EC-EF-012, which collectively establish the hard filter on images and its potential to cause empty or incomplete result sets.",
+      "slot_fit_rationale": "The claim describes a systemic constraint that leads to an abnormal outcome (empty/incomplete results) despite matching criteria, which constitutes a valid exception flow condition in Cockburn use-case modeling.",
+      "evidence_refs": [
+        "EC-EF-001",
+        "EC-EF-007",
+        "EC-EF-012"
+      ],
+      "evidence_modalities": {
+        "EC-EF-001": "card_text",
+        "EC-EF-007": "card_text",
+        "EC-EF-012": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If the Customer is not signed in when clicking anywhere within a product module (except the QuickBid",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-010], which explicitly describes the condition (not signed in), the trigger (clicking within a product module except QuickBid), and the resulting behavior (sign-in page followed by redirection to Product Details).",
+      "slot_fit_rationale": "The claim describes an abnormal flow triggered by a missing precondition (authentication) that interrupts the normal navigation path, which aligns with the definition of an exception_flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-EF-010"
+      ],
+      "evidence_modalities": {
+        "EC-EF-010": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The system displays a filtered product list in a table titled 'Search Results'; each row represents ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-MF-003], which confirms the table title and general content, and Evidence [EC-PO-003], which provides the specific column names (e.g., 'Product ID (SKU #)', 'Auction ID') and details matching the claim.",
+      "slot_fit_rationale": "The claim describes the specific data fields and visual state of the search results interface immediately following a successful search, which constitutes the resulting system state defined as a postcondition.",
+      "evidence_refs": [
+        "EC-MF-003",
+        "EC-PO-003"
+      ],
+      "evidence_modalities": {
+        "EC-MF-003": "card_text",
+        "EC-PO-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The search results display data using columns in this default order: 'Action' (checkbox), Item thumb",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a verbatim match to Evidence [EC-PO-003], which explicitly lists the default column order and initial states for the search results display.",
+      "slot_fit_rationale": "The claim describes the specific observable state of the system interface (column layout and initial values) immediately following the successful completion of the search interaction, which constitutes a postcondition.",
+      "evidence_refs": [
+        "EC-PO-003"
+      ],
+      "evidence_modalities": {
+        "EC-PO-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

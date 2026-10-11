@@ -1,0 +1,580 @@
+{
+  "use_case_name": "Initiate Emergency Point Reports",
+  "actor": "System Operator",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "System Operator initiates an emergency point report for a previously reported emergency point, providing additional or more current information for that point.",
+          "evidence_refs": [
+            "EC-G-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000"
+      ],
+      "scope_contract": {
+        "goal_statement": "System Operator initiates an emergency point report to provide additional or more current information about a previously reported emergency point.",
+        "canonical_success_scenario": "A System Operator, acting as the required operator action for a JU, initiates an emergency point report on a previously reported emergency point and supplies the additional or more current information about that point.",
+        "start_boundary": "The System Operator begins the action of initiating an emergency point report for a previously reported emergency point.",
+        "success_boundary": "The System Operator has initiated the emergency point report with the additional or more current information for the previously reported emergency point.",
+        "in_scope_actions": [
+          "Initiating an emergency point report on a previously reported emergency point",
+          "Providing additional or more current information on the point",
+          "Performing the report through operator action for a JU"
+        ],
+        "excluded_adjacent_actions": [
+          "Creating a first-time/initial report for an emergency point that has not been previously reported",
+          "Automated reporting without operator action",
+          "Post-initiation review, approval, distribution, or downstream processing of the report",
+          "Administrative management of JUs or emergency point records"
+        ],
+        "variant_dimensions": [
+          "The JU on whose behalf the operator initiates the report (any JU may report)",
+          "The specific content supplied as additional or more current information"
+        ],
+        "evidence_refs": [
+          "EC-G-000"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "System Operator",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "System Operator"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "A previously reported emergency point exists.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "A JU has additional or more current information about the previously reported emergency point.",
+          "evidence_refs": [
+            "EC-G-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000",
+        "EC-G-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "precondition-previously-reported-point",
+          "precondition-additional-current-info"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The System Operator, as the required operator action for a JU, performs an action to report additional or more current information on a previously reported emergency point.",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-G-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-G-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-operator-action",
+          "trigger-previously-reported-point",
+          "trigger-additional-info"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The System Operator, performing the required operator action for a JU, initiates an emergency point report for a previously reported emergency point to provide additional or more current information about that point.",
+          "evidence_refs": [
+            "EC-MF-003",
+            "EC-G-000"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The System Operator includes, as amplifying information in the emergency point report, the TN Previously Reported associated with the emergency point.",
+          "evidence_refs": [
+            "EC-MF-001"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The System Operator uses the same TN Reference and the same value of TN Previously Reported as those reported by the previous reporting unit.",
+          "evidence_refs": [
+            "EC-MF-004"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The emergency point report has a TN Reference different from the TN Previously Reported.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "The System Operator transmits the emergency point report as a J3.1 message.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-003",
+        "EC-G-000",
+        "EC-MF-001",
+        "EC-MF-004",
+        "EC-MF-002",
+        "EC-MF-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-operator-action",
+          "MF-amplifying-info",
+          "MF-tn-consistency",
+          "MF-tn-difference",
+          "MF-transmission"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: If the unit currently holding R² for the emergency point has been declared inactive by a J7.0 (ACT=0) message, or no periodic update has been received for three consecutive update intervals, the System Operator, performing the required operator action for another JU that is assuming R² for the point, initiates the emergency point report and uses the same TN Reference and the same value of TN Previously Reported as those reported by the previous reporting unit.",
+          "evidence_refs": [
+            "EC-AF-001",
+            "EC-AF-002"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 5: The System Operator sets the Exercise Indicator to value 1 in the J3.1 message, designating the emergency point report for exercise purposes and not as an actual emergency.",
+          "evidence_refs": [
+            "EC-AF-000"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-001",
+        "EC-AF-002",
+        "EC-AF-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-r2-transfer",
+          "AF-exercise-indicator"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 4: If an ID conflict exists such that the ID difference cannot be automatically accepted or rejected, the conflicting differences are presented to the System Operator for evaluation and may require voice coordination for final resolution; after resolution, the use case resumes at Step 4.",
+          "evidence_refs": [
+            "EC-EF-004"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 5: Because alerts are not used for the J3.1 Emergency Point message and emergency points cannot be filtered, no alerting/filtering is applied; the System Operator proceeds with Step 5 and transmits the J3.1 report, completing the use case.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 2
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-004",
+        "EC-EF-005"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EX-ID-conflict",
+          "EX-J3.1-no-alerting"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "An emergency point report has been initiated on the previously reported emergency point, containing the additional or more current information supplied by the JU.",
+          "evidence_refs": [
+            "EC-G-000"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The JU that reported the emergency point is now the latest reporting unit and has R² for that point.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-PO-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-emergency-point-report-initiated",
+          "PC-latest-reporter-holds-r2"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 22,
+    "cross_page_cards": 12,
+    "modalities": {
+      "text": 22
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 986.514,
+    "llm_seconds": 816.025,
+    "lvlm_seconds": 162.148,
+    "llm_calls": 14,
+    "lvlm_calls": 37,
+    "lvlm_retry_calls": 0,
+    "llm_retry_calls": 0,
+    "cards_collected": 22,
+    "cards_referenced": 14
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Structured author candidates captured before deterministic evidence-reference validation. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "System Operator initiates an emergency point report for a previously reported emergency point, providing additional or more current information for that point.",
+            "evidence_refs": [
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "A previously reported emergency point exists.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          },
+          {
+            "content": "A JU has additional or more current information about the previously reported emergency point.",
+            "evidence_refs": [
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-PC-000"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "The System Operator, as the required operator action for a JU, performs an action to report additional or more current information on a previously reported emergency point.",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-PC-000",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "The System Operator, performing the required operator action for a JU, initiates an emergency point report for a previously reported emergency point to provide additional or more current information about that point.",
+            "evidence_refs": [
+              "EC-MF-003",
+              "EC-G-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The System Operator includes, as amplifying information in the emergency point report, the TN Previously Reported associated with the emergency point.",
+            "evidence_refs": [
+              "EC-MF-001"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The System Operator uses the same TN Reference and the same value of TN Previously Reported as those reported by the previous reporting unit.",
+            "evidence_refs": [
+              "EC-MF-004"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The emergency point report has a TN Reference different from the TN Previously Reported.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The System Operator transmits the emergency point report as a J3.1 message.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-PC-000"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: If the unit currently holding R² for the emergency point has been declared inactive by a J7.0 (ACT=0) message, or no periodic update has been received for three consecutive update intervals, the System Operator, performing the required operator action for another JU that is assuming R² for the point, initiates the emergency point report and uses the same TN Reference and the same value of TN Previously Reported as those reported by the previous reporting unit.",
+            "evidence_refs": [
+              "EC-AF-001",
+              "EC-AF-002"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 5: The System Operator sets the Exercise Indicator to value 1 in the J3.1 message, designating the emergency point report for exercise purposes and not as an actual emergency.",
+            "evidence_refs": [
+              "EC-AF-000"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-006",
+          "EC-PC-000",
+          "EC-TR-002"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from Step 4: If an ID conflict exists such that the ID difference cannot be automatically accepted or rejected, the conflicting differences are presented to the System Operator for evaluation and may require voice coordination for final resolution; after resolution, the use case resumes at Step 4.",
+            "evidence_refs": [
+              "EC-EF-004"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 5: Because alerts are not used for the J3.1 Emergency Point message and emergency points cannot be filtered, no alerting/filtering is applied; the System Operator proceeds with Step 5 and transmits the J3.1 report, completing the use case.",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-004",
+          "EC-PC-000",
+          "EC-TR-001"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "An emergency point report has been initiated on the previously reported emergency point, containing the additional or more current information supplied by the JU.",
+            "evidence_refs": [
+              "EC-G-000"
+            ]
+          },
+          {
+            "content": "The JU that reported the emergency point is now the latest reporting unit and has R² for that point.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-G-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-004",
+          "EC-PC-000",
+          "EC-PO-000",
+          "EC-TR-001"
+        ]
+      }
+    }
+  },
+  "method": "CREST w/o cross-slot"
+}

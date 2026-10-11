@@ -1,0 +1,1032 @@
+{
+  "use_case_name": "Manage Account Settings",
+  "actor": "Customer",
+  "slots": {
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered when the Customer accesses the 'My Account Edit Page' (specifically pages for editing Membership Information, Billing/Shipping Addresses, Payment Methods, or Email Preferences) to update their stored account data.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-TR-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-TR-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-entry-point",
+          "trigger-update-intent",
+          "trigger-edit-categories"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The Customer's selected email notification preferences ('notify me when I am outbid', 'notify me when I win an auction', 'notify me when my winnings are shipped') are saved and will govern future transactional email behavior.",
+          "evidence_refs": [
+            "EC-PO-004"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "After saving changes, the Customer's updated membership account information (First Name, Last Name, Member ID, E-mail Address, Phone, Password) is saved to the system and persisted, and the Customer is returned to the My Account page.",
+          "evidence_refs": [
+            "EC-PO-003",
+            "EC-PO-005"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-004",
+        "EC-PO-003",
+        "EC-PO-005"
+      ]
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Customer wants to update and save their stored membership account information (such as First Name, Last Name, Member ID, E-mail Address, Phone, and Password) and manage their email notification preferences.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-001",
+            "EC-G-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-001",
+        "EC-G-002"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Customer wants to update and save their stored membership account information (such as First Name, Last Name, Member ID, E-mail Address, Phone, and Password) and manage their email notification preferences.",
+        "evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002"
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At main flow step 2 (entering updated account information), if the Customer has not completed the current-password authorization step, the system prevents modification of account information.",
+          "evidence_refs": [
+            "EC-EF-000",
+            "EC-EF-008"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "At main flow step 2 (selecting email notification preferences), if the Customer's paytype is PayPal or Amazon, the 'Please notify me when I win an auction' checkbox is grayed out, preventing the Customer from de-selecting it.",
+          "evidence_refs": [
+            "EC-EF-002"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "At main flow step 3 (saving changes), if the E-mail Address entered is a duplicate of an existing customer-table value, the system raises an error condition requiring correction.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "At main flow step 3 (saving changes), if the Member ID ('Handle') entered is not unique, the system enters an error state.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "At main flow step 3 (saving changes), if the password entered is outside the 8-12 character range, the system triggers a validation error and prevents the save.",
+          "evidence_refs": [
+            "EC-EF-004"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "At main flow step 3 (saving changes), if the two password fields contain mismatched values, the system rejects the save.",
+          "evidence_refs": [
+            "EC-EF-012"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "At main flow step 3 (saving changes), when a new or edited address is submitted, the system validates the address via the Core web service; if correction suggestions are returned and are not accepted, the system may reject the address input as invalid.",
+          "evidence_refs": [
+            "EC-EF-001",
+            "EC-EF-006",
+            "EC-EF-009"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-000",
+        "EC-EF-008",
+        "EC-EF-002",
+        "EC-EF-003",
+        "EC-EF-005",
+        "EC-EF-004",
+        "EC-EF-012",
+        "EC-EF-001",
+        "EC-EF-006",
+        "EC-EF-009"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "current-password-authorization",
+          "paypal-amazon-notification-constraint",
+          "email-uniqueness",
+          "member-id-uniqueness",
+          "password-length-validation",
+          "password-mismatch-validation",
+          "address-validation-corrections"
+        ],
+        "missing_aspects": [
+          "Recovery/return path after each validation rejection is not documented in the evidence; the cards specify only the rejection/prevention outcome, not whether the Customer is returned to the edit page or which entered values are retained.",
+          "The cited evidence (Page 42) defines the uniqueness requirement for Registration Page 2; explicit confirmation that this specific validation logic applies to the 'My Account Edit' save action (Step 3) is missing.",
+          "The cited evidence (Page 42) defines the password length constraint for Registration Page 2; explicit confirmation that this specific validation logic applies to the 'My Account Edit' save action (Step 3) is missing.",
+          "The cited evidence (Page 108) describes an administrative user interface ('Create or Edit User Page Mockup'), not the Customer 'My Account Edit' page; support for this exception flow on the Customer-facing page is missing."
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from the main flow step of entering updated shipping address information: instead of manually re-entering the shipping address fields, the Customer may select the 'Same as Billing Address' checkbox in the address editing section, which automatically populates the New Shipping Address fields with the billing address data before the Customer saves the changes.",
+          "evidence_refs": [
+            "EC-AF-001",
+            "EC-AF-013"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 2 (updating email notification preferences): instead of changing the on-page email notification checkboxes, the Customer clicks the 'Change my \"Auction Insider\" Email Newsletter Subscription' link to manage the newsletter subscription preference.",
+          "evidence_refs": [
+            "EC-AF-005"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-001",
+        "EC-AF-013",
+        "EC-AF-005"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Customer navigates to the 'Change Membership Account Information' page, the My Account Edit Page for updating membership information and email notification preferences.",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-TR-000"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer views the 'My Current Information' section, which displays their existing First Name, Last Name, Member ID ('Handle'), E-mail Address, Phone, and requires entry of the Current Password to authorize changes.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer enters their Current Password to authorize the changes.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer enters updated information into the 'My New Information' section fields: First Name, Last Name, Member ID ('Handle'), E-mail Address (entered twice for verification), Phone, and Password (entered twice for verification).",
+          "evidence_refs": [
+            "EC-MF-001"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer sets the email notification preference checkboxes: 'notify me via email when I am outbid', 'notify me when I win an auction', and 'notify me when my winnings are shipped'.",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer clicks the 'Save Changes' button to submit the changes.",
+          "evidence_refs": [
+            "EC-MF-002",
+            "EC-MF-007"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer is returned to the My Account page upon saving changes.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-TR-000",
+        "EC-MF-000",
+        "EC-MF-001",
+        "EC-MF-009",
+        "EC-MF-002",
+        "EC-MF-007",
+        "EC-MF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-access-edit-page",
+          "MF-view-current-info",
+          "MF-current-password-authorization",
+          "MF-enter-updated-info",
+          "MF-email-preference-selection",
+          "MF-save-changes",
+          "MF-return-to-my-account"
+        ],
+        "missing_aspects": [
+          "Evidence supports that these checkboxes exist and can be managed, but does not explicitly state they are all set/checked in this specific step sequence."
+        ]
+      }
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Customer is authenticated (logged in) with an active session associated with their account.",
+          "evidence_refs": [
+            "EC-PC-003",
+            "EC-PC-006"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer has an existing account with stored registration information (First Name, Last Name, Member ID/Handle, E-mail Address, Phone) and a current password already stored in the system, so the edit page can display current identity/contact data.",
+          "evidence_refs": [
+            "EC-PC-002",
+            "EC-PC-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-003",
+        "EC-PC-006",
+        "EC-PC-002",
+        "EC-PC-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "authenticated-session",
+          "existing-account-with-stored-data"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 2 says it diverges from 'Step 2 (updating email notification preferences)', but main_flow step 2 is about viewing current information; email notification preferences are handled in main_flow step 5. The divergence point references the wrong step. (atomic grounding: candidate remains incomplete (Explicit recovery/exit after clicking the link is not supported by the cited evidence.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The Trigger claims the use case starts from pages for editing Membership Information, Billing/Shipping Addresses, Payment Methods, or Email Preferences, but the Main Flow only continues through the 'Change Membership Account Information' page for membership data and email notification preferences. A customer entering through Billing/Shipping Addresses or Payment Methods has no continuing path in the main flow, so the trigger is broader than the actual vertical flow. (atomic grounding: candidate remains incomplete (Evidence does not state that the page is the 'My Account edit page' nor that the customer's purpose is to update stored membership account data.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim at index 1 diverges from 'Step 2 (updating email notification preferences)', but main_flow step 2 is about viewing current information and current-password authorization; the email notification preference checkboxes are in main_flow step 5. (atomic grounding: candidate remains incomplete (EC-AF-005 does not contain explicit evidence for the claimed divergence from the main-flow step 5 on-page email notification checkbox update.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The Trigger claims the use case starts when the Customer accesses the My Account Edit Page, explicitly including pages for editing Billing/Shipping Addresses and Payment Methods. However, the Main Flow only covers the Change Membership Account Information page / email preferences and never continues from the billing/shipping/payment entry points. The Trigger is therefore broader than the flow actually specified, creating a vertical discontinuity.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] The first alternative flow claim diverges from a main flow step for entering updated shipping address information, but main_flow contains no such step as specified. Main flow step 4 lists First Name, Last Name, Member ID, E-mail Address, Phone, and Password and does not mention shipping address fields or an address-editing section. The alternative is therefore attached to a nonexistent/unrelated point in main_flow.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] The second alternative flow claim names 'Step 2' as the divergence point for updating email notification preferences, but in main_flow, Step 2 is viewing the 'My Current Information' section; email notification preferences are handled in Step 5. The divergence point is therefore mislabeled and points to the wrong main_flow step.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "goal",
+        "alternative_flow",
+        "postconditions"
+      ],
+      "inconsistency_hints": [
+        "The goal's scope_contract lists 'Update billing/shipping addresses' and 'Update payment methods' as in-scope actions, but main_flow only covers membership account information fields and email notification preferences. The goal is broader than the behavior actually specified in main_flow and appears to conflate multiple account-management use cases.",
+        "Alternative flow claim 1 says it diverges from 'Step 2 (entering updated shipping address)', but main_flow step 2 is 'The Customer views the My Current Information section', and no main_flow step contains shipping address entry. The divergence point is logically unrelated to the stated main-flow step.",
+        "Postcondition 2 asserts a post-save state indicated by 'confirmation text regarding payment processing', but the Main Flow only saves membership information and email notification preferences; it contains no payment-processing step. The payment-processing confirmation is therefore not reachable from this flow. This also reflects a broader scope mismatch: the Trigger lists Payment Methods as an entry page, but the Main Flow does not implement that path.",
+        "Alternative flow claim at index 0 diverges from 'the main flow step of entering updated shipping address information', but main_flow has no shipping-address entry step; step 4 covers only First Name, Last Name, Member ID, E-mail, Phone, and Password."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 59,
+    "cross_page_cards": 40,
+    "modalities": {
+      "text": 54,
+      "diagram": 5
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2167.616,
+    "llm_calls": 28.0,
+    "llm_seconds": 2063.199,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 103.538,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 11.0,
+    "judge_calls": 0,
+    "cards_collected": 55,
+    "cards_referenced": 29,
+    "evidence_reused": true,
+    "reused_card_count": 55,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/jtvauctions/Customer_Manage_Account_Settings-evidence.json",
+    "dra_elapsed_seconds": 1565.467,
+    "dra_llm_calls": 21,
+    "dra_llm_seconds": 1535.375,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 29.367,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_calls": 4,
+    "dra_judge_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The use case is triggered when the Customer accesses the 'My Account Edit Page' (specifically pages for editing Membership Information, Billing/Shipping Addresses, Payment Methods, or Email Preferences) to update their stored account data.",
+            "evidence_refs": [
+              "EC-TR-000",
+              "EC-TR-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer's selected email notification preferences ('notify me when I am outbid', 'notify me when I win an auction', 'notify me when my winnings are shipped') are saved and will govern future transactional email behavior.",
+            "evidence_refs": [
+              "EC-PO-004"
+            ]
+          },
+          {
+            "content": "After saving changes, the Customer's updated membership account information (First Name, Last Name, Member ID, E-mail Address, Phone, Password) is saved to the system and persisted, and the Customer is returned to the My Account page.",
+            "evidence_refs": [
+              "EC-PO-003",
+              "EC-PO-005"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer wants to update and save their stored membership account information (such as First Name, Last Name, Member ID, E-mail Address, Phone, and Password) and manage their email notification preferences.",
+            "evidence_refs": [
+              "EC-G-000",
+              "EC-G-001",
+              "EC-G-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "At main flow step 2 (entering updated account information), if the Customer has not completed the current-password authorization step, the system prevents modification of account information.",
+            "evidence_refs": [
+              "EC-EF-000",
+              "EC-EF-008"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At main flow step 2 (selecting email notification preferences), if the Customer's paytype is PayPal or Amazon, the 'Please notify me when I win an auction' checkbox is grayed out, preventing the Customer from de-selecting it.",
+            "evidence_refs": [
+              "EC-EF-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "At main flow step 3 (saving changes), if the E-mail Address entered is a duplicate of an existing customer-table value, the system raises an error condition requiring correction.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "At main flow step 3 (saving changes), if the Member ID ('Handle') entered is not unique, the system enters an error state.",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "At main flow step 3 (saving changes), if the password entered is outside the 8-12 character range, the system triggers a validation error and prevents the save.",
+            "evidence_refs": [
+              "EC-EF-004"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "At main flow step 3 (saving changes), if the two password fields contain mismatched values, the system rejects the save.",
+            "evidence_refs": [
+              "EC-EF-012"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "At main flow step 3 (saving changes), when a new or edited address is submitted, the system validates the address via the Core web service; if correction suggestions are returned and are not accepted, the system may reject the address input as invalid.",
+            "evidence_refs": [
+              "EC-EF-001",
+              "EC-EF-006",
+              "EC-EF-009"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from the main flow step of entering updated shipping address information: instead of manually re-entering the shipping address fields, the Customer may select the 'Same as Billing Address' checkbox in the address editing section, which automatically populates the New Shipping Address fields with the billing address data before the Customer saves the changes.",
+            "evidence_refs": [
+              "EC-AF-001",
+              "EC-AF-013"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 2 (updating email notification preferences): instead of changing the on-page email notification checkboxes, the Customer clicks the 'Change my \"Auction Insider\" Email Newsletter Subscription' link to manage the newsletter subscription preference.",
+            "evidence_refs": [
+              "EC-AF-005"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer navigates to the 'Change Membership Account Information' page, the My Account Edit Page for updating membership information and email notification preferences.",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-TR-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Customer views the 'My Current Information' section, which displays their existing First Name, Last Name, Member ID ('Handle'), E-mail Address, Phone, and requires entry of the Current Password to authorize changes.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Customer enters their Current Password to authorize the changes.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The Customer enters updated information into the 'My New Information' section fields: First Name, Last Name, Member ID ('Handle'), E-mail Address (entered twice for verification), Phone, and Password (entered twice for verification).",
+            "evidence_refs": [
+              "EC-MF-001"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The Customer sets the email notification preference checkboxes: 'notify me via email when I am outbid', 'notify me when I win an auction', and 'notify me when my winnings are shipped'.",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The Customer clicks the 'Save Changes' button to submit the changes.",
+            "evidence_refs": [
+              "EC-MF-002",
+              "EC-MF-007"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "The Customer is returned to the My Account page upon saving changes.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer is authenticated (logged in) with an active session associated with their account.",
+            "evidence_refs": [
+              "EC-PC-003",
+              "EC-PC-006"
+            ]
+          },
+          {
+            "content": "The Customer has an existing account with stored registration information (First Name, Last Name, Member ID/Handle, E-mail Address, Phone) and a current password already stored in the system, so the edit page can display current identity/contact data.",
+            "evidence_refs": [
+              "EC-PC-002",
+              "EC-PC-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=29]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=29]",
+    "directory": "random_order/seed_029",
+    "seed": 29,
+    "slot_order": [
+      "trigger",
+      "postconditions",
+      "goal",
+      "exception_flow",
+      "alternative_flow",
+      "main_flow",
+      "preconditions",
+      "primary_actor"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "4096aa00b02c46198468d2cb8a5ceb72"
+}

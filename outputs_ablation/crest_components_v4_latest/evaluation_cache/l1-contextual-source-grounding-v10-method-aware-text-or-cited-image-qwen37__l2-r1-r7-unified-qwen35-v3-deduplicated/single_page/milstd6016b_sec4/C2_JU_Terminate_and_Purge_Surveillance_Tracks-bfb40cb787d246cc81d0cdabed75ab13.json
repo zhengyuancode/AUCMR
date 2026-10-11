@@ -1,0 +1,692 @@
+{
+  "use_case_name": "Terminate and Purge Surveillance Tracks",
+  "actor": "C2 JU",
+  "scg": 100.0,
+  "nli_g": 85.71428571428571,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 0.0,
+  "avg_cards": 38,
+  "total_claims": 21,
+  "total_cited_claims": 21,
+  "total_entailed_claims": 18,
+  "pre_constraint_claim_count": 21,
+  "pre_constraint_cited_claim_count": 21,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 170,
+  "cross_page_cards": 0,
+  "referenced_cards": 38,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 3,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 3,
+      "cited_claim_count": 3,
+      "evidence_ref_count": 5,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 5,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 5,
+      "cited_claim_count": 5,
+      "evidence_ref_count": 24,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 2,
+      "cited_claim_count": 2,
+      "evidence_ref_count": 3,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 6,
+      "cited_claim_count": 6,
+      "evidence_ref_count": 8,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 3,
+      "cited_claim_count": 3,
+      "evidence_ref_count": 7,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R1": 3,
+    "R7": 3
+  },
+  "l3_violations_pre_repair": {
+    "R1": 3,
+    "R2": 0,
+    "R3": 0,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 3
+  },
+  "l2_violations": {
+    "R1": 0,
+    "R2": 1,
+    "R3": 1,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 0
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R2": [
+        {
+          "rule_id": "R2",
+          "rule_name": "mainflow_trigger_continuity",
+          "offending_slot": "main_flow",
+          "offending_claim_index": 0,
+          "rationale": "Main Flow step 1 redundantly restates the entire Trigger logic as a conditional branching point rather than continuing from the specific event that initiated the scenario, creating a logical gap between the singular Trigger and the multi-path Main Flow."
+        }
+      ],
+      "R3": [
+        {
+          "rule_id": "R3",
+          "rule_name": "mainflow_postconditions_reachability",
+          "offending_slot": "postconditions",
+          "offending_claim_index": 0,
+          "rationale": "Postcondition [0] claims a J7.0 transmission occurs for all successful terminations, but this is not reachable in the automatic purge path described in Main Flow steps [3]-[5] where no message is transmitted."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 0,
+      "R2": 1,
+      "R3": 1,
+      "R4": 0,
+      "R5": 0,
+      "R6": 0,
+      "R7": 0
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The Trigger's automatic-purge branch requires, for any remote track/point, that the specified interval has elapsed since the last report without receipt of a J7.0 Drop Track Report or further updates. Preconditions cover the system capability to auto-drop remote tracks (claim 2) and the no-drop/no-update state only for remote ballistic missile tracks (claim 3); there is no general precondition that a remote track/point (DRT=0-3) awaiting purge is in the no-J7.0/no-further-update state. Without that state, the automatic-purge trigger for non-BMD remote tracks is not supported by the preconditions. (atomic grounding: candidate remains incomplete (No cited evidence supports purging of 'points' distinct from remote tracks; claim narrowed to remote tracks.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 4 (ballistic missile dependent Impact Point) attaches to main_flow Step 2 but lacks a clear branch outcome. It states that a change in R² for the track causes a corresponding change in R² for the related Impact Point and that termination/purge logic must account for it, but it does not state whether the J7.0 transmission is suppressed, whether the branch returns to a main-flow step, or what terminal state the branch ends in. (atomic grounding: candidate remains incomplete (Explicit recovery/exit evidence for the exception branch after the R² and Impact Point reporting state updates.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 4 does not define a clear branch outcome. It states a dependency/requirement for ballistic missile R² changes and related Impact Point reporting, but it does not say whether the branch returns to a main flow step, terminates/hands off, or reaches an explicit terminal prevention state. The reader cannot determine what happens after this exception is entered. (atomic grounding: candidate remains incomplete (Explicit evidence that the exception branch completes in that state is not supported by the cited cards; only the condition and the corresponding R² update are supported.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The trigger includes a branch for EW product information that the C2 JU has been reporting becoming invalid or failing time-related update requirements, but no precondition states that the C2 JU is currently reporting/transmitting that EW product information or holds the needed reporting responsibility for it. The main flow carries this branch forward, so the vertical flow starts from an uncovered state.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Precondition 3 limits the required 'no J7.0 Drop Track Report and no further updates' state to automatic purging of a remote ballistic missile track, whereas the trigger and main flow apply automatic purge to any remote track/point (DRT=0-3). The non-ballistic remote-track automatic purge branch therefore lacks a corresponding precondition.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 4 (ballistic missile track R² change) lacks a clear branch outcome. It states that an R² change for the track causes a corresponding R² change for the related Impact Point and that termination/purge logic must account for it, but it does not specify whether the branch returns to a main-flow step, terminates, hands off, or reaches an explicit prevention/failure state.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "The goal is to terminate surveillance tracks and to automatically purge them after a specific time i",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-G-002], which states the goal to terminate tracks, and Evidence [EC-G-003], which states the goal to automatically purge them after a specific time interval.",
+      "slot_fit_rationale": "The claim explicitly defines the high-level objective and success outcome of the use case, which corresponds directly to the 'goal' slot in Cockburn's template.",
+      "evidence_refs": [
+        "EC-G-002",
+        "EC-G-003",
+        "EC-G-004"
+      ],
+      "evidence_modalities": {
+        "EC-G-002": "card_text",
+        "EC-G-003": "card_text",
+        "EC-G-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The C2 JU currently holds reporting responsibility (R²) for a surveillance track that is to be termi",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence: EC-PC-009 and EC-PC-018 confirm the C2 JU holds R², while EC-PC-011 and EC-PC-018 establish the exceptions (relinquishment or becoming an Active IU) that must not occur for the termination precondition to hold.",
+      "slot_fit_rationale": "The claim describes necessary state conditions (holding R² and not transitioning to other statuses) that must be true before the track termination interaction can initiate, which aligns with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-009",
+        "EC-PC-011",
+        "EC-PC-018"
+      ],
+      "evidence_modalities": {
+        "EC-PC-009": "card_text",
+        "EC-PC-011": "card_text",
+        "EC-PC-018": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The C2 JU has the capability to automatically drop remote tracks/points after a specified time inter",
+      "entailment": "neutral",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence states that a JU 'may have' the capability (optional/variable), whereas the claim asserts definitively that 'The C2 JU has' the capability, creating an unsupported material proposition regarding the certainty of the feature's presence.",
+      "slot_fit_rationale": "The claim describes a general system capability or feature definition rather than a specific state condition that must hold true immediately before the use case interaction begins.",
+      "evidence_refs": [
+        "EC-PC-002"
+      ],
+      "evidence_modalities": {
+        "EC-PC-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "For automatic purging of a remote ballistic missile track, the system has not received a J7.0 Drop T",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-PC-014], which explicitly states the required state for automatic purging.",
+      "slot_fit_rationale": "The claim describes the necessary system state that must hold before the automatic purging interaction initiates, which aligns with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-014"
+      ],
+      "evidence_modalities": {
+        "EC-PC-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "The use case is triggered when the C2 JU ceases reporting a track for which it currently has R² (tra",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim's three triggering conditions (J7.0 Drop Track transmission, EW invalidity, and time interval expiration) are each directly supported by the union of evidence units EC-TR-005, EC-TR-007/EC-TR-008, and EC-TR-000/EC-TR-006 respectively.",
+      "slot_fit_rationale": "The claim explicitly lists the specific events and conditions that initiate the use case interaction, which is the precise definition of the trigger slot in Cockburn's framework.",
+      "evidence_refs": [
+        "EC-TR-000",
+        "EC-TR-005",
+        "EC-TR-006",
+        "EC-TR-007",
+        "EC-TR-008"
+      ],
+      "evidence_modalities": {
+        "EC-TR-000": "card_text",
+        "EC-TR-005": "card_text",
+        "EC-TR-006": "card_text",
+        "EC-TR-007": "card_text",
+        "EC-TR-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The main flow begins when the C2 JU transmits a J7.0 (ACT = 0) Drop Track Report upon ceasing report",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units: EC-MF-005/025 support the R² cessation path, EC-MF-006/009/015/031 support the automatic purge path for remote tracks, and EC-TR-007/008 support the EW product termination and reporting path.",
+      "slot_fit_rationale": "The claim describes the primary actions and triggering conditions for terminating track reporting within the normal successful interaction path, which constitutes the main flow of the use case.",
+      "evidence_refs": [
+        "EC-MF-005",
+        "EC-MF-006",
+        "EC-MF-009",
+        "EC-MF-015",
+        "EC-MF-025",
+        "EC-MF-031",
+        "EC-TR-007",
+        "EC-TR-008"
+      ],
+      "evidence_modalities": {
+        "EC-MF-005": "card_text",
+        "EC-MF-006": "card_text",
+        "EC-MF-009": "card_text",
+        "EC-MF-015": "card_text",
+        "EC-MF-025": "card_text",
+        "EC-MF-031": "card_text",
+        "EC-TR-007": "card_text",
+        "EC-TR-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The C2 JU transmits a J7.0 (ACT = 0) message when it ceases reporting a track for which it currently",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-MF-005] and [EC-MF-025], which define the general rule for transmitting J7.0 (ACT = 0) and its specific exceptions (relinquishing R², Active IU), combined with Evidence [EC-MF-004] which confirms no message is sent during automatic purging.",
+      "slot_fit_rationale": "The claim describes the primary action and its conditional exceptions within the normal successful interaction path for terminating a track, which constitutes the main flow of the use case.",
+      "evidence_refs": [
+        "EC-MF-003",
+        "EC-MF-004",
+        "EC-MF-005",
+        "EC-MF-025"
+      ],
+      "evidence_modalities": {
+        "EC-MF-003": "card_text",
+        "EC-MF-004": "card_text",
+        "EC-MF-005": "card_text",
+        "EC-MF-025": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "For a remote track/point (DRT = 0-3), the C2 JU system applies automatic purge using a system-select",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units EC-MF-009, EC-MF-015, and EC-MF-031, which collectively confirm that the system automatically purges remote tracks (DRT=0-3) after a system-selected time interval based on the last report/update.",
+      "slot_fit_rationale": "The claim describes a standard automated action within the normal successful interaction path for handling stale tracks, which aligns with the definition of a main_flow step.",
+      "evidence_refs": [
+        "EC-MF-003",
+        "EC-MF-009",
+        "EC-MF-015",
+        "EC-MF-031"
+      ],
+      "evidence_modalities": {
+        "EC-MF-003": "card_text",
+        "EC-MF-009": "card_text",
+        "EC-MF-015": "card_text",
+        "EC-MF-031": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The automatic-purge condition is met when the specified time interval has elapsed, no J7.0 Drop Trac",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim's conditions (elapsed time interval, no J7.0 Drop Track Report, no further updates) are collectively supported by the union of evidence units EC-MF-009, EC-MF-015, and EC-MF-031, which describe the automatic purge mechanism triggered by these exact factors.",
+      "slot_fit_rationale": "The claim describes a standard system response (automatic purging) within the normal successful interaction path for handling stale tracks, which constitutes a main flow step rather than an exception or alternative branch.",
+      "evidence_refs": [
+        "EC-MF-006",
+        "EC-MF-009",
+        "EC-MF-015",
+        "EC-MF-031"
+      ],
+      "evidence_modalities": {
+        "EC-MF-006": "card_text",
+        "EC-MF-009": "card_text",
+        "EC-MF-015": "card_text",
+        "EC-MF-031": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The C2 JU system automatically drops/purges the remote track/point once the automatic-purge conditio",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence collectively supports that the system automatically purges remote tracks when specific conditions (time interval elapsed, no updates, no explicit drop message) are met.",
+      "slot_fit_rationale": "The claim describes a standard system action within the normal successful interaction path for handling stale tracks, which aligns with the definition of a main flow step.",
+      "evidence_refs": [
+        "EC-MF-003",
+        "EC-MF-006",
+        "EC-MF-009",
+        "EC-MF-031"
+      ],
+      "evidence_modalities": {
+        "EC-MF-003": "card_text",
+        "EC-MF-006": "card_text",
+        "EC-MF-009": "card_text",
+        "EC-MF-031": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 2: For NOTACK areas, Moving Havens, and FWDAs, the C2 JU transmits a J7.0 (ACT=0)",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-AF-021], which provides the default periods for missing times, and Evidence [EC-AF-023], which specifies the J7.0 transmission timing at deactivation for the listed area types.",
+      "slot_fit_rationale": "The claim describes a specific variant behavior (alternative timing and message trigger) for certain area types that diverges from the standard main flow step, which is the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-021",
+        "EC-AF-023"
+      ],
+      "evidence_modalities": {
+        "EC-AF-021": "card_text",
+        "EC-AF-023": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 2: When a remote reference point, line, or area or a land (ground) point is no lo",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly supports that JUs may purge remote references via local options without transmitting a J7.0 message when they are no longer required.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch (purging locally instead of transmitting) that diverges from the standard main flow, fitting the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-014"
+      ],
+      "evidence_modalities": {
+        "EC-AF-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main_flow Step 2, if the C2 JU ceases reporting a track because it has relinquished R² to another",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-EF-009], which confirms no J7.0 message is sent upon relinquishment, and Evidence [EC-EF-039], which defines the specific TQ/STN conditions for that relinquishment.",
+      "slot_fit_rationale": "The claim describes a specific condition (relinquishment due to higher remote priority) that suppresses a standard action (sending J7.0), which constitutes a substantive exception flow branching from the main interaction path.",
+      "evidence_refs": [
+        "EC-EF-009",
+        "EC-EF-039",
+        "EC-EF-040"
+      ],
+      "evidence_modalities": {
+        "EC-EF-009": "card_text",
+        "EC-EF-039": "card_text",
+        "EC-EF-040": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main_flow Step 2, if the track becomes an Active IU on the network with the same TN, no J7.0 (ACT",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that the J7.0 message is not transmitted when a track becomes an Active IU on the network with the same TN, which directly supports the claim's negative assertion.",
+      "slot_fit_rationale": "The claim describes a specific condition under which a normal action (message transmission) is suppressed, which constitutes an exception flow handling a deviation from the standard behavior.",
+      "evidence_refs": [
+        "EC-EF-040"
+      ],
+      "evidence_modalities": {
+        "EC-EF-040": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main_flow Step 2, under the condition where a C2 JU is returning to Active status (after Inactive",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-EF-042], which explicitly states the condition and the resulting suppression of the J7.0 message.",
+      "slot_fit_rationale": "The claim describes a specific conditional branch where a standard action (message transmission) is suppressed due to a transient system state, which constitutes an exception flow handling a deviation from the normal success path.",
+      "evidence_refs": [
+        "EC-EF-042"
+      ],
+      "evidence_modalities": {
+        "EC-EF-042": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main_flow Step 2, for a ballistic missile track for which the C2 JU holds R², a change in R² for ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-EF-014], which explicitly states that a change in R² for a ballistic missile track causes a corresponding change for the related Impact Point and implies an exception path for termination/purge logic.",
+      "slot_fit_rationale": "The claim describes an abnormal condition (change in responsibility/R²) that interrupts or alters the standard termination/purge process, which aligns with the definition of an exception_flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-EF-014"
+      ],
+      "evidence_modalities": {
+        "EC-EF-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main_flow Step 3, DATUM remote points (DRT=4) shall not be purged automatically.",
+      "entailment": "entailment",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "entailed_but_slot_misfit",
+      "rationale": "The evidence explicitly states that DATUMS with DRT=4 shall not be purged automatically, which directly supports the claim's core behavioral constraint.",
+      "slot_fit_rationale": "The claim describes a static business rule or data retention policy rather than a specific error condition and its handling response, which is required for an exception_flow slot.",
+      "evidence_refs": [
+        "EC-EF-029"
+      ],
+      "evidence_modalities": {
+        "EC-EF-029": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "At main_flow Step 5, when the C2 JU system does not receive a J7.0 (ACT=0) message and receives no f",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim introduces a specific reference to 'main_flow Step 5' which is not present in or supported by the provided evidence unit [EC-EF-045].",
+      "slot_fit_rationale": "The claim describes an abnormal condition (missing message/updates) and its resulting system behavior (purge without transmission), which substantively fits the definition of an exception flow.",
+      "evidence_refs": [
+        "EC-EF-045"
+      ],
+      "evidence_modalities": {
+        "EC-EF-045": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "After successful termination of a surveillance track for which the C2 JU holds reporting responsibil",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PO-001], which establishes the transmission of the J7.0 message as a postcondition, and Evidence [EC-PO-003]/[EC-PO-011], which establish the cessation of reporting by the C2 JU after that transmission.",
+      "slot_fit_rationale": "The claim describes the resulting system state (message transmission and actor behavior change) immediately following successful completion, which is the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-001",
+        "EC-PO-003",
+        "EC-PO-011"
+      ],
+      "evidence_modalities": {
+        "EC-PO-001": "card_text",
+        "EC-PO-003": "card_text",
+        "EC-PO-011": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The terminated surveillance track is removed from the system's active tracking list.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PO-005], which states that upon successful completion, the surveillance track is terminated and removed from the active tracking list.",
+      "slot_fit_rationale": "The claim describes the final state of the system (track removed from active list) after successful completion, which is the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-005"
+      ],
+      "evidence_modalities": {
+        "EC-PO-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "For remote tracks/points (DRT=0-3), after the specified time interval has elapsed since the track's/",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units EC-PO-002, EC-PO-004, and EC-PO-006, which collectively confirm that remote tracks (DRT=0-3) are automatically dropped after a time interval without updates and without transmitting a J7.0 message.",
+      "slot_fit_rationale": "The claim describes the resulting system state (track removal and lack of external signaling) immediately following the successful completion of the automatic purge process, which aligns with the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-002",
+        "EC-PO-004",
+        "EC-PO-006"
+      ],
+      "evidence_modalities": {
+        "EC-PO-002": "card_text",
+        "EC-PO-004": "card_text",
+        "EC-PO-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

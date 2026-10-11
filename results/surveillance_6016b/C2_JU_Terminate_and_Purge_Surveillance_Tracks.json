@@ -1,0 +1,529 @@
+{
+  "use_case_name": "Terminate and Purge Surveillance Tracks",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To terminate surveillance tracks by transmitting a J7.0 (ACT = 0) message when a JU ceases reporting a track for which it has responsibility, and to automatically purge remote tracks when no further updates are received from those tracks.",
+          "evidence_refs": [
+            "EC-G-004",
+            "EC-G-010",
+            "EC-G-026",
+            "EC-G-027"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-004",
+        "EC-G-010",
+        "EC-G-026",
+        "EC-G-027"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU currently holds reporting responsibility (R²) for the surveillance track it intends to terminate or purge.",
+          "evidence_refs": [
+            "EC-PC-015",
+            "EC-PC-016",
+            "EC-PC-026"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU has the capability to automatically purge remote tracks/points after a specified time interval of no updates has elapsed.",
+          "evidence_refs": [
+            "EC-PC-005",
+            "EC-PC-014",
+            "EC-PC-025"
+          ]
+        },
+        {
+          "content": "The source of track data (Source TN) is provided in the system.",
+          "evidence_refs": [
+            "EC-PC-007"
+          ]
+        },
+        {
+          "content": "The C2 JU is actively monitoring the Surveillance NPG for locally held remote tracks or non-C2 JU situational awareness.",
+          "evidence_refs": [
+            "EC-PC-017"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU has the capability to automatically purge locally held remote surveillance tracks when no further updates are received after a specified time interval, regardless of whether the C2 JU holds Reporting Responsibility (R²) for those tracks.",
+          "evidence_refs": [
+            "EC-PC-005",
+            "EC-PC-014",
+            "EC-PC-025",
+            "EC-PC-019"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU is actively monitoring the Surveillance NPG and holds at least one remote surveillance track in its local database.",
+          "evidence_refs": [
+            "EC-PC-017"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-015",
+        "EC-PC-016",
+        "EC-PC-026",
+        "EC-PC-005",
+        "EC-PC-014",
+        "EC-PC-025",
+        "EC-PC-007",
+        "EC-PC-017",
+        "EC-PC-019"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU ceases reporting a surveillance track for which it currently holds reporting responsibility, or no further updates are received from a remote track within a specified time interval.",
+          "evidence_refs": [
+            "EC-TR-006",
+            "EC-TR-021",
+            "EC-TR-022",
+            "EC-TR-023",
+            "EC-TR-024"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-006",
+        "EC-TR-021",
+        "EC-TR-022",
+        "EC-TR-023",
+        "EC-TR-024"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU determines that it has ceased reporting a surveillance track for which it holds reporting responsibility (R²), or determines that no further updates are being received from a remote track.",
+          "evidence_refs": [
+            "EC-TR-006",
+            "EC-TR-021",
+            "EC-TR-023",
+            "EC-TR-024"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the track is a local track or a local copy of a remote track for which the C2 JU holds R², the C2 JU transmits a J7.0 message with the Track Management Action field set to value 0 (Drop Track Report).",
+          "evidence_refs": [
+            "EC-MF-001",
+            "EC-MF-017",
+            "EC-MF-042"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU has not received a remote report on a locally held track for approximately 40 seconds (Air/Surface) or 20 seconds (Land), the C2 JU assumes Reporting Responsibility (R²) for the track at the next transmission opportunity.",
+          "evidence_refs": [
+            "EC-MF-053",
+            "EC-TR-020",
+            "EC-PC-027"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU uses the track's own Track Number (TN) as the reference TN in the J7.0 message, unless the track is determined to be an Active IU, in which case it reports it as a Subsurface (Maritime) Track message using the inactive IU address as the reference TN.",
+          "evidence_refs": [
+            "EC-MF-001",
+            "EC-MF-002",
+            "EC-G-018"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the track is a ballistic missile track for which the C2 JU relinquishes R², the C2 JU transmits a Drop Track Report message in accordance with standard transmit/receive rules.",
+          "evidence_refs": [
+            "EC-MF-024",
+            "EC-G-005"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the track is a remote track and no J7.0 Drop Track Report is received, the system automatically purges the track after a system-selected specific time interval has elapsed since the track's last report.",
+          "evidence_refs": [
+            "EC-MF-007",
+            "EC-MF-020",
+            "EC-MF-032"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "For tracks automatically purged due to no updates (where DRT = 0-3), the system does not transmit a J7.0 (ACT = 0) message.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-021",
+            "EC-MF-030"
+          ],
+          "step_number": 7
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-006",
+        "EC-TR-021",
+        "EC-TR-023",
+        "EC-TR-024",
+        "EC-MF-001",
+        "EC-MF-017",
+        "EC-MF-042",
+        "EC-MF-053",
+        "EC-TR-020",
+        "EC-PC-027",
+        "EC-MF-002",
+        "EC-G-018",
+        "EC-MF-024",
+        "EC-G-005",
+        "EC-MF-007",
+        "EC-MF-020",
+        "EC-MF-032",
+        "EC-MF-000",
+        "EC-MF-021",
+        "EC-MF-030"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow"
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the C2 JU determines that the track being ceased reporting becomes an Active IU on the network with the same address as the previously used reference TN, the C2 JU does NOT transmit the J7.0 (ACT = 0) message.",
+          "evidence_refs": [
+            "EC-MF-018"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the simulation status of a track is changed due to operator error, the track shall be dropped using the J7.0 (ACT = 0) message, and a new track shall be reported. Exception: a change from live to simulated is accepted if the track is being received from an FJU.",
+          "evidence_refs": [
+            "EC-EF-004",
+            "EC-EF-022",
+            "EC-EF-039"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If a JU holds R² on a ballistic missile track, it need not assume R² for the associated launch point when relinquishing R² for the missile track, allowing the former track holder to continue reporting the launch point.",
+          "evidence_refs": [
+            "EC-EF-015",
+            "EC-MF-006"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a JU with limited track capacity (e.g., F-15) is saturated by force tell and emergency alerts, it must manage its database to ensure saturation is avoided.",
+          "evidence_refs": [
+            "EC-EF-005",
+            "EC-EF-023"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the remote track is classified as DATUMS (DRT = 4), the system shall NOT automatically purge the track when no further updates are received. This exception flow terminates without purging the track, leaving it active in the surveillance picture for subsequent reporting cycles or manual intervention.",
+          "evidence_refs": [
+            "EC-EF-013",
+            "EC-MF-022"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "If a JU determines that two different tracks identified by the same Track Number (TN) are actually the same track, it shall use the TN value in the track report rather than the time value as the criterion for an R² shift; if R² is retained, the track remains active and no termination is performed, but if R² is relinquished, the JU must terminate the track in accordance with the standard termination rules.",
+          "evidence_refs": [
+            "EC-EF-025"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a JU with R² receives a remote track report with a Track Quality (TQ) equal to the local TQ, it must relinquish R² if the remote track's Source TN is greater than the local Source TN; upon relinquishing R², the JU shall transmit a J7.0 (ACT = 0) message to terminate the track in accordance with standard termination rules, thereby completing this exception flow and terminating the surveillance track.",
+          "evidence_refs": [
+            "EC-EF-014",
+            "EC-MF-042"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a JU assumes R² on a ballistic missile track because it has not received a remote report for 25 seconds (non-real-time), it may assume R² with a TQ of 12 regardless of the remote tag or remote track TQ; upon assuming R², the JU ceases its local purge attempt for the remote track and begins reporting the track locally.",
+          "evidence_refs": [
+            "EC-EF-031"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a JU determines that a Subsurface (Maritime) Track is no longer active, it shall report a J3.4 message using the inactive IU Address as the reference TN, rather than using a J7.0 Drop Track message. This J3.4 transmission constitutes the completion of the termination process for this specific track type.",
+          "evidence_refs": [
+            "EC-MF-045"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "If a JU assumes R² on a ballistic missile track because it has not received a remote report for 25 seconds, it may assume R² with a TQ of 12 regardless of the remote tag or remote track TQ; upon assuming R², the JU ceases its local purge attempt for the remote track (effectively terminating the exception flow regarding the stale remote track) and begins reporting the track locally.",
+          "evidence_refs": [
+            "EC-EF-031",
+            "EC-EF-030"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-018",
+        "EC-EF-004",
+        "EC-EF-022",
+        "EC-EF-039",
+        "EC-EF-015",
+        "EC-MF-006",
+        "EC-EF-005",
+        "EC-EF-023",
+        "EC-EF-013",
+        "EC-MF-022",
+        "EC-EF-025",
+        "EC-EF-014",
+        "EC-MF-042",
+        "EC-EF-031",
+        "EC-MF-045",
+        "EC-EF-030"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "For local tracks or tracks for which the C2 JU held R², a J7.0 (ACT = 0) Drop Track message has been transmitted using the track's own Track Number as the reference TN, and the C2 JU has ceased reporting that track to the network.",
+          "evidence_refs": [
+            "EC-PO-026",
+            "EC-PO-027",
+            "EC-PO-023"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "For remote tracks automatically purged due to elapsed time without updates (where DRT = 0-3), the track has been removed from the local database and no J7.0 (ACT = 0) message was transmitted by the system.",
+          "evidence_refs": [
+            "EC-PO-003",
+            "EC-PO-019",
+            "EC-PO-021",
+            "EC-PO-054"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the C2 JU assumed R² for a track due to lack of updates, the track is reported in the database as 'Friend' in the Environment/Category field, and maintains the Track Number, Platform, and Platform Activity values received in previous PPLI messages.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-PO-001",
+            "EC-PO-033"
+          ]
+        },
+        {
+          "content": "The C2 JU has ensured that local and remote track data are correlated and decorrelated, resulting in the minimization of dual designations in the surveillance environment.",
+          "evidence_refs": [
+            "EC-PO-004",
+            "EC-PO-005",
+            "EC-PO-023"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "For Subsurface (Maritime) tracks that cease to be active, a J3.4 message with Track Management Action set to 0 is transmitted using the inactive IU address as the reference TN, effectively purging the track from the network.",
+          "evidence_refs": [
+            "EC-PO-028",
+            "EC-PO-046"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-026",
+        "EC-PO-027",
+        "EC-PO-023",
+        "EC-PO-003",
+        "EC-PO-019",
+        "EC-PO-021",
+        "EC-PO-054",
+        "EC-PO-000",
+        "EC-PO-001",
+        "EC-PO-033",
+        "EC-PO-004",
+        "EC-PO-005",
+        "EC-PO-028",
+        "EC-PO-046"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No evidence found for slot 'alternative_flow'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Precondition Claim 1 asserts that the C2 JU must hold Reporting Responsibility (R²) for the track it intends to terminate or purge. However, the Trigger includes an automatic purge path ('no further updates are received') which, as confirmed by Main Flow Step 6 and Preconditions Claim 5, operates regardless of R² status. Claim 1 incorrectly imposes an R² prerequisite for the auto-purge path, failing to cover the necessary preconditions (or lack thereof) for the second branch of the Trigger.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 5 describes a condition where R² is retained and 'no termination is performed'. This branch lacks a defined exit path: it does not specify returning to the main flow, terminating the use case, or handing off to another flow. It leaves the track in an active state indefinitely without concluding the specific use case action.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 2 states a new track 'shall be reported' after dropping an erroneously simulated track. This action (reporting a new track) is not part of the 'Terminate and Purge' use case scope and does not define an exit from the current use case. It creates an ambiguity where the use case might implicitly call another use case without a clear hand-off or termination.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 9 (duplicate of claim 10) describes assuming R² and ceasing local purge. This branch changes the track status from 'pending purge' to 'actively reported', but does not specify an exit. Does the use case terminate because the track is no longer being purged? Or does it return to main flow? The exit is undefined.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "goal",
+      "detail": "[goal_mainflow_alignment] The goal conflates 'terminating tracks' and 'purging tracks'. The main flow clearly separates these: explicit termination (steps 1-5) and automatic purging (steps 6-7). However, the goal phrasing 'terminate... by transmitting... AND automatically purge' suggests two distinct activities. While related, the exception flow claim 5 (EC-EF-025) introduces a complex R² shift logic that is partially covered in main flow step 1 but relies on exception flows for the specific 'no termination' outcome. The goal is broad enough to cover both, but the main flow's separation of explicit vs implicit actions creates a slight misalignment where the goal doesn't reflect the structural split in the flow. More critically, the goal implies a single coherent action, whereas the use case handles two distinct mechanisms (explicit drop vs timeout purge). This is acceptable, but the exception flow's 'no termination' path (Claim 5) is not clearly supported by the goal's simple 'terminate and purge' statement, which implies an action is taken. The goal should reflect that tracks may remain active under certain exception conditions.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "preconditions",
+        "main_flow",
+        "exception_flow",
+        "goal"
+      ],
+      "inconsistency_hints": [
+        "The Trigger allows for termination due to 'no further updates received from a remote track'. While Preconditions mention the C2 JU holding R² for tracks it *intends* to terminate/purge, they do not explicitly cover the scenario where the C2 JU is monitoring a remote track (which it may not hold R² for) and initiates a local purge action due to timeout. Specifically, Main Flow step 5 and Postcondition 2 describe purging remote tracks locally without transmitting a Drop Track Report, implying the C2 JU acts on its own local state for tracks where it lacks reporting responsibility. Preconditions must assert the capability/permission to locally purge remote tracks that have timed out, not just those for which R² is held.",
+        "Main Flow ends with Step 6 (automatic purge of remote tracks due to no updates). However, Postcondition 3 describes a specific state where 'If the C2 JU assumed R² for a track due to lack of updates...'. This scenario (assuming R² due to inactivity) is a distinct behavioral path that is not covered by the existing Main Flow steps. Steps 1-6 cover ceasing reporting (local/R²) or auto-purging (remote/no R²). The flow is missing the step where the C2 JU *assumes* R² from another source due to silence, which leads to the state described in Postcondition 3. Without this step in the main flow, the postcondition is unreachable via the defined primary flow.",
+        "Exception flow step 5.1 (DATUMS track non-purge) describes a behavior (not purging) that conflicts with the main flow step 5 (automatic purge). It does not explicitly state how the flow returns to the main sequence or terminates cleanly relative to the main flow's termination condition (purge). It creates a dangling state where the track persists indefinitely without a defined handoff or termination step in the context of this use case.",
+        "Exception flow step 5.2 (TN collision resolution) describes a logic change for R² shift but does not clearly indicate how the main flow (which expects a Drop Track or Purge) proceeds or exits after this decision. It modifies the criteria for R² but doesn't explicitly link back to whether the track is dropped or retained, creating ambiguity in the flow's exit.",
+        "Exception flow step 5.3 (R² relinquishment based on TQ/Source TN) describes a condition for relinquishing R² but fails to specify the resulting action in the context of the 'Terminate and Purge' use case. Does relinquishing R² trigger the Drop Track Report in the main flow, or does it simply stop the use case? The exit is ambiguous.",
+        "Exception flow step 5.4 (Assuming R² on ballistic missile track) describes a condition for assuming R² but does not link back to the main flow's termination logic. If R² is assumed, does the use case continue? Does it abort the purge? The exit/continuation is unclear.",
+        "Exception flow step 5.5 (Subsurface track reporting) specifies using a J3.4 message instead of J7.0. This diverges from the main flow's method (J7.0 Drop Track) but does not explicitly state that this alternative action constitutes the completion of the use case for this specific track type, potentially leaving the flow state ambiguous regarding termination.",
+        "Exception flow step 5.6 (R² assumption timing) describes a constraint on *when* R² must be assumed but does not define the exit path from the use case if this constraint is met or if the assumption happens. It overlaps with 5.4 and lacks a clear termination statement.",
+        "The goal claim conflates two distinct operational states and their corresponding termination behaviors into a single scope without distinguishing the branching logic required for proper coverage. Specifically, it groups 'ceasing reporting a track' (where the actor actively determines cessation and must transmit a Drop Track Report, per Main Flow steps 2 and 5) with 'no further updates are received' (which triggers automatic purging logic, per Main Flow steps 3, 6, and 7, often without explicit actor action or transmission). This broad phrasing obscures the critical divergence in actor responsibility and message transmission requirements between active termination and automatic stale-track handling, making the goal insufficiently precise to guide the specific main flow steps defined.",
+        "The Trigger specifies that it activates when 'no further updates are received from a remote track within a specified time interval'. However, the Preconditions do not assert that the C2 JU is currently monitoring or holding a remote track in its database. Without this precondition, the system has no track context to which the trigger can apply. Additionally, the trigger implies a time interval exists, but there is no precondition confirming the configuration or availability of this timeout value for remote tracks.",
+        "Exception flow claim 4 describes a case where DATUMS tracks (DRT = 4) are NOT automatically purged. It states the track 'remains active... and is handled by subsequent reporting cycles or manual intervention.' This does not provide a clear exit point that returns to the current use case's termination logic or terminates the use case cleanly for this specific path. Instead, it effectively abandons the termination process for this track within this use case context, implying the track persists indefinitely until other processes handle it, which breaks the 'Terminate and Purge' narrative of the use case for this exception branch.",
+        "Exception flow claim 6 describes a scenario where a JU with R² receives a remote track report with equal TQ and greater Source TN, requiring it to relinquish R². It states the JU 'shall transmit a J7.0 (ACT = 0) message to terminate the track in accordance with standard termination rules.' However, it does not explicitly link this action back to a specific step in the main flow that handles the transmission of the ACT=0 message (e.g., Main Flow step 2 or 5) nor does it clearly state that the use case terminates after this transmission. While it implies following 'standard rules,' it lacks a definitive exit statement confirming the completion of this exception branch within the use case.",
+        "Exception flow claim 9 describes a JU assuming R² on a ballistic missile track and ceasing local purge attempts, 'effectively terminating the exception flow regarding the stale remote track.' However, it does not clearly define the exit point for the primary use case 'Terminate and Purge Surveillance Tracks.' By assuming R² and beginning to report the track locally, the JU is shifting from a 'termination' role to a 'reporting' role. The exception flow effectively converts the use case's goal (termination) into a continuation of tracking, but fails to explicitly state that the original use case (termination of the stale track) is complete and that the system has transitioned to a new state/use case for the now-local track. This ambiguity creates a potential gap in coverage for what happens to the track post-exception."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 272,
+    "cross_page_cards": 127,
+    "modalities": {
+      "text": 272
+    }
+  }
+}

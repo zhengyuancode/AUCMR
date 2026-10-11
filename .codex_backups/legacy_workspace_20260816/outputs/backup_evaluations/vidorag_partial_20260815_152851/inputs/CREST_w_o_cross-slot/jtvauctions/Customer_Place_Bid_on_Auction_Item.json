@@ -1,0 +1,681 @@
+{
+  "use_case_name": "Place Bid on Auction Item",
+  "actor": "Customer",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The customer wants to place a bid on an auction item, choosing either a single bid or SmartBid (maximum automatic bidding), with minimal necessary data entry so they can act on a time-sensitive bidding opportunity.",
+          "evidence_refs": [
+            "EC-G-002",
+            "EC-G-000",
+            "EC-G-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002",
+        "EC-G-000",
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "Place a bid on an auction item, either as a single bid or via SmartBid, with minimal necessary input so the customer can bid quickly.",
+        "canonical_success_scenario": "The customer submits one bid on an auction item through one of the available bid mechanisms, and the bid is entered for that item.",
+        "start_boundary": "The customer is on an auction item and decides to place a bid.",
+        "success_boundary": "The customer's bid has been placed/entered for the auction item.",
+        "in_scope_actions": [
+          "Place a single bid",
+          "Use QuickBid to place a single bid above the current bid",
+          "Use SmartBid for maximum automatic bidding",
+          "Enter only required information to start bidding"
+        ],
+        "excluded_adjacent_actions": [
+          "Winning the auction and checkout/payment",
+          "Post-auction processing or second-chance offers",
+          "Listing/admin maintenance",
+          "Bid history lookup"
+        ],
+        "variant_dimensions": [
+          "Bid mechanism: single bid vs SmartBid (maximum automatic bidding)",
+          "Entry method: QuickBid button vs manual bid entry"
+        ],
+        "evidence_refs": [
+          "EC-G-002",
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The customer is signed in to the auction platform.",
+          "evidence_refs": [
+            "EC-PC-002",
+            "EC-PC-003"
+          ]
+        },
+        {
+          "content": "The customer's bidder profile contains the minimum information required to bid.",
+          "evidence_refs": [
+            "EC-PC-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-002",
+        "EC-PC-003",
+        "EC-PC-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-signed-in",
+          "PC-min-required-info"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The customer initiates the bidding process for an auction item by clicking the 'QuickBid Now'/'QuickBid' button or the 'Place Single Bid' button to place a single bid, or the 'SmartBid'/'Place SmartBid' field/button to set a maximum automatic bid.",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-TR-002",
+            "EC-TR-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-TR-002",
+        "EC-TR-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-action",
+          "trigger-variants"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The customer selects a bid mechanism by entering a bid amount in the 'Your Single Bid' or 'Your SmartBid' field and clicking the corresponding 'Place Single Bid' or 'Place SmartBid' button, or by clicking the 'QuickBid Now' button to place a bid at the current QuickBid amount.",
+          "evidence_refs": [
+            "EC-MF-006",
+            "EC-TR-001",
+            "EC-TR-002",
+            "EC-TR-003"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system displays a Bid Confirmation pop-up showing the bid amount, the bid type, and the payment method, asking 'Is this correct?'.",
+          "evidence_refs": [
+            "EC-MF-004",
+            "EC-MF-007"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer confirms the bid by clicking the confirmation button in the Bid Confirmation pop-up.",
+          "evidence_refs": [
+            "EC-MF-008",
+            "EC-MF-004"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system completes the bid placement transaction for the auction item.",
+          "evidence_refs": [
+            "EC-MF-008"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer remains on the product details page.",
+          "evidence_refs": [
+            "EC-MF-005"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-006",
+        "EC-TR-001",
+        "EC-TR-002",
+        "EC-TR-003",
+        "EC-MF-004",
+        "EC-MF-007",
+        "EC-MF-008",
+        "EC-MF-005"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-select-bid",
+          "MF-confirmation-popup",
+          "MF-confirm-bid",
+          "MF-bid-placed",
+          "MF-remaining-on-page"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "coverage_state": {
+        "covered_aspect_ids": [],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from main_flow step 1. If the customer is not signed in when attempting to place a bid, the system does not enter the bid; it prompts/directs the customer to the sign-in page. After successful sign-in and confirmation that the bidder has the required minimum information, the customer is returned to the product details page of the item (or to the catalog page if the entry point was QuickBid). Exit: if sign-in succeeds, return to main_flow step 1 to resume bid placement; if sign-in is not completed, the use case terminates without placing a bid.",
+          "evidence_refs": [
+            "EC-EF-000",
+            "EC-EF-001",
+            "EC-EF-002"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from main_flow step 1. If the customer's account is closed or suspended, the system blocks the bid attempt and displays a popup message stating that the account has been closed/suspended and providing Customer Care contact information. Exit: use case terminates; the bid is not placed.",
+          "evidence_refs": [
+            "EC-EF-004"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from main_flow step 1. If the customer's account is not in a bid-allowed state—for example, the account is locked/in Review Status due to expired PayPal or Amazon Payments orders, the bidder is subject to the escalation policy, or the bidder has unresolved unpaid auction winnings more than 7 days old—the system does not allow the bid to be placed. Exit: use case terminates without placing a bid; if the account is in Review Status, it remains blocked until a Customer Service representative removes the restriction.",
+          "evidence_refs": [
+            "EC-EF-008",
+            "EC-EF-009",
+            "EC-EF-010"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from main_flow step 1. If the customer has not signed in within the past 3 months, the system pings the card on file by sending an authorization request to validate the card before allowing the bid. Exit: if validation succeeds, resume at main_flow step 1 to continue bid placement; if validation fails or is not completed, the bid is not placed and the use case terminates.",
+          "evidence_refs": [
+            "EC-EF-006"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges from main_flow step 1. If the default payment method is an expired credit card on file, the system displays a prompt to enter a new credit card. If the customer clicks 'Yes', the system directs them to My Account Edit page to update the card; if the customer clicks 'No', the system returns them to the home page and grays out the page. Exit: in either case the bid is not placed and this use case instance terminates.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Diverges from main_flow step 3. If, instead of confirming the bid, the customer clicks the 'CANCEL' button in the Bid Confirmation pop-up, the system cancels the bid placement transaction. Exit: use case terminates without placing a bid.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 6
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-000",
+        "EC-EF-001",
+        "EC-EF-002",
+        "EC-EF-004",
+        "EC-EF-008",
+        "EC-EF-009",
+        "EC-EF-010",
+        "EC-EF-006",
+        "EC-EF-005",
+        "EC-EF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EX-not-signed-in",
+          "EX-account-closed-suspended",
+          "EX-account-review-unpaid-escalation",
+          "EX-inactive-card-validation",
+          "EX-expired-payment-card",
+          "EX-cancel-confirmation"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The customer's bid is successfully placed/entered for the auction item and is recorded in the Item Bid History table on the product details page, displaying the bidder's name (or anonymized identifier), the bid amount, the date and time placed, and whether the user is a SmartBid user.",
+          "evidence_refs": [
+            "EC-PO-003",
+            "EC-PO-004"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The customer remains on the same product details page after the bid is placed, allowing them to view the updated bid history and remaining time without navigating away.",
+          "evidence_refs": [
+            "EC-PO-004",
+            "EC-PO-000",
+            "EC-PO-001",
+            "EC-PO-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-003",
+        "EC-PO-004",
+        "EC-PO-000",
+        "EC-PO-001",
+        "EC-PO-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PO-bid-recorded",
+          "PO-bid-history-updated",
+          "PO-remain-on-page"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No evidence found for slot 'alternative_flow'",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 48,
+    "cross_page_cards": 13,
+    "modalities": {
+      "text": 42,
+      "diagram": 6
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1118.373,
+    "llm_seconds": 856.306,
+    "lvlm_seconds": 252.107,
+    "llm_calls": 18,
+    "lvlm_calls": 59,
+    "lvlm_retry_calls": 0,
+    "llm_retry_calls": 0,
+    "cards_collected": 48,
+    "cards_referenced": 30
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Structured author candidates captured before deterministic evidence-reference validation. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "The customer wants to place a bid on an auction item, choosing either a single bid or SmartBid (maximum automatic bidding), with minimal necessary data entry so they can act on a time-sensitive bidding opportunity.",
+            "evidence_refs": [
+              "EC-G-002",
+              "EC-G-000",
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The customer is signed in to the auction platform.",
+            "evidence_refs": [
+              "EC-PC-002",
+              "EC-PC-003"
+            ]
+          },
+          {
+            "content": "The customer's bidder profile contains the minimum information required to bid.",
+            "evidence_refs": [
+              "EC-PC-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "The customer initiates the bidding process for an auction item by clicking the 'QuickBid Now'/'QuickBid' button or the 'Place Single Bid' button to place a single bid, or the 'SmartBid'/'Place SmartBid' field/button to set a maximum automatic bid.",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-TR-002",
+              "EC-TR-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "The customer selects a bid mechanism by entering a bid amount in the 'Your Single Bid' or 'Your SmartBid' field and clicking the corresponding 'Place Single Bid' or 'Place SmartBid' button, or by clicking the 'QuickBid Now' button to place a bid at the current QuickBid amount.",
+            "evidence_refs": [
+              "EC-MF-006",
+              "EC-TR-001",
+              "EC-TR-002",
+              "EC-TR-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system displays a Bid Confirmation pop-up showing the bid amount, the bid type, and the payment method, asking 'Is this correct?'.",
+            "evidence_refs": [
+              "EC-MF-004",
+              "EC-MF-007"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The customer confirms the bid by clicking the confirmation button in the Bid Confirmation pop-up.",
+            "evidence_refs": [
+              "EC-MF-008",
+              "EC-MF-004"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system completes the bid placement transaction for the auction item.",
+            "evidence_refs": [
+              "EC-MF-008"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The customer remains on the product details page.",
+            "evidence_refs": [
+              "EC-MF-005"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-G-000",
+          "EC-G-002",
+          "EC-MF-004",
+          "EC-MF-008",
+          "EC-TR-001"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from main_flow step 1. If the customer is not signed in when attempting to place a bid, the system does not enter the bid; it prompts/directs the customer to the sign-in page. After successful sign-in and confirmation that the bidder has the required minimum information, the customer is returned to the product details page of the item (or to the catalog page if the entry point was QuickBid). Exit: if sign-in succeeds, return to main_flow step 1 to resume bid placement; if sign-in is not completed, the use case terminates without placing a bid.",
+            "evidence_refs": [
+              "EC-EF-000",
+              "EC-EF-001",
+              "EC-EF-002"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from main_flow step 1. If the customer's account is closed or suspended, the system blocks the bid attempt and displays a popup message stating that the account has been closed/suspended and providing Customer Care contact information. Exit: use case terminates; the bid is not placed.",
+            "evidence_refs": [
+              "EC-EF-004"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from main_flow step 1. If the customer's account is not in a bid-allowed state—for example, the account is locked/in Review Status due to expired PayPal or Amazon Payments orders, the bidder is subject to the escalation policy, or the bidder has unresolved unpaid auction winnings more than 7 days old—the system does not allow the bid to be placed. Exit: use case terminates without placing a bid; if the account is in Review Status, it remains blocked until a Customer Service representative removes the restriction.",
+            "evidence_refs": [
+              "EC-EF-008",
+              "EC-EF-009",
+              "EC-EF-010"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from main_flow step 1. If the customer has not signed in within the past 3 months, the system pings the card on file by sending an authorization request to validate the card before allowing the bid. Exit: if validation succeeds, resume at main_flow step 1 to continue bid placement; if validation fails or is not completed, the bid is not placed and the use case terminates.",
+            "evidence_refs": [
+              "EC-EF-006"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from main_flow step 1. If the default payment method is an expired credit card on file, the system displays a prompt to enter a new credit card. If the customer clicks 'Yes', the system directs them to My Account Edit page to update the card; if the customer clicks 'No', the system returns them to the home page and grays out the page. Exit: in either case the bid is not placed and this use case instance terminates.",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges from main_flow step 3. If, instead of confirming the bid, the customer clicks the 'CANCEL' button in the Bid Confirmation pop-up, the system cancels the bid placement transaction. Exit: use case terminates without placing a bid.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-002",
+          "EC-TR-001"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The customer's bid is successfully placed/entered for the auction item and is recorded in the Item Bid History table on the product details page, displaying the bidder's name (or anonymized identifier), the bid amount, the date and time placed, and whether the user is a SmartBid user.",
+            "evidence_refs": [
+              "EC-PO-003",
+              "EC-PO-004"
+            ]
+          },
+          {
+            "content": "The customer remains on the same product details page after the bid is placed, allowing them to view the updated bid history and remaining time without navigating away.",
+            "evidence_refs": [
+              "EC-PO-004",
+              "EC-PO-000",
+              "EC-PO-001",
+              "EC-PO-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-G-000",
+          "EC-G-002",
+          "EC-PC-003",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-TR-002"
+        ]
+      }
+    }
+  },
+  "method": "CREST w/o cross-slot"
+}

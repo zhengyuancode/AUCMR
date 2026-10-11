@@ -1,0 +1,779 @@
+{
+  "use_case_name": "Manage Track Identity Classification",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The C2 JU manages track identity classification to distinguish live tracks involved in an exercise from other live tracks being reported.",
+          "evidence_refs": [
+            "EC-G-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000"
+      ],
+      "scope_contract": {
+        "goal_statement": "The C2 JU manages track identity classification to distinguish live tracks involved in an exercise from other live tracks being reported.",
+        "canonical_success_scenario": "For one reported live track, the C2 JU manages its track identity classification so that the track is distinguished as either involved in the exercise or as another live track.",
+        "start_boundary": "C2 JU has a reported live track whose identity classification needs to be managed.",
+        "success_boundary": "The reported live track is distinguished as exercise-involved or as another live track.",
+        "in_scope_actions": [
+          "Manage track identity classification for a reported live track",
+          "Distinguish exercise-involved live tracks from other live tracks being reported"
+        ],
+        "excluded_adjacent_actions": [
+          "Downstream use of the resulting classification",
+          "Administrative configuration of classification rules"
+        ],
+        "variant_dimensions": [
+          "Exercise involvement status: exercise-involved live track vs other live track"
+        ],
+        "evidence_refs": [
+          "EC-G-000"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "C2 JU has a reported live track whose identity classification needs to be managed.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The reported live track has standard identity Friend, as only tracks with standard identity Friend can be modified by the exercise identity.",
+          "evidence_refs": [
+            "EC-PC-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000",
+        "EC-PC-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-reported-live-track",
+          "PC-standard-identity-friend"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU receives a track report with the PPLI Track Number and Identity Indicator set to value 1, provided the new identity is Friend and the locally held identity is not Hostile, requiring the Exercise Indicator to be set in J3 track messages.",
+          "evidence_refs": [
+            "EC-TR-003",
+            "EC-TR-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-003",
+        "EC-TR-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-event"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU receives a track report for a reported live track; the track report has the PPLI Track Number and Identity Indicator set to value 1.",
+          "evidence_refs": [
+            "EC-TR-003"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Because the new identity in the track report is Friend and the locally held identity is not Hostile, the C2 JU automatically accepts the change in Environment/Category, Identity or Exercise Indicator.",
+          "evidence_refs": [
+            "EC-MF-008"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "When accepting the remote ID change, the C2 JU retains the received values of the Platform, Platform Activity, Specific Type, and Special Interest Indicator fields for retransmission and operator appreciation.",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "To classify the reported live track as exercise-involved, the C2 JU sets the Exercise Indicator to value 1 (Exercise Track) in J3 track messages.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU sets the standard identity of the track to Friend.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU specifies the specific exercise identity (e.g., FAKER or JOKER) in the Identity Amplifying Descriptor field.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "The reported live track is now distinguished as an exercise-involved live track, separate from other live tracks being reported.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-G-000"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-003",
+        "EC-MF-008",
+        "EC-MF-009",
+        "EC-MF-000",
+        "EC-G-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-receive-track-report",
+          "MF-auto-accept-identity-change",
+          "MF-retain-identity-fields",
+          "MF-set-exercise-indicator",
+          "MF-set-standard-identity",
+          "MF-set-exercise-identity-descriptor",
+          "MF-success-classification"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 4: instead of setting the Exercise Indicator to value 1 (Exercise Track), the C2 JU sets the Exercise Indicator to value 0 (Non-Exercise Track) and specifies the standard identity of the track in the Identity field, thereby classifying the reported live track as another live track rather than as exercise-involved.",
+          "evidence_refs": [
+            "EC-AF-000"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 2: if the Local Data for the reported live track is PENDING or UNKNOWN and the Remote Data is not HOSTILE, the C2 JU automatically accepts the received ID as LOCAL ID (Action 2), rather than applying the Step 2 automatic-acceptance conditions, and the reported live track is classified according to the accepted identity.",
+          "evidence_refs": [
+            "EC-AF-007"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 2: if the Local Data is FRIEND, NEUTRAL, or SUSPECT and the Remote Data is PENDING, UNKNOWN, or ASSUMED FRIEND, the C2 JU automatically rejects the received ID (Action 3), preserving the locally held identity classification so the reported live track remains distinguished.",
+          "evidence_refs": [
+            "EC-AF-008"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-000",
+        "EC-AF-007",
+        "EC-AF-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-non-exercise-classification",
+          "AF-auto-accept-non-hostile-remote",
+          "AF-auto-reject-low-confidence-remote"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: if the position or other data in the PPLI meet the system's decorrelation criteria, the C2 JU decorrelates the PPLI and local track data, initiates a surveillance track report with locally held data using a new track number, and reports the PPLI Track Number and Identity Indicator field and the PPLI IFF/SIF Indicator field as No Statement. Exit: the use case terminates without classifying the original track as exercise-involved or as another live track.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1: if a correlation is not found for the received J2 PPLI report, the C2 JU integrates the report into its surveillance database as part of the surveillance picture; if J2 messages are not received subsequent to this action and the C2 JU still has no local data, it assumes no responsibility for reporting the subject JU on the Surveillance Network PG. Exit: in that no-subsequent-data case, the use case terminates for the original reported track.",
+          "evidence_refs": [
+            "EC-EF-002"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 1: if the local data and received data differ as to whether the Track Number is assigned to a point or to a track, the C2 JU alerts the operator. Exit: after the alert, the use case returns to Step 2.",
+          "evidence_refs": [
+            "EC-EF-008"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 2: if an ID conflict exists because the ID difference between local and remote data cannot be automatically accepted or rejected, the C2 JU presents these differences to the operators for evaluation. Exit: the automatic flow hands off to operator evaluation and terminates.",
+          "evidence_refs": [
+            "EC-EF-006"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 2: if either track has the Strength field set to a value greater than 1 (unless Strength is No Statement), or if the local/remote data indicates both tracks are locally derived real-time tracks, the C2 JU shall not automatically correlate the two tracks. Exit: the automatic identity-change acceptance is not performed and the use case terminates with the track's classification unchanged.",
+          "evidence_refs": [
+            "EC-EF-005",
+            "EC-EF-004"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Diverges from Step 2: if the locally held Environment/Category of the track differs from the Environment/Category received in a J3.X or J7.0 message, the C2 JU alerts the operator. Exit: after the alert, the use case returns to Step 3.",
+          "evidence_refs": [
+            "EC-EF-007"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3: when a Platform, Platform Activity, or Specific Type value of 0 (No Statement) is received and a non-zero value is held locally, the C2 JU retains the locally held value instead of accepting the received zero value. Exit: the use case returns to Step 4.",
+          "evidence_refs": [
+            "EC-EF-009"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-003",
+        "EC-EF-002",
+        "EC-EF-008",
+        "EC-EF-006",
+        "EC-EF-005",
+        "EC-EF-004",
+        "EC-EF-007",
+        "EC-EF-009"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-decorrelation-resets-identity",
+          "EF-correlation-not-found",
+          "EF-tracknumber-point-track-alert",
+          "EF-id-conflict-operator-eval",
+          "EF-auto-correlation-inhibited",
+          "EF-environment-category-alert",
+          "EF-no-statement-retain-local"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The reported live track is distinguished as an exercise-involved live track or as another live track being reported.",
+          "evidence_refs": [
+            "EC-PO-009"
+          ]
+        },
+        {
+          "content": "If the reported live track is classified as exercise-involved, it is distinguished as an exercise-involved live track, separate from other live tracks being reported, with the Exercise Indicator set to value 1 (Exercise Track), the standard identity set to Friend, and the specific exercise identity (e.g., FAKER or JOKER) set in the Identity Amplifying Descriptor field.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-PO-005"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the reported live track is classified as another live track (Non-Exercise Track), it has the Exercise Indicator set to value 0 and its standard identity specified in the Identity field.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "When assuming R^2 for a previously-reported track, the C2 JU retains the received values of the Platform, Platform Activity, Specific Type, and Special Interest Indicator fields for retransmission and operator appreciation.",
+          "evidence_refs": [
+            "EC-PO-007"
+          ]
+        },
+        {
+          "content": "If the Special Interest Indicator is set to value 1, it is retransmitted as value 1 by the C2 JU when assuming R^2.",
+          "evidence_refs": [
+            "EC-PO-008"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-009",
+        "EC-PO-000",
+        "EC-PO-005",
+        "EC-PO-001",
+        "EC-PO-007",
+        "EC-PO-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PO-classification-outcome",
+          "PO-exercise-variant",
+          "PO-non-exercise-variant",
+          "PO-identity-field-retention",
+          "PO-special-interest-retransmission"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 63,
+    "cross_page_cards": 27,
+    "modalities": {
+      "text": 58,
+      "table": 5
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1527.462,
+    "llm_seconds": 1266.0,
+    "lvlm_seconds": 253.247,
+    "llm_calls": 14,
+    "lvlm_calls": 45,
+    "lvlm_retry_calls": 0,
+    "llm_retry_calls": 0,
+    "cards_collected": 63,
+    "cards_referenced": 25
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Structured author candidates captured before deterministic evidence-reference validation. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "The C2 JU manages track identity classification to distinguish live tracks involved in an exercise from other live tracks being reported.",
+            "evidence_refs": [
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "C2 JU has a reported live track whose identity classification needs to be managed.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          },
+          {
+            "content": "The reported live track has standard identity Friend, as only tracks with standard identity Friend can be modified by the exercise identity.",
+            "evidence_refs": [
+              "EC-PC-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "The C2 JU receives a track report with the PPLI Track Number and Identity Indicator set to value 1, provided the new identity is Friend and the locally held identity is not Hostile, requiring the Exercise Indicator to be set in J3 track messages.",
+            "evidence_refs": [
+              "EC-TR-003",
+              "EC-TR-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-PC-000",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "The C2 JU receives a track report for a reported live track; the track report has the PPLI Track Number and Identity Indicator set to value 1.",
+            "evidence_refs": [
+              "EC-TR-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Because the new identity in the track report is Friend and the locally held identity is not Hostile, the C2 JU automatically accepts the change in Environment/Category, Identity or Exercise Indicator.",
+            "evidence_refs": [
+              "EC-MF-008"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "When accepting the remote ID change, the C2 JU retains the received values of the Platform, Platform Activity, Specific Type, and Special Interest Indicator fields for retransmission and operator appreciation.",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "To classify the reported live track as exercise-involved, the C2 JU sets the Exercise Indicator to value 1 (Exercise Track) in J3 track messages.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The C2 JU sets the standard identity of the track to Friend.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The C2 JU specifies the specific exercise identity (e.g., FAKER or JOKER) in the Identity Amplifying Descriptor field.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "The reported live track is now distinguished as an exercise-involved live track, separate from other live tracks being reported.",
+            "evidence_refs": [
+              "EC-MF-000",
+              "EC-G-000"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from Step 4: instead of setting the Exercise Indicator to value 1 (Exercise Track), the C2 JU sets the Exercise Indicator to value 0 (Non-Exercise Track) and specifies the standard identity of the track in the Identity field, thereby classifying the reported live track as another live track rather than as exercise-involved.",
+            "evidence_refs": [
+              "EC-AF-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 2: if the Local Data for the reported live track is PENDING or UNKNOWN and the Remote Data is not HOSTILE, the C2 JU automatically accepts the received ID as LOCAL ID (Action 2), rather than applying the Step 2 automatic-acceptance conditions, and the reported live track is classified according to the accepted identity.",
+            "evidence_refs": [
+              "EC-AF-007"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 2: if the Local Data is FRIEND, NEUTRAL, or SUSPECT and the Remote Data is PENDING, UNKNOWN, or ASSUMED FRIEND, the C2 JU automatically rejects the received ID (Action 3), preserving the locally held identity classification so the reported live track remains distinguished.",
+            "evidence_refs": [
+              "EC-AF-008"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-G-000",
+          "EC-MF-000",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-003"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: if the position or other data in the PPLI meet the system's decorrelation criteria, the C2 JU decorrelates the PPLI and local track data, initiates a surveillance track report with locally held data using a new track number, and reports the PPLI Track Number and Identity Indicator field and the PPLI IFF/SIF Indicator field as No Statement. Exit: the use case terminates without classifying the original track as exercise-involved or as another live track.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: if a correlation is not found for the received J2 PPLI report, the C2 JU integrates the report into its surveillance database as part of the surveillance picture; if J2 messages are not received subsequent to this action and the C2 JU still has no local data, it assumes no responsibility for reporting the subject JU on the Surveillance Network PG. Exit: in that no-subsequent-data case, the use case terminates for the original reported track.",
+            "evidence_refs": [
+              "EC-EF-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 1: if the local data and received data differ as to whether the Track Number is assigned to a point or to a track, the C2 JU alerts the operator. Exit: after the alert, the use case returns to Step 2.",
+            "evidence_refs": [
+              "EC-EF-008"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 2: if an ID conflict exists because the ID difference between local and remote data cannot be automatically accepted or rejected, the C2 JU presents these differences to the operators for evaluation. Exit: the automatic flow hands off to operator evaluation and terminates.",
+            "evidence_refs": [
+              "EC-EF-006"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 2: if either track has the Strength field set to a value greater than 1 (unless Strength is No Statement), or if the local/remote data indicates both tracks are locally derived real-time tracks, the C2 JU shall not automatically correlate the two tracks. Exit: the automatic identity-change acceptance is not performed and the use case terminates with the track's classification unchanged.",
+            "evidence_refs": [
+              "EC-EF-005",
+              "EC-EF-004"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges from Step 2: if the locally held Environment/Category of the track differs from the Environment/Category received in a J3.X or J7.0 message, the C2 JU alerts the operator. Exit: after the alert, the use case returns to Step 3.",
+            "evidence_refs": [
+              "EC-EF-007"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Diverges from Step 3: when a Platform, Platform Activity, or Specific Type value of 0 (No Statement) is received and a non-zero value is held locally, the C2 JU retains the locally held value instead of accepting the received zero value. Exit: the use case returns to Step 4.",
+            "evidence_refs": [
+              "EC-EF-009"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-TR-000"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The reported live track is distinguished as an exercise-involved live track or as another live track being reported.",
+            "evidence_refs": [
+              "EC-PO-009"
+            ]
+          },
+          {
+            "content": "If the reported live track is classified as exercise-involved, it is distinguished as an exercise-involved live track, separate from other live tracks being reported, with the Exercise Indicator set to value 1 (Exercise Track), the standard identity set to Friend, and the specific exercise identity (e.g., FAKER or JOKER) set in the Identity Amplifying Descriptor field.",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-PO-005"
+            ]
+          },
+          {
+            "content": "If the reported live track is classified as another live track (Non-Exercise Track), it has the Exercise Indicator set to value 0 and its standard identity specified in the Identity field.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "When assuming R^2 for a previously-reported track, the C2 JU retains the received values of the Platform, Platform Activity, Specific Type, and Special Interest Indicator fields for retransmission and operator appreciation.",
+            "evidence_refs": [
+              "EC-PO-007"
+            ]
+          },
+          {
+            "content": "If the Special Interest Indicator is set to value 1, it is retransmitted as value 1 by the C2 JU when assuming R^2.",
+            "evidence_refs": [
+              "EC-PO-008"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011"
+        ]
+      }
+    }
+  },
+  "method": "CREST w/o cross-slot"
+}

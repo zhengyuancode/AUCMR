@@ -1,0 +1,606 @@
+{
+  "use_case_name": "Monitor Current and Past Auction Status",
+  "actor": "Customer",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The primary actor (Customer) wants to view the history of a specific product item, including its auction status (Unscheduled, Scheduled, Current/Live, Closed), dates/times, bid counts, and winning bidder information.",
+          "evidence_refs": [
+            "EC-G-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "The primary actor (Customer) wants to view the history of a specific product item, including its auction status (Unscheduled, Scheduled, Current/Live, Closed), dates/times, bid counts, and winning bidder information.",
+        "canonical_success_scenario": "The Customer views the auction history of a specific product item and sees each auction's status (Unscheduled, Scheduled, Current/Live, Closed), the relevant dates/times, bid counts, and winning bidder information; a live auction is shown as Active, while a past auction shows its closing date/time.",
+        "start_boundary": "The Customer needs to view the current and past auction status of a specific product item.",
+        "success_boundary": "The Customer can see the product item's current and past auction status, including date/time information, bid counts, and winning bidder information.",
+        "in_scope_actions": [
+          "View auction history for a specific product item",
+          "View auction status category (Unscheduled, Scheduled, Current/Live, Closed)",
+          "View date/time information (Active for live auctions, closing date/time for past auctions)",
+          "View bid counts and winning bidder information"
+        ],
+        "excluded_adjacent_actions": [
+          "Placing or updating bids",
+          "Setting or changing SmartBid",
+          "Checkout or payment for won items",
+          "Post-auction 2nd-chance offers",
+          "Administrative or seller auction management"
+        ],
+        "variant_dimensions": [
+          "The specific product item being reviewed",
+          "Auction status category (Unscheduled, Scheduled, Current/Live, Closed)",
+          "Current/live versus past/closed auction display information"
+        ],
+        "evidence_refs": [
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "preconditions": {
+      "slot": "preconditions"
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Customer initiates the auction status view for a specific product item by entering the Product ID and clicking “Go.”",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-TR-003"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-TR-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-action"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The system displays the search results for the product item in two sections: a top product summary section and a bottom auction history section.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The top product summary section shows Product ID, Description, Type, Cost, Price, Thumbnail Image, Auction History stats, Buyer Name, Available Quantities, and Active Date.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The bottom auction history section lists each auction record with Auction Status, Auction Sequence, Start Date/Time, End Date/Time, Reserve Amount, High Bid, Number of Bids, and Winner / High Bidder.",
+          "evidence_refs": [
+            "EC-MF-004"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer selects 'Bid History' from the results list to view the detailed bid history.",
+          "evidence_refs": [
+            "EC-MF-006"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system displays the bid history section, including the item's closing date/time (or 'Active' if live), auction sequence numbers, product ID (SKU), the customer's last bid, their SmartBid (max bid), and the winning bid regardless of who placed it.",
+          "evidence_refs": [
+            "EC-MF-007"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-003",
+        "EC-MF-004",
+        "EC-MF-006",
+        "EC-MF-007"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-display-results",
+          "MF-product-summary",
+          "MF-auction-history-list",
+          "MF-select-bid-history",
+          "MF-bid-history-display",
+          "MF-live-past-status"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 5: The bid history page includes a link to 'Recently Ended Auctions'; if the Customer clicks this link, the system shows 24 hours' worth of recently ended auction history.",
+          "evidence_refs": [
+            "EC-AF-008"
+          ],
+          "step_number": 1
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-recently-ended-auctions",
+          "AF-export-csv"
+        ],
+        "missing_aspects": [
+          "The specific trigger condition or navigation action that initiates the display of the full bid history (Step 5) is not explicitly defined in the cited evidence."
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: When the Customer's search for the specific product item returns no matches (No Results Found), the system displays a 'No Results' page. The page includes a 'Search Tips' section advising the Customer to check for typos/misspellings, remove unnecessary words like 'and', 'the', or 'a', try plural and singular forms of the word, use fewer or more generic keywords, and contact support if the tips fail.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 1
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-no-results",
+          "EF-search-tips"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The system displays the specified SKU's auction history in two sections: a top product summary section and a bottom auction history section.",
+          "evidence_refs": [
+            "EC-PO-019",
+            "EC-PO-020",
+            "EC-PO-008"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The top product summary section displays Product ID, Short 'On-Air' Description, Product Type, Unit Cost, P1 Price, Thumbnail Image, Auction History stats, Buyer's Name, Auction/Red/White Available Quantity, and Active Date.",
+          "evidence_refs": [
+            "EC-PO-020",
+            "EC-PO-008"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The bottom auction history section lists each auction record on a separate line with Auction Status, Auction Sequence, Start Date/Time, End Date/Time, Reserve Amount (Opening Bid), High Bid, Number of Bids, and Winner / High Bidder.",
+          "evidence_refs": [
+            "EC-PO-021",
+            "EC-PO-019",
+            "EC-PO-008"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-019",
+        "EC-PO-020",
+        "EC-PO-008",
+        "EC-PO-021"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-display-history-results",
+          "PC-product-summary",
+          "PC-auction-history-fields",
+          "PC-bid-history-details"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "goal_evidence_missing",
+      "slot": "preconditions",
+      "detail": "Goal-alignment gate rejected all available evidence as describing adjacent (non-goal) processes. Missing: [\"Evidence-backed preconditions for the Customer's product-item auction status history view\"]",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "no_evidence",
+      "slot": "preconditions",
+      "detail": "No supported claim produced from frozen evidence for slot 'preconditions'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Preconditions is empty, but the Trigger requires the Customer to enter a Product ID for a specific product item. To initiate the auction status view, the Customer must already have/know a valid Product ID and the product item must exist in the system; otherwise the Trigger cannot lead to the Main Flow's successful display of that item's auction status. This is more than generic UI availability. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Preconditions is empty, but the Trigger requires the Customer to enter a Product ID for a specific product item. To initiate the auction status view, the Customer must already have/know a valid Product ID and the product item must exist in the system; otherwise the Trigger cannot lead to the Main Flow's successful display of that item's auction status. This is more than generic UI availability.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 76,
+    "cross_page_cards": 29,
+    "modalities": {
+      "text": 60,
+      "diagram": 11,
+      "table": 5
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 827.306,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 44.085,
+    "llm_retry_calls": 0,
+    "judge_calls": 0,
+    "llm_calls": 9.0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 783.08,
+    "lvlm_calls": 6.0,
+    "cards_collected": 76,
+    "cards_referenced": 13,
+    "evidence_reused": true,
+    "reused_card_count": 76,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/jtvauctions/Customer_Monitor_Current_and_Past_Auction_Status-evidence.json",
+    "dra_elapsed_seconds": 191.665,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_calls": 0,
+    "dra_llm_calls": 2,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_seconds": 191.658,
+    "dra_lvlm_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The primary actor (Customer) wants to view the history of a specific product item, including its auction status (Unscheduled, Scheduled, Current/Live, Closed), dates/times, bid counts, and winning bidder information.",
+            "evidence_refs": [
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer initiates the auction status view for a specific product item by entering the Product ID and clicking “Go.”",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-TR-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The system displays the search results for the product item in two sections: a top product summary section and a bottom auction history section.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The top product summary section shows Product ID, Description, Type, Cost, Price, Thumbnail Image, Auction History stats, Buyer Name, Available Quantities, and Active Date.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The bottom auction history section lists each auction record with Auction Status, Auction Sequence, Start Date/Time, End Date/Time, Reserve Amount, High Bid, Number of Bids, and Winner / High Bidder.",
+            "evidence_refs": [
+              "EC-MF-004"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The Customer selects 'Bid History' from the results list to view the detailed bid history.",
+            "evidence_refs": [
+              "EC-MF-006"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The system displays the bid history section, including the item's closing date/time (or 'Active' if live), auction sequence numbers, product ID (SKU), the customer's last bid, their SmartBid (max bid), and the winning bid regardless of who placed it.",
+            "evidence_refs": [
+              "EC-MF-007"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 5: The bid history page includes a link to 'Recently Ended Auctions'; if the Customer clicks this link, the system shows 24 hours' worth of recently ended auction history.",
+            "evidence_refs": [
+              "EC-AF-008"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: When the Customer's search for the specific product item returns no matches (No Results Found), the system displays a 'No Results' page. The page includes a 'Search Tips' section advising the Customer to check for typos/misspellings, remove unnecessary words like 'and', 'the', or 'a', try plural and singular forms of the word, use fewer or more generic keywords, and contact support if the tips fail.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The system displays the specified SKU's auction history in two sections: a top product summary section and a bottom auction history section.",
+            "evidence_refs": [
+              "EC-PO-019",
+              "EC-PO-020",
+              "EC-PO-008"
+            ]
+          },
+          {
+            "content": "The top product summary section displays Product ID, Short 'On-Air' Description, Product Type, Unit Cost, P1 Price, Thumbnail Image, Auction History stats, Buyer's Name, Auction/Red/White Available Quantity, and Active Date.",
+            "evidence_refs": [
+              "EC-PO-020",
+              "EC-PO-008"
+            ]
+          },
+          {
+            "content": "The bottom auction history section lists each auction record on a separate line with Auction Status, Auction Sequence, Start Date/Time, End Date/Time, Reserve Amount (Opening Bid), High Bid, Number of Bids, and Winner / High Bidder.",
+            "evidence_refs": [
+              "EC-PO-021",
+              "EC-PO-019",
+              "EC-PO-008"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024"
+        ]
+      }
+    }
+  },
+  "method": "CREST - cross-slot evidence reuse",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "without_cross_slot_reuse",
+    "method": "CREST - cross-slot evidence reuse",
+    "directory": "without_cross_slot_reuse",
+    "seed": null,
+    "slot_order": null,
+    "reuse_prior_evidence": false,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "c30b8364658d4b04b54b5ecedf8be922"
+}

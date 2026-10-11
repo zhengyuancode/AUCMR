@@ -1,0 +1,478 @@
+{
+  "use_case_name": "Complete Checkout and Payment",
+  "actor": "Customer",
+  "method": "TextRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [],
+      "raw_text": ""
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The customer is the winner of an auction that has ended.",
+          "evidence_refs": [
+            "jtvauctions:P129#C654"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The customer has PayPal or Amazon Payments as their default Method of Payment (MOP).",
+          "evidence_refs": [
+            "jtvauctions:P129#C654",
+            "jtvauctions:P129#C655"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The customer has unpaid auction winnings.",
+          "evidence_refs": [
+            "jtvauctions:P129#C655"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Payment must be made within seven days (168 hours) of the auction’s closing date/time.",
+          "evidence_refs": [
+            "jtvauctions:P129#C655"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "jtvauctions:P129#C654",
+        "jtvauctions:P129#C655"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The customer clicks the “pay now” link in the winner notification email from Responsys, or signs in and is identified as having unpaid auction winnings.",
+          "evidence_refs": [
+            "jtvauctions:P129#C655"
+          ]
+        }
+      ],
+      "raw_text": "The customer clicks the “pay now” link in the winner notification email from Responsys, or signs in and is identified as having unpaid auction winnings.",
+      "evidence_card_ids": [
+        "jtvauctions:P129#C655"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The system checks the winner’s payment method type in their registration data, and proceeds according to payment method.",
+          "evidence_refs": [
+            "jtvauctions:P129#C654"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The customer sees a post-auction checkout page that says: “Congratulations! You've won XX items for a total of $XXX.XX. We've included a list of these items below. You are seeing this message because you have chosen either PayPal or Amazon Payments as your default method of payment. Please complete your transaction(s) now by choosing a checkout option.”",
+          "evidence_refs": [
+            "jtvauctions:P133#C675"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The customer chooses a checkout option from the Checkout Options section, which consists of three logo buttons, with a radio button next to each.",
+          "evidence_refs": [
+            "jtvauctions:P130#C658"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the customer clicks the PayPal logo or radio button, the system immediately takes the user to the PayPal checkout process, and the next page the user sees is a PayPal-hosted page.",
+          "evidence_refs": [
+            "jtvauctions:P130#C658"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If the customer clicks the Amazon Payments logo or radio button, the system immediately loads the Amazon Payments checkout widget on the page; the page remains in the background, grayed out, all other links are disabled, and the rest of the process is per the Amazon integration guidelines documentation.",
+          "evidence_refs": [
+            "jtvauctions:P130#C658"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "PayPal and Amazon Payments users will be given a shipping option during the PayPal / Amazon checkout process.",
+          "evidence_refs": [
+            "jtvauctions:P43#C211"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "jtvauctions:P129#C654",
+        "jtvauctions:P133#C675",
+        "jtvauctions:P130#C658",
+        "jtvauctions:P43#C211"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "At the Checkout Options section, instead of choosing PayPal or Amazon Payments, the customer may click the “Checkout Later” button or radio button. The system immediately grays out the page, disables all links, a DIV layer appears, and a pop-up modal titled “No Problem!” overlays part of the page.",
+          "evidence_refs": [
+            "jtvauctions:P130#C658",
+            "jtvauctions:P133#C675",
+            "jtvauctions:P3#C15"
+          ],
+          "step_number": 1
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "jtvauctions:P130#C658",
+        "jtvauctions:P133#C675",
+        "jtvauctions:P3#C15"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the customer does not complete payment within 7 days (exactly 168 hours) after winning their auction(s), any unpaid orders will be cancelled after the payment window expires. Exit: the use case ends with the unpaid orders cancelled.",
+          "evidence_refs": [
+            "jtvauctions:P130#C659"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the customer clicks the “Return to Payments” link in the “No Problem!” DIV, the system closes the DIV and re-enables the page links. Exit: the “No Problem!” DIV is closed and the page links are re-enabled, allowing checkout to continue.",
+          "evidence_refs": [
+            "jtvauctions:P130#C659"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the customer clicks the “JTVauctions Homepage” link in the “No Problem!” DIV, the system takes the user to the home page. Exit: the use case ends without completing payment; the customer can come back to pay anytime within 7 days (exactly 168 hours) after winning their auction(s), and any unpaid orders will be cancelled after the payment window expires.",
+          "evidence_refs": [
+            "jtvauctions:P130#C659"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "jtvauctions:P130#C659"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The customer has completed the Amazon or PayPal checkout process.",
+          "evidence_refs": [
+            "jtvauctions:P130#C659"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Payment is received for orders won with an alternative payment method (i.e., PayPal or Amazon Payments).",
+          "evidence_refs": [
+            "jtvauctions:P138#C690"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The user is returned to a Thank You page.",
+          "evidence_refs": [
+            "jtvauctions:P130#C659"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "jtvauctions:P130#C659",
+        "jtvauctions:P138#C690"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "goal",
+      "detail": "No content produced for slot 'goal' by TextRAG-Elaborate."
+    }
+  ],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "jtvauctions:P129#C654",
+          "jtvauctions:P133#C675",
+          "jtvauctions:P109#C528",
+          "jtvauctions:P132#C670",
+          "jtvauctions:P130#C658",
+          "jtvauctions:P132#C669",
+          "jtvauctions:P133#C678",
+          "jtvauctions:P133#C677",
+          "jtvauctions:P132#C671",
+          "jtvauctions:P55#C247"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The customer is the winner of an auction that has ended.",
+            "evidence_refs": [
+              "jtvauctions:P129#C654"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The customer has PayPal or Amazon Payments as their default Method of Payment (MOP).",
+            "evidence_refs": [
+              "jtvauctions:P129#C654",
+              "jtvauctions:P129#C655"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The customer has unpaid auction winnings.",
+            "evidence_refs": [
+              "jtvauctions:P129#C655"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Payment must be made within seven days (168 hours) of the auction’s closing date/time.",
+            "evidence_refs": [
+              "jtvauctions:P129#C655"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "jtvauctions:P49#C230",
+          "jtvauctions:P129#C654",
+          "jtvauctions:P3#C7",
+          "jtvauctions:P40#C201",
+          "jtvauctions:P64#C279",
+          "jtvauctions:P109#C528",
+          "jtvauctions:P129#C655",
+          "jtvauctions:P132#C669",
+          "jtvauctions:P132#C671",
+          "jtvauctions:P133#C678"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The customer clicks the “pay now” link in the winner notification email from Responsys, or signs in and is identified as having unpaid auction winnings.",
+            "evidence_refs": [
+              "jtvauctions:P129#C655"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "jtvauctions:P39#C196",
+          "jtvauctions:P43#C213",
+          "jtvauctions:P136#C685",
+          "jtvauctions:P129#C654",
+          "jtvauctions:P136#C684",
+          "jtvauctions:P129#C655",
+          "jtvauctions:P132#C669",
+          "jtvauctions:P133#C675",
+          "jtvauctions:P43#C212",
+          "jtvauctions:P138#C690"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The system checks the winner’s payment method type in their registration data, and proceeds according to payment method.",
+            "evidence_refs": [
+              "jtvauctions:P129#C654"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The customer sees a post-auction checkout page that says: “Congratulations! You've won XX items for a total of $XXX.XX. We've included a list of these items below. You are seeing this message because you have chosen either PayPal or Amazon Payments as your default method of payment. Please complete your transaction(s) now by choosing a checkout option.”",
+            "evidence_refs": [
+              "jtvauctions:P133#C675"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The customer chooses a checkout option from the Checkout Options section, which consists of three logo buttons, with a radio button next to each.",
+            "evidence_refs": [
+              "jtvauctions:P130#C658"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the customer clicks the PayPal logo or radio button, the system immediately takes the user to the PayPal checkout process, and the next page the user sees is a PayPal-hosted page.",
+            "evidence_refs": [
+              "jtvauctions:P130#C658"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If the customer clicks the Amazon Payments logo or radio button, the system immediately loads the Amazon Payments checkout widget on the page; the page remains in the background, grayed out, all other links are disabled, and the rest of the process is per the Amazon integration guidelines documentation.",
+            "evidence_refs": [
+              "jtvauctions:P130#C658"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "PayPal and Amazon Payments users will be given a shipping option during the PayPal / Amazon checkout process.",
+            "evidence_refs": [
+              "jtvauctions:P43#C211"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "jtvauctions:P129#C654",
+          "jtvauctions:P11#C50",
+          "jtvauctions:P130#C658",
+          "jtvauctions:P49#C230",
+          "jtvauctions:P56#C250",
+          "jtvauctions:P11#C52",
+          "jtvauctions:P133#C675",
+          "jtvauctions:P43#C211",
+          "jtvauctions:P25#C97",
+          "jtvauctions:P11#C51"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "At the Checkout Options section, instead of choosing PayPal or Amazon Payments, the customer may click the “Checkout Later” button or radio button. The system immediately grays out the page, disables all links, a DIV layer appears, and a pop-up modal titled “No Problem!” overlays part of the page.",
+            "evidence_refs": [
+              "jtvauctions:P130#C658",
+              "jtvauctions:P133#C675",
+              "jtvauctions:P3#C15"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "jtvauctions:P129#C654",
+          "jtvauctions:P138#C690",
+          "jtvauctions:P132#C670",
+          "jtvauctions:P130#C658",
+          "jtvauctions:P49#C230",
+          "jtvauctions:P133#C677",
+          "jtvauctions:P133#C675",
+          "jtvauctions:P11#C52",
+          "jtvauctions:P3#C15",
+          "jtvauctions:P43#C212"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the customer does not complete payment within 7 days (exactly 168 hours) after winning their auction(s), any unpaid orders will be cancelled after the payment window expires. Exit: the use case ends with the unpaid orders cancelled.",
+            "evidence_refs": [
+              "jtvauctions:P130#C659"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the customer clicks the “Return to Payments” link in the “No Problem!” DIV, the system closes the DIV and re-enables the page links. Exit: the “No Problem!” DIV is closed and the page links are re-enabled, allowing checkout to continue.",
+            "evidence_refs": [
+              "jtvauctions:P130#C659"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the customer clicks the “JTVauctions Homepage” link in the “No Problem!” DIV, the system takes the user to the home page. Exit: the use case ends without completing payment; the customer can come back to pay anytime within 7 days (exactly 168 hours) after winning their auction(s), and any unpaid orders will be cancelled after the payment window expires.",
+            "evidence_refs": [
+              "jtvauctions:P130#C659"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "jtvauctions:P129#C654",
+          "jtvauctions:P133#C675",
+          "jtvauctions:P133#C677",
+          "jtvauctions:P49#C230",
+          "jtvauctions:P132#C671",
+          "jtvauctions:P133#C678",
+          "jtvauctions:P130#C659",
+          "jtvauctions:P132#C670",
+          "jtvauctions:P130#C658",
+          "jtvauctions:P110#C534"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The customer has completed the Amazon or PayPal checkout process.",
+            "evidence_refs": [
+              "jtvauctions:P130#C659"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Payment is received for orders won with an alternative payment method (i.e., PayPal or Amazon Payments).",
+            "evidence_refs": [
+              "jtvauctions:P138#C690"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The user is returned to a Thank You page.",
+            "evidence_refs": [
+              "jtvauctions:P130#C659"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "jtvauctions:P133#C675",
+          "jtvauctions:P129#C654",
+          "jtvauctions:P49#C230",
+          "jtvauctions:P40#C201",
+          "jtvauctions:P130#C659",
+          "jtvauctions:P132#C670",
+          "jtvauctions:P110#C534",
+          "jtvauctions:P138#C690",
+          "jtvauctions:P129#C655",
+          "jtvauctions:P133#C677"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 587.7
+}

@@ -1,0 +1,896 @@
+{
+  "use_case_name": "Resolve Dual Designations via Track Correlation",
+  "actor": "C2 JU",
+  "scg": 100.0,
+  "nli_g": 81.25,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 41.935483870967744,
+  "avg_cards": 53,
+  "total_claims": 32,
+  "total_cited_claims": 32,
+  "total_entailed_claims": 26,
+  "pre_constraint_claim_count": 32,
+  "pre_constraint_cited_claim_count": 32,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 124,
+  "cross_page_cards": 52,
+  "referenced_cards": 53,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 4,
+      "cited_claim_count": 4,
+      "evidence_ref_count": 7,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 1,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 8,
+      "cited_claim_count": 8,
+      "evidence_ref_count": 15,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 8,
+      "cited_claim_count": 8,
+      "evidence_ref_count": 9,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 5,
+      "cited_claim_count": 5,
+      "evidence_ref_count": 10,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 5,
+      "cited_claim_count": 5,
+      "evidence_ref_count": 10,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R2": 2,
+    "R7": 2
+  },
+  "l3_violations_pre_repair": {
+    "R1": 0,
+    "R2": 2,
+    "R3": 0,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 2
+  },
+  "l2_violations": {
+    "R1": 1,
+    "R2": 1,
+    "R3": 0,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 1
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R1": [
+        {
+          "rule_id": "R1",
+          "rule_name": "trigger_preconditions_coverage",
+          "offending_slot": "preconditions",
+          "offending_claim_index": -1,
+          "rationale": "The Trigger explicitly allows for manual initiation of the resolution, but the Preconditions only describe the system state where tracks are eligible, missing the precondition that a manual request or operator selection has occurred if the automatic path is not taken."
+        }
+      ],
+      "R2": [
+        {
+          "rule_id": "R2",
+          "rule_name": "mainflow_trigger_continuity",
+          "offending_slot": "main_flow",
+          "offending_claim_index": 0,
+          "rationale": "The Trigger states that action is initiated to resolve dual designation based on eligibility already established in Preconditions, but Main Flow Step 1 restarts the process by comparing data and performing tests, contradicting the premise that eligibility (passing tests) is already a precondition."
+        }
+      ],
+      "R7": [
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 0,
+          "rationale": "The exit condition 'applicable exception-handling path is triggered' is a vague reference to an undefined process rather than a clear terminal failure state or explicit return point."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 1,
+      "R2": 1,
+      "R3": 0,
+      "R4": 0,
+      "R5": 0,
+      "R6": 0,
+      "R7": 1
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The trigger/preconditions state that the C2 JU has already recognized the two ballistic missile tracks as eligible and that the tracks have already passed the required correlation tests/restrictions the required number of times. The main flow, however, starts over by comparing track data, declaring a tentative correlation after one pass, and only processing for resolution after a second pass. This is a restart/contradiction: the use case starts after the outcome of the main-flow test sequence rather than at the initiating event. (atomic grounding: candidate remains incomplete (Starting the track correlation sequence to resolve a possible dual designation is not supported by the cited cards.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception Flow claim 1 (diverging from Step 1) does not provide a concrete exit. It ends with 'triggering exception handling' / 'the applicable exception-handling path is triggered' without naming that path or defining a terminal state, so there is no clear outcome for the branch. (atomic grounding: candidate remains incomplete (Explicit recovery/exit behavior after track decorrelation is not supported by the cited cards; evidence is needed for whether the exception branch terminates, resumes, or continues.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "trigger",
+      "detail": "[mainflow_trigger_continuity] The trigger/preconditions state that the C2 JU has already recognized the two ballistic missile tracks as eligible and that the tracks have already passed the required correlation tests/restrictions the required number of times. The main flow, however, starts over by comparing track data, declaring a tentative correlation after one pass, and only processing for resolution after a second pass. This is a restart/contradiction: the use case starts after the outcome of the main-flow test sequence rather than at the initiating event.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception Flow claim 1 (diverging from Step 1) does not provide a concrete exit. It ends with 'triggering exception handling' / 'the applicable exception-handling path is triggered' without naming that path or defining a terminal state, so there is no clear outcome for the branch.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "C2 JU resolves dual designations by correlating two ballistic missile tracks reported to the interfa",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "Evidence [EC-G-004] explicitly states that the goal of the use case is to resolve dual designations by correlating two eligible tracks, which directly supports every material proposition in the claim.",
+      "slot_fit_rationale": "The claim describes the actor's intended objective and success outcome, which is the precise definition of the 'goal' slot in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-G-003",
+        "EC-G-004"
+      ],
+      "evidence_modalities": {
+        "EC-G-003": "card_text",
+        "EC-G-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The C2 JU recognizes that two ballistic missile tracks reported to the interface are eligible for co",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim adds the specific detail 'ballistic missile' which is not present in the evidence text that only mentions 'two tracks', making the material proposition unsupported.",
+      "slot_fit_rationale": "The claim describes a system state (recognition of eligibility) that must hold before the interaction initiates, which aligns with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-014"
+      ],
+      "evidence_modalities": {
+        "EC-PC-014": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The two ballistic missile tracks are eligible for correlation by passing the positional test: course",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PC-005], which explicitly defines the positional test criteria (course, speed, and altitude differentials) required for two tracks to be eligible for correlation.",
+      "slot_fit_rationale": "The claim describes a mandatory state condition that must hold before the correlation interaction can proceed, which aligns with the definition of a precondition.",
+      "evidence_refs": [
+        "EC-PC-005"
+      ],
+      "evidence_modalities": {
+        "EC-PC-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The two tracks pass the required correlation tests and restrictions the required number of times bef",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PC-011] (passing tests N times), [EC-PC-007] (no ID conflict), [EC-PC-010] (Strength field constraint), and [EC-PC-008] (Mode II code constraint), which collectively establish the necessary conditions before correlation execution.",
+      "slot_fit_rationale": "The claim describes specific data states and test results that must hold true before the interaction (correlation) begins, which aligns precisely with the definition of preconditions in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-PC-007",
+        "EC-PC-008",
+        "EC-PC-010",
+        "EC-PC-011"
+      ],
+      "evidence_modalities": {
+        "EC-PC-007": "card_text",
+        "EC-PC-008": "card_text",
+        "EC-PC-010": "card_text",
+        "EC-PC-011": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "Positions of all tracks and IUs tested for correlation are extrapolated to the same time.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-PC-004], which explicitly states that positions must be extrapolated to the same time.",
+      "slot_fit_rationale": "The evidence collector note explicitly identifies this requirement as a 'precondition that must hold before the correlation test occurs,' aligning perfectly with the preconditions slot.",
+      "evidence_refs": [
+        "EC-PC-004"
+      ],
+      "evidence_modalities": {
+        "EC-PC-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "The C2 JU recognizes that two ballistic missile tracks reported to the interface are eligible for co",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-TR-003], which explicitly states that the C2 JU initiates action upon recognizing eligible tracks.",
+      "slot_fit_rationale": "The claim describes the specific event (recognition of eligible tracks) and the immediate actor response that initiates the interaction, which aligns with the definition of a trigger.",
+      "evidence_refs": [
+        "EC-TR-003"
+      ],
+      "evidence_modalities": {
+        "EC-TR-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The C2 JU compares the locally derived ballistic missile track data (position, velocity, and altitud",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence collectively supports that the C2 JU performs correlation by comparing locally derived ballistic missile track data (including position, velocity, and altitude) with data received on the Surveillance NPG/interface.",
+      "slot_fit_rationale": "The claim describes a core action step within the normal successful interaction path (correlation process), which appropriately belongs in the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-000",
+        "EC-MF-006",
+        "EC-MF-021"
+      ],
+      "evidence_modalities": {
+        "EC-MF-000": "card_text",
+        "EC-MF-006": "card_text",
+        "EC-MF-021": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "When the two ballistic missile tracks pass the correlation tests and restrictions once, the C2 JU de",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim attributes the action to the 'C2 JU' actor, but the cited evidence uses passive voice ('they shall be deemed') without specifying which system component or actor performs the action, leaving the agent unsupported.",
+      "slot_fit_rationale": "The claim describes a standard processing step within the successful interaction path, which aligns with the definition of a main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-018"
+      ],
+      "evidence_modalities": {
+        "EC-MF-018": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "Upon the next correlation stimulus, the C2 JU tests the same two ballistic missile tracks again.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "Evidence [EC-MF-019] explicitly states that the same two tracks shall be tested again upon the next correlation stimulus, directly supporting the claim's action and trigger.",
+      "slot_fit_rationale": "The claim describes a specific procedural step (re-testing tracks) within the normal successful interaction path, which aligns with the definition of a main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-017",
+        "EC-MF-019"
+      ],
+      "evidence_modalities": {
+        "EC-MF-017": "card_text",
+        "EC-MF-019": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "When the two ballistic missile tracks pass the correlation tests and restrictions a second time and ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-MF-002], which establishes the requirement for two passes, and Evidence [EC-MF-020], which specifies that upon passing the second test with no restrictions, the tracks are processed for dual designation resolution.",
+      "slot_fit_rationale": "The claim describes a specific action/response (processing for dual designation resolution) that occurs in the normal successful interaction path after meeting conditions, which fits the definition of a main_flow step.",
+      "evidence_refs": [
+        "EC-MF-002",
+        "EC-MF-020"
+      ],
+      "evidence_modalities": {
+        "EC-MF-002": "card_text",
+        "EC-MF-020": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The recognizing C2 JU transmits a J7.2 Correlation message requesting all other C2 IUs to correlate ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-MF-008] and [EC-MF-023], which state that the recognizing JU transmits a J7.2 Correlation message identifying the Retained and Dropped TNs to request correlation from other C2 IUs.",
+      "slot_fit_rationale": "The claim describes a primary action taken by the actor during the normal successful interaction path, which correctly fits the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-008",
+        "EC-MF-023"
+      ],
+      "evidence_modalities": {
+        "EC-MF-008": "card_text",
+        "EC-MF-023": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The receiving IUs accept the requested correlation.",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim asserts unconditional acceptance, but the evidence explicitly states that acceptance is conditional ('unless certain prespecified conditions exist'), leaving the unconditional outcome unsupported.",
+      "slot_fit_rationale": "The action of receiving IUs accepting a correlation represents a standard response in the successful interaction path, which aligns with the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-009"
+      ],
+      "evidence_modalities": {
+        "EC-MF-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The originating C2 JU holding R² for the Dropped TN ceases reporting the Dropped TN and transmits a ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-MF-010], which mandates dropping the track and transmitting J7.0 after J7.2 if R² is held, and Evidence [EC-MF-013], which specifies ceasing reporting and transmitting the J7.0 Drop Track message.",
+      "slot_fit_rationale": "The claim describes a specific action (ceasing reporting and transmitting a message) performed by the actor in the normal successful interaction path, which constitutes a main flow step.",
+      "evidence_refs": [
+        "EC-MF-010",
+        "EC-MF-013"
+      ],
+      "evidence_modalities": {
+        "EC-MF-010": "card_text",
+        "EC-MF-013": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "Each ballistic missile track reported on the interface now represents a single data point, and the d",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that each ballistic missile track reported on the interface must represent a single data point to eliminate dual designations, directly supporting the claim's factual content.",
+      "slot_fit_rationale": "The claim describes the successful outcome state of the interaction (tracks representing single data points with resolved dual designations), which constitutes a substantive step or result within the main success flow.",
+      "evidence_refs": [
+        "EC-G-003",
+        "EC-MF-022"
+      ],
+      "evidence_modalities": {
+        "EC-G-003": "card_text",
+        "EC-MF-022": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: Instead of requiring the automatic pass of correlation tests and restrictions,",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-AF-000], which establishes the manual initiation capability irrespective of automatic criteria, and Evidence [EC-AF-001], which lists the specific exclusions for this capability.",
+      "slot_fit_rationale": "The claim describes a valid alternative interaction path that diverges from the standard automated process to achieve the same goal, fitting the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-000",
+        "EC-AF-001"
+      ],
+      "evidence_modalities": {
+        "EC-AF-000": "card_text",
+        "EC-AF-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: If conflicting IDs is the only correlation restriction, the C2 JU alerts the o",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-AF-002], which explicitly details the alert and operator actions required when conflicting IDs are the only restriction.",
+      "slot_fit_rationale": "The claim describes a specific non-error branch where the system handles an ID conflict through manual intervention to achieve the same success outcome, which fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-002"
+      ],
+      "evidence_modalities": {
+        "EC-AF-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: If either subject track is the Target TN in a J10.2 Engagement Status message ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-AF-003], which explicitly describes the exception allowing automatic correlation when specific ID and message conditions are met.",
+      "slot_fit_rationale": "The claim describes a specific conditional branch that overrides a standard restriction while still pursuing the primary goal of correlation, which correctly fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-003"
+      ],
+      "evidence_modalities": {
+        "EC-AF-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: When processing the correlation and the Identity of the Retained TN and Droppe",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the data retention rule but does not mention 'Step 4' or the divergence point, leaving the structural claim unsupported.",
+      "slot_fit_rationale": "The claim describes a conditional branch from the main flow that handles a specific data state while pursuing the same success outcome, which fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-006"
+      ],
+      "evidence_modalities": {
+        "EC-AF-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: When processing the correlation, if the ID or Identity Amplifying Descriptor o",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-AF-005], which specifies the exact condition (ID/IAD difference resulting in automatic acceptance) and the corresponding data transfer action.",
+      "slot_fit_rationale": "The claim describes a conditional branch within the correlation process that handles a specific non-error scenario, fitting the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-005"
+      ],
+      "evidence_modalities": {
+        "EC-AF-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 6: Instead of accepting the requested correlation, the responding C2 JU may respo",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the message content and field values for a reverse correlation but does not explicitly state that this action diverges from Step 6 or that it occurs instead of accepting the requested correlation.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch (reverse correlation) that pursues the same success outcome, which fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-010"
+      ],
+      "evidence_modalities": {
+        "EC-AF-010": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 6: If the correlation request is a manual correlation (RV=3) and the Retained TN ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-AF-011], which specifies the exact conditions (RV=3, Retained TN not held, Dropped TN held with OCC) and the resulting system action (execute correlation using Dropped TN data and Retained TN track number).",
+      "slot_fit_rationale": "The claim describes a specific conditional branch of the normal processing logic that handles a valid but distinct scenario (manual correlation with specific track ownership states), which fits the definition of an alternative flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-AF-011"
+      ],
+      "evidence_modalities": {
+        "EC-AF-011": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 7: When a J7.2 message is initiated by own unit and a Drop Track message has not ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim's behavioral rule regarding retaining the Dropped TN as a remote track is directly supported by Evidence [EC-AF-004].",
+      "slot_fit_rationale": "The claim describes a specific conditional branch that diverges from the main flow to handle a non-error state, which aligns with the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-004"
+      ],
+      "evidence_modalities": {
+        "EC-AF-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from Step 1: When the dual designation arises from an initial report on ballistic missile c",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-034], which explicitly lists the specified conditions (initial reports, track merging, etc.) as situations where correlation may fail or produce erroneous results, thereby triggering exception handling.",
+      "slot_fit_rationale": "The claim describes specific error conditions and the resulting trigger for exception handling, which substantively belongs in the exception_flow slot as it defines an abnormal branch from the standard correlation path.",
+      "evidence_refs": [
+        "EC-EF-008",
+        "EC-EF-034"
+      ],
+      "evidence_modalities": {
+        "EC-EF-008": "card_text",
+        "EC-EF-034": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from Step 3: The correlation test shall occur no more than 6 seconds after the extrapolatio",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the 6-second constraint but does not explicitly state that the test 'cannot be performed' or that the branch 'terminates without performing' it, leaving the specific exception handling behavior unsupported.",
+      "slot_fit_rationale": "The claim describes a deviation from the main flow due to a constraint violation and specifies the resulting termination, which aligns with the definition of an exception flow.",
+      "evidence_refs": [
+        "EC-EF-012"
+      ],
+      "evidence_modalities": {
+        "EC-EF-012": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from Step 6: Receiving IUs accept the requested correlation unless prespecified conditions ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence: EC-EF-019 establishes the general acceptance rule with exceptions, EC-EF-015 defines the specific rejection conditions (OCCs/conflicting IDs) for J7.2 messages, and EC-EF-038 specifies the required rejection response (J7.2 with RV=2).",
+      "slot_fit_rationale": "The claim describes a specific error condition (conflicting track data) and its corresponding handling (rejection message), which constitutes a substantive exception flow branching from the main correlation acceptance path.",
+      "evidence_refs": [
+        "EC-EF-015",
+        "EC-EF-019",
+        "EC-EF-038"
+      ],
+      "evidence_modalities": {
+        "EC-EF-015": "card_text",
+        "EC-EF-019": "card_text",
+        "EC-EF-038": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from Step 7: If a ballistic missile track involved in the correlation is considered lost — ",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-EF-017] (defining lost track conditions), [EC-EF-032] (confirming Lost Track Indicator relevance), and [EC-EF-035] (specifying the TQ reduction rule and example).",
+      "slot_fit_rationale": "The claim describes a specific abnormal condition (lost track) and its associated handling logic (TQ adjustment), which constitutes a substantive exception flow branching from the normal correlation process.",
+      "evidence_refs": [
+        "EC-EF-017",
+        "EC-EF-032",
+        "EC-EF-035"
+      ],
+      "evidence_modalities": {
+        "EC-EF-017": "card_text",
+        "EC-EF-032": "card_text",
+        "EC-EF-035": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from Step 8: If it is determined that more than one data point exists for a ballistic missi",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that track decorrelation should occur when multiple data points are detected for a reported ballistic missile track, directly supporting the claim's condition and action.",
+      "slot_fit_rationale": "The claim describes an error-handling path (decorrelation) triggered by an abnormal condition (multiple data points), which fits the definition of an exception flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-EF-033"
+      ],
+      "evidence_modalities": {
+        "EC-EF-033": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The dual designation is resolved via correlation, and each ballistic missile track reported on the i",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PO-000], which states that dual designation is resolved via correlation and the reported track represents a single data point.",
+      "slot_fit_rationale": "The claim describes the resulting system state (resolved designation, single data point representation) after successful completion, which aligns with the definition of postconditions.",
+      "evidence_refs": [
+        "EC-PO-000",
+        "EC-PO-007",
+        "EC-PO-008"
+      ],
+      "evidence_modalities": {
+        "EC-PO-000": "card_text",
+        "EC-PO-007": "card_text",
+        "EC-PO-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "Upon acceptance of the requested correlation, receiving IUs retain the designated Retained TN and dr",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PO-009], [EC-PO-010], and [EC-PO-002], which collectively describe the state changes and message transmissions occurring upon successful correlation acceptance.",
+      "slot_fit_rationale": "The claim describes the resulting system states and effects (retaining/dropping tracks, sending messages) that hold immediately after the successful completion of the use case, which aligns with the definition of postconditions.",
+      "evidence_refs": [
+        "EC-PO-002",
+        "EC-PO-009",
+        "EC-PO-010"
+      ],
+      "evidence_modalities": {
+        "EC-PO-002": "card_text",
+        "EC-PO-009": "card_text",
+        "EC-PO-010": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "Upon correlation execution, the Retained TN is updated from the Dropped TN with Latitude, Longitude,",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PO-004] and [EC-PO-006], which collectively specify the exact data fields and conditional logic for updating the Retained TN after correlation.",
+      "slot_fit_rationale": "The claim describes the resulting data state of the retained track immediately following successful correlation, which aligns with the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-004",
+        "EC-PO-006"
+      ],
+      "evidence_modalities": {
+        "EC-PO-004": "card_text",
+        "EC-PO-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The final identification state of the Retained TN is determined by the ID conflict restriction rules",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PO-005], which explicitly states the conditional logic for identification data transfer based on ID conflict restrictions.",
+      "slot_fit_rationale": "The claim describes the final state of identification data after the process completes, which aligns with the definition of postconditions as the immediate state or effect resulting from successful completion.",
+      "evidence_refs": [
+        "EC-PO-005"
+      ],
+      "evidence_modalities": {
+        "EC-PO-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "After acceptance of a manual correlation (RV field set to value 3), the resulting track shall not be",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a verbatim match to Evidence [EC-PO-011], which explicitly states the system state constraint following manual correlation acceptance.",
+      "slot_fit_rationale": "The claim describes the immediate state of the track (exclusion from automatic decorrelation) resulting from the successful completion of the interaction, which defines a postcondition.",
+      "evidence_refs": [
+        "EC-PO-011"
+      ],
+      "evidence_modalities": {
+        "EC-PO-011": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

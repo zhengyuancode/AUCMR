@@ -1,0 +1,1385 @@
+{
+  "use_case_name": "Define Reference Points and Geometric Areas",
+  "actor": "C2 JU",
+  "slots": {
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered when the C2 JU needs to define and report a reference point, line, or geometric area (including an Area of Probability) to other JUs by generating a J3.0 Reference Point message.",
+          "evidence_refs": [
+            "EC-G-001",
+            "EC-G-002",
+            "EC-G-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001",
+        "EC-G-002",
+        "EC-G-004"
+      ]
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The C2 JU wants to define and report reference points, lines, and geometric areas (including Areas of Probability) to other JUs by generating J3.0 Reference Point messages that describe the required shapes for tactical information exchange.",
+          "evidence_refs": [
+            "EC-G-001",
+            "EC-G-002",
+            "EC-G-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001",
+        "EC-G-002",
+        "EC-G-004"
+      ],
+      "scope_contract": {
+        "goal_statement": "The C2 JU wants to define and report reference points, lines, and geometric areas (including Areas of Probability) to other JUs by generating J3.0 Reference Point messages that describe the required shapes for tactical information exchange.",
+        "canonical_success_scenario": "A C2 JU creates and transmits a J3.0 Reference Point message that defines a reference point, line, or geometric area using the appropriate shape description, making it available to other JUs for tactical information exchange/surveillance.",
+        "start_boundary": "The C2 JU is ready to define a reference point or geometric area and has the location/shape information needed to construct the J3.0 Reference Point message.",
+        "success_boundary": "The J3.0 Reference Point message defining/reporting the requested point, line, or area has been transmitted to the intended JUs; force-tell alert activation and other follow-on alert-management actions are not part of this use case.",
+        "in_scope_actions": [
+          "Define geographic reference points (e.g., waypoints, Combat Air Patrol stations, Forward Edge of the Battle Area)",
+          "Define lines (e.g., FEBA, roads)",
+          "Define geometric areas (e.g., search areas, exercise areas, Areas of Probability)",
+          "Describe supported shapes in the J3.0 Reference Point message (segmented lines, multisided areas, squares, rectangles, circles, ellipses)",
+          "Report/exchange the defined entities among JUs via the J3.0 Reference Point message"
+        ],
+        "excluded_adjacent_actions": [
+          "Initiating or terminating force tell alerts on reference points, lines, areas, or tracks",
+          "Generating or maintaining track numbers",
+          "Downstream surveillance processing after the J3.0 message is exchanged"
+        ],
+        "variant_dimensions": [
+          "J3.0 entity category: Reference Point, Emergency Point, Land/Ground Point, line, area, volume (e.g., corridor)",
+          "Geometric shape: segmented line, multisided area, square, rectangle, circle, ellipse",
+          "Area of Probability (AOP) data basis: organic data, LOB exchange, EW fix data, or combination"
+        ],
+        "evidence_refs": [
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-004"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal",
+          "goal-define-report-reference-entities",
+          "goal-geometric-shape-description",
+          "goal-aop",
+          "goal-geometric-description"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a JU attempts to report lines or areas using any message type other than J3.0, the action is not permitted because the capability to transmit such geometric entities is restricted to the J3.0 message type.",
+          "evidence_refs": [
+            "EC-EF-000"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If a reporting JU changes data concerning any point comprising a portion of a segmented line or multisided area, the JU must transmit the entire line or area; receiving units shall purge the previously held segmented line or multisided area and replace it with the new report.",
+          "evidence_refs": [
+            "EC-EF-001"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If an ASW Area of Probability (AOP) is reported in a J3.0 message with Point Type = 7 and Point Amplification = 12, slaving of the AOP is not permitted.",
+          "evidence_refs": [
+            "EC-EF-016"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If a JU reports a line or an irregular multisided area (i.e., a shape other than a square, rectangle, circle, or ellipse), slaving of that entity is not permitted.",
+          "evidence_refs": [
+            "EC-EF-017"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If a unit attempts to assume reporting responsibility for another unit's J3.7 EW Fix, AOP, or LOB report, the assumption of responsibility is illegal and must not be performed.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "If a JU attempts to change a reference or emergency point to any other type of surveillance entity, the change is illegal; the Reference TN used to identify a reference or emergency point shall not be used for any other type of entity reported on the interface except in the normal course of TN reuse.",
+          "evidence_refs": [
+            "EC-EF-014"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "If a JU attempts to change the Point Type and/or Point Amplification value of a reference point while retaining the same Reference TN, the change is illegal and must not be performed; however, a Point Amplification value of No Statement may be changed to a non-No Statement value.",
+          "evidence_refs": [
+            "EC-EF-009",
+            "EC-EF-015"
+          ],
+          "step_number": 7
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-000",
+        "EC-EF-001",
+        "EC-EF-016",
+        "EC-EF-017",
+        "EC-EF-005",
+        "EC-EF-014",
+        "EC-EF-009",
+        "EC-EF-015"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "exception_flow",
+          "exception-line-area-message-type-restriction",
+          "exception-segmented-line-area-full-update",
+          "exception-asw-aop-no-slaving",
+          "exception-line-irregular-area-no-slaving",
+          "exception-illegal-aop-responsibility-assumption",
+          "exception-illegal-entity-type-change",
+          "exception-illegal-point-type-amplification-change",
+          "exception-point-amplification-no-statement-allowed",
+          "illegal-entity-type-change",
+          "illegal-attribute-modification",
+          "exception_flow-prohibited-slaving-aop",
+          "exception_flow-prohibited-slaving-lines-areas",
+          "exception_flow-optional-clearance-path",
+          "exception_flow-j3.0-ft-ind-zero",
+          "exception-flow-ballistic-missile-covariance-exclusion"
+        ],
+        "missing_aspects": [
+          "Exact main-flow step numbers for each exception branch cannot be verified because the main_flow slot was not provided.",
+          "The system response to an invalid message type (e.g., rejection/error message) is not specified in the evidence; only the restriction to J3.0 is stated.",
+          "Recovery/continuation steps after rejected or prevented actions are not documented in the evidence cards."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The J3.0 Reference Point message defining the point, line, or area has been transmitted, and the receiving JUs have the defined entity available for tactical information exchange and surveillance processing.",
+          "evidence_refs": [
+            "EC-PO-007"
+          ]
+        },
+        {
+          "content": "The defined point, line, or area is identified by Reference TN(s) assigned by the reporting JU and is reported using geodetic latitude/longitude values.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ]
+        },
+        {
+          "content": "When the J3.0 message defines a segmented line or multisided area, receiving JUs purge any previously held segmented line or multisided area and replace it with the new report.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-PO-002"
+          ]
+        },
+        {
+          "content": "When the defined area is a square, rectangle, circle, or ellipse, the J3.0I word contains Point/Line/Area Descriptor = 1 (Single Point Area), and the Square/Circle Switch field indicates whether the shape is interpreted as square/circle (value 1) or circle/ellipse (value 2).",
+          "evidence_refs": [
+            "EC-PO-004"
+          ]
+        },
+        {
+          "content": "The reporting JU, as the latest unit to report the entity, has R² for the defined point, line, or area.",
+          "evidence_refs": [
+            "EC-PO-005",
+            "EC-PO-006"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-007",
+        "EC-PO-001",
+        "EC-PO-000",
+        "EC-PO-002",
+        "EC-PO-004",
+        "EC-PO-005",
+        "EC-PO-006"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postcondition-transmission-and-availability",
+          "postcondition-entity-identification",
+          "postcondition-segmented-line-area-replacement",
+          "postcondition-regular-shape-descriptor",
+          "postcondition-reporting-responsibility",
+          "postconditions-data-replacement",
+          "postconditions-entity-assignment",
+          "postconditions-receiving-unit-state-update",
+          "postconditions-reference-tn-persistence-rule",
+          "postconditions-geometric-area-field-constraints",
+          "postconditions-r2-retention-by-originator",
+          "postconditions-r2-transfer-on-inactivity-or-act-zero",
+          "postconditions-latest-iu-holds-r2",
+          "postconditions-entity-available-for-tactical-use",
+          "postconditions-temporal-consistency-across-segments",
+          "postconditions-alert-acceptance-by-receiving-jus",
+          "postconditions-ft-ind-database-update-for-segmented-lines-areas"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1 (create the J3.0 Reference Point message): the C2 JU may use the J3.0 message to define a line (e.g., FEBA or road), an area (e.g., search area or exercise area), or a volume (e.g., corridor), and transmit the defined geometry to other JUs.",
+          "evidence_refs": [
+            "EC-AF-005"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 1 (create the J3.0 Reference Point message): for any Point Type/Point Amplification combination other than Point Type = 6 with Point Amplification = 3 or 4, the C2 JU sets the Exercise Indicator field to 0 in the J3.0 message.",
+          "evidence_refs": [
+            "EC-AF-003"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 1 (create the J3.0 Reference Point message): when a previously reported fix is converted into an Area of Probability (AOP), the C2 JU uses the Track Number of that fix as the TN for the new AOP rather than assigning a new TN.",
+          "evidence_refs": [
+            "EC-AF-004"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 3: when a reporting JU changes data for any point that is part of a segmented line or multisided area, the reporting JU transmits the entire line/area; receiving units purge the previously held line/area and replace it with the new report.",
+          "evidence_refs": [
+            "EC-AF-017"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges from Step 3 (transmit the J3.0 Reference Point message): for every report of a segmented line or multisided area, including a change of reporting responsibility (R²), the TNs used to initiate the line/area are transmitted.",
+          "evidence_refs": [
+            "EC-AF-018"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Diverges from Step 1 (create the J3.0 Reference Point message): for a segmented line or multisided area, the Reference TN of the first J3.0 message with Line/Area Continuation Indicator set to 0 is used as the only legal identifier for subsequent references; the identifier may be used differently only for dropping the line/area, setting/clearing the Force Tell Indicator, or responding to a Data Update Request by TN.",
+          "evidence_refs": [
+            "EC-AF-019"
+          ],
+          "step_number": 6
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-005",
+        "EC-AF-003",
+        "EC-AF-004",
+        "EC-AF-017",
+        "EC-AF-018",
+        "EC-AF-019"
+      ]
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has the location/shape information needed to construct the J3.0 Reference Point message for the point, line, or geometric area it intends to define/report.",
+          "evidence_refs": [
+            "EC-PC-020"
+          ]
+        },
+        {
+          "content": "The C2 JU has the J3.0 Reference Point message type, which supports the description of segmented lines, multisided areas, squares, rectangles, circles, and ellipses; volumes can be described by including maximum and minimum altitude values with those shapes.",
+          "evidence_refs": [
+            "EC-PC-019",
+            "EC-PC-014",
+            "EC-PC-004"
+          ]
+        },
+        {
+          "content": "The reporting JU's system can assign Track Number(s) to the entity and report positions using geodetic latitude/longitude values for any point, line, or area reported on the interface.",
+          "evidence_refs": [
+            "EC-PC-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-020",
+        "EC-PC-019",
+        "EC-PC-014",
+        "EC-PC-004",
+        "EC-PC-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "precondition-location-shape-data-available",
+          "precondition-j3.0-message-type-available",
+          "precondition-j3.0-shape-description-support",
+          "precondition-volume-altitude-support",
+          "precondition-tn-assignment-and-geodetic-reporting",
+          "system_state_prerequisites - J3.0/J3.5 message transmission capability",
+          "data_availability_requirements - default Exercise Indicator value for non-MEZ point types",
+          "data_availability_requirements",
+          "system_state_prerequisites",
+          "actor_readiness_conditions"
+        ],
+        "missing_aspects": [
+          "system_state_prerequisites",
+          "data_availability_requirements",
+          "actor_readiness_conditions"
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU constructs a J3.0 Reference Point message to report a reference point, line, or geometric area (including an Area of Probability), assigning the Reference TN(s) and reporting the position using geodetic latitude/longitude values.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-G-001",
+            "EC-G-004"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The C2 JU describes the reported entity's shape in the J3.0 message using the appropriate supported shape description: a segmented line, multisided area, square, rectangle, circle, or ellipse.",
+          "evidence_refs": [
+            "EC-PC-014",
+            "EC-G-002"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The C2 JU transmits the completed J3.0 Reference Point message to other JUs via the interface.",
+          "evidence_refs": [
+            "EC-MF-007",
+            "EC-MF-003"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "All receiving JUs accept the reference data upon receipt of the J3.0 Reference Point message.",
+          "evidence_refs": [
+            "EC-MF-008"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The defined entity is available at the receiving JUs for tactical information exchange and surveillance processing.",
+          "evidence_refs": [
+            "EC-PO-007"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-G-001",
+        "EC-G-004",
+        "EC-PC-014",
+        "EC-G-002",
+        "EC-MF-007",
+        "EC-MF-003",
+        "EC-MF-008",
+        "EC-PO-007"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-construct-j3.0-message",
+          "MF-assign-tn-geodetic-position",
+          "MF-shape-description",
+          "MF-transmit",
+          "MF-receiver-acceptance",
+          "MF-entity-available",
+          "main_flow-j3.0-message-construction",
+          "main_flow-point-line-area-definition",
+          "main_flow-segmented-line-multisided-area-handling",
+          "main_flow-regular-shape-definition",
+          "main_flow-message-transmission",
+          "main_flow-transmission-of-act-zero-for-multi-tn-entities",
+          "main_flow-prohibition-of-act-zero-on-active-iu-transition",
+          "main_flow-r2-assumption-upon-non-purge-after-act-zero",
+          "main_flow-transmission-of-j3.0",
+          "main_flow-receiving-unit-acceptance"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "trigger",
+        "alternative_flow"
+      ],
+      "inconsistency_hints": [
+        "The trigger describes a force-tell alert action ('JU with R² initiates a force tell alert ... by setting FT IND'), but the use case goal and success boundary explicitly exclude force-tell alert activation, and the main flow is the different scenario of constructing and transmitting a J3.0 Reference Point message to define/report a point, line, or area. Main Flow step 1 does not continue from the force-tell initiation; it starts a definition/reporting flow with no FT IND/alert step, so the vertical flow breaks at the trigger.",
+        "Alternative flow claim 4 references 'Step 2 (transmit the J3.0 Reference Point message)' as its divergence point, but main_flow Step 2 is the shape-description step; the actual transmit step is main_flow Step 3. The branch is attached to the wrong main-flow step.",
+        "Alternative flow claim 5 also references 'Step 2 (transmit the J3.0 Reference Point message)' as its divergence point, but main_flow Step 2 is about shape description; transmission is main_flow Step 3. The divergence point is therefore misaligned with the main flow."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 115,
+    "cross_page_cards": 2,
+    "modalities": {
+      "text": 115
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 4287.537,
+    "llm_calls": 45,
+    "llm_seconds": 3443.652,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 783.867,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 97,
+    "judge_calls": 0,
+    "cards_collected": 115,
+    "cards_referenced": 33
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The use case is triggered when the C2 JU needs to define and report a reference point, line, or geometric area (including an Area of Probability) to other JUs by generating a J3.0 Reference Point message.",
+            "evidence_refs": [
+              "EC-G-001",
+              "EC-G-002",
+              "EC-G-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-PC-021",
+          "EC-PC-022",
+          "EC-PC-023",
+          "EC-PC-024",
+          "EC-PC-025",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU wants to define and report reference points, lines, and geometric areas (including Areas of Probability) to other JUs by generating J3.0 Reference Point messages that describe the required shapes for tactical information exchange.",
+            "evidence_refs": [
+              "EC-G-001",
+              "EC-G-002",
+              "EC-G-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "If a JU attempts to report lines or areas using any message type other than J3.0, the action is not permitted because the capability to transmit such geometric entities is restricted to the J3.0 message type.",
+            "evidence_refs": [
+              "EC-EF-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If a reporting JU changes data concerning any point comprising a portion of a segmented line or multisided area, the JU must transmit the entire line or area; receiving units shall purge the previously held segmented line or multisided area and replace it with the new report.",
+            "evidence_refs": [
+              "EC-EF-001"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If an ASW Area of Probability (AOP) is reported in a J3.0 message with Point Type = 7 and Point Amplification = 12, slaving of the AOP is not permitted.",
+            "evidence_refs": [
+              "EC-EF-016"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If a JU reports a line or an irregular multisided area (i.e., a shape other than a square, rectangle, circle, or ellipse), slaving of that entity is not permitted.",
+            "evidence_refs": [
+              "EC-EF-017"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If a unit attempts to assume reporting responsibility for another unit's J3.7 EW Fix, AOP, or LOB report, the assumption of responsibility is illegal and must not be performed.",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "If a JU attempts to change a reference or emergency point to any other type of surveillance entity, the change is illegal; the Reference TN used to identify a reference or emergency point shall not be used for any other type of entity reported on the interface except in the normal course of TN reuse.",
+            "evidence_refs": [
+              "EC-EF-014"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "If a JU attempts to change the Point Type and/or Point Amplification value of a reference point while retaining the same Reference TN, the change is illegal and must not be performed; however, a Point Amplification value of No Statement may be changed to a non-No Statement value.",
+            "evidence_refs": [
+              "EC-EF-009",
+              "EC-EF-015"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The J3.0 Reference Point message defining the point, line, or area has been transmitted, and the receiving JUs have the defined entity available for tactical information exchange and surveillance processing.",
+            "evidence_refs": [
+              "EC-PO-007"
+            ]
+          },
+          {
+            "content": "The defined point, line, or area is identified by Reference TN(s) assigned by the reporting JU and is reported using geodetic latitude/longitude values.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "When the J3.0 message defines a segmented line or multisided area, receiving JUs purge any previously held segmented line or multisided area and replace it with the new report.",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-PO-002"
+            ]
+          },
+          {
+            "content": "When the defined area is a square, rectangle, circle, or ellipse, the J3.0I word contains Point/Line/Area Descriptor = 1 (Single Point Area), and the Square/Circle Switch field indicates whether the shape is interpreted as square/circle (value 1) or circle/ellipse (value 2).",
+            "evidence_refs": [
+              "EC-PO-004"
+            ]
+          },
+          {
+            "content": "The reporting JU, as the latest unit to report the entity, has R² for the defined point, line, or area.",
+            "evidence_refs": [
+              "EC-PO-005",
+              "EC-PO-006"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 1 (create the J3.0 Reference Point message): the C2 JU may use the J3.0 message to define a line (e.g., FEBA or road), an area (e.g., search area or exercise area), or a volume (e.g., corridor), and transmit the defined geometry to other JUs.",
+            "evidence_refs": [
+              "EC-AF-005"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1 (create the J3.0 Reference Point message): for any Point Type/Point Amplification combination other than Point Type = 6 with Point Amplification = 3 or 4, the C2 JU sets the Exercise Indicator field to 0 in the J3.0 message.",
+            "evidence_refs": [
+              "EC-AF-003"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 1 (create the J3.0 Reference Point message): when a previously reported fix is converted into an Area of Probability (AOP), the C2 JU uses the Track Number of that fix as the TN for the new AOP rather than assigning a new TN.",
+            "evidence_refs": [
+              "EC-AF-004"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 3: when a reporting JU changes data for any point that is part of a segmented line or multisided area, the reporting JU transmits the entire line/area; receiving units purge the previously held line/area and replace it with the new report.",
+            "evidence_refs": [
+              "EC-AF-017"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 3 (transmit the J3.0 Reference Point message): for every report of a segmented line or multisided area, including a change of reporting responsibility (R²), the TNs used to initiate the line/area are transmitted.",
+            "evidence_refs": [
+              "EC-AF-018"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges from Step 1 (create the J3.0 Reference Point message): for a segmented line or multisided area, the Reference TN of the first J3.0 message with Line/Area Continuation Indicator set to 0 is used as the only legal identifier for subsequent references; the identifier may be used differently only for dropping the line/area, setting/clearing the Force Tell Indicator, or responding to a Data Update Request by TN.",
+            "evidence_refs": [
+              "EC-AF-019"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-PC-021",
+          "EC-PC-022",
+          "EC-PC-023",
+          "EC-PC-024",
+          "EC-PC-025",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU has the location/shape information needed to construct the J3.0 Reference Point message for the point, line, or geometric area it intends to define/report.",
+            "evidence_refs": [
+              "EC-PC-020"
+            ]
+          },
+          {
+            "content": "The C2 JU has the J3.0 Reference Point message type, which supports the description of segmented lines, multisided areas, squares, rectangles, circles, and ellipses; volumes can be described by including maximum and minimum altitude values with those shapes.",
+            "evidence_refs": [
+              "EC-PC-019",
+              "EC-PC-014",
+              "EC-PC-004"
+            ]
+          },
+          {
+            "content": "The reporting JU's system can assign Track Number(s) to the entity and report positions using geodetic latitude/longitude values for any point, line, or area reported on the interface.",
+            "evidence_refs": [
+              "EC-PC-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-PC-021",
+          "EC-PC-022",
+          "EC-PC-023",
+          "EC-PC-024",
+          "EC-PC-025",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU constructs a J3.0 Reference Point message to report a reference point, line, or geometric area (including an Area of Probability), assigning the Reference TN(s) and reporting the position using geodetic latitude/longitude values.",
+            "evidence_refs": [
+              "EC-MF-000",
+              "EC-G-001",
+              "EC-G-004"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU describes the reported entity's shape in the J3.0 message using the appropriate supported shape description: a segmented line, multisided area, square, rectangle, circle, or ellipse.",
+            "evidence_refs": [
+              "EC-PC-014",
+              "EC-G-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The C2 JU transmits the completed J3.0 Reference Point message to other JUs via the interface.",
+            "evidence_refs": [
+              "EC-MF-007",
+              "EC-MF-003"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "All receiving JUs accept the reference data upon receipt of the J3.0 Reference Point message.",
+            "evidence_refs": [
+              "EC-MF-008"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The defined entity is available at the receiving JUs for tactical information exchange and surveillance processing.",
+            "evidence_refs": [
+              "EC-PO-007"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-PC-021",
+          "EC-PC-022",
+          "EC-PC-023",
+          "EC-PC-024",
+          "EC-PC-025",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=13]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=13]",
+    "directory": "random_order/seed_013",
+    "seed": 13,
+    "slot_order": [
+      "trigger",
+      "goal",
+      "exception_flow",
+      "postconditions",
+      "primary_actor",
+      "alternative_flow",
+      "preconditions",
+      "main_flow"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "a5c9990eb79f44a8accd4d76c58639b3"
+}

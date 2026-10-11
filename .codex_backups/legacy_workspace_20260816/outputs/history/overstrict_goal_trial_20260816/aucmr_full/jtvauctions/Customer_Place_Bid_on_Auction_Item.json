@@ -1,0 +1,968 @@
+{
+  "use_case_name": "Place Bid on Auction Item",
+  "actor": "Customer",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "Customer places a bid on an auction item.",
+          "evidence_refs": [
+            "EC-G-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "Customer places a bid on an auction item.",
+        "canonical_success_scenario": "While viewing an auction item, the Customer submits a bid for that item and the bid is successfully placed.",
+        "start_boundary": "The Customer has identified a specific auction item and decides to place a bid.",
+        "success_boundary": "The Customer's bid has been placed on the auction item.",
+        "in_scope_actions": [
+          "Place a bid on an auction item"
+        ],
+        "excluded_adjacent_actions": [
+          "Building or operating the auction platform",
+          "Payment or checkout after winning the auction",
+          "Post-auction second-chance offers",
+          "Admin or batch processing",
+          "Viewing bid or item history"
+        ],
+        "variant_dimensions": [],
+        "evidence_refs": [
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Customer is signed in and has provided the required minimum information required to bid.",
+          "evidence_refs": [
+            "EC-PC-000",
+            "EC-PC-001"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer has agreed to be bound by the Terms of Use Agreement.",
+          "evidence_refs": [
+            "EC-PC-002"
+          ]
+        },
+        {
+          "content": "The Customer has no unresolved (unpaid) auction winnings older than 7 days.",
+          "evidence_refs": [
+            "EC-PC-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000",
+        "EC-PC-001",
+        "EC-PC-002",
+        "EC-PC-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "sign-in-and-minimum-info",
+          "terms-accepted",
+          "no-overdue-unpaid-winnings"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Customer selects a bid amount from the 'Your SmartBid' dropdown and clicks the 'Place SmartBid' button for the auction item.",
+          "evidence_refs": [
+            "EC-TR-002",
+            "EC-MF-003"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-002",
+        "EC-MF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Customer selects a bid amount from the 'Your SmartBid' dropdown and clicks the 'Place SmartBid' button for the auction item.",
+          "evidence_refs": [
+            "EC-MF-003",
+            "EC-TR-002"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system displays a confirmation popup asking if the chosen bid is correct and identifying the credit card to be used.",
+          "evidence_refs": [
+            "EC-MF-004"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer confirms the bid by clicking the 'Yes, Place SmartBid' button in the confirmation popup.",
+          "evidence_refs": [
+            "EC-MF-005"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "After the Customer confirms the bid, the system places the SmartBid and keeps the Customer on the product details page.",
+          "evidence_refs": [
+            "EC-MF-005",
+            "EC-PO-001"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-003",
+        "EC-TR-002",
+        "EC-MF-004",
+        "EC-MF-005",
+        "EC-PO-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: The Customer clicks the 'QuickBid Now' button to place a bid immediately without selecting a specific amount from a dropdown.",
+          "evidence_refs": [
+            "EC-AF-009",
+            "EC-TR-002"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 1: Instead of using the 'Your SmartBid' dropdown, the Customer selects a bid amount from the 'Single Bid' dropdown and clicks the 'Place Single Bid' button to submit the bid.",
+          "evidence_refs": [
+            "EC-TR-002"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-009",
+        "EC-TR-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-alternative-quickbid",
+          "AF-alternative-singlebid"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At main flow Step 1, if the Customer has unresolved (unpaid) auction winnings older than 7 days (168 hours), the system cancels the unpaid order and prevents the Customer from placing new bids. Exit: no bid is placed; the use case terminates.",
+          "evidence_refs": [
+            "EC-EF-010",
+            "EC-EF-028"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At main flow Step 1, if the Customer has not signed in within the past 3 months and has not completed an auction purchase within that period, the system sends an authorization request (\"ping\") to the card on file to validate the card before allowing the Customer to bid. If validation fails because the card on file is expired, the system prompts the Customer to enter a new credit card; if the Customer chooses 'Yes, Update Now', the system takes the Customer to My Account Edit page 3. If the Customer chooses 'No', the system returns the Customer to the home page and grays out the current page.",
+          "evidence_refs": [
+            "EC-EF-024",
+            "EC-EF-031",
+            "EC-EF-032",
+            "EC-EF-022"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "At main flow Step 1, if the Customer's account is closed or suspended, the system displays a popup: \"We're sorry, this account has been closed [suspended]. If you believe this is an error, please call or email Customer Care at (800) 123-4567 or Auctions@jtv.com.\" The system will not allow sign-in.",
+          "evidence_refs": [
+            "EC-EF-021",
+            "EC-EF-014"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "At main flow Step 1, after a sign-in interruption, if the Customer has the required minimum information to bid, the system returns the Customer to the product details page of the item they initially tried to bid on. If the Customer has not provided the required minimum information to bid, the system returns the Customer to the product details page of the item they initially tried to bid on.",
+          "evidence_refs": [
+            "EC-EF-003",
+            "EC-EF-020"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "At main flow Step 2, if the default payment method is an expired credit card on file, the system displays a prompt asking whether to update the card now. If the Customer chooses \"Yes, update now\", the system takes the Customer to My Account Edit page 3 to update the card; if the Customer chooses \"No\", the system returns the Customer to the home page and grays out the current page. Exit: the bid is not completed; the use case terminates or hands off to the card-update flow.",
+          "evidence_refs": [
+            "EC-EF-016",
+            "EC-EF-022"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "At alternative flow Step 1 (QuickBid), if the Customer is not signed in when clicking the QuickBid button, the system prompts the Customer to sign in and then returns the Customer to the catalog page. Exit: no bid is placed; the use case terminates.",
+          "evidence_refs": [
+            "EC-EF-000"
+          ],
+          "step_number": 6
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-010",
+        "EC-EF-028",
+        "EC-EF-024",
+        "EC-EF-031",
+        "EC-EF-032",
+        "EC-EF-022",
+        "EC-EF-021",
+        "EC-EF-014",
+        "EC-EF-003",
+        "EC-EF-020",
+        "EC-EF-016",
+        "EC-EF-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [],
+        "missing_aspects": [
+          "Evidence does not explicitly state that the bid is blocked or the use case terminates if the card validation fails or is not updated.",
+          "Evidence does not explicitly state that the use case terminates or that no bid is placed as a direct result of this specific popup message.",
+          "Evidence does not explicitly state that no bid is placed or that the use case terminates/exits upon return to the product details page."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The Customer's bid has been placed on the auction item.",
+          "evidence_refs": [
+            "EC-G-001",
+            "EC-PO-001"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The system keeps the Customer on the product details page for the auction item.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001",
+        "EC-PO-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "bid-placed",
+          "remains-on-product-details-page"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The trigger and main flow assume a credit card is on file: after the Customer clicks 'Place SmartBid', the system confirmation popup identifies the credit card to be used. Preconditions only state that the Customer is signed in, has provided minimum required information, has agreed to Terms, and has no overdue unpaid winnings; no precondition establishes that a valid credit card/payment method exists before the bid is placed.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 2 describes a card-validation failure but lacks a clear exit outcome. If validation fails because the card is expired, the Customer is prompted to update; choosing Yes goes to My Account Edit page 3, and choosing No returns to the home page and grays out the current page. Neither branch explicitly states that the bid is blocked, that no bid is placed, or that the use case terminates/hands off.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 4 says that after a sign-in interruption the system returns the Customer to the product details page in both the has-info and lacks-info cases, but it does not state whether the bid is placed, the use case terminates, or the Customer resumes at a specific main flow step. Returning to the product details page is a page/precondition, not a clear Main Flow step or terminal failure state.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "trigger",
+        "exception_flow",
+        "main_flow"
+      ],
+      "inconsistency_hints": [
+        "The Trigger lists multiple bid action buttons ('QuickBid Now', 'Place SmartBid', or 'Place Single Bid'), but Main Flow Step 1 only continues the 'Place SmartBid' path. A Customer who triggers the use case via QuickBid Now or Place Single Bid has no corresponding main flow, creating a real continuity gap.",
+        "Exception flow claim at index 1 (3-month card validation) explicitly leaves the validation-failure path undocumented: 'if validation fails, the outcome is undocumented.' Rule 4 requires every exception branch to end in a clear outcome (return to a main-flow step, terminate/hand off, or explicit terminal failure/prevention state), so this branch lacks required exit coverage.",
+        "Exception flow claim at index 3 (sign-in interruption) only documents the outcome when the Customer has the required minimum information; it explicitly states 'if the required minimum information is missing, the outcome is undocumented.' The missing-information sub-branch therefore has no clear terminal/return/hand-off outcome.",
+        "The main flow ends with the customer remaining on the product details page after confirming the bid, but it never includes a system step that actually places/records the bid. Therefore the postcondition 'The Customer's bid has been placed on the auction item' is not demonstrably reached by the main flow."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 72,
+    "cross_page_cards": 15,
+    "modalities": {
+      "text": 60,
+      "table": 2,
+      "diagram": 10
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 3134.825,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 552.715,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 86.0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 2567.903,
+    "llm_calls": 35.0,
+    "judge_calls": 0,
+    "cards_collected": 69,
+    "cards_referenced": 21,
+    "dra_elapsed_seconds": 1087.485,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_seconds": 69.062,
+    "dra_llm_retry_calls": 0,
+    "dra_lvlm_calls": 8,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_seconds": 1017.731,
+    "dra_llm_calls": 11,
+    "dra_judge_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Customer places a bid on an auction item.",
+            "evidence_refs": [
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer is signed in and has provided the required minimum information required to bid.",
+            "evidence_refs": [
+              "EC-PC-000",
+              "EC-PC-001"
+            ]
+          },
+          {
+            "content": "The Customer has agreed to be bound by the Terms of Use Agreement.",
+            "evidence_refs": [
+              "EC-PC-002"
+            ]
+          },
+          {
+            "content": "The Customer has no unresolved (unpaid) auction winnings older than 7 days.",
+            "evidence_refs": [
+              "EC-PC-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer selects a bid amount from the 'Your SmartBid' dropdown and clicks the 'Place SmartBid' button for the auction item.",
+            "evidence_refs": [
+              "EC-TR-002",
+              "EC-MF-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer selects a bid amount from the 'Your SmartBid' dropdown and clicks the 'Place SmartBid' button for the auction item.",
+            "evidence_refs": [
+              "EC-MF-003",
+              "EC-TR-002"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system displays a confirmation popup asking if the chosen bid is correct and identifying the credit card to be used.",
+            "evidence_refs": [
+              "EC-MF-004"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Customer confirms the bid by clicking the 'Yes, Place SmartBid' button in the confirmation popup.",
+            "evidence_refs": [
+              "EC-MF-005"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "After the Customer confirms the bid, the system places the SmartBid and keeps the Customer on the product details page.",
+            "evidence_refs": [
+              "EC-MF-005",
+              "EC-PO-001"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: The Customer clicks the 'QuickBid Now' button to place a bid immediately without selecting a specific amount from a dropdown.",
+            "evidence_refs": [
+              "EC-AF-009",
+              "EC-TR-002"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: Instead of using the 'Your SmartBid' dropdown, the Customer selects a bid amount from the 'Single Bid' dropdown and clicks the 'Place Single Bid' button to submit the bid.",
+            "evidence_refs": [
+              "EC-TR-002"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "At main flow Step 1, if the Customer has unresolved (unpaid) auction winnings older than 7 days (168 hours), the system cancels the unpaid order and prevents the Customer from placing new bids. Exit: no bid is placed; the use case terminates.",
+            "evidence_refs": [
+              "EC-EF-010",
+              "EC-EF-028"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At main flow Step 1, if the Customer has not signed in within the past 3 months and has not completed an auction purchase within that period, the system sends an authorization request (\"ping\") to the card on file to validate the card before allowing the Customer to bid. If validation fails because the card on file is expired, the system prompts the Customer to enter a new credit card; if the Customer chooses 'Yes, Update Now', the system takes the Customer to My Account Edit page 3. If the Customer chooses 'No', the system returns the Customer to the home page and grays out the current page.",
+            "evidence_refs": [
+              "EC-EF-024",
+              "EC-EF-031",
+              "EC-EF-032",
+              "EC-EF-022"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "At main flow Step 1, if the Customer's account is closed or suspended, the system displays a popup: \"We're sorry, this account has been closed [suspended]. If you believe this is an error, please call or email Customer Care at (800) 123-4567 or Auctions@jtv.com.\" The system will not allow sign-in.",
+            "evidence_refs": [
+              "EC-EF-021",
+              "EC-EF-014"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "At main flow Step 1, after a sign-in interruption, if the Customer has the required minimum information to bid, the system returns the Customer to the product details page of the item they initially tried to bid on. If the Customer has not provided the required minimum information to bid, the system returns the Customer to the product details page of the item they initially tried to bid on.",
+            "evidence_refs": [
+              "EC-EF-003",
+              "EC-EF-020"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "At main flow Step 2, if the default payment method is an expired credit card on file, the system displays a prompt asking whether to update the card now. If the Customer chooses \"Yes, update now\", the system takes the Customer to My Account Edit page 3 to update the card; if the Customer chooses \"No\", the system returns the Customer to the home page and grays out the current page. Exit: the bid is not completed; the use case terminates or hands off to the card-update flow.",
+            "evidence_refs": [
+              "EC-EF-016",
+              "EC-EF-022"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "At alternative flow Step 1 (QuickBid), if the Customer is not signed in when clicking the QuickBid button, the system prompts the Customer to sign in and then returns the Customer to the catalog page. Exit: no bid is placed; the use case terminates.",
+            "evidence_refs": [
+              "EC-EF-000"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer's bid has been placed on the auction item.",
+            "evidence_refs": [
+              "EC-G-001",
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "The system keeps the Customer on the product details page for the auction item.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-semantic-multimodal-grounding-v2",
+  "artifact_revision_id": "523a4b06043f4ca29934c428d55a2674"
+}

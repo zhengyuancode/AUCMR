@@ -1,0 +1,561 @@
+{
+  "use_case_name": "Terminate and Purge Surveillance Tracks",
+  "actor": "C2 JU",
+  "method": "ReAct-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The C2 JU terminates surveillance track reporting by transmitting drop track report messages and purges remote tracks that have not been updated within a specified time interval.",
+          "evidence_refs": [
+            "P53",
+            "P10"
+          ]
+        }
+      ],
+      "raw_text": "The C2 JU terminates surveillance track reporting by transmitting drop track report messages and purges remote tracks that have not been updated within a specified time interval.",
+      "evidence_card_ids": [
+        "P53",
+        "P10"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has surveillance tracks that need to be terminated or purged.",
+          "evidence_refs": [
+            "P87",
+            "P53",
+            "P10",
+            "P82"
+          ]
+        },
+        {
+          "content": "For terminating own tracks, the C2 JU currently has R² (reporting responsibility) for the track.",
+          "evidence_refs": [
+            "P53",
+            "P82"
+          ]
+        },
+        {
+          "content": "The track is no longer valid or time-related update requirements are not met (for EW surveillance data).",
+          "evidence_refs": [
+            "P87"
+          ]
+        },
+        {
+          "content": "For purging remote tracks, a specified time interval has elapsed since the track's last report.",
+          "evidence_refs": [
+            "P10",
+            "P82"
+          ]
+        },
+        {
+          "content": "The system has not received a J7.0 (ACT=0) message for the remote track being purged.",
+          "evidence_refs": [
+            "P53",
+            "P82"
+          ]
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P87",
+        "P53",
+        "P10",
+        "P82"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU initiates the termination and purge of surveillance tracks when it ceases reporting a track for which it has reporting responsibility (R²), when the track information is no longer valid or time-related update requirements are not met, or when a specified time interval has elapsed since a remote track's last report without receiving a drop track message.",
+          "evidence_refs": [
+            "P82",
+            "P53",
+            "P87",
+            "P10"
+          ]
+        }
+      ],
+      "raw_text": "The C2 JU initiates the termination and purge of surveillance tracks when it ceases reporting a track for which it has reporting responsibility (R²), when the track information is no longer valid or time-related update requirements are not met, or when a specified time interval has elapsed since a remote track's last report without receiving a drop track message.",
+      "evidence_card_ids": [
+        "P82",
+        "P53",
+        "P87",
+        "P10"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "When the C2 JU ceases reporting a surveillance track for which it currently has reporting responsibility (R²), it transmits a J7.0 (ACT = 0) Drop Track Report message, except when relinquishing R² to another JU or when the track becomes an Active IU on the network with the same TN.",
+          "evidence_refs": [
+            "P53"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "For Electronic Warfare surveillance data, when the information is no longer valid or time-related update requirements are not met, the C2 JU terminates transmission and may purge the information in accordance with system design.",
+          "evidence_refs": [
+            "P87"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "When a JU drops or ceases reporting EW information that it has been reporting on the interface, it transmits a J7.0 (ACT = 0) message; this message is not transmitted for remote reports.",
+          "evidence_refs": [
+            "P87"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The C2 JU automatically purges remote tracks/points after a specified time interval has elapsed since the track's/point's last report, without transmitting a J7.0 (ACT = 0) message for the purged remote track.",
+          "evidence_refs": [
+            "P10"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "For ballistic missile tracks, the C2 JU transmits a J7.0 message with Track Management Action field set to value 0 (Drop Track Report) when ceasing reporting a track for which it has R², except when relinquishing R² to another JU.",
+          "evidence_refs": [
+            "P82"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Remote ballistic missile tracks are automatically purged by the system after a specific time interval if no J7.0 Drop Track Report message is received and no further updates occur; this time interval is a system-selected parameter.",
+          "evidence_refs": [
+            "P82"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P87",
+        "P10",
+        "P82"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "When a JU ceases reporting a track because it has relinquished R² to another JU, it does not transmit a J7.0 (ACT = 0) Drop Track Report message.",
+          "evidence_refs": [
+            "P53"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "When a track becomes an Active IU on the network with the same TN, the JU does not transmit a J7.0 (ACT = 0) Drop Track Report message.",
+          "evidence_refs": [
+            "P53"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If it is desired to change the simulation status of a track due to operator error, the track shall be dropped using the J7.0 (ACT = 0) message and a new track shall be reported, except that a change from live to simulated shall be accepted if the track is being received from an FJU.",
+          "evidence_refs": [
+            "P10"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P10"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "When a JU ceases reporting a track because it has relinquished R² to another JU, it does not transmit a J7.0 (ACT = 0) Drop Track Report message.",
+          "evidence_refs": [
+            "P53"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "When a track becomes an Active IU on the network with the same TN, the JU does not transmit a J7.0 (ACT = 0) Drop Track Report message.",
+          "evidence_refs": [
+            "P53"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If it is desired to change the simulation status of a track due to operator error, the track shall be dropped using the J7.0 (ACT = 0) message and a new track shall be reported, except that a change from live to simulated shall be accepted if the track is being received from an FJU.",
+          "evidence_refs": [
+            "P10"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P10"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has transmitted a J7.0 (ACT = 0) Drop Track Report message for own tracks where reporting responsibility (R²) is ceased, except when R² is relinquished to another JU or the track becomes an Active IU on the network with the same TN.",
+          "evidence_refs": [
+            "P53",
+            "P62",
+            "P82"
+          ]
+        },
+        {
+          "content": "For Electronic Warfare (EW) surveillance data, transmission has been terminated because the information is no longer valid or time-related update requirements are not met, and the information may have been purged in accordance with system design.",
+          "evidence_refs": [
+            "P87"
+          ]
+        },
+        {
+          "content": "A J7.0 (ACT = 0) message has been transmitted by the C2 JU when dropping or ceasing reporting of EW information that it was reporting on the interface; this message is not transmitted for remote reports.",
+          "evidence_refs": [
+            "P87"
+          ]
+        },
+        {
+          "content": "Remote tracks/points have been automatically purged by the system after a specified time interval has elapsed since the track's/point's last report, without transmitting a J7.0 (ACT = 0) message for the purged remote track/point.",
+          "evidence_refs": [
+            "P53",
+            "P62",
+            "P82",
+            "P10"
+          ]
+        },
+        {
+          "content": "For ballistic missile tracks, a J7.0 message with Track Management Action field set to value 0 (Drop Track Report) has been transmitted when ceasing reporting a track for which the C2 JU has R², except when relinquishing R² to another JU.",
+          "evidence_refs": [
+            "P82"
+          ]
+        },
+        {
+          "content": "Remote ballistic missile tracks have been automatically purged by the system after a specific time interval if no J7.0 Drop Track Report message is received and no further updates occur; this time interval is a system-selected parameter.",
+          "evidence_refs": [
+            "P82"
+          ]
+        },
+        {
+          "content": "If a change in simulation status of a track was required due to operator error, the track was dropped using the J7.0 (ACT = 0) message and a new track was reported, except that a change from live to simulated was accepted if the track was being received from an FJU.",
+          "evidence_refs": [
+            "P10"
+          ]
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P62",
+        "P82",
+        "P87",
+        "P10"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "The C2 JU terminates surveillance track reporting by transmitting drop track report messages and purges remote tracks that have not been updated within a specified time interval.",
+            "evidence_refs": [
+              "P53",
+              "P10"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P10",
+          "P87",
+          "P138",
+          "P3"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The C2 JU has surveillance tracks that need to be terminated or purged.",
+            "evidence_refs": [
+              "P87",
+              "P53",
+              "P10",
+              "P82"
+            ]
+          },
+          {
+            "content": "For terminating own tracks, the C2 JU currently has R² (reporting responsibility) for the track.",
+            "evidence_refs": [
+              "P53",
+              "P82"
+            ]
+          },
+          {
+            "content": "The track is no longer valid or time-related update requirements are not met (for EW surveillance data).",
+            "evidence_refs": [
+              "P87"
+            ]
+          },
+          {
+            "content": "For purging remote tracks, a specified time interval has elapsed since the track's last report.",
+            "evidence_refs": [
+              "P10",
+              "P82"
+            ]
+          },
+          {
+            "content": "The system has not received a J7.0 (ACT=0) message for the remote track being purged.",
+            "evidence_refs": [
+              "P53",
+              "P82"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P87",
+          "P53",
+          "P10",
+          "P82",
+          "P8"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The C2 JU initiates the termination and purge of surveillance tracks when it ceases reporting a track for which it has reporting responsibility (R²), when the track information is no longer valid or time-related update requirements are not met, or when a specified time interval has elapsed since a remote track's last report without receiving a drop track message.",
+            "evidence_refs": [
+              "P82",
+              "P53",
+              "P87",
+              "P10"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P82",
+          "P53",
+          "P10",
+          "P87",
+          "P138"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "When the C2 JU ceases reporting a surveillance track for which it currently has reporting responsibility (R²), it transmits a J7.0 (ACT = 0) Drop Track Report message, except when relinquishing R² to another JU or when the track becomes an Active IU on the network with the same TN.",
+            "evidence_refs": [
+              "P53"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "For Electronic Warfare surveillance data, when the information is no longer valid or time-related update requirements are not met, the C2 JU terminates transmission and may purge the information in accordance with system design.",
+            "evidence_refs": [
+              "P87"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "When a JU drops or ceases reporting EW information that it has been reporting on the interface, it transmits a J7.0 (ACT = 0) message; this message is not transmitted for remote reports.",
+            "evidence_refs": [
+              "P87"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The C2 JU automatically purges remote tracks/points after a specified time interval has elapsed since the track's/point's last report, without transmitting a J7.0 (ACT = 0) message for the purged remote track.",
+            "evidence_refs": [
+              "P10"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "For ballistic missile tracks, the C2 JU transmits a J7.0 message with Track Management Action field set to value 0 (Drop Track Report) when ceasing reporting a track for which it has R², except when relinquishing R² to another JU.",
+            "evidence_refs": [
+              "P82"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Remote ballistic missile tracks are automatically purged by the system after a specific time interval if no J7.0 Drop Track Report message is received and no further updates occur; this time interval is a system-selected parameter.",
+            "evidence_refs": [
+              "P82"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P87",
+          "P53",
+          "P82",
+          "P10",
+          "P7"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "When a JU ceases reporting a track because it has relinquished R² to another JU, it does not transmit a J7.0 (ACT = 0) Drop Track Report message.",
+            "evidence_refs": [
+              "P53"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "When a track becomes an Active IU on the network with the same TN, the JU does not transmit a J7.0 (ACT = 0) Drop Track Report message.",
+            "evidence_refs": [
+              "P53"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If it is desired to change the simulation status of a track due to operator error, the track shall be dropped using the J7.0 (ACT = 0) message and a new track shall be reported, except that a change from live to simulated shall be accepted if the track is being received from an FJU.",
+            "evidence_refs": [
+              "P10"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P10",
+          "P87",
+          "P138",
+          "P3"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "When a JU ceases reporting a track because it has relinquished R² to another JU, it does not transmit a J7.0 (ACT = 0) Drop Track Report message.",
+            "evidence_refs": [
+              "P53"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "When a track becomes an Active IU on the network with the same TN, the JU does not transmit a J7.0 (ACT = 0) Drop Track Report message.",
+            "evidence_refs": [
+              "P53"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If it is desired to change the simulation status of a track due to operator error, the track shall be dropped using the J7.0 (ACT = 0) message and a new track shall be reported, except that a change from live to simulated shall be accepted if the track is being received from an FJU.",
+            "evidence_refs": [
+              "P10"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P10",
+          "P87",
+          "P138",
+          "P63"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The C2 JU has transmitted a J7.0 (ACT = 0) Drop Track Report message for own tracks where reporting responsibility (R²) is ceased, except when R² is relinquished to another JU or the track becomes an Active IU on the network with the same TN.",
+            "evidence_refs": [
+              "P53",
+              "P62",
+              "P82"
+            ]
+          },
+          {
+            "content": "For Electronic Warfare (EW) surveillance data, transmission has been terminated because the information is no longer valid or time-related update requirements are not met, and the information may have been purged in accordance with system design.",
+            "evidence_refs": [
+              "P87"
+            ]
+          },
+          {
+            "content": "A J7.0 (ACT = 0) message has been transmitted by the C2 JU when dropping or ceasing reporting of EW information that it was reporting on the interface; this message is not transmitted for remote reports.",
+            "evidence_refs": [
+              "P87"
+            ]
+          },
+          {
+            "content": "Remote tracks/points have been automatically purged by the system after a specified time interval has elapsed since the track's/point's last report, without transmitting a J7.0 (ACT = 0) message for the purged remote track/point.",
+            "evidence_refs": [
+              "P53",
+              "P62",
+              "P82",
+              "P10"
+            ]
+          },
+          {
+            "content": "For ballistic missile tracks, a J7.0 message with Track Management Action field set to value 0 (Drop Track Report) has been transmitted when ceasing reporting a track for which the C2 JU has R², except when relinquishing R² to another JU.",
+            "evidence_refs": [
+              "P82"
+            ]
+          },
+          {
+            "content": "Remote ballistic missile tracks have been automatically purged by the system after a specific time interval if no J7.0 Drop Track Report message is received and no further updates occur; this time interval is a system-selected parameter.",
+            "evidence_refs": [
+              "P82"
+            ]
+          },
+          {
+            "content": "If a change in simulation status of a track was required due to operator error, the track was dropped using the J7.0 (ACT = 0) message and a new track was reported, except that a change from live to simulated was accepted if the track was being received from an FJU.",
+            "evidence_refs": [
+              "P10"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P82",
+          "P62",
+          "P10",
+          "P87"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 91.2
+}

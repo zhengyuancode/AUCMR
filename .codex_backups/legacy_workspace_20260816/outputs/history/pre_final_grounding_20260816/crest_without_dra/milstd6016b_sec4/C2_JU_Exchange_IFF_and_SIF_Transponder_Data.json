@@ -1,0 +1,758 @@
+{
+  "use_case_name": "Exchange IFF and SIF Transponder Data",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "C2 JU wants to exchange IFF and SIF transponder data by resolving differences between its own unit data and remote data according to the IFF/SIF Difference Resolution Matrix.",
+          "evidence_refs": [
+            "EC-G-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "C2 JU wants to exchange IFF and SIF transponder data by resolving differences between its own unit data and remote data according to the IFF/SIF Difference Resolution Matrix.",
+        "canonical_success_scenario": "In one successful instance, C2 JU resolves the IFF/SIF differences between its own unit data and remote data according to the IFF/SIF Difference Resolution Matrix, completing the exchange of the relevant transponder data.",
+        "start_boundary": "C2 JU has own unit data and remote data available for an IFF/SIF transponder data exchange in which differences may need to be resolved.",
+        "success_boundary": "The differences relevant to the exchange have been resolved according to the IFF/SIF Difference Resolution Matrix.",
+        "in_scope_actions": [
+          "Resolving differences between own unit data and remote data",
+          "Applying the IFF/SIF Difference Resolution Matrix",
+          "Exchanging IFF/SIF transponder data"
+        ],
+        "excluded_adjacent_actions": [
+          "Post-exchange interoperability assurance or downstream reporting",
+          "Administrative maintenance or update of the IFF/SIF Difference Resolution Matrix",
+          "Configuration or administration of transponder systems",
+          "Other non-exchange operational processes"
+        ],
+        "variant_dimensions": [
+          "The five functional areas of IFF/SIF modes and codes exchange"
+        ],
+        "evidence_refs": [
+          "EC-G-001",
+          "EC-G-000"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has R² capability and is responsible for reporting IFF/SIF surveillance data.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "An established track exists with associated IFF/SIF data (own unit data and remote data) available for comparison.",
+          "evidence_refs": [
+            "EC-PC-002"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "A remote JU without R² is monitoring the IFF/SIF data and holds data different from the C2 JU's own unit data.",
+          "evidence_refs": [
+            "EC-PC-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000",
+        "EC-PC-002",
+        "EC-PC-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "actor-capability-r2",
+          "track-data-available",
+          "difference-source-remote"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered when a C2 JU operator initiates a J7.5 (ACT=2) IFF/SIF Update Request; when an operator clears IFF/SIF data via J7.5 (ACT=0), transmitted by any JU; when a JU without R² automatically reports a change to its locally held IFF/SIF data via J7.5 (ACT=1); or spontaneously when an R² unit reports No Data (value 0) in a required J3.XC1 IFF/SIF Surveillance report — in each case, C2 JU must resolve the resulting IFF/SIF transponder data difference against its own unit data.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-TR-001",
+            "EC-TR-004",
+            "EC-TR-003"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-TR-001",
+        "EC-TR-004",
+        "EC-TR-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-operator-update-request",
+          "trigger-clear-data",
+          "trigger-automatic-change-report",
+          "trigger-spontaneous-no-data-report"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "A remote JU without R² detects locally entered IFF/SIF data changes (from zero to nonzero or from one nonzero value to another nonzero value) and transmits a J7.5 (ACT=1) Difference Report to the C2 JU.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU receives the J7.5 (ACT=1) Difference Report from the remote JU.",
+          "evidence_refs": [
+            "EC-MF-009",
+            "EC-MF-000"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU compares its locally held IFF/SIF data with the IFF/SIF data reported by the remote JU and reports any valid data that are different.",
+          "evidence_refs": [
+            "EC-MF-008"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Because the received J7.5 (ACT=1) message differs from locally held data, the C2 JU determines and applies the response indicated by Table 4.7-5 IFF/SIF Difference Resolution Matrix.",
+          "evidence_refs": [
+            "EC-MF-009",
+            "EC-MF-001"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU transmits an update via a J7.5 (ACT=2) IFF/SIF Update Request, initiated by operator action.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-MF-009",
+        "EC-MF-008",
+        "EC-MF-001",
+        "EC-MF-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-remote-difference-report",
+          "MF-receive-report",
+          "MF-compare-local-remote",
+          "MF-apply-resolution-matrix",
+          "MF-transmit-update"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2: Instead of receiving a J7.5 (ACT=1) Difference Report, the C2 JU receives a J3 message including a continuation word with remote IFF/SIF data that differs from locally held data; the C2 JU proceeds with the comparison and responds as indicated in Table 4.7-5 IFF/SIF Difference Resolution Matrix.",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 4: When the resolution matrix triggers an IFF/SIF data conflict alert, the operator may manually resolve the difference instead of the C2 JU automatically applying the matrix response, by choosing one of: (1) update local data manually or verify automatic inputs; (2) initiate a J7.5 (ACT=0) Clear IFF/SIF message for any mode; (3) initiate a J7.5 (ACT=1) IFF/SIF Difference Report message for any mode; (4) change local data to agree with remote data (except Mode II code); (5) decorrelate local data from remote data, causing assignment of a new track number; or (6) clear the operator alert for any mode.",
+          "evidence_refs": [
+            "EC-AF-003"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 1: Instead of the remote JU transmitting a J7.5 (ACT=1) Difference Report, the C2 JU (the R² unit) initiates the exchange by transmitting a J3.XC1 message at the next opportunity for new tracks when assuming R² or when its data changes (and also periodically at 1/8 of the basic message rate for realtime tracks and with each NRT track report); the exchange then continues with comparison and resolution of any resulting differences.",
+          "evidence_refs": [
+            "EC-AF-000"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-009",
+        "EC-AF-003",
+        "EC-AF-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "alt-j3-continuation-receipt",
+          "alt-manual-operator-resolution",
+          "alt-proactive-j3xc1-report"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from main flow Step 4: If applying the IFF/SIF Difference Resolution Matrix produces an IFF/SIF data conflict alert, automatic resolution cannot proceed; the operator has six manual actions available to resolve the conflict (as listed in Alternative Flow Step 2). Exit: handoff to Alternative Flow Step 2; after the operator completes the selected action, the flow returns to main flow Step 5.",
+          "evidence_refs": [
+            "EC-EF-001"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from main flow Step 4: If a track with Valid Data subsequently fails to respond to interrogations, the C2 JU shall not change the track's IFF/SIF data status to No Data during difference resolution; a change to No Data may be made only through a Clear action. Exit: when a Clear action is taken, the flow returns to main flow Step 5; otherwise the Valid Data status is preserved and no No Data update is made.",
+          "evidence_refs": [
+            "EC-EF-000"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from main flow Step 2: If the C2 JU receives a J7.5 (ACT=3) special code message containing zero or nonzero special code values, it shall accept all zero or nonzero special code values as received and continue processing rather than rejecting the message. Exit: after accepting the values, processing resumes at main flow Step 3.",
+          "evidence_refs": [
+            "EC-EF-004"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from main flow Step 5: If the IFF/SIF exchange involves special codes, the C2 JU may initiate, change, or clear them using the J7.5 (ACT=3) message instead of the J7.5 (ACT=2) update. When the C2 JU originates or changes a special code, it assumes J7.5 (ACT=3) reporting responsibility for retransmission. Exit: the special-code exception handling terminates when a special code message for that track is received from another unit, the track is dropped, or a Clear special code is received.",
+          "evidence_refs": [
+            "EC-EF-002",
+            "EC-EF-005"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges from main flow Step 5: If one or more special codes are being cleared, the C2 JU shall transmit the J7.5 (ACT=3) message with the special code applicability indicator fields set and the associated special code fields set to value 0. Exit: after the clear message is transmitted, the clearing exception terminates.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-001",
+        "EC-EF-000",
+        "EC-EF-004",
+        "EC-EF-002",
+        "EC-EF-005",
+        "EC-EF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-conflict-alert-manual-resolution",
+          "EF-valid-track-no-data-protection",
+          "EF-special-code-accept-values",
+          "EF-special-code-ACT3-report-responsibility",
+          "EF-special-code-clear-format"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has resolved the IFF/SIF differences between its own unit data and remote data according to the IFF/SIF Difference Resolution Matrix (Table 4.7-5).",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-PO-003"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "As dictated by the matrix outcome, the exchange has resulted in accepted local or remote data values, transmission of updated data codes via J3.XC1 or J7.5 messages, and/or operator alerts if conflicts occurred.",
+          "evidence_refs": [
+            "EC-PO-003"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If the resolution required an operator-initiated update request, the C2 JU has transmitted a J7.5 (ACT=2) IFF/SIF Update Request message.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If an upgrade was accepted during resolution, the C2 JU has propagated the updated data via a J3.XC1 word (for R² units) or a J7.5 (ACT=1) message (for non-R² units); if a downgrade was accepted, no such propagation action is taken unless system-dependent operator alerting is configured.",
+          "evidence_refs": [
+            "EC-PO-004"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Operator alerts generated from conflict resolution (e.g., 'C' or 'AC' outcomes) remain active until manually cleared by the operator.",
+          "evidence_refs": [
+            "EC-PO-005"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "For tracks with Valid Data that subsequently fail to respond to interrogations, the C2 JU preserves the Valid Data status unless a Clear action is taken; no automatic downgrade to No Data occurs.",
+          "evidence_refs": [
+            "EC-PO-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-PO-003",
+        "EC-PO-001",
+        "EC-PO-004",
+        "EC-PO-005",
+        "EC-PO-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "post-resolution-complete",
+          "post-matrix-outcome",
+          "post-update-request-sent",
+          "post-upgrade-propagation",
+          "post-alert-state",
+          "post-valid-data-preserved"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 38,
+    "cross_page_cards": 25,
+    "modalities": {
+      "text": 32,
+      "table": 6
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1294.537,
+    "llm_seconds": 1137.548,
+    "lvlm_seconds": 147.357,
+    "llm_calls": 15,
+    "lvlm_calls": 21,
+    "lvlm_retry_calls": 0,
+    "llm_retry_calls": 0,
+    "cards_collected": 38,
+    "cards_referenced": 27
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Structured author candidates captured before deterministic evidence-reference validation. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "C2 JU wants to exchange IFF and SIF transponder data by resolving differences between its own unit data and remote data according to the IFF/SIF Difference Resolution Matrix.",
+            "evidence_refs": [
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The C2 JU has R² capability and is responsible for reporting IFF/SIF surveillance data.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          },
+          {
+            "content": "An established track exists with associated IFF/SIF data (own unit data and remote data) available for comparison.",
+            "evidence_refs": [
+              "EC-PC-002"
+            ]
+          },
+          {
+            "content": "A remote JU without R² is monitoring the IFF/SIF data and holds data different from the C2 JU's own unit data.",
+            "evidence_refs": [
+              "EC-PC-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "An operator action initiates a J7.5 (ACT = 2) IFF/SIF Update Request, or the C2 JU receives a J7.5 clear request (ACT = 0), a J7.5 automatic IFF/SIF report (ACT = 1) from a non-R² JU, or a J3.XC1 IFF/SIF Surveillance data report containing a No Data status, indicating IFF/SIF transponder data that must be exchanged and resolved.",
+            "evidence_refs": [
+              "EC-TR-000",
+              "EC-TR-002",
+              "EC-TR-001",
+              "EC-TR-004",
+              "EC-TR-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "A remote JU without R² detects locally entered IFF/SIF data changes (from zero to nonzero or from one nonzero value to another nonzero value) and transmits a J7.5 (ACT=1) Difference Report to the C2 JU.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU receives the J7.5 (ACT=1) Difference Report from the remote JU.",
+            "evidence_refs": [
+              "EC-MF-009",
+              "EC-MF-000"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The C2 JU compares its locally held IFF/SIF data with the IFF/SIF data reported by the remote JU and reports any valid data that are different.",
+            "evidence_refs": [
+              "EC-MF-008"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Because the received J7.5 (ACT=1) message differs from locally held data, the C2 JU determines and applies the response indicated by Table 4.7-5 IFF/SIF Difference Resolution Matrix.",
+            "evidence_refs": [
+              "EC-MF-009",
+              "EC-MF-001"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The C2 JU transmits an update via a J7.5 (ACT=2) IFF/SIF Update Request, initiated by operator action.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from Step 2: Instead of receiving a J7.5 (ACT=1) Difference Report, the C2 JU receives a J3 message including a continuation word with remote IFF/SIF data that differs from locally held data; the C2 JU proceeds with the comparison and responds as indicated in Table 4.7-5 IFF/SIF Difference Resolution Matrix.",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 4: When the resolution matrix triggers an IFF/SIF data conflict alert, the operator may manually resolve the difference instead of the C2 JU automatically applying the matrix response, by choosing one of: (1) update local data manually or verify automatic inputs; (2) initiate a J7.5 (ACT=0) Clear IFF/SIF message for any mode; (3) initiate a J7.5 (ACT=1) IFF/SIF Difference Report message for any mode; (4) change local data to agree with remote data (except Mode II code); (5) decorrelate local data from remote data, causing assignment of a new track number; or (6) clear the operator alert for any mode.",
+            "evidence_refs": [
+              "EC-AF-003"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 1: Instead of the remote JU transmitting a J7.5 (ACT=1) Difference Report, the C2 JU (the R² unit) initiates the exchange by transmitting a J3.XC1 message at the next opportunity for new tracks when assuming R² or when its data changes (and also periodically at 1/8 of the basic message rate for realtime tracks and with each NRT track report); the exchange then continues with comparison and resolution of any resulting differences.",
+            "evidence_refs": [
+              "EC-AF-000"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-PC-000",
+          "EC-PC-002",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from main flow Step 4: If applying the IFF/SIF Difference Resolution Matrix produces an IFF/SIF data conflict alert, automatic resolution cannot proceed; the operator has six manual actions available to resolve the conflict (as listed in Alternative Flow Step 2). Exit: handoff to Alternative Flow Step 2; after the operator completes the selected action, the flow returns to main flow Step 5.",
+            "evidence_refs": [
+              "EC-EF-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from main flow Step 4: If a track with Valid Data subsequently fails to respond to interrogations, the C2 JU shall not change the track's IFF/SIF data status to No Data during difference resolution; a change to No Data may be made only through a Clear action. Exit: when a Clear action is taken, the flow returns to main flow Step 5; otherwise the Valid Data status is preserved and no No Data update is made.",
+            "evidence_refs": [
+              "EC-EF-000"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from main flow Step 2: If the C2 JU receives a J7.5 (ACT=3) special code message containing zero or nonzero special code values, it shall accept all zero or nonzero special code values as received and continue processing rather than rejecting the message. Exit: after accepting the values, processing resumes at main flow Step 3.",
+            "evidence_refs": [
+              "EC-EF-004"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from main flow Step 5: If the IFF/SIF exchange involves special codes, the C2 JU may initiate, change, or clear them using the J7.5 (ACT=3) message instead of the J7.5 (ACT=2) update. When the C2 JU originates or changes a special code, it assumes J7.5 (ACT=3) reporting responsibility for retransmission. Exit: the special-code exception handling terminates when a special code message for that track is received from another unit, the track is dropped, or a Clear special code is received.",
+            "evidence_refs": [
+              "EC-EF-002",
+              "EC-EF-005"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from main flow Step 5: If one or more special codes are being cleared, the C2 JU shall transmit the J7.5 (ACT=3) message with the special code applicability indicator fields set and the associated special code fields set to value 0. Exit: after the clear message is transmitted, the clearing exception terminates.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-009",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-TR-000",
+          "EC-TR-003"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The C2 JU has resolved the IFF/SIF differences between its own unit data and remote data according to the IFF/SIF Difference Resolution Matrix (Table 4.7-5).",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-PO-003"
+            ]
+          },
+          {
+            "content": "As dictated by the matrix outcome, the exchange has resulted in accepted local or remote data values, transmission of updated data codes via J3.XC1 or J7.5 messages, and/or operator alerts if conflicts occurred.",
+            "evidence_refs": [
+              "EC-PO-003"
+            ]
+          },
+          {
+            "content": "If the resolution required an operator-initiated update request, the C2 JU has transmitted a J7.5 (ACT=2) IFF/SIF Update Request message.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "If an upgrade was accepted during resolution, the C2 JU has propagated the updated data via a J3.XC1 word (for R² units) or a J7.5 (ACT=1) message (for non-R² units); if a downgrade was accepted, no such propagation action is taken unless system-dependent operator alerting is configured.",
+            "evidence_refs": [
+              "EC-PO-004"
+            ]
+          },
+          {
+            "content": "Operator alerts generated from conflict resolution (e.g., 'C' or 'AC' outcomes) remain active until manually cleared by the operator.",
+            "evidence_refs": [
+              "EC-PO-005"
+            ]
+          },
+          {
+            "content": "For tracks with Valid Data that subsequently fail to respond to interrogations, the C2 JU preserves the Valid Data status unless a Clear action is taken; no automatic downgrade to No Data occurs.",
+            "evidence_refs": [
+              "EC-PO-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-001",
+          "EC-G-001",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-PC-002",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-TR-000"
+        ]
+      }
+    }
+  },
+  "method": "CREST w/o cross-slot"
+}

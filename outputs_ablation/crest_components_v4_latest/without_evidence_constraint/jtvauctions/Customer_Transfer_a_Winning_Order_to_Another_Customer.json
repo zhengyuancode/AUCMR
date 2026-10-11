@@ -1,0 +1,675 @@
+{
+  "use_case_name": "Transfer a Winning Order to Another Customer",
+  "actor": "Customer",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Customer wants to transfer a winning order to another customer.",
+          "evidence_refs": [
+            "EC-G-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Customer wants to transfer a winning order to another customer.",
+        "canonical_success_scenario": "The Customer selects a specific winning order, designates another customer as the recipient, and completes the transfer of that order to that customer.",
+        "start_boundary": "The Customer has a winning order and initiates the action of transferring it to another customer.",
+        "success_boundary": "The winning order has been successfully transferred to the designated other customer.",
+        "in_scope_actions": [
+          "Selecting the winning order to transfer",
+          "Designating the other customer as the recipient",
+          "Completing the transfer of the winning order"
+        ],
+        "excluded_adjacent_actions": [
+          "Creating or winning the order through bidding or auction",
+          "Paying for or checking out the order",
+          "Fulfilling or shipping the order",
+          "Post-transfer administration or downstream order management"
+        ],
+        "variant_dimensions": [
+          "Which winning order is selected for transfer",
+          "Which other customer is designated as the recipient"
+        ],
+        "evidence_refs": [
+          "EC-G-000"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Customer has at least one winning order that is currently unpaid and available for payment.",
+          "evidence_refs": [
+            "EC-PC-006"
+          ]
+        },
+        {
+          "content": "The Customer's account is active and not locked or in Review Status.",
+          "evidence_refs": [
+            "EC-PC-016"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-006",
+        "EC-PC-016"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-winning-order-exists",
+          "PC-winning-order-unpaid-active",
+          "PC-account-active",
+          "preconditions",
+          "account_lock_status",
+          "unpaid_order_threshold",
+          "escalation_policy_restriction"
+        ],
+        "missing_aspects": [
+          "preconditions"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered when the Customer selects a specific winning order from their 'Bid History' list (e.g., by clicking on an item in the table of active or past bids) to start the transfer of that order to another customer.",
+          "evidence_refs": [
+            "EC-TR-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger",
+          "trigger-user-selects-winning-order-from-bid-history"
+        ],
+        "missing_aspects": [
+          "explicit-user-initiated-transfer-trigger",
+          "trigger"
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Customer accesses the My Bid History page, which lists the items the Customer has previously bid on, including items won.",
+          "evidence_refs": [
+            "EC-PC-001"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The Customer selects the specific winning order to transfer from the Bid History list.",
+          "evidence_refs": [
+            "EC-TR-004"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Customer designates another customer as the recipient of the selected winning order.",
+          "evidence_refs": [],
+          "step_number": 3
+        },
+        {
+          "content": "The Customer confirms the transfer of the winning order to the designated other customer.",
+          "evidence_refs": [],
+          "step_number": 4
+        },
+        {
+          "content": "The system records the transfer, and the winning order is successfully transferred to the designated other customer.",
+          "evidence_refs": [],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-001",
+        "EC-TR-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-entry-bid-history",
+          "MF-select-winning-order",
+          "MF-designate-recipient",
+          "MF-confirm-transfer",
+          "MF-system-transfer-success",
+          "main_flow_steps",
+          "system_processing_for_transfer"
+        ],
+        "missing_aspects": [
+          "recipient designation step",
+          "transfer confirmation step",
+          "system-side transfer processing and success step",
+          "main_flow",
+          "main_flow_steps",
+          "recipient_designation_step",
+          "system_processing_for_transfer"
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "alternative_flow_payment_timeout_cancellation",
+          "alternative_flow_second_chance_offer_to_runner_up"
+        ],
+        "missing_aspects": [
+          "alternative_flow",
+          "alternative_flow_transfer_scenarios",
+          "alternative_flow_recipient_selection_variants"
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At main_flow step 2, if the selected winning order was not paid within 168 hours of the auction ending, the order is cancelled and the item is placed into Hold status.",
+          "evidence_refs": [
+            "EC-EF-002",
+            "EC-EF-012"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At main_flow step 3, if a match is found on Customer Name, Phone Number, Email Address, Member ID, or Billing/Shipping Addresses between the Customer and the designated recipient, the transfer email is not sent; the transfer is blocked to prevent self-bidding.",
+          "evidence_refs": [
+            "EC-EF-011"
+          ],
+          "step_number": 2
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-002",
+        "EC-EF-012",
+        "EC-EF-011"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-payment-timeout-cancellation",
+          "EF-cancelled-order-selection",
+          "EF-fraud-match-block",
+          "EF-transfer-email-suppressed",
+          "exception_payment_timeout_cancellation",
+          "exception_second_chance_offer_trigger",
+          "exception_recovery_email_options",
+          "exception_flow_validation_failure_blocking_action",
+          "exception_user_notification_content",
+          "exception_flow_account_deauthorization_block",
+          "exception_flow_visual_indicators_for_invalid_states",
+          "exception_flow_supervisor_authorization_requirement",
+          "exception_flow_bid_below_cost_suppression",
+          "exception_flow_fraud_match_suppression",
+          "exception_flow_timeout_cancellation"
+        ],
+        "missing_aspects": [
+          "EF-recipient-eligibility-errors",
+          "EF-transfer-system-errors",
+          "EF-recovery-after-fraud-block",
+          "EF-recovery-after-cancelled-order-selection",
+          "exception_flow_transfer_validation_failures",
+          "exception_flow_recipient_eligibility_errors",
+          "exception_flow_transfer_system_errors",
+          "exception_recovery_options_detail",
+          "exception_retry_or_continuation_path",
+          "exception_user_notification_content"
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The winning order has been successfully transferred to the designated other customer.",
+          "evidence_refs": [
+            "EC-PO-001",
+            "EC-PO-003"
+          ]
+        },
+        {
+          "content": "The 'Winner / High Bidder' field in the auction history table reflects the designated recipient's username, and the original auction sequence number and bid details are preserved.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "The designated recipient is responsible for payment of the transferred winning order.",
+          "evidence_refs": [
+            "EC-PO-002"
+          ]
+        },
+        {
+          "content": "The original Customer no longer holds ownership or responsibility for the transferred order; the order is now associated with the designated recipient's account and bid history.",
+          "evidence_refs": [
+            "EC-PO-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-001",
+        "EC-PO-003",
+        "EC-PO-000",
+        "EC-PO-002",
+        "EC-PO-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postcondition-transfer-complete",
+          "postcondition-winner-high-bidder-updated",
+          "postcondition-auction-history-details-preserved",
+          "postcondition-payment-responsibility-transferred",
+          "postcondition-original-owner-relieved",
+          "postcondition-order-associated-with-recipient",
+          "postconditions",
+          "postconditions-order-reassigned-to-recipient",
+          "postconditions-original-customer-no-longer-owner",
+          "postconditions-observable-state-order-history-display",
+          "postconditions-observable-state-bid-history-display"
+        ],
+        "missing_aspects": [
+          "postconditions",
+          "system_state_after_transfer",
+          "order_visibility_changes",
+          "payment_status_updates_post_transfer",
+          "postconditions_transfer_success",
+          "postconditions_order_state_update",
+          "postconditions_recipient_notification"
+        ]
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No evidence found for slot 'alternative_flow'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] Main Flow step 1 restarts the scenario by having the Customer access the My Bid History page, even though the Trigger already occurs after the Customer has selected a specific winning order from the Bid History list. This page-access action logically precedes the trigger, so it does not continue from the trigger event. (coverage-preserving removal: not subsumed (The retained witness mentions selecting a winning order from the Bid History list but does not explicitly state that the Customer accesses the My Bid History page or that it lists items previously bid on, including items won.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] Main Flow step 1 restarts the scenario by having the Customer access the My Bid History page, even though the Trigger already occurs after the Customer has selected a specific winning order from the Bid History list. This page-access action logically precedes the trigger, so it does not continue from the trigger event.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 75,
+    "cross_page_cards": 4,
+    "modalities": {
+      "text": 70,
+      "table": 4,
+      "diagram": 1
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 3537.507,
+    "llm_calls": 57,
+    "llm_seconds": 2898.403,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 569.285,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 96,
+    "judge_calls": 0,
+    "cards_collected": 75,
+    "cards_referenced": 13
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer wants to transfer a winning order to another customer.",
+            "evidence_refs": [
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer has at least one winning order that is currently unpaid and available for payment.",
+            "evidence_refs": [
+              "EC-PC-006"
+            ]
+          },
+          {
+            "content": "The Customer's account is active and not locked or in Review Status.",
+            "evidence_refs": [
+              "EC-PC-016"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-004",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "The use case is triggered when the Customer selects a specific winning order from their 'Bid History' list (e.g., by clicking on an item in the table of active or past bids) to start the transfer of that order to another customer.",
+            "evidence_refs": [
+              "EC-TR-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-TR-001",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-009"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer accesses the My Bid History page, which lists the items the Customer has previously bid on, including items won.",
+            "evidence_refs": [
+              "EC-PC-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Customer selects the specific winning order to transfer from the Bid History list.",
+            "evidence_refs": [
+              "EC-TR-004"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Customer designates another customer as the recipient of the selected winning order.",
+            "evidence_refs": [],
+            "step_number": 3
+          },
+          {
+            "content": "The Customer confirms the transfer of the winning order to the designated other customer.",
+            "evidence_refs": [],
+            "step_number": 4
+          },
+          {
+            "content": "The system records the transfer, and the winning order is successfully transferred to the designated other customer.",
+            "evidence_refs": [],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-004",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-TR-001",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-009"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-G-000",
+          "EC-PC-001",
+          "EC-PC-006",
+          "EC-PC-016",
+          "EC-TR-004"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "At main_flow step 2, if the selected winning order was not paid within 168 hours of the auction ending, the order is cancelled and the item is placed into Hold status.",
+            "evidence_refs": [
+              "EC-EF-002",
+              "EC-EF-012"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At main_flow step 3, if a match is found on Customer Name, Phone Number, Email Address, Member ID, or Billing/Shipping Addresses between the Customer and the designated recipient, the transfer email is not sent; the transfer is blocked to prevent self-bidding.",
+            "evidence_refs": [
+              "EC-EF-011"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-006",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-021",
+          "EC-PC-006",
+          "EC-TR-004"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The winning order has been successfully transferred to the designated other customer.",
+            "evidence_refs": [
+              "EC-PO-001",
+              "EC-PO-003"
+            ]
+          },
+          {
+            "content": "The 'Winner / High Bidder' field in the auction history table reflects the designated recipient's username, and the original auction sequence number and bid details are preserved.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "The designated recipient is responsible for payment of the transferred winning order.",
+            "evidence_refs": [
+              "EC-PO-002"
+            ]
+          },
+          {
+            "content": "The original Customer no longer holds ownership or responsibility for the transferred order; the order is now associated with the designated recipient's account and bid history.",
+            "evidence_refs": [
+              "EC-PO-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-011",
+          "EC-G-000",
+          "EC-PC-001",
+          "EC-PC-006",
+          "EC-PC-016",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-TR-004"
+        ]
+      }
+    }
+  },
+  "method": "CREST - mandatory evidence constraint",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "without_evidence_constraint",
+    "method": "CREST - mandatory evidence constraint",
+    "directory": "without_evidence_constraint",
+    "seed": null,
+    "slot_order": null,
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": false,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "34551917617a49a492c612b11dd7a5f2"
+}

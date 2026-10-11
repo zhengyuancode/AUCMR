@@ -1,0 +1,565 @@
+{
+  "use_case_name": "Resolve Dual Designations via Track Correlation",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "Resolve dual designations between JUs to ensure a single Track Number is used for a specific contact.",
+          "evidence_refs": [
+            "EC-G-018"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-018"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C² JU is participating in the Surveillance Network PG.",
+          "evidence_refs": [
+            "EC-PC-000",
+            "EC-PC-017",
+            "EC-PC-086"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The C² JU possesses the mandatory automatic correlation capability for originating real-time air or surface tracks.",
+          "evidence_refs": [
+            "EC-PC-005"
+          ]
+        },
+        {
+          "content": "The C² JU is capable of generating and managing track numbers.",
+          "evidence_refs": [
+            "EC-PC-037",
+            "EC-PC-050",
+            "EC-PC-083"
+          ]
+        },
+        {
+          "content": "Surveillance data and PPLI reports (including J7.2 PPLI reports with Track Numbers) are being received from track sensors.",
+          "evidence_refs": [
+            "EC-PC-002",
+            "EC-PC-003",
+            "EC-PC-018",
+            "EC-PC-087"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "A dual designation condition exists where the C² JU holds a local track that correlates with a remote track, and the Track Numbers assigned by the two JUs are different, regardless of which JU holds R².",
+          "evidence_refs": [
+            "EC-PC-039",
+            "EC-PC-040",
+            "EC-PC-051",
+            "EC-PC-052",
+            "EC-MF-001",
+            "EC-MF-002"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The two tracks possess Track Quality (TQ) greater than threshold e and the JU possesses Predictive Quality (Qpg) greater than 0.",
+          "evidence_refs": [
+            "EC-PC-023",
+            "EC-PC-024"
+          ]
+        },
+        {
+          "content": "The remote track being tested for correlation has a Track Qualifier (TQ) of 7 or more.",
+          "evidence_refs": [
+            "EC-PC-088"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The two tracks are not currently the subject of an active, unresolved dual designation resolution action involving a third Track Number.",
+          "evidence_refs": [
+            "EC-PC-031"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The two tracks are compatible (same Entity/Classification, not mixed simulated/live) and neither has the Strength field set to a value greater than 1.",
+          "evidence_refs": [
+            "EC-PC-025",
+            "EC-PC-027",
+            "EC-PC-042",
+            "EC-PC-066",
+            "EC-PC-092"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "No Operational Contingency Constraints (OCCs) are active that prohibit correlation, such as: No App Manual Correlation/Nmerge Restrictions, pending J9.0 Command messages, different Identity difference assignment message indications from different replies, different Mode I codes, long/short track time locks, active engagement/J10.2/J10.5 statuses, or being an active/inactive IU.",
+          "evidence_refs": [
+            "EC-PC-007",
+            "EC-PC-032",
+            "EC-PC-065"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The two tracks have passed the correlation tests specified in paragraph 4.4.4.3.1f and all restrictions specified in paragraphs 4.4.4.3.1f and 4.4.4.3.1g twice consecutively.",
+          "evidence_refs": [
+            "EC-PC-006"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000",
+        "EC-PC-017",
+        "EC-PC-086",
+        "EC-PC-005",
+        "EC-PC-037",
+        "EC-PC-050",
+        "EC-PC-083",
+        "EC-PC-002",
+        "EC-PC-003",
+        "EC-PC-018",
+        "EC-PC-087",
+        "EC-PC-039",
+        "EC-PC-040",
+        "EC-PC-051",
+        "EC-PC-052",
+        "EC-MF-001",
+        "EC-MF-002",
+        "EC-PC-023",
+        "EC-PC-024",
+        "EC-PC-088",
+        "EC-PC-031",
+        "EC-PC-025",
+        "EC-PC-027",
+        "EC-PC-042",
+        "EC-PC-066",
+        "EC-PC-092",
+        "EC-PC-007",
+        "EC-PC-032",
+        "EC-PC-065",
+        "EC-PC-006"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU receives a J7.0 (ACT = 0) Drop Track message from the Forward JU (FJU), or the C2 JU detects a correlation between a local track and a remote track for which another C2 JU has R² and the Track Numbers are different.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-TR-010",
+            "EC-TR-011",
+            "EC-TR-012"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-TR-010",
+        "EC-TR-011",
+        "EC-TR-012"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU correlates the received PPLI report with data from its own track sensors (or verifies the correlation basis if the trigger is a Drop Track message), using the max2m2m positional error associated with the reported Geodetic Position Quality (Qpg) as the value of R for the position test, treating Qpg > 3 as Qpg = 3.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-007",
+            "EC-MF-013"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU correlates the received PPLI report with data from its own track sensors (or verifies the correlation basis if the trigger is a Drop Track message), using the max2m2m positional error associated with the reported Geodetic Position Quality (Qpg) as the value of R for the position test, treating Qpg > 3 as Qpg = 3.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-007",
+            "EC-MF-013"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU assumes R² (Responsibility for Reporting) if the remote track report has a Track Quality (TQ) greater than the local TQ, or if the remote TQ is equal to the local TQ and the Source TN (STN) of the remote JU is greater than the local STN.",
+          "evidence_refs": [
+            "EC-MF-019",
+            "EC-MF-020"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The C2 JU selects the Track Number to be dropped: if an Operational Contingency Constraint (OCC) prevents dropping a track, it is not selected; otherwise, the higher TN is selected as the TN to be dropped.",
+          "evidence_refs": [
+            "EC-MF-016",
+            "EC-MF-017"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If the C2 JU holds R², it transmits a J7.2 Correlation message with Response Value (RV) set to 2, retaining the Source TN as the Retained TN and the surveillance TN as the Dropped TN; it then ceases reporting the track and transmits a J7.0 (ACT = 0) Drop Track message on the surveillance TN.",
+          "evidence_refs": [
+            "EC-MF-001"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU discards the local surveillance data on the specific track (except for Position Quality values) while maintaining the track with the Retained TN.",
+          "evidence_refs": [
+            "EC-MF-003",
+            "EC-PO-000"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "If another C2 JU holds R², the C2 JU relinquishes R² and transmits a J7.2 Correlation message with Response Value (RV) set to 1, retaining the Source TN as the Retained TN and the surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "EC-MF-002",
+            "EC-MF-021"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU waits for a J7.0 (ACT = 0) message for the dropped TN; if not received within 60 seconds, the correlation is deemed failed and processing is cancelled.",
+          "evidence_refs": [
+            "EC-MF-018"
+          ],
+          "step_number": 8
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-MF-007",
+        "EC-MF-013",
+        "EC-MF-019",
+        "EC-MF-020",
+        "EC-MF-016",
+        "EC-MF-017",
+        "EC-MF-001",
+        "EC-MF-003",
+        "EC-PO-000",
+        "EC-MF-002",
+        "EC-MF-021",
+        "EC-MF-018"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 6: If a correlation is found with a track for which another C² JU has R² and the Track Numbers are the same, the C² JU accepts the PPLI report, discards the local surveillance data on the specific track (except for Position Quality), and maintains the track if another C² JU assumes R².",
+          "evidence_refs": [
+            "EC-AF-001"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 6: If a correlation is found with a track for which another C² JU has R² and the Track Numbers are different, the C² JU transmits a J7.2 Correlation message with Response Value (RV) set to 1 (Accepted), retaining the Source TN as the Retained TN and the surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "EC-AF-000",
+            "EC-AF-014"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 1: A manual capability is provided to initiate the correlation of any two tracks irrespective of the automatic correlation test criteria, restrictions, or requirements, provided the tracks are not of a different Entity/Classification, not mixed simulated/live, and not both remote.",
+          "evidence_refs": [
+            "EC-AF-002"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 6: If the C² JU holds R² for the Dropped TN and transmits a J7.0 (ACT=0) Drop Track message, but the Dropped TN is subsequently reported by another IU, the C² JU retains the Dropped TN as a remote track, does not reattempt to correlate the Retained TN and Dropped TN, and stops correlation for a period of 60 seconds after transmission of the J7.0.",
+          "evidence_refs": [
+            "EC-AF-008",
+            "EC-AF-023"
+          ],
+          "step_number": 6
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-001",
+        "EC-AF-000",
+        "EC-AF-014",
+        "EC-AF-002",
+        "EC-AF-008",
+        "EC-AF-023"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a J7.0 (ACT = 0) Drop Track message is not received for the dropped Track Number within 60 seconds from the transmission of the correlation request, the correlation is deemed to have failed and all associated processing for the correlation shall be cancelled.",
+          "evidence_refs": [
+            "EC-EF-005",
+            "EC-EF-016",
+            "EC-EF-025",
+            "EC-AF-021"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "If the own unit has R² for the Dropped TN and transmits a J7.0 (ACT = 0) Drop Track message, but the Dropped TN is subsequently reported by another IU, the own unit shall retain the Dropped TN as a remote track and shall not reattempt to correlate the Retained TN and the Dropped TN for a period of 60 seconds after transmission of the J7.0.",
+          "evidence_refs": [
+            "EC-EF-006",
+            "EC-EF-017",
+            "EC-AF-008",
+            "EC-AF-023"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "If a correlation is found with a track for which another C² JU has R² and the Track Numbers are different, the C² JU transmits a J7.2 (RV = 1) Correlation message retaining the Source TN as the Retained TN and the surveillance TN as the Dropped TN. The C² JU does not cease reporting the local track and does not transmit a J7.0 (ACT = 0) Drop Track message, but shall cease re-attempting to correlate the Retained TN and Dropped TN for a period of 60 seconds after transmission of the J7.2.",
+          "evidence_refs": [
+            "EC-EF-000",
+            "EC-EF-013",
+            "EC-AF-032",
+            "EC-EF-017"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "If correlation restrictions are enabled and either track has the Strength field set to a value greater than 1, the C² JU rejects the correlation in accordance with paragraph 4.4.4.3.1g(1).",
+          "evidence_refs": [
+            "EC-EF-004",
+            "EC-EF-014"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "If an Operational Contingency Constraint (OCC) is active, the JU will inform other participating JUs through voice communication or other communications media and restrict automatic correlation by default, thereby terminating the current automatic correlation attempt and requiring manual intervention to proceed.",
+          "evidence_refs": [
+            "EC-EF-002"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-005",
+        "EC-EF-016",
+        "EC-EF-025",
+        "EC-AF-021",
+        "EC-EF-006",
+        "EC-EF-017",
+        "EC-AF-008",
+        "EC-AF-023",
+        "EC-EF-000",
+        "EC-EF-013",
+        "EC-AF-032",
+        "EC-EF-004",
+        "EC-EF-014",
+        "EC-EF-002"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The C² JU that holds R² maintains the track using the Retained Track Number (TN), having discarded local surveillance data on the specific track except for Position Quality values.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The C² JU that relinquishes R² retains the Source TN as the Retained TN and the surveillance TN as the Dropped TN, and has transmitted a J7.2 Correlation message with Response Value (RV) set to 1 (Accepted).",
+          "evidence_refs": [
+            "EC-PO-001"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The Dropped TN has been dropped by its owner and is retained as a remote track.",
+          "evidence_refs": [
+            "EC-PO-003"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "Surveillance data (Latitude, Longitude, Course, Speed, Altitude, etc.) from the Dropped TN is transferred to the Retained TN, which assimilates this data to maintain continuity.",
+          "evidence_refs": [
+            "EC-PO-004"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-PO-001",
+        "EC-PO-003",
+        "EC-PO-004"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "evidence_invalid",
+      "slot": "main_flow",
+      "detail": "Dropped 2 claim(s) due to unresolved evidence_refs after retry. Unknown ids: []",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "evidence_invalid",
+      "slot": "alternative_flow",
+      "detail": "Dropped 0 claim(s) due to unresolved evidence_refs after retry. Unknown ids: ['EC-AF-15']",
+      "evidence_refs": [
+        "EC-AF-15"
+      ]
+    },
+    {
+      "flag_type": "consistency_check_failed",
+      "slot": null,
+      "detail": "Consistency detector (vertical) returned malformed JSON; remaining issues not verified.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 1 explicitly states it 'Diverges from Step 6', but the main_flow contains a claim with step_number 6. However, main_flow claim 6 content describes discarding local data, while alt_flow claim 1 describes accepting PPLI based on another JU having R² with same TN. More critically, alt_flow claim 3 states it 'Diverges from Step 1', but main_flow claim 1 and 2 have identical content and both are labeled as step 1 implicitly (actually step_number is missing in claim 1 but present in claim 2 as 2? No, claim 1 has no step_number, claim 2 has step_number 2. Wait, looking at main_flow: Claim 1 has no step_number field. Claim 2 has step_number 2. Claim 3 has step_number 3. Claim 4 has step_number 4. Claim 5 has no step_number. Claim 6 has step_number 6. Claim 7 has step_number 7. Claim 8 has step_number 8. The alt_flow claim 3 diverges from Step 1. Main flow does not have a claim with step_number 1. Main flow claim 1 is the first claim but lacks a step_number. Main flow claim 2 is step 2. This is a numbering inconsistency. But let's look at alt_flow claim 2: 'Diverges from Step 6'. Main flow has step 6. Alt_flow claim 0: 'Diverges from Step 6'. Main flow has step 6. Alt_flow claim 3: 'Diverges from Step 1'. Main flow does NOT have a step numbered 1. Main flow claim 1 has no step_number. This is a clear mismatch.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 2 describes a scenario where 'another C² JU has R² and the Track Numbers are different'. The main_flow processes correlation logic in steps 1-5. Step 3 determines R². Step 4 selects TN to drop. Step 5 (implied by sequence before step 6) should handle the transmission of correlation messages if the local JU holds R² or if it doesn't. However, main_flow claim 5 is missing a step_number and describes transmitting J7.2 with RV=2 if LOCAL JU holds R². It does not explicitly cover the case where the LOCAL JU does NOT hold R² (i.e., another JU has R²) and TNs are different, which is handled in exception flow claim 2. The main_flow jumps from determining R² (step 3) and selecting drop TN (step 4) to handling the case where LOCAL JU holds R² (claim 5). It fails to specify the action when LOCAL JU does NOT hold R², forcing the alternative/exception flows to define the primary behavior for that branch, leaving main_flow incomplete.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 3 states it 'Diverges from Step 1'. Main_flow claim 1 does not have a step_number assigned. Main_flow claim 2 is step_number 2. Without a step 1 in main_flow, this divergence point is invalid or ambiguous.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Alternative flow claim 0 states it 'Diverges from Step 6'. Main_flow has a step 6. However, main_flow step 6 describes discarding local surveillance data. Alt flow claim 0 describes accepting PPLI if another JU has R² and TNs are same. This implies the logic for 'another JU has R²' should be in main_flow but is missing or pushed to alt/exception. The main_flow step 6 assumes the local JU has completed its R² determination and drop selection. If another JU has R², the local JU shouldn't be performing the action in step 6 (discarding data) in the same way. The main_flow structure is flawed because it doesn't account for the 'other JU has R²' branch in the main sequence, forcing it into alternative flows that diverge from steps that don't logically encompass that state.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "preconditions",
+        "main_flow",
+        "alternative_flow",
+        "exception_flow"
+      ],
+      "inconsistency_hints": [
+        "The Trigger allows initiation when the C2 JU 'detects a correlation' locally. However, the corresponding Preconditions claim (index 4) strictly requires that the local track correlates with a remote track for which 'another C2 JU has R² (Responsibility for Resolution)'. This excludes the case where the C2 JU holds R² (which is a valid scenario per Main Flow steps 3, 5, and 6). Consequently, the preconditions do not cover all conditions specified in the trigger.",
+        "The Trigger states the C2 JU receives a J7.0 (ACT=0) Drop Track message or detects a correlation. The Preconditions claim (index 7) states: 'Neither track is currently the subject of a dual designation resolution action involving another Track Number.' This precondition is too restrictive for the 'Drop Track' trigger path. If the C2 JU receives a Drop Track for its own track (or a correlated remote track), it implies a resolution is already in progress or has occurred elsewhere. Requiring that 'no' resolution is active contradicts the scenario where a Drop Track message is being processed as a result of a previous or concurrent resolution step by another JU. The precondition should allow for tracks that are part of an ongoing resolution if the Drop Track is the finalizing step for the local JU.",
+        "The Trigger indicates the start of the process via a Drop Track or correlation detection. Main Flow Step 1 performs correlation calculations. However, Main Flow Step 2 states: 'The C2 JU tests the retained Track Number (TN) for decorrelation... before executing the correlation, conducting this test only once.' This step logically belongs *before* the correlation data processing or is part of the initial validation. Placing it as Step 2 *after* Step 1 (correlation calculation) creates a flow discontinuity because Step 1 uses correlation parameters (Qpg, error) that might be invalidated if decorrelation is detected. More critically, the Trigger provides the *reason* for the flow (Drop Track or Correlation Detection). If the Trigger is a Drop Track, the 'correlation' in Step 1 is actually a verification of the drop target, not a new correlation test. The step numbering and description imply a new correlation event, whereas a Drop Track might just require validation of the existing link. The flow should explicitly handle the 'Drop Track' trigger path separately or clarify that Step 1 is a 'Verification' step for Drop Track triggers.",
+        "Alternative flow claim 3 diverges from step 6, stating that if the Dropped TN is reported by another IU, the JU 'stops correlation for a period of 60 seconds after transmission of the J7.0.' However, main_flow step 7 states that if the J7.0 is not received within 60 seconds, processing is cancelled. The alternative flow's divergence from step 6 (which in the main flow leads to step 7's wait period) creates a conflict or ambiguity about whether the 60-second timer for 'stopping correlation' is distinct from the 60-second wait for the J7.0 message in step 7. More critically, the main_flow step 6 describes relinquishing R2 and transmitting RV=1, then implicitly proceeding to step 7. The alternative flow claim 3 describes a scenario where the JU holds R2 for the Dropped TN (which contradicts the condition in main_flow step 6 where another JU holds R2, but aligns with main_flow step 5/6 logic if the local JU held R2). If the local JU holds R2, it sends J7.0. If the other IU reports it, this is handled in main_flow step 5/6? No, main_flow step 5 is for local R2. Step 6 is for remote R2. The alternative flow claim 3 says 'If the C2 JU holds R2... but the Dropped TN is subsequently reported by another IU'. This scenario is actually covered in Exception Flow claim 2, not Alternative Flow. Furthermore, Alternative Flow claims typically describe successful but variant paths, while Exception/Alt flows handle errors or specific divergences. Claim 3 in alt_flow describes a state ('stops correlation') that seems to describe a timeout or error handling mechanism better suited for exception handling or a specific post-condition, and it references a condition ('holds R2 for Dropped TN') which is the inverse of the main_flow step 6 condition ('another JU holds R2'). This creates a logical disconnect. The divergence point 'Step 6' in main_flow assumes 'another JU holds R2'. The alt_flow claim 3 assumes 'JU holds R2'. These are mutually exclusive conditions branching from Step 4/5 decision, not divergences from Step 6. Thus, claiming it diverges from Step 6 is incorrect because the precondition for Step 6 (remote R2) is false in this alt_flow claim.",
+        "[slot_rewrite] Alternative flow claim 0 diverges from step 6. It states: 'If a correlation is found with a track for which another C² JU has R² and the Track Numbers are the same...'. Main flow step 6 handles the case where 'another C2 JU holds R2'. However, the main flow step 6 explicitly states: 'relinquishes R²... retaining the Source TN as the Retained TN and the surveillance TN as the Dropped TN.' It does not distinguish between Track Numbers being the same or different in its text, but rather sends RV=1. The alternative flow claim 0 and 1 split this logic. Claim 0 says 'Track Numbers are the same', Claim 1 says 'Track Numbers are different'. Main flow step 6 is a single step. It is valid to have alternative flows diverging from a single step if the main flow is incomplete or generalized. However, the main flow step 6 content provided is: 'If another C2 JU holds R², the C2 JU relinquishes R²...'. It doesn't mention TNs being same/different. This suggests the main flow is missing detail or the alt flows are splitting a main flow step that should have been more granular. Is this a violation? Rule 3 says 'Every divergence point... must exist as a step'. Step 6 exists. The issue is whether the alt flows are *correctly* diverging. Claim 0 says 'accepts the PPLI report, discards local surveillance data... maintains the track if another C2 JU assumes R2'. This sounds like the result of RV=1. Claim 1 says 'transmits RV=1... retaining Source TN...'. Both result in RV=1. The distinction 'Track Numbers same vs different' is not in the Main Flow Step 6. If the Main Flow Step 6 is intended to cover both, the Alt flows are providing necessary detail. However, usually, alt flows diverge on a condition checked *before* or *during* a step. Here, the condition (TNs same/different) is likely evaluated at correlation time (Step 1/2/3). Diverging from Step 6 implies the decision is made at Step 6. But the decision to send RV=1 vs RV=2 (or drop/relinquish) depends on who holds R2. The TN difference logic seems to be about *which* TN is retained/dropped, which is decided in Step 4 (select TN to drop) and Step 5/6 (transmit). If TNs are the same, the 'Dropped TN' concept is weird. This suggests a logical flaw in the Alt Flow's premise or a missing Main Flow step that handles TN equality/inequality explicitly before Step 6. More importantly, Claim 0 says 'discards local surveillance data... except for Position Quality'. Main Flow Step 6 says 'transmits RV=1'. It does *not* say 'discards local surveillance data'. This is a major behavioral omission in the Main Flow if this Alt Flow is a valid divergence. Conversely, if the Main Flow is complete, this Alt Flow is introducing behavior not supported by the Main Flow's path. Given Rule 3 focuses on *existence* of the divergence point, Step 6 exists. But if the Main Flow Step 6 is too vague to support the specific divergences, it's a Main Flow issue. However, looking at Claim 0, it describes 'maintains the track if another C2 JU assumes R2'. This is the state *after* RV=1. Claim 1 describes sending RV=1. They are redundant or overlapping. Claim 0's divergence from Step 6 is valid in terms of step number, but the content implies the Main Flow Step 6 is incomplete regarding the handling of the 'same TN' case. Is it a violation of Rule 3? Strictly, no, Step 6 exists. But it highlights a Main Flow deficiency. Let's look for a clearer violation. Claim 2 diverges from Step 1. Step 1 exists. Claim 3 diverges from Step 6. Step 6 exists. The issue in Claim 3 was the logical mismatch. Claim 0 and 1 split Step 6. This is a valid alternative flow structure if Step 6 is a gateway. However, Claim 0 says 'accepts... discards... maintains'. Claim 1 says 'transmits...'. These are actions. If the Main Flow Step 6 is 'Transmits RV=1', then the alt flows detailing *what happens next* (discard data vs just transmit) are actually post-steps or exception handling. They shouldn't necessarily diverge *from* Step 6 as parallel branches of the *same* step's execution, but rather describe the consequences. If they are divergences, they imply that at Step 6, the flow splits. Main Flow Step 6 doesn't show a split. It's a single action. Therefore, the Alt Flows are imposing a split that doesn't exist in the Main Flow's description. This is a 'Main Flow missing detail' issue, but per instructions, if Alt/Exception conflicts with Main, root is the branch. So Alt Flow is the root of the mismatch because it assumes a structure (split on TN type) that Main Flow doesn't explicitly define or support as a branch point in Step 6.",
+        "Main Flow Step 1 assumes the C2 JU correlates the received PPLI report with its own local track sensors. However, the Trigger can also be initiated by a J7.0 Drop Track message. A Drop Track message does not contain the positional data or PPLI report details required for the positional correlation test described in Step 1 (using Qpg and R). Step 2 correctly handles the Drop Track scenario by verifying the correlation basis, but Step 1 creates a logical discontinuity because the data assumed in Step 1 is not guaranteed to be present in all Trigger scenarios.",
+        "Postconditions state that the C2 JU holding R2 'has discarded local surveillance data... except for Position Quality values'. However, Main Flow Step 5 only describes transmitting the J7.2 Correlation message and the J7.0 Drop Track message. It does not explicitly describe the internal data management action of discarding the local surveillance data. Without this step, the transition to the postcondition state is incomplete.",
+        "Exception flow claim 2 describes an action (transmitting RV=1 but NOT ceasing reporting) that contradicts the terminal nature of the main flow's resolution steps. Specifically, main_flow step 6 implies that if another JU holds R², the local JU relinquishes R² and drops its local track (by accepting the other's TN). However, this exception claim states the local JU does NOT cease reporting the local track, effectively leaving the dual designation unresolved locally, but it does not specify an exit condition (e.g., return to monitoring, hand off to another use case, or terminate). It leaves the state ambiguous regarding when/if this 'non-reporting' exception ends or transitions back to normal tracking.",
+        "Exception flow claim 4 states that if an OCC is active, the JU informs other JUs via voice and restricts automatic correlation. This describes a system-wide restriction or a hand-off to manual/voice procedures. It does not define how the current use case instance exits or returns to a stable state. Does it terminate the correlation attempt? Does it pause? The lack of a clear exit (return to main flow loop, terminate use case, or hand off) makes the flow incomplete."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 316,
+    "cross_page_cards": 158,
+    "modalities": {
+      "text": 308,
+      "table": 8
+    }
+  }
+}

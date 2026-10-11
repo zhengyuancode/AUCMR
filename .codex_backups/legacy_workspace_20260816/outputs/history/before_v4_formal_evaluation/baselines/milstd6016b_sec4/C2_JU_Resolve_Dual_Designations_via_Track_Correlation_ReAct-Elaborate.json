@@ -1,0 +1,717 @@
+{
+  "use_case_name": "Resolve Dual Designations via Track Correlation",
+  "actor": "C2 JU",
+  "method": "ReAct-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The C2 JU resolves dual designations by initiating track correlation actions, either automatically or manually, upon recognizing that two reported tracks are eligible for correlation, thereby ensuring a single data point representation per object.",
+          "evidence_refs": [
+            "P113"
+          ]
+        }
+      ],
+      "raw_text": "The C2 JU resolves dual designations by initiating track correlation actions, either automatically or manually, upon recognizing that two reported tracks are eligible for correlation, thereby ensuring a single data point representation per object.",
+      "evidence_card_ids": [
+        "P113"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "All Information Units (IUs) must be capable of periodically comparing remote tracks to local tracks (and optionally common local tracks) to determine if a dual designation has occurred.",
+          "evidence_refs": [
+            "P113"
+          ]
+        },
+        {
+          "content": "The criteria for determining that two tracks represent the same object and the correlation rules must be in accordance with section 4.4.4.3.1, Air and Surface Track Correlation.",
+          "evidence_refs": [
+            "P113"
+          ]
+        },
+        {
+          "content": "The C2 JU must recognize that two tracks being reported to the interface are eligible for correlation before initiating action to resolve the dual designation.",
+          "evidence_refs": [
+            "P113"
+          ]
+        },
+        {
+          "content": "Correlation involves comparing locally derived sensor data (position, velocity, altitude) with data received on the interface to prevent or eliminate dual designations.",
+          "evidence_refs": [
+            "P25"
+          ]
+        },
+        {
+          "content": "Tracks subject to certain Operational Contingency Constraints (OCC), such as being the subject of a current engagement status message, a pending command message, or being a controlled track, may restrict automatic correlation.",
+          "evidence_refs": [
+            "P35"
+          ]
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P113",
+        "P25",
+        "P35"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered when a C2 JU recognizes that two tracks being reported to the interface are eligible for correlation.",
+          "evidence_refs": [
+            "P113"
+          ]
+        }
+      ],
+      "raw_text": "The use case is triggered when a C2 JU recognizes that two tracks being reported to the interface are eligible for correlation.",
+      "evidence_card_ids": [
+        "P113"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU periodically compares remote tracks to local tracks to determine if a dual designation has occurred, ensuring criteria align with section 4.4.4.3.1.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Two tracks must pass correlation tests and restrictions twice (tentative correlation followed by a second successful test) before being processed for dual designation resolution, unless restricted.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Upon recognizing eligible tracks, the C2 JU initiates action (automatically or manually) to resolve the dual designation and transmits a J7.2 Correlation message identifying the Track Number (TN) to be retained and the TN to be dropped.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The originating JU indicates any constraints prohibiting reverse correlation in the J7.2 message using the Response Value (RV) field (0 for acceptable, 1 for rejected).",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Receiving IUs accept the requested correlation unless prespecified conditions exist (e.g., OCC constraints, conflicting IDs, or simulation/live mismatches) that require rejection or a reverse correlation request.",
+          "evidence_refs": [
+            "P113",
+            "P115"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "If a correlation request is rejected, the receiving IU transmits a J7.2 message with the RV field set to value 2; if manually initiated (RV=3), it is accepted unless specific restrictions like E/C conflicts apply.",
+          "evidence_refs": [
+            "P113",
+            "P115"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P113",
+        "P36",
+        "P115"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If a selection conflict occurs due to Operational Contingency Constraints (OCCs) on both the Retained TN and the Dropped TN, the correlation shall be abandoned until the next correlation check.",
+          "evidence_refs": [
+            "P114"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Receiving IUs shall not accept the requested correlation if local or remote data indicates a correlation restriction exists (e.g., Identity conflict, different Mode II codes, both tracks are locally derived real-time, or Strength field > 1).",
+          "evidence_refs": [
+            "P114",
+            "P34"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Receiving IUs shall reject the correlation if the Retained TN and Dropped TN would decorrelate when subjected to decorrelation criteria.",
+          "evidence_refs": [
+            "P115"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If there is an OCC on the Dropped TN and the received RV field is 0, the receiving IU shall transmit a reverse correlation if the new Dropped TN has no correlation constraint; otherwise, the correlation shall be rejected.",
+          "evidence_refs": [
+            "P115"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If there is an OCC on the Dropped TN and the received RV field is 1, the correlation shall be rejected.",
+          "evidence_refs": [
+            "P115"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "C² JUs receiving a J7.2 message with RV=2 (Correlation Rejection) shall not automatically originate a request with the same Retained/Dropped TN pair for a period of 2 minutes.",
+          "evidence_refs": [
+            "P115"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "C² JUs receiving a J7.2 message with RV=3 (manually initiated) shall automatically accept the correlation unless restrictions apply (e.g., different E/C, simulated vs live mismatch, or both tracks are locally derived real-time).",
+          "evidence_refs": [
+            "P115"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "C² JUs rejecting a requested correlation shall transmit a J7.2 message with the RV field set to value 2.",
+          "evidence_refs": [
+            "P116"
+          ],
+          "step_number": 8
+        },
+        {
+          "content": "C² JUs responding with a reverse correlation shall transmit the J7.2 message with the originally received Retained TN and Dropped TN reversed and the RV field set to value 1.",
+          "evidence_refs": [
+            "P116"
+          ],
+          "step_number": 9
+        },
+        {
+          "content": "If the Retained TN is not held but the Dropped TN is held, and the Dropped TN has an OCC, the receiving JU shall transmit a reverse correlation with RV=1 if the original RV was 0, or transmit a rejection with RV=2 if the original RV was 1.",
+          "evidence_refs": [
+            "P116"
+          ],
+          "step_number": 10
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P114",
+        "P34",
+        "P115",
+        "P116"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a selection conflict occurs due to Operational Contingency Constraints (OCCs) on both the Retained TN and the Dropped TN, the correlation shall be abandoned until the next correlation check.",
+          "evidence_refs": [
+            "P114"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Receiving IUs shall not accept the requested correlation if local or remote data indicates a correlation restriction exists (e.g., Identity conflict, different Mode II codes, both tracks are locally derived real-time, or Strength field > 1).",
+          "evidence_refs": [
+            "P114",
+            "P115"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Receiving IUs shall reject the correlation if the Retained TN and Dropped TN would decorrelate when subjected to decorrelation criteria.",
+          "evidence_refs": [
+            "P115"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If there is an OCC on the Dropped TN and the received RV field is 0, the receiving IU shall transmit a reverse correlation if the new Dropped TN has no correlation constraint; otherwise, the correlation shall be rejected.",
+          "evidence_refs": [
+            "P115"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If there is an OCC on the Dropped TN and the received RV field is 1, the correlation shall be rejected.",
+          "evidence_refs": [
+            "P115"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "C² JUs receiving a J7.2 message with RV=2 (Correlation Rejection) shall not automatically originate a request with the same Retained/Dropped TN pair for a period of 2 minutes.",
+          "evidence_refs": [
+            "P115"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "C² JUs receiving a J7.2 message with RV=3 (manually initiated) shall automatically accept the correlation unless restrictions apply (e.g., different E/C, simulated vs live mismatch, or both tracks are locally derived real-time).",
+          "evidence_refs": [
+            "P115"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "C² JUs rejecting a requested correlation shall transmit a J7.2 message with the RV field set to value 2.",
+          "evidence_refs": [
+            "P113",
+            "P115"
+          ],
+          "step_number": 8
+        },
+        {
+          "content": "C² JUs responding with a reverse correlation shall transmit the J7.2 message with the originally received Retained TN and Dropped TN reversed and the RV field set to value 1.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 9
+        },
+        {
+          "content": "If the Retained TN is not held but the Dropped TN is held, and the Dropped TN has an OCC, the receiving JU shall transmit a reverse correlation with RV=1 if the original RV was 0, or transmit a rejection with RV=2 if the original RV was 1.",
+          "evidence_refs": [
+            "P115"
+          ],
+          "step_number": 10
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P114",
+        "P115",
+        "P113"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The C² JU transmits a J7.2 Correlation message identifying the Track Number (TN) to be retained and the TN to be dropped to all other C² IUs.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Receiving IUs accept the requested correlation unless prespecified conditions exist which require rejection or a reverse correlation request.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the own unit holds the Dropped TN as a local or common local track, the Retained TN is designated as a common local track.",
+          "evidence_refs": [
+            "P37"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the own unit has R² for the Dropped TN, a J7.0 (ACT = 0) Drop Track message is transmitted for the Dropped TN.",
+          "evidence_refs": [
+            "P37"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The correlation is deemed to have failed if no J7.0 (ACT = 0) is received for the dropped TN after 60 seconds from the transmission of the correlation request, and all associated processing is cancelled.",
+          "evidence_refs": [
+            "P37"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P113",
+        "P37"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "The C2 JU resolves dual designations by initiating track correlation actions, either automatically or manually, upon recognizing that two reported tracks are eligible for correlation, thereby ensuring a single data point representation per object.",
+            "evidence_refs": [
+              "P113"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P67",
+          "P25",
+          "P35",
+          "P37"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "All Information Units (IUs) must be capable of periodically comparing remote tracks to local tracks (and optionally common local tracks) to determine if a dual designation has occurred.",
+            "evidence_refs": [
+              "P113"
+            ]
+          },
+          {
+            "content": "The criteria for determining that two tracks represent the same object and the correlation rules must be in accordance with section 4.4.4.3.1, Air and Surface Track Correlation.",
+            "evidence_refs": [
+              "P113"
+            ]
+          },
+          {
+            "content": "The C2 JU must recognize that two tracks being reported to the interface are eligible for correlation before initiating action to resolve the dual designation.",
+            "evidence_refs": [
+              "P113"
+            ]
+          },
+          {
+            "content": "Correlation involves comparing locally derived sensor data (position, velocity, altitude) with data received on the interface to prevent or eliminate dual designations.",
+            "evidence_refs": [
+              "P25"
+            ]
+          },
+          {
+            "content": "Tracks subject to certain Operational Contingency Constraints (OCC), such as being the subject of a current engagement status message, a pending command message, or being a controlled track, may restrict automatic correlation.",
+            "evidence_refs": [
+              "P35"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P67",
+          "P35",
+          "P25",
+          "P37"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The use case is triggered when a C2 JU recognizes that two tracks being reported to the interface are eligible for correlation.",
+            "evidence_refs": [
+              "P113"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P25",
+          "P35",
+          "P114",
+          "P34"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU periodically compares remote tracks to local tracks to determine if a dual designation has occurred, ensuring criteria align with section 4.4.4.3.1.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Two tracks must pass correlation tests and restrictions twice (tentative correlation followed by a second successful test) before being processed for dual designation resolution, unless restricted.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Upon recognizing eligible tracks, the C2 JU initiates action (automatically or manually) to resolve the dual designation and transmits a J7.2 Correlation message identifying the Track Number (TN) to be retained and the TN to be dropped.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The originating JU indicates any constraints prohibiting reverse correlation in the J7.2 message using the Response Value (RV) field (0 for acceptable, 1 for rejected).",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Receiving IUs accept the requested correlation unless prespecified conditions exist (e.g., OCC constraints, conflicting IDs, or simulation/live mismatches) that require rejection or a reverse correlation request.",
+            "evidence_refs": [
+              "P113",
+              "P115"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "If a correlation request is rejected, the receiving IU transmits a J7.2 message with the RV field set to value 2; if manually initiated (RV=3), it is accepted unless specific restrictions like E/C conflicts apply.",
+            "evidence_refs": [
+              "P113",
+              "P115"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P36",
+          "P25",
+          "P24",
+          "P115"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If a selection conflict occurs due to Operational Contingency Constraints (OCCs) on both the Retained TN and the Dropped TN, the correlation shall be abandoned until the next correlation check.",
+            "evidence_refs": [
+              "P114"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Receiving IUs shall not accept the requested correlation if local or remote data indicates a correlation restriction exists (e.g., Identity conflict, different Mode II codes, both tracks are locally derived real-time, or Strength field > 1).",
+            "evidence_refs": [
+              "P114",
+              "P34"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Receiving IUs shall reject the correlation if the Retained TN and Dropped TN would decorrelate when subjected to decorrelation criteria.",
+            "evidence_refs": [
+              "P115"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If there is an OCC on the Dropped TN and the received RV field is 0, the receiving IU shall transmit a reverse correlation if the new Dropped TN has no correlation constraint; otherwise, the correlation shall be rejected.",
+            "evidence_refs": [
+              "P115"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If there is an OCC on the Dropped TN and the received RV field is 1, the correlation shall be rejected.",
+            "evidence_refs": [
+              "P115"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "C² JUs receiving a J7.2 message with RV=2 (Correlation Rejection) shall not automatically originate a request with the same Retained/Dropped TN pair for a period of 2 minutes.",
+            "evidence_refs": [
+              "P115"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "C² JUs receiving a J7.2 message with RV=3 (manually initiated) shall automatically accept the correlation unless restrictions apply (e.g., different E/C, simulated vs live mismatch, or both tracks are locally derived real-time).",
+            "evidence_refs": [
+              "P115"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "C² JUs rejecting a requested correlation shall transmit a J7.2 message with the RV field set to value 2.",
+            "evidence_refs": [
+              "P116"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "C² JUs responding with a reverse correlation shall transmit the J7.2 message with the originally received Retained TN and Dropped TN reversed and the RV field set to value 1.",
+            "evidence_refs": [
+              "P116"
+            ],
+            "step_number": 9
+          },
+          {
+            "content": "If the Retained TN is not held but the Dropped TN is held, and the Dropped TN has an OCC, the receiving JU shall transmit a reverse correlation with RV=1 if the original RV was 0, or transmit a rejection with RV=2 if the original RV was 1.",
+            "evidence_refs": [
+              "P116"
+            ],
+            "step_number": 10
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P114",
+          "P115",
+          "P116",
+          "P34"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If a selection conflict occurs due to Operational Contingency Constraints (OCCs) on both the Retained TN and the Dropped TN, the correlation shall be abandoned until the next correlation check.",
+            "evidence_refs": [
+              "P114"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Receiving IUs shall not accept the requested correlation if local or remote data indicates a correlation restriction exists (e.g., Identity conflict, different Mode II codes, both tracks are locally derived real-time, or Strength field > 1).",
+            "evidence_refs": [
+              "P114",
+              "P115"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Receiving IUs shall reject the correlation if the Retained TN and Dropped TN would decorrelate when subjected to decorrelation criteria.",
+            "evidence_refs": [
+              "P115"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If there is an OCC on the Dropped TN and the received RV field is 0, the receiving IU shall transmit a reverse correlation if the new Dropped TN has no correlation constraint; otherwise, the correlation shall be rejected.",
+            "evidence_refs": [
+              "P115"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If there is an OCC on the Dropped TN and the received RV field is 1, the correlation shall be rejected.",
+            "evidence_refs": [
+              "P115"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "C² JUs receiving a J7.2 message with RV=2 (Correlation Rejection) shall not automatically originate a request with the same Retained/Dropped TN pair for a period of 2 minutes.",
+            "evidence_refs": [
+              "P115"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "C² JUs receiving a J7.2 message with RV=3 (manually initiated) shall automatically accept the correlation unless restrictions apply (e.g., different E/C, simulated vs live mismatch, or both tracks are locally derived real-time).",
+            "evidence_refs": [
+              "P115"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "C² JUs rejecting a requested correlation shall transmit a J7.2 message with the RV field set to value 2.",
+            "evidence_refs": [
+              "P113",
+              "P115"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "C² JUs responding with a reverse correlation shall transmit the J7.2 message with the originally received Retained TN and Dropped TN reversed and the RV field set to value 1.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 9
+          },
+          {
+            "content": "If the Retained TN is not held but the Dropped TN is held, and the Dropped TN has an OCC, the receiving JU shall transmit a reverse correlation with RV=1 if the original RV was 0, or transmit a rejection with RV=2 if the original RV was 1.",
+            "evidence_refs": [
+              "P115"
+            ],
+            "step_number": 10
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P35",
+          "P114",
+          "P115",
+          "P7"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The C² JU transmits a J7.2 Correlation message identifying the Track Number (TN) to be retained and the TN to be dropped to all other C² IUs.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Receiving IUs accept the requested correlation unless prespecified conditions exist which require rejection or a reverse correlation request.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the own unit holds the Dropped TN as a local or common local track, the Retained TN is designated as a common local track.",
+            "evidence_refs": [
+              "P37"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the own unit has R² for the Dropped TN, a J7.0 (ACT = 0) Drop Track message is transmitted for the Dropped TN.",
+            "evidence_refs": [
+              "P37"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The correlation is deemed to have failed if no J7.0 (ACT = 0) is received for the dropped TN after 60 seconds from the transmission of the correlation request, and all associated processing is cancelled.",
+            "evidence_refs": [
+              "P37"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P35",
+          "P37",
+          "P25",
+          "P67"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 103.6
+}

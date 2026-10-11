@@ -1,0 +1,695 @@
+{
+  "use_case_name": "Transfer a Winning Order to Another Customer",
+  "actor": "Customer",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Customer offers a cancelled item to the second-place finisher at the second-place finisher's last bid price.",
+          "evidence_refs": [
+            "EC-G-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Customer offers a cancelled item to the second-place finisher at the second-place finisher's last bid price.",
+        "canonical_success_scenario": "The Customer takes one cancelled winning order and offers it to the second-place finisher at the second-place finisher's last bid price, thereby transferring the winning order to that other customer.",
+        "start_boundary": "The Customer has a cancelled winning order available to transfer to another customer.",
+        "success_boundary": "The cancelled winning order has been offered to the second-place finisher at the second-place finisher's last bid price.",
+        "in_scope_actions": [
+          "Offer the cancelled winning order to the second-place finisher",
+          "Transfer the winning order at the second-place finisher's last bid price"
+        ],
+        "excluded_adjacent_actions": [
+          "Original order cancellation and hold status",
+          "Second-place finisher's acceptance or decline of the offer",
+          "Payment processing for the transferred order",
+          "Order fulfilment or shipping",
+          "Customer history lookup"
+        ],
+        "variant_dimensions": [
+          "Price basis: fixed at the second-place finisher's last bid price",
+          "Recipient: the second-place finisher"
+        ],
+        "evidence_refs": [
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "There is an original winning order that has been cancelled due to non-payment within 7 days (168 hours) of the auction ending time and subsequently placed into a 'hold' status.",
+          "evidence_refs": [
+            "EC-PC-007"
+          ]
+        },
+        {
+          "content": "There is a second-place finisher available for the specific auction item of the cancelled winning order.",
+          "evidence_refs": [
+            "EC-PC-011"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-007",
+        "EC-PC-011"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-order-cancelled-hold",
+          "PC-second-place-finisher-available",
+          "preconditions"
+        ],
+        "missing_aspects": [
+          "preconditions"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered when a winning order is cancelled due to non-payment within 7 days (168 hours) of the auction ending time, which places the item into a 'hold' status.",
+          "evidence_refs": [
+            "EC-TR-006",
+            "EC-TR-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-006",
+        "EC-TR-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-winning-order-cancelled",
+          "trigger-non-payment-window",
+          "trigger-item-hold-status",
+          "trigger"
+        ],
+        "missing_aspects": [
+          "trigger"
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The system sends an automated email to the second-place finisher for the cancelled winning order.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-002"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The email offers to sell the cancelled item to the second-place finisher at the second-place finisher's last bid price.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The email presents the second-place finisher with three response options: Credit Card Option, PayPal or Amazon Payments Option, or Decline Option (the 'No Thanks' button).",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-MF-002",
+        "EC-MF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-offer-email-sent",
+          "MF-offer-at-last-bid-price",
+          "MF-offer-options-presented",
+          "main_flow_notification",
+          "notification_to_recipient",
+          "actor_response_options"
+        ],
+        "missing_aspects": [
+          "main_flow"
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "coverage_state": {
+        "covered_aspect_ids": [],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At main_flow step 1, if the second-place finisher's bid is below the item's unit cost, the system does not send the 2nd-Chance email.",
+          "evidence_refs": [
+            "EC-EF-007",
+            "EC-EF-015"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At main_flow step 1, if the 2nd-Chance recipient has two accounts and is essentially bidding against themselves, the system does not send the 2nd-Chance email.",
+          "evidence_refs": [
+            "EC-EF-009"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At main_flow step 1, if matches are found between the 2nd-Chance recipient's account data and the winner's account data on any of Customer Name, Customer Phone Number, Customer Email Address, Customer Member ID, or Customer Billing and/or Shipping Addresses, the system does not send the 2nd-Chance email.",
+          "evidence_refs": [
+            "EC-EF-017"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At main_flow step 3, if the second-place finisher does not respond to the 2nd-Chance email within 72 hours after the email is sent, the item is returned to auction available inventory and rescheduled for a future auction.",
+          "evidence_refs": [
+            "EC-EF-008"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-007",
+        "EC-EF-015",
+        "EC-EF-009",
+        "EC-EF-017",
+        "EC-EF-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-email-suppressed-below-unit-cost",
+          "EF-email-suppressed-self-bidding-two-accounts",
+          "EF-email-suppressed-identity-match",
+          "EF-offer-timeout-reschedule",
+          "exception_flow",
+          "exception_non_response_handling",
+          "exception_account_consequences",
+          "exception_payment_method_unavailable",
+          "exception_post_auction_payment_not_supported",
+          "exception_tax_handling_future_risk",
+          "exception_bid_below_cost",
+          "exception_non_response_timeout",
+          "exception_fraud_prevention_match"
+        ],
+        "missing_aspects": [
+          "EF-recovery-after-email-suppression",
+          "exception_flow",
+          "Explicit evidence that the use case terminates or exits upon this condition."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "An automated 2nd-Chance email has been sent to the second-place finisher, offering the cancelled winning order at the second-place finisher's last bid price.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postconditions-offer-email-sent",
+          "postconditions-offer-price-last-bid",
+          "postconditions_system_state_after_success",
+          "postconditions_inventory_return_decline",
+          "postconditions_inventory_return_timeout"
+        ],
+        "missing_aspects": [
+          "postconditions_system_state_after_success"
+        ]
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No evidence found for slot 'alternative_flow'",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 61,
+    "cross_page_cards": 0,
+    "modalities": {
+      "text": 54,
+      "table": 6,
+      "diagram": 1
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2919.311,
+    "llm_retry_calls": 0,
+    "llm_calls": 42,
+    "lvlm_retry_calls": 0,
+    "lvlm_calls": 83,
+    "lvlm_seconds": 472.822,
+    "judge_seconds": 0.0,
+    "judge_calls": 0,
+    "llm_seconds": 2425.005,
+    "cards_collected": 61,
+    "cards_referenced": 13
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer offers a cancelled item to the second-place finisher at the second-place finisher's last bid price.",
+            "evidence_refs": [
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "There is an original winning order that has been cancelled due to non-payment within 7 days (168 hours) of the auction ending time and subsequently placed into a 'hold' status.",
+            "evidence_refs": [
+              "EC-PC-007"
+            ]
+          },
+          {
+            "content": "There is a second-place finisher available for the specific auction item of the cancelled winning order.",
+            "evidence_refs": [
+              "EC-PC-011"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The use case is triggered when a winning order is cancelled due to non-payment within 7 days (168 hours) of the auction ending time, which places the item into a 'hold' status.",
+            "evidence_refs": [
+              "EC-TR-006",
+              "EC-TR-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The system sends an automated email to the second-place finisher for the cancelled winning order.",
+            "evidence_refs": [
+              "EC-MF-000",
+              "EC-MF-002"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The email offers to sell the cancelled item to the second-place finisher at the second-place finisher's last bid price.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The email presents the second-place finisher with three response options: Credit Card Option, PayPal or Amazon Payments Option, or Decline Option (the 'No Thanks' button).",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-MF-003",
+          "EC-PC-011"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "At main_flow step 1, if the second-place finisher's bid is below the item's unit cost, the system does not send the 2nd-Chance email.",
+            "evidence_refs": [
+              "EC-EF-007",
+              "EC-EF-015"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At main_flow step 1, if the 2nd-Chance recipient has two accounts and is essentially bidding against themselves, the system does not send the 2nd-Chance email.",
+            "evidence_refs": [
+              "EC-EF-009"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At main_flow step 1, if matches are found between the 2nd-Chance recipient's account data and the winner's account data on any of Customer Name, Customer Phone Number, Customer Email Address, Customer Member ID, or Customer Billing and/or Shipping Addresses, the system does not send the 2nd-Chance email.",
+            "evidence_refs": [
+              "EC-EF-017"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At main_flow step 3, if the second-place finisher does not respond to the 2nd-Chance email within 72 hours after the email is sent, the item is returned to auction available inventory and rescheduled for a future auction.",
+            "evidence_refs": [
+              "EC-EF-008"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "An automated 2nd-Chance email has been sent to the second-place finisher, offering the cancelled winning order at the second-place finisher's last bid price.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006"
+        ]
+      }
+    }
+  },
+  "method": "CREST w/o cross-slot",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "8e7f508417244abfb5a83afc2355691b"
+}

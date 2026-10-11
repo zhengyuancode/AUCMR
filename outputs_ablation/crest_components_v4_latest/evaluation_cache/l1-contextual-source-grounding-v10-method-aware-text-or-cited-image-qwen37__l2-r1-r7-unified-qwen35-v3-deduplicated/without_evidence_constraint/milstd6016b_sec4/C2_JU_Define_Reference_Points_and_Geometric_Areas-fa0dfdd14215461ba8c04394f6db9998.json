@@ -1,0 +1,678 @@
+{
+  "use_case_name": "Define Reference Points and Geometric Areas",
+  "actor": "C2 JU",
+  "scg": 88.0,
+  "nli_g": 44.0,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 0.7042253521126761,
+  "avg_cards": 31,
+  "total_claims": 25,
+  "total_cited_claims": 22,
+  "total_entailed_claims": 11,
+  "pre_constraint_claim_count": 25,
+  "pre_constraint_cited_claim_count": 22,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 142,
+  "cross_page_cards": 1,
+  "referenced_cards": 31,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 2,
+      "cited_claim_count": 2,
+      "evidence_ref_count": 4,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 3,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 6,
+      "cited_claim_count": 3,
+      "evidence_ref_count": 5,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 7,
+      "cited_claim_count": 7,
+      "evidence_ref_count": 9,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 3,
+      "cited_claim_count": 3,
+      "evidence_ref_count": 4,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 5,
+      "cited_claim_count": 5,
+      "evidence_ref_count": 6,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R2": 3
+  },
+  "l3_violations_pre_repair": {
+    "R1": 0,
+    "R2": 3,
+    "R3": 0,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 0
+  },
+  "l2_violations": {
+    "R1": 0,
+    "R2": 1,
+    "R3": 1,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 0
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R2": [
+        {
+          "rule_id": "R2",
+          "rule_name": "mainflow_trigger_continuity",
+          "offending_slot": "main_flow",
+          "offending_claim_index": 0,
+          "rationale": "The Trigger allows for defining generic reference points (waypoints, CAP stations) or slaved areas, but Main Flow Step 1 immediately restricts the scenario to identifying an emitter for an AOP, ignoring the other valid trigger conditions."
+        }
+      ],
+      "R3": [
+        {
+          "rule_id": "R3",
+          "rule_name": "mainflow_postconditions_reachability",
+          "offending_slot": "postconditions",
+          "offending_claim_index": 4,
+          "rationale": "The Main Flow only details the steps for defining an AOP and does not include steps for defining a slaved point/area, making the postcondition regarding slaved position calculation unreachable."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 0,
+      "R2": 1,
+      "R3": 1,
+      "R4": 0,
+      "R5": 0,
+      "R6": 0,
+      "R7": 0
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The Trigger lists multiple distinct initiations: reporting geographic references/fixed ground objects, reporting slaved points/areas with Slaved Indicator=1, and reporting an AOP. The Main Flow jumps directly to step 1 'identifies the particular emitter for which an Area of Probability (AOP) is to be defined' and the remaining steps only cover AOP reporting. No branch or step handles the reference-point/geometric-area trigger cases or the slaved-point/area case, so the flow does not continue from those Trigger branches and cannot reach the slaved-point postcondition. (atomic grounding: candidate remains incomplete (The 'non-AOP' qualifier is not supported by the cited evidence; the cited evidence only supports the J3.5 message capability for reporting points, not for lines or areas.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The trigger opens the use case for multiple scenarios: reporting geographic references such as waypoints/CAP/FEBA, fixed ground units/objects, slaved points/areas, and AOP reporting. Main Flow step 1 immediately jumps to identifying an emitter for an AOP and never returns to the non-AOP trigger branches. For any non-AOP triggering event, the main flow restarts as a different scenario and does not continue from the trigger. This also makes the corresponding non-AOP and slaved postconditions unreachable. (atomic grounding: candidate remains incomplete (The Slaved Indicator=1 condition is supported as a trigger/precondition, not as an explicit C2 JU action; the rewritten wording uses the supported conditional state.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] The Trigger commits to multiple paths: non-AOP geographic references/fixed objects, slaved points/areas with Slaved Indicator=1, and AOP reporting. The Main Flow executes only the AOP path (identify emitter, define 95% area, assign TN/report time/TPQ). It never continues from the reference-point/slaved-point triggers; consequently, the postcondition for slaved point/area position from a Related TN is also unreachable.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "The C2 JU's objective is to define reference points and geometric areas, such as an Area of Probabil",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-G-003], which defines the C2 JU's objective to report an AOP with specific probability criteria, and Evidence [EC-G-004], which establishes the constraint that emergency alerts are not used on such geometric areas.",
+      "slot_fit_rationale": "The claim accurately describes the primary actor's intended objective and success outcome (defining/reporting an AOP under specific constraints), which constitutes the 'goal' slot in a Cockburn use case.",
+      "evidence_refs": [
+        "EC-G-003",
+        "EC-G-004"
+      ],
+      "evidence_modalities": {
+        "EC-G-003": "card_text",
+        "EC-G-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "Emergency alerts are not used on reference points, lines, or areas.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a verbatim match to Evidence [EC-PC-006], which explicitly states that emergency alerts are not used on reference points, lines, or areas.",
+      "slot_fit_rationale": "The evidence collector note explicitly identifies this constraint as a system state that must hold before operations begin, fitting the definition of a precondition.",
+      "evidence_refs": [
+        "EC-PC-006"
+      ],
+      "evidence_modalities": {
+        "EC-PC-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The C2 JU is capable of generating and maintaining track numbers to report an Area of Probability (A",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PC-009], [EC-PC-011], and [EC-PC-016], which collectively establish the system capabilities, data source requirements, and state conditions necessary before the interaction.",
+      "slot_fit_rationale": "The claim describes necessary system states and data availability (capabilities, valid sources, related track numbers) that must hold before the use case can successfully initiate, which aligns with the definition of preconditions.",
+      "evidence_refs": [
+        "EC-PC-009",
+        "EC-PC-011",
+        "EC-PC-016"
+      ],
+      "evidence_modalities": {
+        "EC-PC-009": "card_text",
+        "EC-PC-011": "card_text",
+        "EC-PC-016": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "The use case is triggered when the C2 JU needs to report tactical information about geographic refer",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-TR-007], [EC-TR-008], and [EC-TR-009], which collectively describe the three specific triggering conditions for the use case.",
+      "slot_fit_rationale": "The claim explicitly describes the events and conditions that initiate the interaction, which is the precise definition of the 'trigger' slot in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-TR-007",
+        "EC-TR-008",
+        "EC-TR-009"
+      ],
+      "evidence_modalities": {
+        "EC-TR-007": "card_text",
+        "EC-TR-008": "card_text",
+        "EC-TR-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The C2 JU identifies the particular emitter for which an Area of Probability (AOP) is to be defined.",
+      "entailment": "neutral",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "rationale": "no valid, exposed evidence cited",
+      "slot_fit_rationale": "no valid cited evidence is available for this slot",
+      "evidence_refs": []
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The C2 JU defines the AOP as the geometric area within which there is a 95% probability (2 sigma) of",
+      "entailment": "neutral",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "rationale": "no valid, exposed evidence cited",
+      "slot_fit_rationale": "no valid cited evidence is available for this slot",
+      "evidence_refs": []
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The C2 JU assigns a TN(s) to the AOP and reports its position using geodetic latitude/longitude valu",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports assigning TNs and reporting positions for 'each reported point, line, or area' generally, but does not explicitly support the specific claim that this action is performed on the 'AOP' (Area of Operations).",
+      "slot_fit_rationale": "The claim describes a core system action (assigning identifiers and reporting coordinates) which constitutes a substantive step in the normal successful interaction path.",
+      "evidence_refs": [
+        "EC-MF-000",
+        "EC-MF-022"
+      ],
+      "evidence_modalities": {
+        "EC-MF-000": "card_text",
+        "EC-MF-022": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The C2 JU reports the time associated with the AOP in hours/minutes, with its meaning defined by the",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the reporting format and definition but does not identify the 'C2 JU' as the specific actor performing the action, leaving the subject of the claim unsupported.",
+      "slot_fit_rationale": "The claim describes a standard action within the successful interaction path, which aligns with the definition of a main flow step.",
+      "evidence_refs": [
+        "EC-MF-003"
+      ],
+      "evidence_modalities": {
+        "EC-MF-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The C2 JU reports the AOP using a J3.7I/J3.7C1/J3.7C2 word sequence as a minimum, transmitting the J",
+      "entailment": "entailment",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "entailed_but_slot_misfit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-MF-037] (message sequence) and Evidence [EC-PO-009] (TPQ/TQ values), which collectively confirm all material propositions.",
+      "slot_fit_rationale": "The claim includes postcondition material (the resulting reported state after successful completion) explicitly identified as a postcondition in Evidence [EC-PO-009], which does not substantively belong in the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-037",
+        "EC-PO-009"
+      ],
+      "evidence_modalities": {
+        "EC-MF-037": "card_text",
+        "EC-PO-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The C2 JU ensures that emergency alerts are not used on the AOP or on any reference point, line, or ",
+      "entailment": "neutral",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "rationale": "no valid, exposed evidence cited",
+      "slot_fit_rationale": "no valid cited evidence is available for this slot",
+      "evidence_refs": []
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 2: Instead of defining an AOP, the C2 JU defines and reports a reference point, l",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the capability of J3.0 messages to carry lines, areas, and volumes, but it does not support the specific claim that this action is performed by a 'C2 JU' or that it specifically 'diverges from Step 2' in the context of defining an AOP.",
+      "slot_fit_rationale": "The claim describes a valid alternative branch (using J3.0 for non-point geometries) that diverges from a main flow step, which aligns with the definition of an alternative_flow slot.",
+      "evidence_refs": [
+        "EC-AF-001"
+      ],
+      "evidence_modalities": {
+        "EC-AF-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 2: Instead of defining an AOP, the C2 JU reports a circle/ellipse about a ground ",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence confirms the capability to report a circle/ellipse via J3.5 but does not support the specific procedural claim that this action diverges from Step 2 or replaces the definition of an AOP.",
+      "slot_fit_rationale": "The claim describes a valid alternative branch (using a different message format for the same reporting goal) which substantively fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-000"
+      ],
+      "evidence_modalities": {
+        "EC-AF-000": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 2: If a segmented line is formed by joining 2 or 3 points, the C2 JU reports it i",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim's technical details regarding the J3.0 message fields for a segmented line formed by 2 or 3 points are directly supported by Evidence [EC-AF-002].",
+      "slot_fit_rationale": "The claim describes a specific conditional branch (segmented line with 2-3 points) that diverges from the standard flow to handle a variation while pursuing the same goal, which fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-002"
+      ],
+      "evidence_modalities": {
+        "EC-AF-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 2: If a segmented line or multisided area is formed by joining more than 3 points",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-AF-003], [EC-AF-004], and [EC-AF-005], which collectively describe the message structure, continuation indicators, point matching, and area closure requirements for complex geometries.",
+      "slot_fit_rationale": "The claim describes a specific non-error branching path for handling complex geometries (more than 3 points) that diverges from the standard flow, which aligns with the definition of an alternative flow in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-AF-003",
+        "EC-AF-004",
+        "EC-AF-005"
+      ],
+      "evidence_modalities": {
+        "EC-AF-003": "card_text",
+        "EC-AF-004": "card_text",
+        "EC-AF-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 3: If a fix is changed to an AOP, the C2 JU uses the TN of the previously reporte",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the system behavior of reusing the TN, but does not support the specific claim that this flow diverges from 'Step 3' or involves the 'C2 JU' actor, as these details are absent from the cited text.",
+      "slot_fit_rationale": "The claim describes a conditional branch where an existing identifier is reused instead of generating a new one, which substantively fits the definition of an alternative flow in a use case.",
+      "evidence_refs": [
+        "EC-AF-008"
+      ],
+      "evidence_modalities": {
+        "EC-AF-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 3: If an AOP is formed from a single fix, the C2 JU retains the same TN; if it is",
+      "entailment": "neutral",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim introduces the actor 'C2 JU' and specific actions ('retains', 'assigns') which are not present in the evidence that only specifies passive system states ('shall be retained', 'shall be assigned').",
+      "slot_fit_rationale": "The claim describes a conditional business rule regarding data attribute assignment rather than a distinct interaction step or branch in the user-system dialogue typical of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-011"
+      ],
+      "evidence_modalities": {
+        "EC-AF-011": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 3: If the entity is reported as Data Report Type 4 (Datum), the same TN may be us",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly supports the condition (Data Report Type 4) and the resulting action (same Track Number used by operator action) stated in the claim.",
+      "slot_fit_rationale": "The claim describes a conditional branch based on data type that allows the process to continue successfully via a specific operator action, which fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-012"
+      ],
+      "evidence_modalities": {
+        "EC-AF-012": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Exception — illegal R² assumption for another unit's EW product: At step 5, if the C2 JU attempts to",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the illegality of the action but does not explicitly state that the system prevents the assumption or that the interaction exits at step 5, leaving the behavioral response and specific flow location unsupported.",
+      "slot_fit_rationale": "The claim describes a prohibited action and its prevention, which constitutes a valid exception flow handling a constraint violation.",
+      "evidence_refs": [
+        "EC-EF-008"
+      ],
+      "evidence_modalities": {
+        "EC-EF-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Exception — change to a segmented line or multisided area: At step 2, while defining a segmented lin",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim includes specific procedural context ('At step 2', 'while defining') and a specific actor condition ('if the C2 JU changes data') that are not present in the cited evidence, which only specifies the system response to 'any change' without defining the timing or the modifying actor.",
+      "slot_fit_rationale": "The claim describes an abnormal condition (data change during definition) and the required error-handling behavior (purge and replace), which substantively fits the exception_flow slot.",
+      "evidence_refs": [
+        "EC-EF-002",
+        "EC-EF-003"
+      ],
+      "evidence_modalities": {
+        "EC-EF-002": "card_text",
+        "EC-EF-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Exception — emergency alert prohibited on reference geometry: At step 6, if an emergency alert is at",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the general rule that emergency alerts are not used on reference geometry, but it does not support the specific procedural claim that this check occurs at 'step 6' or that the interaction involves an 'exit' behavior as described.",
+      "slot_fit_rationale": "The claim describes a conditional error handling path (prohibited action and its rejection), which substantively belongs in the exception_flow slot.",
+      "evidence_refs": [
+        "EC-G-004"
+      ],
+      "evidence_modalities": {
+        "EC-G-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The C2 JU has reported the defined reference point or geometric area (e.g., AOP, line, area) with al",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PO-027], which explicitly states the system state after successfully defining a reference point or geometric area matches the claim's description.",
+      "slot_fit_rationale": "The claim describes the resulting system state after successful completion of the use case, which aligns precisely with the definition of the postconditions slot.",
+      "evidence_refs": [
+        "EC-PO-027"
+      ],
+      "evidence_modalities": {
+        "EC-PO-027": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "For a defined Area of Probability (AOP), the system state includes a Track Number assigned to the AO",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the assignment of a Track Number but does not contain information defining the AOP as a geometric area with 95% probability (2 sigma).",
+      "slot_fit_rationale": "The claim describes the resulting system state and data definitions after successful completion, which aligns with the postconditions slot.",
+      "evidence_refs": [
+        "EC-PO-029"
+      ],
+      "evidence_modalities": {
+        "EC-PO-029": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "For a defined AOP, the C2 JU has reported a Target Position Quality (TPQ) value corresponding to the",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PO-009], which explicitly states the system state regarding TPQ and VTQ reporting after successful completion of the use case.",
+      "slot_fit_rationale": "The claim describes the resulting system state (reported values) conditional on successful completion, which aligns precisely with the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-009"
+      ],
+      "evidence_modalities": {
+        "EC-PO-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The defined reference point, line, or area remains active on the interface unless explicitly purged,",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-PO-021], which establishes the originator's reporting responsibility (R²) while active, and Evidence [EC-PO-024], which states that the defined entity remains active on the interface unless explicitly purged.",
+      "slot_fit_rationale": "The claim describes the persistent system state (active entity and retained responsibility) that holds after the successful completion of the use case, which aligns with the definition of postconditions.",
+      "evidence_refs": [
+        "EC-PO-021",
+        "EC-PO-024"
+      ],
+      "evidence_modalities": {
+        "EC-PO-021": "card_text",
+        "EC-PO-024": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "For a slaved point or area, the position is established as Delta Latitude and 1/Delta Longitude from",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-PO-019], which explicitly states the system state after successfully defining a slaved point or area.",
+      "slot_fit_rationale": "The claim describes the immediate system state resulting from successful completion of the use case, which is the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-019"
+      ],
+      "evidence_modalities": {
+        "EC-PO-019": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

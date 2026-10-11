@@ -1,0 +1,473 @@
+{
+  "use_case_name": "Initiate Emergency Point Reports",
+  "actor": "System Operator",
+  "method": "ViDoRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [],
+      "raw_text": ""
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "System Operator",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "System Operator",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "An emergency condition exists that requires search and rescue efforts.",
+          "evidence_refs": [
+            "P12"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A previously reported emergency point exists.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The JU has additional or more current information on the point.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "A J7.0 (ACT = 0) message is received on an emergency point, declaring the unit with R² inactive.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "No periodic update is received for three consecutive update intervals.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P12",
+        "P20"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The System Operator initiates reporting through operator action only when the JU has additional or more current information on a previously reported emergency point, or when a J7.0 (ACT = 0) message is received or no periodic update is received for three consecutive update intervals.",
+          "evidence_refs": [
+            "P20"
+          ]
+        }
+      ],
+      "raw_text": "The System Operator initiates reporting through operator action only when the JU has additional or more current information on a previously reported emergency point, or when a J7.0 (ACT = 0) message is received or no periodic update is received for three consecutive update intervals.",
+      "evidence_card_ids": [
+        "P20"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The System Operator initiates the report through operator action only.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The system transmits a J3.1 Emergency Point message.",
+          "evidence_refs": [
+            "P12",
+            "P20"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The system uses the same TN Reference and the same value of TN Previously Reported as those reported by the previous reporting unit.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system reports the position using geodetic latitude/longitude values.",
+          "evidence_refs": [
+            "P12"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The system reports the time associated with the reported point.",
+          "evidence_refs": [
+            "P12"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The system transmits IFF/SIF data (Modes I, II, and III Codes) in the J3.1 message when available, containing the IFF/SIF modes and codes of the previously reported track for which the emergency point was initiated.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P20",
+        "P12"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If a JU without R² desires that a specific point, line, or area be transmitted immediately without awaiting the next periodic update, it should transmit a J7.1 (ACT = 1) Data Update Request for the desired TN.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If a JU fails to receive the J7.0 (ACT = 0) message and further updates are not received, the JU may purge those points after a specified time period has elapsed with no updates.",
+          "evidence_refs": [
+            "P21"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "A JU receiving a J7.0 (ACT = 0) message on a point, line, or area shall not be required to purge the point, line, or area.",
+          "evidence_refs": [
+            "P21"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "However, if the JU does not purge a point, line, or area on which it has received a J7.0 (ACT = 0) message, it shall assume R² for the point, line, or area to ensure that it remains active on the interface.",
+          "evidence_refs": [
+            "P21"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P20",
+        "P21"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "A JU shall not transmit a J7.0 (ACT = 0) message on a point when the point becomes an Active IU on the interface with the same TN.",
+          "evidence_refs": [
+            "P21"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "When a remote point, line, or area is purged from a system by local options, a J7.0 (ACT = 0) message shall not be transmitted.",
+          "evidence_refs": [
+            "P21"
+          ],
+          "step_number": 2
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P21"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The latest JU to report a point has R² for that point.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "The point is assigned a TN and the position is reported using geodetic latitude/longitude values.",
+          "evidence_refs": [
+            "P12"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If assuming R², the system uses the same TN Reference and the same value of TN Previously Reported as those reported by the previous reporting unit.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "No alert indicators are used for the J3.1 Emergency Point message.",
+          "evidence_refs": [
+            "P104"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P20",
+        "P12",
+        "P104"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "goal",
+      "detail": "No content produced for slot 'goal' by ViDoRAG-Elaborate."
+    }
+  ],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "P12"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "An emergency condition exists that requires search and rescue efforts.",
+            "evidence_refs": [
+              "P12"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A previously reported emergency point exists.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The JU has additional or more current information on the point.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "A J7.0 (ACT = 0) message is received on an emergency point, declaring the unit with R² inactive.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "No periodic update is received for three consecutive update intervals.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P20",
+          "P12"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The System Operator initiates reporting through operator action only when the JU has additional or more current information on a previously reported emergency point, or when a J7.0 (ACT = 0) message is received or no periodic update is received for three consecutive update intervals.",
+            "evidence_refs": [
+              "P20"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P20",
+          "P12"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The System Operator initiates the report through operator action only.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system transmits a J3.1 Emergency Point message.",
+            "evidence_refs": [
+              "P12",
+              "P20"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system uses the same TN Reference and the same value of TN Previously Reported as those reported by the previous reporting unit.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system reports the position using geodetic latitude/longitude values.",
+            "evidence_refs": [
+              "P12"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The system reports the time associated with the reported point.",
+            "evidence_refs": [
+              "P12"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The system transmits IFF/SIF data (Modes I, II, and III Codes) in the J3.1 message when available, containing the IFF/SIF modes and codes of the previously reported track for which the emergency point was initiated.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P20",
+          "P104",
+          "P12"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If a JU without R² desires that a specific point, line, or area be transmitted immediately without awaiting the next periodic update, it should transmit a J7.1 (ACT = 1) Data Update Request for the desired TN.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If a JU fails to receive the J7.0 (ACT = 0) message and further updates are not received, the JU may purge those points after a specified time period has elapsed with no updates.",
+            "evidence_refs": [
+              "P21"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "A JU receiving a J7.0 (ACT = 0) message on a point, line, or area shall not be required to purge the point, line, or area.",
+            "evidence_refs": [
+              "P21"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "However, if the JU does not purge a point, line, or area on which it has received a J7.0 (ACT = 0) message, it shall assume R² for the point, line, or area to ensure that it remains active on the interface.",
+            "evidence_refs": [
+              "P21"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P20",
+          "P21"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "A JU shall not transmit a J7.0 (ACT = 0) message on a point when the point becomes an Active IU on the interface with the same TN.",
+            "evidence_refs": [
+              "P21"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "When a remote point, line, or area is purged from a system by local options, a J7.0 (ACT = 0) message shall not be transmitted.",
+            "evidence_refs": [
+              "P21"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P20",
+          "P21"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The latest JU to report a point has R² for that point.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "The point is assigned a TN and the position is reported using geodetic latitude/longitude values.",
+            "evidence_refs": [
+              "P12"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If assuming R², the system uses the same TN Reference and the same value of TN Previously Reported as those reported by the previous reporting unit.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "No alert indicators are used for the J3.1 Emergency Point message.",
+            "evidence_refs": [
+              "P104"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P20",
+          "P104",
+          "P12"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 2191.7
+}

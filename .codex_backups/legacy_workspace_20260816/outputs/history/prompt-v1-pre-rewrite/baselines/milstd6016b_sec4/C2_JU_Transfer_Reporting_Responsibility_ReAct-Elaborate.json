@@ -1,0 +1,700 @@
+{
+  "use_case_name": "Transfer Reporting Responsibility",
+  "actor": "C2 JU",
+  "method": "ReAct-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The C2 JU transfers reporting responsibility for a track to another unit when specific conditions are met, such as receiving a Drop Track message or loss of remote reports, ensuring continuous and accurate surveillance data exchange.",
+          "evidence_refs": [
+            "P85",
+            "P8",
+            "P52"
+          ]
+        }
+      ],
+      "raw_text": "The C2 JU transfers reporting responsibility for a track to another unit when specific conditions are met, such as receiving a Drop Track message or loss of remote reports, ensuring continuous and accurate surveillance data exchange.",
+      "evidence_card_ids": [
+        "P85",
+        "P8",
+        "P52"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The unit originating a J3.7 EW Fix, AOP, or LOB report always retains reporting responsibility, and it is illegal to assume reporting responsibility for another unit's report unless specific exceptions apply (e.g., received in a J14.0 message).",
+          "evidence_refs": [
+            "P85"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A C2 JU shall assume reporting responsibility (R2) of an Interface Unit (IU) if a J2 PPLI message is not received for 40 to 60 seconds.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "A C2 JU shall assume reporting responsibility (R2) of an Interface Unit (IU) if a J2 PPLI message (other than J2.0) is received with the NPS Indicator set to Inactive or Conditional Radio Silence.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "A C2 JU shall assume reporting responsibility (R2) of an Interface Unit (IU) if a J7.0 (ACT = 0) Drop Track message is received from the FJU for a PU, RU, or other IU.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "A C2 JU shall assume reporting responsibility (R2) of an Interface Unit (IU) if the Geodetic Position Quality in the J2 PPLI message is set to value 0.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "A JU receiving a J7.0 message with the Track Management Action field set to value 0 (Drop Track Report) on a locally held track shall assume R2 at the next opportunity if local reporting eligibility remains and a remote report has not been received on that track.",
+          "evidence_refs": [
+            "P81"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "Common tracking involves sharing a common track number and shifting reporting responsibility (R2) between C2 JUs to prevent cluttering the tactical plot.",
+          "evidence_refs": [
+            "P25"
+          ],
+          "step_number": 7
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P85",
+        "P8",
+        "P81",
+        "P25"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU initiates transfer of reporting responsibility when it receives a J7.0 Drop Track message, fails to receive a J2 PPLI message for 40–60 seconds, receives a J2 PPLI with NPS Indicator set to Inactive or Conditional Radio Silence, or detects Geodetic Position Quality set to 0 in a J2 PPLI message.",
+          "evidence_refs": [
+            "P52",
+            "P8",
+            "P81"
+          ]
+        }
+      ],
+      "raw_text": "The C2 JU initiates transfer of reporting responsibility when it receives a J7.0 Drop Track message, fails to receive a J2 PPLI message for 40–60 seconds, receives a J2 PPLI with NPS Indicator set to Inactive or Conditional Radio Silence, or detects Geodetic Position Quality set to 0 in a J2 PPLI message.",
+      "evidence_card_ids": [
+        "P52",
+        "P8",
+        "P81"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU assumes reporting responsibility (R²) if it has not received a remote report on a locally held Air or Surface track for approximately 40 seconds, or on a Land track for approximately 120 seconds.",
+          "evidence_refs": [
+            "P52"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Upon receiving a J7.0 (ACT = 0) Drop Track message on a locally held track, the JU shall assume R² at the next opportunity to transmit the track, provided local reporting eligibility remains and no remote report has been received.",
+          "evidence_refs": [
+            "P52",
+            "P81"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "A C2 JU assumes R² of an Interface Unit if a J2 PPLI message is not received for 40 to 60 seconds, or if a J2 PPLI is received with the NPS Indicator set to Inactive or Conditional Radio Silence, or if the Geodetic Position Quality is set to 0.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The JU retains reporting responsibility until it is relinquished in accordance with specific rules or until the track is dropped.",
+          "evidence_refs": [
+            "P52",
+            "P81"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The JU relinquishes R² for a real-time track upon reception of a remote track report where the remote Track Quality (TQ) is greater than the local TQ.",
+          "evidence_refs": [
+            "P52",
+            "P81"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "If the remote TQ is equal to the local TQ, the JU relinquishes R² if the remote report comes from a JU whose Source Track Number (STN) is greater than the local STN.",
+          "evidence_refs": [
+            "P52",
+            "P81"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P52",
+        "P81",
+        "P8"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "A C² JU shall assume R² of an IU if a J2 PPLI message is not received for 40 to 60 seconds.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A C² JU shall assume R² of an IU if a J2 PPLI message (other than J2.0) is received with the NPS Indicator set to Inactive or Conditional Radio Silence.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "A C² JU shall assume R² of an IU if a J7.0 (ACT = 0) Drop Track message is received from the FJU for a PU, RU, or other IU.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "A C² JU shall assume R² of an IU if the Geodetic Position Quality in the J2 PPLI message is set to value 0.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "A JU assumes R² if it has not received a remote report on a locally held Air or Surface track for approximately 40 seconds, or on a Land track for approximately 120 seconds.",
+          "evidence_refs": [
+            "P52"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "A JU receiving a J7.0 (ACT = 0) message on a locally held track shall assume R² at the next opportunity to transmit the track if local reporting eligibility remains and no remote report has been received.",
+          "evidence_refs": [
+            "P52"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "A JU without R² for a nonreal-time track with TQ=0 shall assume R² when the track is locally updated by a new nonreal-time report.",
+          "evidence_refs": [
+            "P52"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "A JU receiving a J2 PPLI message with NPS Indicator set to Inactive, Conditional Radio Silence, or TDS Failure from a JU that has R² of a locally held track may assume R² at the next opportunity if local reporting eligibility remains and no remote report has been received.",
+          "evidence_refs": [
+            "P52"
+          ],
+          "step_number": 8
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P8",
+        "P52"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a J7.0 (ACT = 0) message is received on a reference point, line, area, or ground point, the current reporting responsibility (R²) unit is declared inactive, and another JU may assume R² by operator action only using the same Reference TN(s).",
+          "evidence_refs": [
+            "P19"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If no periodic update is received for three consecutive update intervals on a reference point, line, area, or ground point, another JU may assume R² by operator action only.",
+          "evidence_refs": [
+            "P19"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "For emergency points, if a J7.0 (ACT = 0) message is received, the unit with R² is declared inactive, or if no periodic update is received for three consecutive update intervals, another JU may assume R² by operator action only.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "A C² JU shall assume R² of an Interface Unit if a J2 PPLI message is not received for 40 to 60 seconds, which serves as an exception trigger when normal reporting fails.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "A C² JU shall assume R² of an Interface Unit if a J2 PPLI message (other than J2.0) is received with the NPS Indicator set to Inactive or Conditional Radio Silence, indicating an exception condition requiring takeover.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "A C² JU shall assume R² of an Interface Unit if a J7.0 (ACT = 0) Drop Track message is received from the FJU for a PU, RU, or other IU, triggering an exception path for responsibility transfer.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "A C² JU shall assume R² of an Interface Unit if the Geodetic Position Quality in the J2 PPLI message is set to value 0, indicating invalid position data and triggering an exception handling path.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 7
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P19",
+        "P20",
+        "P8"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "After assuming reporting responsibility (R²) of an Interface Unit (IU), the C² JU reports it as a track or point on the Surveillance Network PG with Identity reported as Friend, and maintains the PPLI Track Number and Identity Indicator as value 1 if another C² JU assumes R² of the IU.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "For subsurface tracks, if a J7.0 (ACT = 0) Drop Track message is received or a J3.4 message is not received for two consecutive periodic updates, another JU may assume reporting responsibility using a different Track Number.",
+          "evidence_refs": [
+            "P61"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "For emergency points, after transfer, the latest JU to report the point has reporting responsibility (R²) for that point and shall use the same TN Reference and TN Previously Reported as the previous reporting unit.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "For J3.7 EW Fix, AOP, or LOB reports, the originating unit always retains reporting responsibility; it is illegal for another unit to assume reporting responsibility unless the report is received in a J14.0 message.",
+          "evidence_refs": [
+            "P85"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "For ballistic missile tracks, a JU with R² relinquishes it upon receiving a remote real-time track report, and a JU assumes R² if its local TQ exceeds the received TQ by 1 or more, or if no remote report is received for 25 seconds on a locally held track.",
+          "evidence_refs": [
+            "P80"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P8",
+        "P61",
+        "P20",
+        "P85",
+        "P80"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "The C2 JU transfers reporting responsibility for a track to another unit when specific conditions are met, such as receiving a Drop Track message or loss of remote reports, ensuring continuous and accurate surveillance data exchange.",
+            "evidence_refs": [
+              "P85",
+              "P8",
+              "P52"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P85",
+          "P8",
+          "P52",
+          "P39",
+          "P61"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The unit originating a J3.7 EW Fix, AOP, or LOB report always retains reporting responsibility, and it is illegal to assume reporting responsibility for another unit's report unless specific exceptions apply (e.g., received in a J14.0 message).",
+            "evidence_refs": [
+              "P85"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A C2 JU shall assume reporting responsibility (R2) of an Interface Unit (IU) if a J2 PPLI message is not received for 40 to 60 seconds.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "A C2 JU shall assume reporting responsibility (R2) of an Interface Unit (IU) if a J2 PPLI message (other than J2.0) is received with the NPS Indicator set to Inactive or Conditional Radio Silence.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "A C2 JU shall assume reporting responsibility (R2) of an Interface Unit (IU) if a J7.0 (ACT = 0) Drop Track message is received from the FJU for a PU, RU, or other IU.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "A C2 JU shall assume reporting responsibility (R2) of an Interface Unit (IU) if the Geodetic Position Quality in the J2 PPLI message is set to value 0.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "A JU receiving a J7.0 message with the Track Management Action field set to value 0 (Drop Track Report) on a locally held track shall assume R2 at the next opportunity if local reporting eligibility remains and a remote report has not been received on that track.",
+            "evidence_refs": [
+              "P81"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Common tracking involves sharing a common track number and shifting reporting responsibility (R2) between C2 JUs to prevent cluttering the tactical plot.",
+            "evidence_refs": [
+              "P25"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P85",
+          "P8",
+          "P24",
+          "P25",
+          "P81"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The C2 JU initiates transfer of reporting responsibility when it receives a J7.0 Drop Track message, fails to receive a J2 PPLI message for 40–60 seconds, receives a J2 PPLI with NPS Indicator set to Inactive or Conditional Radio Silence, or detects Geodetic Position Quality set to 0 in a J2 PPLI message.",
+            "evidence_refs": [
+              "P52",
+              "P8",
+              "P81"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P52",
+          "P8",
+          "P81",
+          "P20",
+          "P124"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU assumes reporting responsibility (R²) if it has not received a remote report on a locally held Air or Surface track for approximately 40 seconds, or on a Land track for approximately 120 seconds.",
+            "evidence_refs": [
+              "P52"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Upon receiving a J7.0 (ACT = 0) Drop Track message on a locally held track, the JU shall assume R² at the next opportunity to transmit the track, provided local reporting eligibility remains and no remote report has been received.",
+            "evidence_refs": [
+              "P52",
+              "P81"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "A C2 JU assumes R² of an Interface Unit if a J2 PPLI message is not received for 40 to 60 seconds, or if a J2 PPLI is received with the NPS Indicator set to Inactive or Conditional Radio Silence, or if the Geodetic Position Quality is set to 0.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The JU retains reporting responsibility until it is relinquished in accordance with specific rules or until the track is dropped.",
+            "evidence_refs": [
+              "P52",
+              "P81"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The JU relinquishes R² for a real-time track upon reception of a remote track report where the remote Track Quality (TQ) is greater than the local TQ.",
+            "evidence_refs": [
+              "P52",
+              "P81"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "If the remote TQ is equal to the local TQ, the JU relinquishes R² if the remote report comes from a JU whose Source Track Number (STN) is greater than the local STN.",
+            "evidence_refs": [
+              "P52",
+              "P81"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P81",
+          "P8",
+          "P52",
+          "P88",
+          "P61"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "A C² JU shall assume R² of an IU if a J2 PPLI message is not received for 40 to 60 seconds.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A C² JU shall assume R² of an IU if a J2 PPLI message (other than J2.0) is received with the NPS Indicator set to Inactive or Conditional Radio Silence.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "A C² JU shall assume R² of an IU if a J7.0 (ACT = 0) Drop Track message is received from the FJU for a PU, RU, or other IU.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "A C² JU shall assume R² of an IU if the Geodetic Position Quality in the J2 PPLI message is set to value 0.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "A JU assumes R² if it has not received a remote report on a locally held Air or Surface track for approximately 40 seconds, or on a Land track for approximately 120 seconds.",
+            "evidence_refs": [
+              "P52"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "A JU receiving a J7.0 (ACT = 0) message on a locally held track shall assume R² at the next opportunity to transmit the track if local reporting eligibility remains and no remote report has been received.",
+            "evidence_refs": [
+              "P52"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "A JU without R² for a nonreal-time track with TQ=0 shall assume R² when the track is locally updated by a new nonreal-time report.",
+            "evidence_refs": [
+              "P52"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "A JU receiving a J2 PPLI message with NPS Indicator set to Inactive, Conditional Radio Silence, or TDS Failure from a JU that has R² of a locally held track may assume R² at the next opportunity if local reporting eligibility remains and no remote report has been received.",
+            "evidence_refs": [
+              "P52"
+            ],
+            "step_number": 8
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P8",
+          "P7",
+          "P52",
+          "P46",
+          "P39"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If a J7.0 (ACT = 0) message is received on a reference point, line, area, or ground point, the current reporting responsibility (R²) unit is declared inactive, and another JU may assume R² by operator action only using the same Reference TN(s).",
+            "evidence_refs": [
+              "P19"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If no periodic update is received for three consecutive update intervals on a reference point, line, area, or ground point, another JU may assume R² by operator action only.",
+            "evidence_refs": [
+              "P19"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "For emergency points, if a J7.0 (ACT = 0) message is received, the unit with R² is declared inactive, or if no periodic update is received for three consecutive update intervals, another JU may assume R² by operator action only.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "A C² JU shall assume R² of an Interface Unit if a J2 PPLI message is not received for 40 to 60 seconds, which serves as an exception trigger when normal reporting fails.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "A C² JU shall assume R² of an Interface Unit if a J2 PPLI message (other than J2.0) is received with the NPS Indicator set to Inactive or Conditional Radio Silence, indicating an exception condition requiring takeover.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "A C² JU shall assume R² of an Interface Unit if a J7.0 (ACT = 0) Drop Track message is received from the FJU for a PU, RU, or other IU, triggering an exception path for responsibility transfer.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "A C² JU shall assume R² of an Interface Unit if the Geodetic Position Quality in the J2 PPLI message is set to value 0, indicating invalid position data and triggering an exception handling path.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P19",
+          "P63",
+          "P39",
+          "P38",
+          "P20",
+          "P51",
+          "P8",
+          "P54"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "After assuming reporting responsibility (R²) of an Interface Unit (IU), the C² JU reports it as a track or point on the Surveillance Network PG with Identity reported as Friend, and maintains the PPLI Track Number and Identity Indicator as value 1 if another C² JU assumes R² of the IU.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "For subsurface tracks, if a J7.0 (ACT = 0) Drop Track message is received or a J3.4 message is not received for two consecutive periodic updates, another JU may assume reporting responsibility using a different Track Number.",
+            "evidence_refs": [
+              "P61"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "For emergency points, after transfer, the latest JU to report the point has reporting responsibility (R²) for that point and shall use the same TN Reference and TN Previously Reported as the previous reporting unit.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "For J3.7 EW Fix, AOP, or LOB reports, the originating unit always retains reporting responsibility; it is illegal for another unit to assume reporting responsibility unless the report is received in a J14.0 message.",
+            "evidence_refs": [
+              "P85"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "For ballistic missile tracks, a JU with R² relinquishes it upon receiving a remote real-time track report, and a JU assumes R² if its local TQ exceeds the received TQ by 1 or more, or if no remote report is received for 25 seconds on a locally held track.",
+            "evidence_refs": [
+              "P80"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P20",
+          "P61",
+          "P85",
+          "P8",
+          "P80"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 123.2
+}

@@ -1,0 +1,668 @@
+{
+  "use_case_name": "Register Customer Account",
+  "actor": "Customer",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "Create a free membership account.",
+          "evidence_refs": [
+            "EC-G-002",
+            "EC-G-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002",
+        "EC-G-000"
+      ],
+      "scope_contract": {
+        "goal_statement": "Customer creates a free membership account.",
+        "canonical_success_scenario": "The Customer navigates to the registration page, submits the required account information, and receives confirmation that the free membership account has been created.",
+        "start_boundary": "Customer begins the account registration process.",
+        "success_boundary": "The free membership account is successfully created and confirmed.",
+        "in_scope_actions": [
+          "Enter registration details",
+          "Submit registration form",
+          "Receive account creation confirmation"
+        ],
+        "excluded_adjacent_actions": [
+          "Collect payment",
+          "Place bids",
+          "Select preferred payment type"
+        ],
+        "variant_dimensions": [
+          "Free vs. paid membership account type"
+        ],
+        "evidence_refs": [
+          "EC-G-002",
+          "EC-G-000"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The email address the Customer submits for registration is not already associated with an existing account.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "precondition-email-uniqueness"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Customer navigates to the registration page to create a free membership account.",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-TR-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-TR-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-navigate-registration"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "Customer enters First Name, Last Name, Email Address (with verification), Password (8-12 characters, verified), and a unique Member ID ('Handle') into the registration form.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-MF-005"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Customer checks the checkbox to accept and agree with the JTVauctions.com Terms of Use Agreement.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Customer clicks the final registration button to submit the completed registration form.",
+          "evidence_refs": [
+            "EC-MF-007",
+            "EC-MF-004",
+            "EC-MF-014"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "System creates the free membership account, marks the registration process as complete, and displays a pop-up message instructing the Customer to whitelist the system's email address and enable cookies.",
+          "evidence_refs": [
+            "EC-MF-004",
+            "EC-MF-007",
+            "EC-G-002",
+            "EC-PO-000",
+            "EC-PO-004"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "System sends the Customer a confirmation email stating 'You are now registered with JTV Auctions!' and including instructions on how to whitelist the system's email addresses.",
+          "evidence_refs": [
+            "EC-MF-016",
+            "EC-MF-015"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-MF-005",
+        "EC-MF-003",
+        "EC-MF-007",
+        "EC-MF-004",
+        "EC-MF-014",
+        "EC-G-002",
+        "EC-PO-000",
+        "EC-PO-004",
+        "EC-MF-016",
+        "EC-MF-015"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 3: Instead of clicking the final registration button that submits the full registration details, the Customer clicks the 'I Want to Sign In Now!' button. The system creates the free membership account and allows the Customer to browse immediately, deferring completion of shipping/billing address details until the Customer wins an auction.",
+          "evidence_refs": [
+            "EC-AF-000",
+            "EC-MF-004"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-000",
+        "EC-MF-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-short-registration-defer-address"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from main flow Step 3: when the registrant submits the registration form using an email address that is already in use by an existing account, the system notifies the registrant that the email address is already in use and asks whether they need to reset the password for that account. If the registrant declines to reset the password, the registration attempt is abandoned and the use case terminates.",
+          "evidence_refs": [
+            "EC-EF-001",
+            "EC-PC-000"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Continuation of exception 1: if the Customer indicates yes to resetting the password, the system generates an email to the existing email address with a temporary password and advises the Customer to change it. The registration attempt ends and the use case terminates without creating a new account.",
+          "evidence_refs": [
+            "EC-EF-002"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from main flow Step 3: after the registrant submits the registration form, the system cross-references the Consumer Protection negative file. In the event of a match, the registrant receives the message: 'We are sorry, we are unable to create an auction account for you at this time. If you believe this message to be in error, please contact our Customer Service team at: 800-550-8393.' The registration is denied and the use case terminates.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from main flow Step 3: if the email address submitted for registration is associated with a closed or suspended account, the system blocks access and displays a popup stating: 'We're sorry, this account has been closed [suspended]. If you believe this is an error, please call or email Customer Care at (800) 123-4567 or Auctions@jtv.com.' The registration attempt ends and the use case terminates without creating an account.",
+          "evidence_refs": [
+            "EC-EF-000"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-001",
+        "EC-PC-000",
+        "EC-EF-002",
+        "EC-EF-003",
+        "EC-EF-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "exception-duplicate-email",
+          "exception-password-reset",
+          "exception-negative-file-match",
+          "exception-closed-suspended-account"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The system creates the free membership account in the database.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The system marks the registration process as complete and displays a pop-up message instructing the Customer to whitelist the system's email address and enable cookies.",
+          "evidence_refs": [
+            "EC-PO-004"
+          ]
+        },
+        {
+          "content": "The system sends an automated transactional confirmation email to the Customer's email address with a welcome/thank-you message and instructions to whitelist the system's email addresses.",
+          "evidence_refs": [
+            "EC-PO-008"
+          ]
+        },
+        {
+          "content": "The Customer can browse immediately without completing shipping/billing address details; address entry is deferred until the Customer wins an auction.",
+          "evidence_refs": [
+            "EC-PO-005"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-PO-004",
+        "EC-PO-008",
+        "EC-PO-005"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "postconditions",
+        "main_flow"
+      ],
+      "inconsistency_hints": [
+        "Postcondition claim 2 states the Customer is authenticated and logged in, sees a personalized welcome message, and can access the 'Change Membership Account Information' page. Main Flow only creates the account and sends a confirmation email; it never establishes an authenticated session, displays a welcome message, or provides access to that page.",
+        "Postcondition claim 5 depends on the Customer having chosen an immediate-browse option, but Main Flow contains no such option or branch. The conditional return to the last product details page or home page is therefore not reachable from the described flow.",
+        "Postcondition claim 3 requires the confirmation email to include instructions to enable cookies, but the final Main Flow email step only mentions whitelist instructions. As written, the email produced by Main Flow does not fully match the postcondition's required email content.",
+        "The Main Flow ends after the confirmation email is sent, but it never includes a step in which the system marks registration complete and displays the pop-up with whitelist/cookie instructions that Postcondition 2 guarantees. Therefore the Main Flow does not fully reach the Postconditions state."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 40,
+    "cross_page_cards": 25,
+    "modalities": {
+      "text": 38,
+      "diagram": 2
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1553.229,
+    "llm_calls": 24,
+    "lvlm_calls": 37,
+    "llm_seconds": 1356.24,
+    "llm_retry_calls": 0,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 189.235,
+    "cards_collected": 40,
+    "cards_referenced": 22
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Structured author candidates captured before deterministic evidence-reference validation. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "Create a free membership account.",
+            "evidence_refs": [
+              "EC-G-002",
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The email address the Customer submits for registration is not already associated with an existing account.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer navigates to the registration page to create a free membership account.",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-TR-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Customer enters First Name, Last Name, Email Address (with verification), Password (8-12 characters, verified), and a unique Member ID ('Handle') into the registration form.",
+            "evidence_refs": [
+              "EC-MF-000",
+              "EC-MF-005"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Customer checks the checkbox to accept and agree with the JTVauctions.com Terms of Use Agreement.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Customer clicks the final registration button to submit the completed registration form.",
+            "evidence_refs": [
+              "EC-MF-007",
+              "EC-MF-004",
+              "EC-MF-014"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "System creates the free membership account.",
+            "evidence_refs": [
+              "EC-MF-004",
+              "EC-MF-007",
+              "EC-G-002"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "System sends the Customer a confirmation email stating 'You are now registered with JTV Auctions!' and including instructions on how to whitelist the system's email addresses.",
+            "evidence_refs": [
+              "EC-MF-016",
+              "EC-MF-015"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-PC-000",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from Step 3: Instead of clicking the final registration button that submits the full registration details, the Customer clicks the 'I Want to Sign In Now!' button. The system creates the free membership account and allows the Customer to browse immediately, deferring completion of shipping/billing address details until the Customer wins an auction.",
+            "evidence_refs": [
+              "EC-AF-000",
+              "EC-MF-004"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-G-000",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-007",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-PC-000",
+          "EC-TR-000",
+          "EC-TR-001"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "Diverges from main flow Step 3: when the registrant submits the registration form using an email address that is already in use by an existing account, the system notifies the registrant that the email address is already in use and asks whether they need to reset the password for that account. If the registrant declines to reset the password, the registration attempt is abandoned and the use case terminates.",
+            "evidence_refs": [
+              "EC-EF-001",
+              "EC-PC-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Continuation of exception 1: if the Customer indicates yes to resetting the password, the system generates an email to the existing email address with a temporary password and advises the Customer to change it. The registration attempt ends and the use case terminates without creating a new account.",
+            "evidence_refs": [
+              "EC-EF-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from main flow Step 3: after the registrant submits the registration form, the system cross-references the Consumer Protection negative file. In the event of a match, the registrant receives the message: 'We are sorry, we are unable to create an auction account for you at this time. If you believe this message to be in error, please contact our Customer Service team at: 800-550-8393.' The registration is denied and the use case terminates.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from main flow Step 3: if the email address submitted for registration is associated with a closed or suspended account, the system blocks access and displays a popup stating: 'We're sorry, this account has been closed [suspended]. If you believe this is an error, please call or email Customer Care at (800) 123-4567 or Auctions@jtv.com.' The registration attempt ends and the use case terminates without creating an account.",
+            "evidence_refs": [
+              "EC-EF-000"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-G-000",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-007",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-PC-000",
+          "EC-TR-001"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The system creates the free membership account in the database.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "The Customer is authenticated and logged in; the system displays a personalized welcome message and the Customer can access the 'Change Membership Account Information' page showing their current profile information.",
+            "evidence_refs": [
+              "EC-PO-007",
+              "EC-PO-006"
+            ]
+          },
+          {
+            "content": "The system sends an automated transactional confirmation email to the Customer's email address with a welcome/thank-you message and instructions to enable cookies and whitelist the system's email addresses.",
+            "evidence_refs": [
+              "EC-PO-008",
+              "EC-PO-003",
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "The Customer can browse immediately without completing shipping/billing address details; address entry is deferred until the Customer wins an auction.",
+            "evidence_refs": [
+              "EC-PO-005"
+            ]
+          },
+          {
+            "content": "If the Customer chose the immediate-browse option, the system returns them to their last product details page, or to the home page if they were previously on the home page.",
+            "evidence_refs": [
+              "EC-PO-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-PC-000",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-TR-001"
+        ]
+      }
+    }
+  },
+  "method": "CREST - mandatory evidence constraint",
+  "ablation": {
+    "key": "without_evidence_constraint",
+    "method": "CREST - mandatory evidence constraint",
+    "directory": "without_evidence_constraint",
+    "seed": null,
+    "slot_order": null,
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": false,
+    "dra_enabled": true
+  }
+}

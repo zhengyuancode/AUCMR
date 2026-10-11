@@ -1,0 +1,881 @@
+{
+  "use_case_name": "Initiate Emergency Point Reports",
+  "actor": "System Operator",
+  "slots": {
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The System Operator initiates an Emergency Point Report to report the existence of an emergency condition that requires search and rescue efforts.",
+          "evidence_refs": [
+            "EC-G-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The Emergency Point Report is transmitted as a J3.1 message.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "Each point in the report has been assigned a TN(s) by the reporting JU, and the point's position is reported using geodetic latitude/longitude values.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ]
+        },
+        {
+          "content": "The reporting JU is the latest JU to report the point, so it has R² for that point.",
+          "evidence_refs": [
+            "EC-PO-002"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "If an Emergency Point Report includes a TN Previously Reported, the TN Previously Reported shall be different from the TN Reference.",
+          "evidence_refs": [
+            "EC-PO-010"
+          ]
+        },
+        {
+          "content": "Alerts are not used for the J3.1 Emergency Point message since these points cannot be filtered.",
+          "evidence_refs": [
+            "EC-EF-018"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-PO-001",
+        "EC-PO-002",
+        "EC-PO-010",
+        "EC-EF-018"
+      ]
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "Emergency Point Reports (J3.1 messages) are used to report the existence of an emergency condition that requires search and rescue efforts.",
+          "evidence_refs": [
+            "EC-G-002",
+            "EC-G-004"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002",
+        "EC-G-004"
+      ],
+      "scope_contract": {
+        "goal_statement": "Emergency Point Reports (J3.1 messages) are used to report the existence of an emergency condition that requires search and rescue efforts.",
+        "canonical_success_scenario": "The System Operator initiates an Emergency Point Report that reports the existence of an emergency condition requiring search and rescue efforts.",
+        "start_boundary": "The System Operator is prepared to initiate an Emergency Point Report for an emergency condition requiring search and rescue.",
+        "success_boundary": "The Emergency Point Report has been initiated, reporting the existence of the emergency condition requiring search and rescue.",
+        "in_scope_actions": [
+          "Initiate an Emergency Point Report",
+          "Report the existence of an emergency condition requiring search and rescue efforts"
+        ],
+        "excluded_adjacent_actions": [
+          "Reporting on a previously reported emergency point with additional or more current information",
+          "Assuming R² for an existing emergency point",
+          "Maintaining TN Reference continuity",
+          "Database acceptance of the report by receiving JUs"
+        ],
+        "variant_dimensions": [
+          "Not applicable to the canonical instance; reports on previously reported emergency points are treated as adjacent/update actions."
+        ],
+        "evidence_refs": [
+          "EC-G-002",
+          "EC-G-004"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the System Operator attempts to initiate an Emergency Point Report for a Reference Point or a Space/Ballistic Missile Track, the Emergency Point Report shall not be initiated.",
+          "evidence_refs": [
+            "EC-EF-017"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "When Force Tell and Emergency Indicators are set in J3 messages, the message overrides all operator-controllable data filters.",
+          "evidence_refs": [
+            "EC-EF-010"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Alerts are not used for the J3.1 Emergency Point message because emergency points cannot be filtered.",
+          "evidence_refs": [
+            "EC-EF-018"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-017",
+        "EC-EF-010",
+        "EC-EF-018"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "prohibited-emergency-entity",
+          "filter-override",
+          "alert-exclusion"
+        ],
+        "missing_aspects": [
+          "Recovery path after prohibited Emergency Point Report initiation on a Reference Point or Space/Ballistic Missile Track is not specified."
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "At Step 2, if the Exercise Indicator is set to value 1 in the J3.1 message, the report is for exercise purposes and is not an actual emergency.",
+          "evidence_refs": [
+            "EC-AF-004"
+          ],
+          "step_number": 1
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-004"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The System Operator initiates an Emergency Point Report through operator action only, to report the existence of an emergency condition requiring search and rescue efforts.",
+          "evidence_refs": [
+            "EC-MF-002",
+            "EC-G-002",
+            "EC-G-004"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The System Operator assigns a TN(s) to the emergency point and reports its position using geodetic latitude/longitude values.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Emergency Point Report is transmitted as a J3.1 message.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-PO-000"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-002",
+        "EC-G-002",
+        "EC-G-004",
+        "EC-PO-001",
+        "EC-MF-000",
+        "EC-PO-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-initiating-action",
+          "MF-point-data",
+          "MF-message-transmission"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "An emergency condition exists that requires search and rescue efforts.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "pc-emergency-condition-information"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "System Operator",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "System Operator"
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 2 is a conditional branch ('When Force Tell and Emergency Indicators are set...') but after stating that the message overrides filters, it does not specify an exit: no return to a Main Flow step, no termination/handoff, and no terminal failure/prevention state. The branch therefore fails the exception-flow exit coverage rule. (atomic grounding: candidate remains incomplete (Explicit evidence that the Emergency Point Report (not just emergency points generally) is transmitted as a J3.1 message and that this transmission is consequent to the Force Tell/Emergency Indicator filter override.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] Main Flow has no step that establishes or validates a TN Previously Reported field, nor the rule that it must differ from the TN Reference. Step 2 only assigns TN(s) and position data, and Step 3 transmits the message. The scope contract also excludes TN Reference continuity and reports on previously reported emergency points, so this conditional postcondition is not reached by the canonical initiate-report flow.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] Main Flow ends with transmission of the J3.1 message and contains no step or system behavior about alerts. The postcondition that alerts are not used for the Emergency Point message is an alerting-side rule that is not produced by the operator's initiate-report actions, and EC-EF-018 is not anchored in any main-flow step.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "trigger",
+        "postconditions",
+        "alternative_flow"
+      ],
+      "inconsistency_hints": [
+        "The Trigger describes a different, adjacent scenario: it says 'Any JU may report ... on a previously reported emergency point when that JU has additional or more current information', while Main Flow step 1 is about the System Operator initiating an Emergency Point Report to report the existence of an emergency condition requiring SAR. The goal scope contract also lists 'Reporting on a previously reported emergency point with additional or more current information' as an excluded adjacent action, so the Trigger restarts a different scenario instead of continuing into Main Flow step 1.",
+        "Postcondition 4 requires the report to use the same TN Reference and TN Previously Reported as the previous reporting unit when assuming R². The Main Flow only assigns a TN/geodetic position and transmits a J3.1; it does not establish or preserve TN continuity with a previous reporting unit. The goal scope contract explicitly lists 'Maintaining TN Reference continuity' and 'Assuming R² for an existing emergency point' as excluded adjacent actions, so this postcondition is not reachable from the canonical Main Flow.",
+        "Postcondition 5 requires all receiving JUs to accept the emergency alert in their databases. The Main Flow ends at transmission of the J3.1 message and contains no step producing or verifying receiving-side database acceptance. The goal scope contract also excludes 'Database acceptance of the report by receiving JUs' as an adjacent action, so this postcondition is not reasonably reached by the specified Main Flow.",
+        "Alternative flow claim 1 does not specify which main_flow step it diverges from. It only states the exercise-indicator condition in the J3.1 message; without an explicit branch point (e.g., Step 2 or Step 3), the alternative flow cannot be laterally aligned with the main flow.",
+        "The postcondition requires a TN Reference different from a TN Previously Reported, but the Main Flow is an initiation flow that only assigns a TN and transmits a J3.1 message; it never establishes any previously reported TN. The scope contract also explicitly excludes reporting on previously reported emergency points and maintaining TN Reference continuity, so this postcondition is not reachable from the initiation flow and appears to belong to an update/continuity scenario."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 59,
+    "cross_page_cards": 27,
+    "modalities": {
+      "text": 59
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2009.194,
+    "llm_calls": 26.0,
+    "llm_seconds": 1900.743,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 107.629,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 11.0,
+    "judge_calls": 0,
+    "cards_collected": 50,
+    "cards_referenced": 15,
+    "evidence_reused": true,
+    "reused_card_count": 50,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/milstd6016b_sec4/System_Operator_Initiate_Emergency_Point_Reports-evidence.json",
+    "dra_elapsed_seconds": 1452.336,
+    "dra_llm_calls": 19,
+    "dra_llm_seconds": 1408.862,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 42.77,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_calls": 4,
+    "dra_judge_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The System Operator initiates an Emergency Point Report to report the existence of an emergency condition that requires search and rescue efforts.",
+            "evidence_refs": [
+              "EC-G-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Emergency Point Report is transmitted as a J3.1 message.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "Each point in the report has been assigned a TN(s) by the reporting JU, and the point's position is reported using geodetic latitude/longitude values.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "The reporting JU is the latest JU to report the point, so it has R² for that point.",
+            "evidence_refs": [
+              "EC-PO-002"
+            ]
+          },
+          {
+            "content": "If an Emergency Point Report includes a TN Previously Reported, the TN Previously Reported shall be different from the TN Reference.",
+            "evidence_refs": [
+              "EC-PO-010"
+            ]
+          },
+          {
+            "content": "Alerts are not used for the J3.1 Emergency Point message since these points cannot be filtered.",
+            "evidence_refs": [
+              "EC-EF-018"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-TR-000"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Emergency Point Reports (J3.1 messages) are used to report the existence of an emergency condition that requires search and rescue efforts.",
+            "evidence_refs": [
+              "EC-G-002",
+              "EC-G-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "If the System Operator attempts to initiate an Emergency Point Report for a Reference Point or a Space/Ballistic Missile Track, the Emergency Point Report shall not be initiated.",
+            "evidence_refs": [
+              "EC-EF-017"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "When Force Tell and Emergency Indicators are set in J3 messages, the message overrides all operator-controllable data filters.",
+            "evidence_refs": [
+              "EC-EF-010"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Alerts are not used for the J3.1 Emergency Point message because emergency points cannot be filtered.",
+            "evidence_refs": [
+              "EC-EF-018"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "At Step 2, if the Exercise Indicator is set to value 1 in the J3.1 message, the report is for exercise purposes and is not an actual emergency.",
+            "evidence_refs": [
+              "EC-AF-004"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-TR-000"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The System Operator initiates an Emergency Point Report through operator action only, to report the existence of an emergency condition requiring search and rescue efforts.",
+            "evidence_refs": [
+              "EC-MF-002",
+              "EC-G-002",
+              "EC-G-004"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The System Operator assigns a TN(s) to the emergency point and reports its position using geodetic latitude/longitude values.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Emergency Point Report is transmitted as a J3.1 message.",
+            "evidence_refs": [
+              "EC-MF-000",
+              "EC-PO-000"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "An emergency condition exists that requires search and rescue efforts.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=29]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=29]",
+    "directory": "random_order/seed_029",
+    "seed": 29,
+    "slot_order": [
+      "trigger",
+      "postconditions",
+      "goal",
+      "exception_flow",
+      "alternative_flow",
+      "main_flow",
+      "preconditions",
+      "primary_actor"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "8e9309a87f8f4c4caab06a5b631e5eb4"
+}

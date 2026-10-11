@@ -1,0 +1,1170 @@
+{
+  "use_case_name": "Terminate and Purge Surveillance Tracks",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The goal is to terminate and purge surveillance tracks (Air, Surface/Maritime, Land/Ground) by transmitting a J7.0 (ACT = 0) message or automatically purging remote tracks after a specific time interval.",
+          "evidence_refs": [
+            "EC-G-001"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "The goal is to terminate and purge surveillance tracks (Air, Surface/Maritime, Land/Ground) by transmitting a J7.0 (ACT = 0) message or automatically purging remote tracks after a specific time interval.",
+        "canonical_success_scenario": "C2 JU transmits a J7.0 (ACT=0) message to terminate and purge a targeted surveillance track.",
+        "start_boundary": "A surveillance track exists that C2 JU has decided to terminate/purge, or a remote track's auto-purge interval has elapsed.",
+        "success_boundary": "The targeted surveillance track has been terminated and purged; in the explicit case, the J7.0 (ACT=0) message has been transmitted.",
+        "in_scope_actions": [
+          "Terminate a surveillance track",
+          "Purge a surveillance track",
+          "Transmit a J7.0 (ACT=0) message",
+          "Automatically purge remote tracks after a specific time interval"
+        ],
+        "excluded_adjacent_actions": [
+          "Using PPLI data from J2 messages to reduce redundancy of surveillance track reporting",
+          "Terminating EW product information transmission when invalid or update requirements are not met"
+        ],
+        "variant_dimensions": [
+          "Track category: Air, Surface/Maritime, Land/Ground, including ballistic missile tracks",
+          "Termination mechanism: explicit J7.0 (ACT=0) message vs automatic timeout purge"
+        ],
+        "evidence_refs": [
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU currently has reporting responsibility (R²) for the surveillance track that is to be terminated.",
+          "evidence_refs": [
+            "EC-PC-002"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The system has the capability to automatically purge remote tracks/points (i.e., automatically drop a remote track/point after a specified time interval has elapsed since the track's/point's last report), and a remote track/point exists for which that specified time interval has elapsed.",
+          "evidence_refs": [
+            "EC-PC-001",
+            "EC-PC-003"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-002",
+        "EC-PC-001",
+        "EC-PC-003"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The trigger is when a JU ceases reporting a track for which it currently has R², triggering transmission of a J7.0 (ACT=0) Drop Track Report; alternatively, when a system does not receive a J7.0 (ACT=0) message and receives no further updates on a remote track/point for a specified time interval, triggering automatic purge. This includes ballistic missile tracks.",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-TR-003",
+            "EC-TR-005",
+            "EC-TR-002",
+            "EC-TR-000",
+            "EC-TR-006"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-TR-003",
+        "EC-TR-005",
+        "EC-TR-002",
+        "EC-TR-000",
+        "EC-TR-006"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU ceases reporting the surveillance track for which it currently has reporting responsibility (R²).",
+          "evidence_refs": [
+            "EC-MF-017",
+            "EC-MF-013",
+            "EC-MF-025"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C2 JU transmits a J7.0 Track Management message with the Track Management Action field set to value 0 (Drop Track Report) for the Reference TN of the dropped track.",
+          "evidence_refs": [
+            "EC-MF-010",
+            "EC-MF-025",
+            "EC-MF-013"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The J7.0 (ACT=0) Drop Track Report message indicates that the C2 JU has dropped or ceased reporting the track specified in the Reference TN field.",
+          "evidence_refs": [
+            "EC-MF-025"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "Alternatively, for a remote track/point where no J7.0 (ACT = 0) message is received and no further updates occur for a specified time interval (a system-selected parameter), the system automatically purges the remote track/point; in this case, the JU shall not transmit a J7.0 (ACT = 0) message.",
+          "evidence_refs": [
+            "EC-MF-003",
+            "EC-MF-007",
+            "EC-MF-000"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-017",
+        "EC-MF-013",
+        "EC-MF-025",
+        "EC-MF-010",
+        "EC-MF-003",
+        "EC-MF-007",
+        "EC-MF-000"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2: If the C2 JU receives no J7.0 (ACT=0) message and receives no further updates on a remote track/point (DRT=0-3, including a remote ballistic missile track), the C2 JU automatically purges the remote track/point after a specific, system-selected time interval has elapsed since the track's/point's last report, rather than by transmitting a J7.0 (ACT=0) Drop Track Report; DATUM tracks/points (DRT=4) are not purged automatically, and no J7.0 (ACT=0) is transmitted on the purged remote track/point.",
+          "evidence_refs": [
+            "EC-MF-003",
+            "EC-MF-007",
+            "EC-TR-002",
+            "EC-TR-000",
+            "EC-TR-006",
+            "EC-MF-021",
+            "EC-MF-000"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-003",
+        "EC-MF-007",
+        "EC-TR-002",
+        "EC-TR-000",
+        "EC-TR-006",
+        "EC-MF-021",
+        "EC-MF-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "alt-automatic-timeout-purge",
+          "alt-drt-scope"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from main_flow Step 2: If the C2 JU ceases reporting a track because it has relinquished R² to another JU, the J7.0 (ACT=0) message is not transmitted.",
+          "evidence_refs": [
+            "EC-EF-004"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from main_flow Step 1: If for any reason, such as operator error, a track's simulation status is to be changed, the C2 JU shall drop the track using the J7.0 (ACT=0) message and report a new track. Exit: the original track is dropped via J7.0 (ACT=0) and a new track shall be reported.",
+          "evidence_refs": [
+            "EC-EF-017"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from the simulation-status drop-and-recreate exception: If the track is being received from an FJU, a change from live to simulated shall be accepted without dropping the track.",
+          "evidence_refs": [
+            "EC-EF-018"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-004",
+        "EC-EF-017",
+        "EC-EF-018"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "exc-r2-relinquish-no-j7.0",
+          "exc-sim-status-drop-recreate",
+          "exc-fju-live-to-sim-accepted"
+        ],
+        "missing_aspects": [
+          "The claim states 'Exit: no J7.0 (ACT=0) message is sent', which implies a specific flow termination or outcome state. The cited evidence (EC-EF-004) only defines the condition under which the message is suppressed ('is not transmitted') but does not explicitly define the subsequent exit behavior or end state of the use case step.",
+          "The claim states 'Exit: the live-to-simulated change is accepted and the drop-and-recreate action is not performed.' While the evidence supports that the change is 'accepted' (implying the drop is not performed), it does not explicitly describe the resulting system state or 'exit' behavior required by strict semantic verification rules."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "In the explicit termination case, the C2 JU transmits a J7.0 (ACT=0) Drop Track Report for the Reference TN of the track being dropped; for ballistic missile tracks where the JU currently has reporting responsibility (R²), this occurs when the JU ceases reporting the track, and the message indicates that the JU has dropped or ceased reporting the specified track.",
+          "evidence_refs": [
+            "EC-PO-015",
+            "EC-PO-011"
+          ]
+        },
+        {
+          "content": "Remote tracks/points (DRT=0-3), including remote ballistic missile tracks, for which no J7.0 (ACT=0) message is received and no further updates occur are automatically purged after the system-selected time interval.",
+          "evidence_refs": [
+            "EC-PO-008",
+            "EC-PO-012",
+            "EC-PO-014"
+          ]
+        },
+        {
+          "content": "For a remote track/point that has been automatically purged after the specified time interval, no J7.0 (ACT=0) message is transmitted.",
+          "evidence_refs": [
+            "EC-PO-002",
+            "EC-PO-009"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-015",
+        "EC-PO-011",
+        "EC-PO-008",
+        "EC-PO-012",
+        "EC-PO-014",
+        "EC-PO-002",
+        "EC-PO-009"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "explicit-drop-report",
+          "automatic-purge-remote-tracks",
+          "automatic-purge-no-j7.0"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] The Trigger includes an automatic timeout purge path, and Postconditions 2 and 3 promise automatic purge of stale remote tracks/points without transmitting a J7.0. The Main Flow contains only the explicit termination path (cease reporting + transmit J7.0 ACT=0), so the automatic-purge postconditions are not reachable from the Main Flow. (atomic grounding: candidate remains incomplete (Explicit evidence that the system actually performs the automatic purge action, as opposed to only having the capability to purge.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Precondition 2 includes 'a remote track/point exists for which that specified time interval has elapsed.' That is the automatic-purge trigger condition, not a stable state that must hold before the Trigger: the Trigger says automatic purge is initiated when the system has received no J7.0 and no further updates for the interval. Listing the completed interval as a precondition makes the automatic purge already due before the use case starts, breaking vertical flow continuity from preconditions to trigger.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "trigger",
+        "preconditions",
+        "main_flow"
+      ],
+      "inconsistency_hints": [
+        "The explicit J7.0 termination trigger is limited to ballistic missile tracks, while Main Flow step 1 and the Preconditions refer to 'the surveillance track' generally (Air, Surface/Maritime, Land/Ground). This creates a vertical gap: non-ballistic surveillance tracks have no explicit trigger leading into the Main Flow.",
+        "The automatic-purge Trigger requires the system to be capable of purging a remote track/point after the specified interval, but Preconditions only state that the interval has elapsed. The cited evidence EC-PC-001 and EC-PC-003 use permissive 'may/should' language and do not establish that a specific track is subject to automatic purge, so the automatic-purge trigger path is not fully covered by Preconditions.",
+        "The Trigger defines two entry paths: explicit termination via J7.0 (ACT=0) and automatic purge of remote tracks after a timeout interval. The Main Flow only implements the explicit path (cease reporting -> transmit J7.0 ACT=0). No Main Flow step continues the automatic-purge path, so that trigger alternative is not followed and the automatic-purge postconditions are unreachable."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 109,
+    "cross_page_cards": 29,
+    "modalities": {
+      "text": 109
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1983.448,
+    "judge_calls": 0,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 7.0,
+    "llm_seconds": 1895.919,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 87.479,
+    "llm_calls": 21.0,
+    "judge_seconds": 0.0,
+    "cards_collected": 109,
+    "cards_referenced": 26,
+    "evidence_reused": true,
+    "reused_card_count": 109,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/milstd6016b_sec4/C2_JU_Terminate_and_Purge_Surveillance_Tracks-evidence.json",
+    "dra_elapsed_seconds": 1257.381,
+    "dra_judge_calls": 0,
+    "dra_llm_retry_calls": 0,
+    "dra_lvlm_calls": 0,
+    "dra_llm_seconds": 1257.372,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_calls": 14,
+    "dra_judge_seconds": 0.0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The goal is to terminate and purge surveillance tracks (Air, Surface/Maritime, Land/Ground) by transmitting a J7.0 (ACT = 0) message or automatically purging remote tracks after a specific time interval.",
+            "evidence_refs": [
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU currently has reporting responsibility (R²) for the surveillance track that is to be terminated.",
+            "evidence_refs": [
+              "EC-PC-002"
+            ]
+          },
+          {
+            "content": "The system has the capability to automatically purge remote tracks/points (i.e., automatically drop a remote track/point after a specified time interval has elapsed since the track's/point's last report), and a remote track/point exists for which that specified time interval has elapsed.",
+            "evidence_refs": [
+              "EC-PC-001",
+              "EC-PC-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-EF-047",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The trigger is when a JU ceases reporting a track for which it currently has R², triggering transmission of a J7.0 (ACT=0) Drop Track Report; alternatively, when a system does not receive a J7.0 (ACT=0) message and receives no further updates on a remote track/point for a specified time interval, triggering automatic purge. This includes ballistic missile tracks.",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-TR-003",
+              "EC-TR-005",
+              "EC-TR-002",
+              "EC-TR-000",
+              "EC-TR-006"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-EF-047",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU ceases reporting the surveillance track for which it currently has reporting responsibility (R²).",
+            "evidence_refs": [
+              "EC-MF-017",
+              "EC-MF-013",
+              "EC-MF-025"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU transmits a J7.0 Track Management message with the Track Management Action field set to value 0 (Drop Track Report) for the Reference TN of the dropped track.",
+            "evidence_refs": [
+              "EC-MF-010",
+              "EC-MF-025",
+              "EC-MF-013"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The J7.0 (ACT=0) Drop Track Report message indicates that the C2 JU has dropped or ceased reporting the track specified in the Reference TN field.",
+            "evidence_refs": [
+              "EC-MF-025"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Alternatively, for a remote track/point where no J7.0 (ACT = 0) message is received and no further updates occur for a specified time interval (a system-selected parameter), the system automatically purges the remote track/point; in this case, the JU shall not transmit a J7.0 (ACT = 0) message.",
+            "evidence_refs": [
+              "EC-MF-003",
+              "EC-MF-007",
+              "EC-MF-000"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-EF-047",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 2: If the C2 JU receives no J7.0 (ACT=0) message and receives no further updates on a remote track/point (DRT=0-3, including a remote ballistic missile track), the C2 JU automatically purges the remote track/point after a specific, system-selected time interval has elapsed since the track's/point's last report, rather than by transmitting a J7.0 (ACT=0) Drop Track Report; DATUM tracks/points (DRT=4) are not purged automatically, and no J7.0 (ACT=0) is transmitted on the purged remote track/point.",
+            "evidence_refs": [
+              "EC-MF-003",
+              "EC-MF-007",
+              "EC-TR-002",
+              "EC-TR-000",
+              "EC-TR-006",
+              "EC-MF-021",
+              "EC-MF-000"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from main_flow Step 2: If the C2 JU ceases reporting a track because it has relinquished R² to another JU, the J7.0 (ACT=0) message is not transmitted.",
+            "evidence_refs": [
+              "EC-EF-004"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from main_flow Step 1: If for any reason, such as operator error, a track's simulation status is to be changed, the C2 JU shall drop the track using the J7.0 (ACT=0) message and report a new track. Exit: the original track is dropped via J7.0 (ACT=0) and a new track shall be reported.",
+            "evidence_refs": [
+              "EC-EF-017"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from the simulation-status drop-and-recreate exception: If the track is being received from an FJU, a change from live to simulated shall be accepted without dropping the track.",
+            "evidence_refs": [
+              "EC-EF-018"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-EF-047",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "In the explicit termination case, the C2 JU transmits a J7.0 (ACT=0) Drop Track Report for the Reference TN of the track being dropped; for ballistic missile tracks where the JU currently has reporting responsibility (R²), this occurs when the JU ceases reporting the track, and the message indicates that the JU has dropped or ceased reporting the specified track.",
+            "evidence_refs": [
+              "EC-PO-015",
+              "EC-PO-011"
+            ]
+          },
+          {
+            "content": "Remote tracks/points (DRT=0-3), including remote ballistic missile tracks, for which no J7.0 (ACT=0) message is received and no further updates occur are automatically purged after the system-selected time interval.",
+            "evidence_refs": [
+              "EC-PO-008",
+              "EC-PO-012",
+              "EC-PO-014"
+            ]
+          },
+          {
+            "content": "For a remote track/point that has been automatically purged after the specified time interval, no J7.0 (ACT=0) message is transmitted.",
+            "evidence_refs": [
+              "EC-PO-002",
+              "EC-PO-009"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-EF-047",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "01926b82c447487e97817559cb791618"
+}

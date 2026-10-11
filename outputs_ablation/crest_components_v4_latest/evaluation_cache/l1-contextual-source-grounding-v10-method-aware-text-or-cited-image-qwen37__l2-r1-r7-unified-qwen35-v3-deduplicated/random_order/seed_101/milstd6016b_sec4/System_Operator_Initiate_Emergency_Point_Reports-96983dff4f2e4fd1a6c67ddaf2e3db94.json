@@ -1,0 +1,507 @@
+{
+  "use_case_name": "Initiate Emergency Point Reports",
+  "actor": "System Operator",
+  "scg": 100.0,
+  "nli_g": 73.33333333333333,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 54.0,
+  "avg_cards": 20,
+  "total_claims": 15,
+  "total_cited_claims": 15,
+  "total_entailed_claims": 11,
+  "pre_constraint_claim_count": 15,
+  "pre_constraint_cited_claim_count": 15,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 50,
+  "cross_page_cards": 27,
+  "referenced_cards": 20,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 4,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 2,
+      "cited_claim_count": 2,
+      "evidence_ref_count": 8,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 1,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 4,
+      "cited_claim_count": 4,
+      "evidence_ref_count": 5,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 5,
+      "cited_claim_count": 5,
+      "evidence_ref_count": 5,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R3": 1,
+    "R2": 1
+  },
+  "l3_violations_pre_repair": {
+    "R1": 0,
+    "R2": 1,
+    "R3": 1,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 0
+  },
+  "l2_violations": {
+    "R1": 0,
+    "R2": 1,
+    "R3": 1,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 1
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R2": [
+        {
+          "rule_id": "R2",
+          "rule_name": "mainflow_trigger_continuity",
+          "offending_slot": "main_flow",
+          "offending_claim_index": 0,
+          "rationale": "Main Flow step 1 describes assigning TNs and reporting position, which logically precedes the 'initiation' described in the Trigger, creating a temporal contradiction where the flow starts before the trigger event."
+        }
+      ],
+      "R3": [
+        {
+          "rule_id": "R3",
+          "rule_name": "mainflow_postconditions_reachability",
+          "offending_slot": "postconditions",
+          "offending_claim_index": 4,
+          "rationale": "The Main Flow only covers the System Operator's transmission actions and does not include steps for receiving JUs to process or accept the alert, making this postcondition unreachable from the defined flow."
+        }
+      ],
+      "R7": [
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 2,
+          "rationale": "The branch describes successful message acceptance and filter overriding but lacks an explicit terminal outcome such as 'report initiated' or 'process complete'."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 0,
+      "R2": 1,
+      "R3": 1,
+      "R4": 0,
+      "R5": 0,
+      "R6": 0,
+      "R7": 1
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] The Main Flow only continues the new-emergency-condition variant: it assigns a TN/position and transmits a J3.1 message reporting the existence of an emergency requiring SAR. The Trigger and Preconditions also cover the variant where the System Operator has additional or more current information on a previously reported emergency point. The Main Flow never requires the System Operator (as reporting JU) to reuse the same TN Reference and TN Previously Reported as the previous reporting unit, so postcondition EC-PO-003 is not reachable. (atomic grounding: candidate remains incomplete (The claim's 'System Operator, as the reporting JU' is not explicitly supported by the cited cards; EC-PO-001 names only the reporting JU.; The claim's 'new emergency point' is not supported; EC-PO-001 says each point reported on the interface.; The claim attributes the additional/current information to the System Operator, whereas EC-TR-000 attributes it to the JU.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] Main Flow step 1 unconditionally states that the System Operator assigns a TN(s) to the emergency point. This does not continue cleanly from the Trigger's update variant: when reporting additional or more current information on a previously reported emergency point, the operator must not assign a new TN; instead, the same TN Reference and TN Previously Reported values from the previous reporting unit must be used. Step 1 therefore conflicts with the update path in the Trigger and with the same-TN rule stated in step 2/postcondition 4.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "Report the existence of an emergency condition that requires search and rescue efforts, or provide a",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-G-001], which covers reporting additional information on previously reported points, and Evidence [EC-G-002], which covers reporting the existence of new emergency conditions.",
+      "slot_fit_rationale": "The claim accurately describes the high-level objective or success outcome of the interaction for the primary actor, which is the definition of the 'goal' slot in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-G-001",
+        "EC-G-002"
+      ],
+      "evidence_modalities": {
+        "EC-G-001": "card_text",
+        "EC-G-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The System Operator has information about an emergency condition that requires search and rescue eff",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct disjunction of the two cited evidence units, both of which explicitly state necessary preconditions for the System Operator.",
+      "slot_fit_rationale": "The claim describes the necessary state of information held by the actor before initiating the interaction, which aligns with the definition of a precondition.",
+      "evidence_refs": [
+        "EC-PC-000",
+        "EC-PC-001"
+      ],
+      "evidence_modalities": {
+        "EC-PC-000": "card_text",
+        "EC-PC-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "The System Operator initiates an Emergency Point Report through operator action only when the System",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units: EC-MF-002 and EC-TR-000 confirm the 'operator action only' mechanism and the trigger condition regarding updated information, while EC-G-002 and EC-PC-000 support the trigger condition regarding new emergency conditions requiring SAR efforts.",
+      "slot_fit_rationale": "The claim describes the specific event (operator action) and the conditions under which it occurs that start the use case interaction, which aligns with the definition of a trigger.",
+      "evidence_refs": [
+        "EC-G-002",
+        "EC-MF-002",
+        "EC-PC-000",
+        "EC-TR-000"
+      ],
+      "evidence_modalities": {
+        "EC-G-002": "card_text",
+        "EC-MF-002": "card_text",
+        "EC-PC-000": "card_text",
+        "EC-TR-000": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The System Operator, as the reporting JU, assigns a TN(s) to the emergency point and reports its pos",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the data attributes (TN assignment and geodetic coordinates) but does not explicitly identify the 'System Operator' as the actor performing the action, leaving the agent unsupported.",
+      "slot_fit_rationale": "The claim describes a core action in the normal successful interaction path, which aligns with the definition of a main flow step.",
+      "evidence_refs": [
+        "EC-PO-001"
+      ],
+      "evidence_modalities": {
+        "EC-PO-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "Through operator action only, the System Operator initiates the Emergency Point Report by transmitti",
+      "entailment": "entailment",
+      "slot_fit": false,
+      "qualified_grounding": false,
+      "grounding_status": "entailed_but_slot_misfit",
+      "rationale": "All material propositions in the claim are directly supported by the union of the cited evidence units.",
+      "slot_fit_rationale": "The claim mixes main flow actions with goal definitions and postcondition constraints, violating the requirement that a slot contain only facts substantive to that specific role.",
+      "evidence_refs": [
+        "EC-EF-001",
+        "EC-G-001",
+        "EC-G-005",
+        "EC-MF-000",
+        "EC-MF-002",
+        "EC-PO-000",
+        "EC-PO-003"
+      ],
+      "evidence_modalities": {
+        "EC-EF-001": "card_text",
+        "EC-G-001": "card_text",
+        "EC-G-005": "card_text",
+        "EC-MF-000": "card_text",
+        "EC-MF-002": "card_text",
+        "EC-PO-000": "card_text",
+        "EC-PO-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 2: instead of being an actual emergency, the Exercise Indicator is set to value 1",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the condition and outcome regarding the Exercise Indicator, but does not explicitly state that this flow diverges from Step 2 of the main success scenario.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch (exercise mode) that pursues the same general reporting outcome, which fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-004"
+      ],
+      "evidence_modalities": {
+        "EC-AF-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Emergency on Reference Points or Space/Ballistic Missile Tracks shall not be initiated.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a verbatim restatement of Evidence [EC-EF-017], which explicitly prohibits the initiation of the emergency function for the specified track types.",
+      "slot_fit_rationale": "The claim describes a specific condition under which the use case is prohibited from proceeding, which constitutes a valid exception flow or constraint on the interaction path.",
+      "evidence_refs": [
+        "EC-EF-017"
+      ],
+      "evidence_modalities": {
+        "EC-EF-017": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If the System Operator attempts to set an alert as part of initiating a J3.1 Emergency Point message",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence supports the rule that alerts are not used for J3.1 messages, but it does not support the specific claim condition that this occurs when a System Operator 'attempts to set an alert' during initiation.",
+      "slot_fit_rationale": "The claim describes a deviation from the standard alerting behavior (an exception) triggered by the specific message type, which appropriately fits the exception_flow slot.",
+      "evidence_refs": [
+        "EC-EF-018"
+      ],
+      "evidence_modalities": {
+        "EC-EF-018": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If Force Tell and Emergency Indicators are set in a J3 message, the message overrides all operator-c",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-EF-010], which confirms the override behavior for Force Tell/Emergency indicators, and Evidence [EC-MF-004], which confirms that receiving JUs accept the alert upon receipt.",
+      "slot_fit_rationale": "The claim describes a specific exception handling path where standard data filters are bypassed due to emergency indicators, which substantively fits the definition of an exception_flow as a non-standard branch triggered by specific conditions.",
+      "evidence_refs": [
+        "EC-EF-010",
+        "EC-MF-004"
+      ],
+      "evidence_modalities": {
+        "EC-EF-010": "card_text",
+        "EC-MF-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "If the System Operator requests an emergency alert on a reference point, line, or area, the emergenc",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that emergency alerts are not used on reference points, lines, or areas, which directly supports the claim's assertion that such alerts are excluded for these entity types.",
+      "slot_fit_rationale": "The claim describes a prohibited condition (exception) where the system rejects or does not apply an action due to invalid entity types, which fits the definition of an exception flow handling an abnormal or invalid request.",
+      "evidence_refs": [
+        "EC-EF-019"
+      ],
+      "evidence_modalities": {
+        "EC-EF-019": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The Emergency Point Report is transmitted as a J3.1 message.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a verbatim match to Evidence [EC-PO-000], which explicitly states that the Emergency Point Report is transmitted as a J3.1 message.",
+      "slot_fit_rationale": "The evidence collector note confirms this message transmission occurs upon successful completion of the action, which defines it as a postcondition (resulting state/effect).",
+      "evidence_refs": [
+        "EC-PO-000"
+      ],
+      "evidence_modalities": {
+        "EC-PO-000": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": true
+    },
+    {
+      "slot": "postconditions",
+      "claim": "Each point reported on the interface is assigned a TN(s) by the reporting JU, and the position is re",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-PO-001], which explicitly mandates TN assignment and geodetic coordinate reporting for each point.",
+      "slot_fit_rationale": "The claim describes the mandatory data attributes that must exist in the system state immediately after successful initiation, which aligns with the definition of postconditions as the resulting state after completion.",
+      "evidence_refs": [
+        "EC-PO-001"
+      ],
+      "evidence_modalities": {
+        "EC-PO-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The latest JU to report a point has R² for that point.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a verbatim match to Evidence [EC-PO-002], which explicitly states that the latest JU to report a point has R² for that point.",
+      "slot_fit_rationale": "The claim describes the resulting system state (assignment of R² responsibility) after the successful completion of the reporting interaction, which aligns with the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-002"
+      ],
+      "evidence_modalities": {
+        "EC-PO-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "A JU assuming R² for an emergency point uses the same TN Reference and the same value of TN Previous",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-PO-003], which explicitly states the requirement for data continuity.",
+      "slot_fit_rationale": "The claim describes the resulting system state (data values) that must hold after the successful completion of the JU assumption action, which defines a postcondition.",
+      "evidence_refs": [
+        "EC-PO-003"
+      ],
+      "evidence_modalities": {
+        "EC-PO-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "All receiving JUs shall accept the alert in their databases upon receipt of the initiation message.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-PO-004], which states that receiving JUs accept the alert in their databases upon receipt of the initiation message.",
+      "slot_fit_rationale": "The claim describes the immediate state change (alert accepted in database) resulting from the successful completion of the interaction, which defines a postcondition.",
+      "evidence_refs": [
+        "EC-PO-004"
+      ],
+      "evidence_modalities": {
+        "EC-PO-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

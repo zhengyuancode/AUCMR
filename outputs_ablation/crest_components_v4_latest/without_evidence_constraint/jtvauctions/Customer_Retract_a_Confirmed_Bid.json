@@ -1,0 +1,759 @@
+{
+  "use_case_name": "Retract a Confirmed Bid",
+  "actor": "Customer",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Customer wants to retract a confirmed bid — i.e., to cancel a bid that they previously placed as a bidder during an auction.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Customer retracts a confirmed bid during an auction.",
+        "canonical_success_scenario": "The Customer retracts a confirmed bid, and the previously placed bid is cancelled.",
+        "start_boundary": "The Customer has a confirmed bid that they want to retract during the auction.",
+        "success_boundary": "The confirmed bid has been retracted/cancelled.",
+        "in_scope_actions": [
+          "Retract a confirmed bid",
+          "Cancel a previously placed bid during the auction"
+        ],
+        "excluded_adjacent_actions": [
+          "Offering the item to the second-place finisher at their last bid price after the original winning order is cancelled",
+          "Processing checkout, payment, or shipping for the retracted item",
+          "Post-auction or administrative handling of the cancelled bid/order"
+        ],
+        "variant_dimensions": [
+          "No selectable categories for the retraction action are specified in the Goal evidence"
+        ],
+        "evidence_refs": [
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Customer is signed in as a bidder.",
+          "evidence_refs": [
+            "EC-PC-010"
+          ]
+        },
+        {
+          "content": "The Customer has a confirmed bid in the auction, placed earlier via SmartBid or Single Bid and explicitly confirmed.",
+          "evidence_refs": [
+            "EC-PC-007"
+          ]
+        },
+        {
+          "content": "The auction containing that confirmed bid is still open for bidding (time remains on the auction).",
+          "evidence_refs": [
+            "EC-PC-006"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-010",
+        "EC-PC-007",
+        "EC-PC-006"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "signed-in-bidder",
+          "confirmed-bid-exists",
+          "auction-open",
+          "user_authentication_precondition",
+          "general prohibition on bid cancellation",
+          "systemic constraint affecting retraction eligibility"
+        ],
+        "missing_aspects": [
+          "specific conditions that make a Customer's confirmed bid eligible for retraction, given the general rule that auction bids may not be cancelled",
+          "specific conditions that make a confirmed bid eligible for retraction",
+          "preconditions"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The trigger for the 'Retract a Confirmed Bid' use case is the Customer navigating to and selecting the 'My Current Bids' page from within their account area.",
+          "evidence_refs": [
+            "EC-TR-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "explicit UI elements or buttons used to perform retraction outside the initial popup",
+          "system response upon successful retraction",
+          "step-by-step sequence of actions to retract a confirmed bid",
+          "explicit UI elements used to perform retraction",
+          "system prohibits bid retraction after confirmation",
+          "no valid main flow exists due to policy constraint"
+        ],
+        "missing_aspects": [
+          "step-by-step sequence of actions to retract a confirmed bid",
+          "system response upon successful retraction",
+          "explicit UI elements or buttons used to perform retraction outside the initial popup",
+          "step-by-step sequence of actions to retract a confirmed bid (post-confirmation)"
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "no_valid_alternative_flow",
+          "systemic_prohibition_on_bid_cancellation_post_confirmation",
+          "system behavior when retraction is attempted under specific variant conditions (post-auction or from history page)",
+          "divergent paths from main flow that still result in successful retraction — none exist from this page; retraction must occur earlier",
+          "systemic prohibition on bid retraction after confirmation",
+          "no valid alternative flow due to policy constraint"
+        ],
+        "missing_aspects": [
+          "alternative_flow for retracting a confirmed bid during auction",
+          "divergent paths from main flow that still result in successful retraction",
+          "system behavior when retraction is attempted under specific variant conditions"
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the Customer attempts to retract a bid after it has been placed, the system blocks the retraction according to the explicit policy that auction bids may not be cancelled once placed.",
+          "evidence_refs": [
+            "EC-EF-007"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the Customer has already confirmed the bid via the Bid Confirmation Pop-up (e.g., by clicking 'Yes, Place SmartBid'), the system provides no further cancellation option; the user remains on the bidding page with no UI or mechanism available to retract the confirmed bid.",
+          "evidence_refs": [
+            "EC-EF-002",
+            "EC-EF-003"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the Customer clicks the 'CANCEL' button in the Bid Confirmation Pop-up instead of confirming the bid, the system prevents the bid from being placed or confirmed, retracting the intended action before a binding bid is created.",
+          "evidence_refs": [
+            "EC-EF-004",
+            "EC-EF-005"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the Customer attempts to retract a confirmed bid from the Customer History Page, the page displays bid history (active and closed bids with timestamps) but provides no UI controls or buttons to retract or cancel any confirmed bid.",
+          "evidence_refs": [
+            "EC-EF-009"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If the Customer attempts to retract a bid via the Order History page, the page shows only order-level cancellations (e.g., status 'Order Cancelled'), which are distinct from bid retractions, and provides no mechanism to initiate a bid retraction during an auction.",
+          "evidence_refs": [
+            "EC-EF-010"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-007",
+        "EC-EF-002",
+        "EC-EF-003",
+        "EC-EF-004",
+        "EC-EF-005",
+        "EC-EF-009",
+        "EC-EF-010"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "policy-prohibition-blocks-bid-retraction",
+          "post-confirmation-no-retraction-ui",
+          "cancel-in-confirmation-popup-prevents-binding-bid",
+          "history-page-no-retraction-controls",
+          "order-history-no-bid-retraction-mechanism",
+          "authentication_gate_exception_during_bid_interaction",
+          "redirect_to_sign_in_then_return_on_failure",
+          "systemic prohibition on bid retraction after confirmation",
+          "terminal exception outcome for post-confirmation retraction attempts",
+          "absence of retry or recovery behavior for invalid retraction",
+          "exception_trigger_condition",
+          "exception_system_response",
+          "exception_flow for account creation blocked by negative file match",
+          "system response upon exception (error message)",
+          "recovery path offered (contact customer service)",
+          "systemic_prohibition_on_bid_cancellation",
+          "rationale_for_exception_prevention",
+          "consequence_of_allowing_retraction",
+          "system prohibits bid retraction after confirmation via UI absence",
+          "exception outcome: no retraction capability available in customer history view",
+          "distinction between order cancellation and bid retraction"
+        ],
+        "missing_aspects": [
+          "main_flow step anchors for exception branches (main_flow is currently undefined because confirmed-bid retraction is prohibited by the system)",
+          "documented recovery/continuation path after a retraction attempt is denied",
+          "explicit exception flow for retracting confirmed bid (e.g., attempt after confirmation, attempt outside time window, attempt without permission)",
+          "system response specifically to retraction attempt failure",
+          "error messages or UI feedback shown when retraction is blocked"
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The system does not produce a successful retraction state: confirmed auction bids are binding and cannot be cancelled after placement, so the final system state is the persistence of the original confirmed bid unchanged.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-PO-005",
+            "EC-PO-011",
+            "EC-PO-016"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-PO-005",
+        "EC-PO-011",
+        "EC-PO-016"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "no_successful_retraction_state",
+          "confirmed_bid_remains_active_and_unchanged",
+          "system_prohibits_cancellation_of_confirmed_bid",
+          "systemic prohibition on bid retraction",
+          "absence of valid postconditions due to policy constraint",
+          "no_valid_postcondition_due_to_policy_prohibition",
+          "system_state_unchanged_after_failed_retraction_attempt",
+          "absence_of_ui_mechanism_for_post_confirmation_retraction",
+          "postcondition for retracting bid before confirmation (via Cancel button)",
+          "no binding bid created upon cancellation in popup",
+          "observable UI feedback confirming retraction completion (popup closes, no bid recorded)",
+          "systemic_prohibition_on_bid_cancellation",
+          "no_valid_postcondition_due_to_policy_constraint",
+          "binding_nature_of_confirmed_bids"
+        ],
+        "missing_aspects": [
+          "system state after successful retraction of a confirmed bid (use case has no valid success path)",
+          "explicit description of system state after successful retraction during auction (e.g., bid removed from active list, balance adjusted, notification sent) — because such retraction is prohibited post-confirmation per policy",
+          "observable changes to bid status, auction record, or user interface upon retraction of a confirmed bid — none exist as retraction is not allowed after confirmation",
+          "postconditions for retracting a confirmed bid during auction",
+          "observable system state changes after successful retraction",
+          "UI feedback or status update confirming retraction completion",
+          "system state after successful retraction of a confirmed bid",
+          "observable changes to bid status, auction record, or user interface upon retraction",
+          "explicit postcondition describing system state after successful retraction during auction",
+          "system state changes after successful retraction (e.g., bid removed from active list)"
+        ]
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "goal_evidence_missing",
+      "slot": "main_flow",
+      "detail": "Goal-alignment gate rejected all available evidence as describing adjacent (non-goal) processes. Missing: ['a permitted step-by-step sequence for cancelling/retracting an already-confirmed, placed bid during the auction', 'system response upon successful retraction of a confirmed bid', 'UI element or action available to the Customer to retract a confirmed bid after the bid confirmation pop-up has been finalized']",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "no_evidence",
+      "slot": "main_flow",
+      "detail": "No evidence found for slot 'main_flow'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No evidence found for slot 'alternative_flow'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] The Main Flow slot has no steps. The Postcondition requires the original confirmed bid to persist unchanged after the retraction attempt is denied, but there is no flow from the Trigger to that final state, so the Postcondition is unreachable. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[goal_mainflow_alignment] main_flow is not a usable flow: its coverage_state simultaneously lists successful retraction aspects ('step-by-step sequence...', 'system response upon successful retraction', 'explicit UI elements or buttons...') and states 'no valid main flow exists due to policy constraint'. The goal says the Customer successfully retracts a confirmed bid, but the main flow provides no steps and no occurrence of the Customer. The main_flow slot is therefore the root cause of both goal_mainflow_alignment and actor_mainflow_presence failures. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] The main_flow slot has no actual steps, so the Trigger's action (navigating to and selecting the My Current Bids page) does not continue into a concrete flow, and the stated Postcondition (confirmed bid remains unchanged, no successful retraction state) is not reachable from any main-flow behavior. The coverage state acknowledges that no valid main flow exists because confirmed bids cannot be retracted after confirmation. If this use case is kept, it must be reframed as an attempted retraction rather than a successful retraction, with an explicit denial/no-op path. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] The main_flow slot has no actual steps, so the Trigger's action (navigating to and selecting the My Current Bids page) does not continue into a concrete flow, and the stated Postcondition (confirmed bid remains unchanged, no successful retraction state) is not reachable from any main-flow behavior. The coverage state acknowledges that no valid main flow exists because confirmed bids cannot be retracted after confirmation. If this use case is kept, it must be reframed as an attempted retraction rather than a successful retraction, with an explicit denial/no-op path.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": [
+        "The Trigger is the Cancel button in the Bid Confirmation Pop-up after placing a bid. That action is a pre-confirmation cancellation and is not available for an already-confirmed bid. Preconditions say the Customer already has a confirmed bid and do not state any eligibility/exception that would permit retraction. Thus the Trigger cannot be initiated from the stated Preconditions."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 93,
+    "cross_page_cards": 1,
+    "modalities": {
+      "text": 59,
+      "table": 19,
+      "diagram": 15
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 3888.361,
+    "llm_calls": 46,
+    "llm_seconds": 3203.652,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 619.451,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 106,
+    "judge_calls": 0,
+    "cards_collected": 93,
+    "cards_referenced": 17
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer wants to retract a confirmed bid — i.e., to cancel a bid that they previously placed as a bidder during an auction.",
+            "evidence_refs": [
+              "EC-G-000",
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The Customer is signed in as a bidder.",
+            "evidence_refs": [
+              "EC-PC-010"
+            ]
+          },
+          {
+            "content": "The Customer has a confirmed bid in the auction, placed earlier via SmartBid or Single Bid and explicitly confirmed.",
+            "evidence_refs": [
+              "EC-PC-007"
+            ]
+          },
+          {
+            "content": "The auction containing that confirmed bid is still open for bidding (time remains on the auction).",
+            "evidence_refs": [
+              "EC-PC-006"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The trigger for the 'Retract a Confirmed Bid' use case is the Customer navigating to and selecting the 'My Current Bids' page from within their account area.",
+            "evidence_refs": [
+              "EC-TR-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "goal_evidence_missing",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-TR-001"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "",
+        "claims": [
+          {
+            "content": "If the Customer attempts to retract a bid after it has been placed, the system blocks the retraction according to the explicit policy that auction bids may not be cancelled once placed.",
+            "evidence_refs": [
+              "EC-EF-007"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the Customer has already confirmed the bid via the Bid Confirmation Pop-up (e.g., by clicking 'Yes, Place SmartBid'), the system provides no further cancellation option; the user remains on the bidding page with no UI or mechanism available to retract the confirmed bid.",
+            "evidence_refs": [
+              "EC-EF-002",
+              "EC-EF-003"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the Customer clicks the 'CANCEL' button in the Bid Confirmation Pop-up instead of confirming the bid, the system prevents the bid from being placed or confirmed, retracting the intended action before a binding bid is created.",
+            "evidence_refs": [
+              "EC-EF-004",
+              "EC-EF-005"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the Customer attempts to retract a confirmed bid from the Customer History Page, the page displays bid history (active and closed bids with timestamps) but provides no UI controls or buttons to retract or cancel any confirmed bid.",
+            "evidence_refs": [
+              "EC-EF-009"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If the Customer attempts to retract a bid via the Order History page, the page shows only order-level cancellations (e.g., status 'Order Cancelled'), which are distinct from bid retractions, and provides no mechanism to initiate a bid retraction during an auction.",
+            "evidence_refs": [
+              "EC-EF-010"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-G-001",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "",
+        "claims": [
+          {
+            "content": "The system does not produce a successful retraction state: confirmed auction bids are binding and cannot be cancelled after placement, so the final system state is the persistence of the original confirmed bid unchanged.",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-PO-005",
+              "EC-PO-011",
+              "EC-PO-016"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-016"
+        ]
+      }
+    }
+  },
+  "method": "CREST - mandatory evidence constraint",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "without_evidence_constraint",
+    "method": "CREST - mandatory evidence constraint",
+    "directory": "without_evidence_constraint",
+    "seed": null,
+    "slot_order": null,
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": false,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "5bf734944f864fceb7d88a3c25652ba7"
+}

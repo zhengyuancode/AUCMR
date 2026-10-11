@@ -1,0 +1,872 @@
+{
+  "use_case_name": "Transfer a Winning Order to Another Customer",
+  "actor": "Customer",
+  "slots": {
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer"
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "Auctioneer clicks the Winner/High Bidder link in the SKU History page.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-PC-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-PC-001"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postconditions"
+        ],
+        "missing_aspects": [
+          "postconditions"
+        ]
+      }
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The user is logged into the system as an Auctioneer, as indicated by the 'Welcome Back, Auctioneer!' header on the SKU History page.",
+          "evidence_refs": [
+            "EC-PC-001"
+          ]
+        },
+        {
+          "content": "A winning order has been automatically cancelled because the winning bidder—whose default Method of Payment is PayPal or Amazon Payments—did not pay within 7 days (168 hours), and the item has been placed in a 'Hold' status.",
+          "evidence_refs": [
+            "EC-PC-005",
+            "EC-PC-002",
+            "EC-PO-007"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-001",
+        "EC-PC-005",
+        "EC-PC-002",
+        "EC-PO-007"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "entry-context",
+          "payment-method-default",
+          "order-cancel-hold",
+          "entry_context",
+          "preconditions"
+        ],
+        "missing_aspects": [
+          "preconditions"
+        ]
+      }
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The goal is to transfer a winning order to another customer.",
+          "evidence_refs": [
+            "EC-G-003"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-003"
+      ],
+      "scope_contract": {
+        "goal_statement": "The goal is to transfer a winning order to another customer.",
+        "canonical_success_scenario": "The Customer selects the desired customer from search results, opens the Order History section, and reassigns the winning order to another customer.",
+        "start_boundary": "The Customer has identified a winning order that should be transferred and can access customer search results and Order History.",
+        "success_boundary": "The winning order has been reassigned to the other customer.",
+        "in_scope_actions": [
+          "Selecting the desired customer from search results.",
+          "Using the Order History section to reassign the winning order to another customer."
+        ],
+        "excluded_adjacent_actions": [
+          "Cancelling unpaid winning orders or placing them in Hold status.",
+          "Selling the item to the 2nd-place finisher at their last bid price."
+        ],
+        "variant_dimensions": [],
+        "evidence_refs": [
+          "EC-G-003"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "exception_flow"
+        ],
+        "missing_aspects": [
+          "exception_flow"
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Auctioneer searches for the desired customer by entering a Customer Email Address, Customer Home Phone, or Customer Name in the search section.",
+          "evidence_refs": [
+            "EC-MF-001",
+            "EC-MF-010"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The Auctioneer finds the desired customer in the Results list.",
+          "evidence_refs": [
+            "EC-MF-002",
+            "EC-MF-010"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Customer clicks the Order History button (labeled 'GO') corresponding to that customer.",
+          "evidence_refs": [
+            "EC-MF-002",
+            "EC-MF-010"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The Order History section displays the customer's order details, including status; a cancelled order appears in RED.",
+          "evidence_refs": [
+            "EC-MF-011"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The Auctioneer uses the Order History section to reassign the winning order to the desired customer.",
+          "evidence_refs": [
+            "EC-G-000"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-001",
+        "EC-MF-010",
+        "EC-MF-002",
+        "EC-MF-011",
+        "EC-G-000"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "alternative_flow_data_constraint",
+          "alternative_flow_legal_context",
+          "alternative_flow_divergence_condition",
+          "alternative_flow_ui_redirect",
+          "alternative_flow_success_path",
+          "alternative_flow_customer_service_unlock",
+          "alternative_flow_payment_failure"
+        ],
+        "missing_aspects": [
+          "alternative_flow"
+        ]
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "goal_evidence_missing",
+      "slot": "postconditions",
+      "detail": "Goal-alignment gate rejected all available evidence as describing adjacent (non-goal) processes. Missing: ['postconditions: immediate system state after a winning order is successfully transferred to another customer']",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "no_evidence",
+      "slot": "postconditions",
+      "detail": "No evidence found for slot 'postconditions'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "goal_evidence_missing",
+      "slot": "exception_flow",
+      "detail": "Goal-alignment gate rejected all available evidence as describing adjacent (non-goal) processes. Missing: ['exception_flow for the transfer-a-winning-order interaction (selecting desired customer from search results, opening Order History, reassigning the order)', 'evidence of error conditions within that interaction (e.g., target customer account invalid/closed, order not transferable, reassignment failure)']",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "no_evidence",
+      "slot": "exception_flow",
+      "detail": "No evidence found for slot 'exception_flow'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No evidence found for slot 'alternative_flow'",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] The Postconditions slot is empty, and the Main Flow's final step only displays the cancelled order in the customer's Order History. It never performs the actual reassignment/transfer of the winning order, so the use case cannot reach the goal's success boundary ('winning order has been reassigned to the other customer'). This is a vertical gap between Main Flow and Postconditions. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[goal_mainflow_alignment] Main Flow steps 1 and 5 have the Auctioneer perform the search and the reassignment, while the Goal's canonical success scenario and in-scope actions say the Customer selects the desired customer and reassigns the winning order. The Main Flow therefore conflicts with the Goal's actor/action expectations. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] The postconditions slot has no claims. The goal's success boundary ('the winning order has been reassigned to the other customer') is not carried into postconditions, so the main flow cannot be checked against a defined postcondition. (slot empty/missing)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] The postconditions slot is empty even though the goal/success boundary states 'The winning order has been reassigned to the other customer.' Without explicit postcondition(s), the main flow's reassignment step has no defined success state to reach, so the preconditions → trigger → main_flow → postconditions chain is incomplete.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] Main Flow step 3 changes the actor to 'The Customer' ('The Customer clicks the Order History button...'), but the Trigger and Preconditions establish an Auctioneer session, and surrounding main flow steps are performed by the Auctioneer. No actor handoff or login change is modeled, so the main flow contradicts the Trigger and does not continue coherently from the Auctioneer's click.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[goal_mainflow_alignment] Main flow assigns the search, find, and reassign actions to the Auctioneer (steps 1, 2, and 5), while the goal's canonical success scenario and in-scope actions require the Customer to select the desired customer from search results and reassign the winning order. The Customer only appears in step 3 clicking GO, so the main flow does not match the goal's actor-role expectations.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "trigger",
+        "main_flow"
+      ],
+      "inconsistency_hints": [
+        "The Trigger says 'Customer clicks the Winner/High Bidder link', but the Preconditions and Main Flow step 1 establish that the acting user is an Auctioneer in the SKU History admin workspace. Main Flow steps 2 and 3 repeat the same mislabeling by using 'Customer' as the actor. This is a real actor contradiction across the vertical flow; the Customer should be the target/recipient, not the operator performing the transfer.",
+        "The goal is to transfer a winning order to another customer, but the main_flow only covers searching for the desired customer, finding them, opening Order History, and displaying order details. No main_flow step actually reassigns or transfers the winning order to the other customer, so the main flow does not achieve the goal.",
+        "Main Flow step 2 (and step 3) changes the operating actor from the Auctioneer established by the Trigger and Preconditions to 'Customer', breaking actor continuity and making the flow not coherently continue from the Trigger."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 91,
+    "cross_page_cards": 5,
+    "modalities": {
+      "text": 87,
+      "diagram": 1,
+      "table": 3
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 4528.36,
+    "llm_calls": 55,
+    "llm_seconds": 3811.78,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 685.639,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 114,
+    "judge_calls": 0,
+    "cards_collected": 91,
+    "cards_referenced": 11
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Auctioneer clicks the Winner/High Bidder link in the SKU History page.",
+            "evidence_refs": [
+              "EC-TR-000",
+              "EC-PC-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The user is logged into the system as an Auctioneer, as indicated by the 'Welcome Back, Auctioneer!' header on the SKU History page.",
+            "evidence_refs": [
+              "EC-PC-001"
+            ]
+          },
+          {
+            "content": "A winning order has been automatically cancelled because the winning bidder—whose default Method of Payment is PayPal or Amazon Payments—did not pay within 7 days (168 hours), and the item has been placed in a 'Hold' status.",
+            "evidence_refs": [
+              "EC-PC-005",
+              "EC-PC-002",
+              "EC-PO-007"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The goal is to transfer a winning order to another customer.",
+            "evidence_refs": [
+              "EC-G-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Auctioneer searches for the desired customer by entering a Customer Email Address, Customer Home Phone, or Customer Name in the search section.",
+            "evidence_refs": [
+              "EC-MF-001",
+              "EC-MF-010"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Auctioneer finds the desired customer in the Results list.",
+            "evidence_refs": [
+              "EC-MF-002",
+              "EC-MF-010"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Customer clicks the Order History button (labeled 'GO') corresponding to that customer.",
+            "evidence_refs": [
+              "EC-MF-002",
+              "EC-MF-010"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The Order History section displays the customer's order details, including status; a cancelled order appears in RED.",
+            "evidence_refs": [
+              "EC-MF-011"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The Auctioneer uses the Order History section to reassign the winning order to the desired customer.",
+            "evidence_refs": [
+              "EC-G-000"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=71]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=71]",
+    "directory": "random_order/seed_071",
+    "seed": 71,
+    "slot_order": [
+      "primary_actor",
+      "trigger",
+      "postconditions",
+      "preconditions",
+      "goal",
+      "exception_flow",
+      "main_flow",
+      "alternative_flow"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "453bb43af4d94e8280e890405ef1a17d"
+}

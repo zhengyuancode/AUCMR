@@ -1,0 +1,394 @@
+{
+  "use_case_name": "Exchange IFF and SIF Transponder Data",
+  "actor": "C2 JU",
+  "method": "ReAct-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [],
+      "raw_text": ""
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [],
+      "raw_text": ""
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "An operator initiates an IFF/SIF update request or a unit reports a No Data status requiring data exchange.",
+          "evidence_refs": [
+            "P123",
+            "P46"
+          ]
+        }
+      ],
+      "raw_text": "An operator initiates an IFF/SIF update request or a unit reports a No Data status requiring data exchange.",
+      "evidence_card_ids": [
+        "P123",
+        "P46"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU operator manually initiates an IFF/SIF update request by transmitting a J7.5 (ACT = 2) IFF/SIF Update Request message with applicable mode indicators set.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Receiving R² units respond to the J7.5 (ACT = 2) message by initiating a J3.XC1 surveillance data report message regardless of their No Data status.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Receiving nonR² units respond to the J7.5 (ACT = 2) message from an R² unit by initiating a J7.5 (ACT = 1) Difference Report message if they hold valid local data (nonzero codes) for the requested modes.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the requested data has already been transmitted by another JU, remaining JUs need not respond with their local data.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "NonR² units receiving the J7.5 (ACT = 2) message from other nonR² units do not respond to the request.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P123"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Data updating can occur spontaneously as a result of an R² unit reporting a No Data status (value 0) for one or more modes in a required IFF/SIF Surveillance data report (J3.XC1), serving as an alternative trigger to manual operator initiation.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Upon receiving a J7.5 (ACT = 2) message from a nonR² unit, other nonR² units will not respond to the request.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P123"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a conflict is detected during difference resolution (indicated by code 'C' in the matrix), the unit does not accept the remote data and alerts the operator.",
+          "evidence_refs": [
+            "P121"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If an upgrade is detected but the data represents a downgrade (numerical decrease), the unit rejects the data and transmits local data in a J7.5 (ACT = 1) message.",
+          "evidence_refs": [
+            "P121"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If a downgrade is detected, the unit accepts the data but takes no further action unless it is an upgrade scenario requiring rejection.",
+          "evidence_refs": [
+            "P121"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Automatic transmission of a J7.5 (ACT = 1) message is inhibited if the same report is transmitted twice within 30 seconds; in this case, the operator is alerted instead.",
+          "evidence_refs": [
+            "P121"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P121"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "IFF/SIF data commonality is insured between the Interface Units (IUs).",
+          "evidence_refs": [
+            "P118"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Receiving units have responded to the update request by transmitting their local data codes or surveillance data reports as required.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Any detected data conflicts have been resolved by the operator or flagged with an alert.",
+          "evidence_refs": [
+            "P122"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P118",
+        "P123",
+        "P122"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "goal",
+      "detail": "No content produced for slot 'goal' by ReAct-Elaborate."
+    },
+    {
+      "flag_type": "no_evidence",
+      "slot": "preconditions",
+      "detail": "No content produced for slot 'preconditions' by ReAct-Elaborate."
+    }
+  ],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "P44",
+          "P46",
+          "P123",
+          "P45",
+          "P20"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "P44",
+          "P123",
+          "P45",
+          "P9",
+          "P122",
+          "P46"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "An operator initiates an IFF/SIF update request or a unit reports a No Data status requiring data exchange.",
+            "evidence_refs": [
+              "P123",
+              "P46"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P123",
+          "P45",
+          "P46",
+          "P9"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU operator manually initiates an IFF/SIF update request by transmitting a J7.5 (ACT = 2) IFF/SIF Update Request message with applicable mode indicators set.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Receiving R² units respond to the J7.5 (ACT = 2) message by initiating a J3.XC1 surveillance data report message regardless of their No Data status.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Receiving nonR² units respond to the J7.5 (ACT = 2) message from an R² unit by initiating a J7.5 (ACT = 1) Difference Report message if they hold valid local data (nonzero codes) for the requested modes.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the requested data has already been transmitted by another JU, remaining JUs need not respond with their local data.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "NonR² units receiving the J7.5 (ACT = 2) message from other nonR² units do not respond to the request.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P123",
+          "P45",
+          "P46",
+          "P122"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "Data updating can occur spontaneously as a result of an R² unit reporting a No Data status (value 0) for one or more modes in a required IFF/SIF Surveillance data report (J3.XC1), serving as an alternative trigger to manual operator initiation.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Upon receiving a J7.5 (ACT = 2) message from a nonR² unit, other nonR² units will not respond to the request.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P123",
+          "P45",
+          "P9",
+          "P121"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If a conflict is detected during difference resolution (indicated by code 'C' in the matrix), the unit does not accept the remote data and alerts the operator.",
+            "evidence_refs": [
+              "P121"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If an upgrade is detected but the data represents a downgrade (numerical decrease), the unit rejects the data and transmits local data in a J7.5 (ACT = 1) message.",
+            "evidence_refs": [
+              "P121"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If a downgrade is detected, the unit accepts the data but takes no further action unless it is an upgrade scenario requiring rejection.",
+            "evidence_refs": [
+              "P121"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Automatic transmission of a J7.5 (ACT = 1) message is inhibited if the same report is transmitted twice within 30 seconds; in this case, the operator is alerted instead.",
+            "evidence_refs": [
+              "P121"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P46",
+          "P45",
+          "P123",
+          "P118",
+          "P121"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "IFF/SIF data commonality is insured between the Interface Units (IUs).",
+            "evidence_refs": [
+              "P118"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Receiving units have responded to the update request by transmitting their local data codes or surveillance data reports as required.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Any detected data conflicts have been resolved by the operator or flagged with an alert.",
+            "evidence_refs": [
+              "P122"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P123",
+          "P118",
+          "P45",
+          "P46",
+          "P122"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 129.4
+}

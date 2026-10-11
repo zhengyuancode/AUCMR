@@ -1,0 +1,671 @@
+{
+  "use_case_name": "Complete Checkout and Payment",
+  "actor": "Customer",
+  "scg": 100.0,
+  "nli_g": 72.72727272727273,
+  "abstention_f1": 0.0,
+  "cross_page_card_pct": 37.5,
+  "avg_cards": 29,
+  "total_claims": 22,
+  "total_cited_claims": 22,
+  "total_entailed_claims": 16,
+  "pre_constraint_claim_count": 22,
+  "pre_constraint_cited_claim_count": 22,
+  "empty_slot_count": 0,
+  "total_evidence_cards": 64,
+  "cross_page_cards": 24,
+  "referenced_cards": 29,
+  "all_8_filled": true,
+  "slot_metrics": {
+    "goal": {
+      "slot_name": "goal",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 1,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "primary_actor": {
+      "slot_name": "primary_actor",
+      "claim_count": 1,
+      "cited_claim_count": 0,
+      "evidence_ref_count": 0,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "preconditions": {
+      "slot_name": "preconditions",
+      "claim_count": 3,
+      "cited_claim_count": 3,
+      "evidence_ref_count": 5,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "trigger": {
+      "slot_name": "trigger",
+      "claim_count": 1,
+      "cited_claim_count": 1,
+      "evidence_ref_count": 3,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "main_flow": {
+      "slot_name": "main_flow",
+      "claim_count": 5,
+      "cited_claim_count": 5,
+      "evidence_ref_count": 5,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "alternative_flow": {
+      "slot_name": "alternative_flow",
+      "claim_count": 6,
+      "cited_claim_count": 6,
+      "evidence_ref_count": 7,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "exception_flow": {
+      "slot_name": "exception_flow",
+      "claim_count": 4,
+      "cited_claim_count": 4,
+      "evidence_ref_count": 7,
+      "is_filled": true,
+      "quality_flags": []
+    },
+    "postconditions": {
+      "slot_name": "postconditions",
+      "claim_count": 2,
+      "cited_claim_count": 2,
+      "evidence_ref_count": 2,
+      "is_filled": true,
+      "quality_flags": []
+    }
+  },
+  "l3_violations": {
+    "R1": 2,
+    "R7": 2,
+    "R3": 2
+  },
+  "l3_violations_pre_repair": {
+    "R1": 2,
+    "R2": 0,
+    "R3": 2,
+    "R4": 0,
+    "R5": 0,
+    "R6": 0,
+    "R7": 2
+  },
+  "l2_violations": {
+    "R1": 0,
+    "R2": 0,
+    "R3": 1,
+    "R4": 0,
+    "R5": 0,
+    "R6": 1,
+    "R7": 1
+  },
+  "l2_parse_failures": [],
+  "l2_details": {
+    "violations": {
+      "R3": [
+        {
+          "rule_id": "R3",
+          "rule_name": "mainflow_postconditions_reachability",
+          "offending_slot": "postconditions",
+          "offending_claim_index": 0,
+          "rationale": "The Main Flow ends at step 5 where the system only 'gets the Customer started' on payment, which does not guarantee the transaction is successfully completed as required by Postcondition [0]."
+        }
+      ],
+      "R6": [
+        {
+          "rule_id": "R6",
+          "rule_name": "altflow_diverge_points",
+          "offending_slot": "alternative_flow",
+          "offending_claim_index": 3,
+          "rationale": "The alternative flow claims to diverge from Step 5, but the described behavior (sending an email upon winning and requiring login within 7 days) is logically unrelated to the payment initiation step and describes a pre-checkout or asynchronous process."
+        }
+      ],
+      "R7": [
+        {
+          "rule_id": "R7",
+          "rule_name": "exceptionflow_exit_coverage",
+          "offending_slot": "exception_flow",
+          "offending_claim_index": 2,
+          "rationale": "The exception branch describes a notification about potential account suspension but lacks an explicit terminal outcome such as use case termination, order cancellation, or access blocking."
+        }
+      ]
+    },
+    "parse_failures": [],
+    "summary": {
+      "R1": 0,
+      "R2": 0,
+      "R3": 1,
+      "R4": 0,
+      "R5": 0,
+      "R6": 1,
+      "R7": 1
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Preconditions include only a vague claim that account status must hold, but do not explicitly require the Customer's account to be unlocked/in good standing before the Customer can initiate checkout from the payment link/button. If a locked/review account cannot initiate payment, this required state is missing. (atomic grounding: candidate remains incomplete (Explicit evidence that checkout/payment initiation is blocked for locked/Review Status accounts; cited evidence supports successful checkout completion and restrictions on bidding/payment, not initiation.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 3 (0-based index 2) reports only an email notification that the Customer's account may be suspended and gives no explicit outcome (terminate, return, handoff, or terminal failure), so the branch lacks clear exit coverage. (atomic grounding: candidate remains incomplete (Explicit evidence that the account-suspension notification is sent by email; the cited cards support account suspension, not the email medium.; Explicit recovery/exit evidence; the cited cards do not state that the use case terminates without payment, only the cancellation/'Hold' outcome.; Explicit evidence that cancellation/'Hold' status applies to all unpaid orders, not only Amazon/PayPal orders.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] Main Flow step 5 only gets the Customer started on the external payment process; it does not complete the Amazon/PayPal checkout, process a successful transaction, or return the Customer to a Thank You page. Therefore the postconditions ('Payment Status = Paid' and 'Customer returned to Thank You page') are not reachable from the Main Flow as written. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "postconditions",
+      "detail": "[mainflow_postconditions_reachability] Main Flow step 5 only gets the Customer started on the external payment process; it does not complete the Amazon/PayPal checkout, process a successful transaction, or return the Customer to a Thank You page. Therefore the postconditions ('Payment Status = Paid' and 'Customer returned to Thank You page') are not reachable from the Main Flow as written.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Preconditions include only a vague claim that account status must hold, but do not explicitly require the Customer's account to be unlocked/in good standing before the Customer can initiate checkout from the payment link/button. If a locked/review account cannot initiate payment, this required state is missing.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 3 (0-based index 2) reports only an email notification that the Customer's account may be suspended and gives no explicit outcome (terminate, return, handoff, or terminal failure), so the branch lacks clear exit coverage.",
+      "evidence_refs": []
+    }
+  ],
+  "nli_details": [
+    {
+      "slot": "goal",
+      "claim": "The Customer wants to complete checkout and payment for won auction items by choosing which items to",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-G-000], which explicitly states the Customer's aim to complete transactions by choosing items, shipping, and payment type.",
+      "slot_fit_rationale": "The claim describes the actor's intended objective and success outcome, which is the precise definition of the 'goal' slot in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-G-000"
+      ],
+      "evidence_modalities": {
+        "EC-G-000": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The Customer has at least one unpaid won auction item for which checkout/payment has not yet been co",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence confirms the customer has unpaid auction winnings, but it does not explicitly state that checkout or payment has not yet been completed for those specific items, leaving that material proposition unsupported.",
+      "slot_fit_rationale": "The claim describes a necessary state of the actor (having unpaid items) that must hold before the interaction begins, which aligns with the definition of a precondition.",
+      "evidence_refs": [
+        "EC-PC-005",
+        "EC-PC-006"
+      ],
+      "evidence_modalities": {
+        "EC-PC-005": "card_text",
+        "EC-PC-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The Customer has previously chosen either PayPal or Amazon Payments as their default method of payme",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "Evidence [EC-PC-007] explicitly states that the customer must have previously chosen either PayPal or Amazon Payments as their default method of payment, directly supporting the claim.",
+      "slot_fit_rationale": "The claim describes a necessary state that must hold before the interaction begins, which aligns with the definition of a precondition in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-PC-005",
+        "EC-PC-007"
+      ],
+      "evidence_modalities": {
+        "EC-PC-005": "card_text",
+        "EC-PC-007": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "preconditions",
+      "claim": "The Customer's account status (e.g., having won items) is a condition that must hold before successf",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence relies on an inference from section titles ('implies that...') rather than providing direct textual support for the specific behavioral rule that account status is a mandatory precondition for checkout.",
+      "slot_fit_rationale": "The claim describes a state that must hold before the interaction begins, which aligns with the definition of the preconditions slot.",
+      "evidence_refs": [
+        "EC-PC-001"
+      ],
+      "evidence_modalities": {
+        "EC-PC-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "trigger",
+      "claim": "The Customer clicks a payment initiation link/button—such as the 'pay now' link in the winner notifi",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of evidence units EC-TR-000, EC-TR-001, and EC-TR-003, which collectively confirm that clicking the 'Winnings Alert' link, the 'pay now' email link, or the 'Pay with PayPal or Amazon Payments' button are valid triggers for initiating the checkout process.",
+      "slot_fit_rationale": "The claim describes specific user actions (clicking links/buttons) that initiate the interaction, which aligns precisely with the definition of the 'trigger' slot in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-TR-000",
+        "EC-TR-001",
+        "EC-TR-003"
+      ],
+      "evidence_modalities": {
+        "EC-TR-000": "card_text",
+        "EC-TR-001": "card_text",
+        "EC-TR-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer chooses which won auction items to pay for from a list of won items by checking the 'Pa",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim adds the specific condition that items are 'won auction items', which is not supported by the evidence that only refers to generic 'won items'.",
+      "slot_fit_rationale": "The claim describes a user action within the normal successful interaction path, which aligns with the definition of a main flow step.",
+      "evidence_refs": [
+        "EC-MF-003"
+      ],
+      "evidence_modalities": {
+        "EC-MF-003": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": true
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The system offers the Customer a choice of shipping methods.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The evidence explicitly states that the system offers the user a choice of shipping methods, which directly supports the claim when treating 'user' and 'Customer' as equivalent in this context.",
+      "slot_fit_rationale": "Offering a choice of shipping methods is a standard action performed by the system during the normal successful interaction path, fitting the main_flow slot.",
+      "evidence_refs": [
+        "EC-MF-001"
+      ],
+      "evidence_modalities": {
+        "EC-MF-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": true
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer selects a shipping speed option (e.g., USPS Standard or Expedited) via radio buttons.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a verbatim match to the provided evidence unit EC-MF-004, which explicitly states the customer's action.",
+      "slot_fit_rationale": "The claim describes a specific user action within the normal successful interaction path, which aligns with the definition of a main_flow step.",
+      "evidence_refs": [
+        "EC-MF-004"
+      ],
+      "evidence_modalities": {
+        "EC-MF-004": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": true
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The Customer selects a checkout option by clicking one of three buttons: 'Check out with PayPal', 'C",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a verbatim match to Evidence [EC-MF-005], which explicitly states the customer's action of selecting a checkout option via specific buttons.",
+      "slot_fit_rationale": "The claim describes a specific user action within the normal successful interaction path, which aligns with the definition of a main_flow step in Cockburn use cases.",
+      "evidence_refs": [
+        "EC-MF-005"
+      ],
+      "evidence_modalities": {
+        "EC-MF-005": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "main_flow",
+      "claim": "The system gets the Customer started on the payment process for their winnings.",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a direct paraphrase of Evidence [EC-MF-002], substituting 'Customer' for 'user' while preserving the exact action and context.",
+      "slot_fit_rationale": "The claim describes a specific system action within the normal successful interaction path, which aligns with the definition of a main_flow step.",
+      "evidence_refs": [
+        "EC-MF-002"
+      ],
+      "evidence_modalities": {
+        "EC-MF-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": true
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: Rather than selecting a checkout option, a returning Customer whose default Me",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-AF-006], which explicitly describes the routing behavior for returning users with specific payment methods.",
+      "slot_fit_rationale": "The claim describes a valid alternative path that diverges from the main flow based on user state, which aligns with the definition of an alternative_flow.",
+      "evidence_refs": [
+        "EC-AF-006"
+      ],
+      "evidence_modalities": {
+        "EC-AF-006": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: The Customer may select PayPal as the payment method by choosing the correspon",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim includes a specific structural reference ('Diverges from Step 4') and a specific UI location ('My Payment Methods' section) that are not fully supported by the cited evidence units, which only confirm the option to select PayPal generally.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch where the user selects an alternative payment method, which substantively fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-013",
+        "EC-AF-017"
+      ],
+      "evidence_modalities": {
+        "EC-AF-013": "card_text",
+        "EC-AF-017": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 4: The Customer may choose to pay using Amazon Payments, which opens a new browse",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a faithful paraphrase of Evidence [EC-AF-018], which explicitly states that the customer may choose Amazon Payments under the specified condition, resulting in a new browser session.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch where the user selects an alternative payment method to successfully complete the transaction, which fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-018"
+      ],
+      "evidence_modalities": {
+        "EC-AF-018": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 5: If PayPal is the Customer's default Method of Payment, the system sends an ema",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-AF-016], which explicitly states the condition (PayPal as default), the system action (email notification), and the required customer action (manual login within 7 days).",
+      "slot_fit_rationale": "The claim describes a valid non-error branch where the user must take additional manual steps to achieve the same success outcome (payment processing), which fits the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-016"
+      ],
+      "evidence_modalities": {
+        "EC-AF-016": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 5: If the Customer already has a PayPal account, they may complete payment by log",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-AF-022] and its context note, which collectively confirm the login behavior for existing PayPal users as an alternative to creating a new account or using Amazon.",
+      "slot_fit_rationale": "The claim explicitly describes a non-error branch (logging in with an existing account) that diverges from the main flow at Step 5 to achieve the same success outcome, which fits the definition of an alternative_flow.",
+      "evidence_refs": [
+        "EC-AF-022"
+      ],
+      "evidence_modalities": {
+        "EC-AF-022": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "alternative_flow",
+      "claim": "Diverges from Step 5: The Customer may create a new PayPal account by selecting 'Create a PayPal acc",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-AF-021] and its context note, which explicitly describe the alternative flow of creating a new PayPal account with the specified details.",
+      "slot_fit_rationale": "The claim describes a valid non-error branch (creating a new account instead of using an existing one) that diverges from the main flow to achieve the same success outcome, fitting the definition of an alternative flow.",
+      "evidence_refs": [
+        "EC-AF-021"
+      ],
+      "evidence_modalities": {
+        "EC-AF-021": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from Step 4: If the Customer clicks the 'Checkout Later' button or radio button, the system",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by Evidence [EC-EF-001], which explicitly details the system's response (graying out page, disabling links, displaying DIV with specific text) when the Customer clicks 'Checkout Later'.",
+      "slot_fit_rationale": "The claim describes a divergent path from the main success scenario where the user defers payment, resulting in a pending state rather than immediate completion, which correctly fits the definition of an exception or alternative flow handling a non-standard but valid user choice.",
+      "evidence_refs": [
+        "EC-EF-001",
+        "EC-EF-009"
+      ],
+      "evidence_modalities": {
+        "EC-EF-001": "card_text",
+        "EC-EF-009": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from Step 5: If the Customer does not complete payment for the won item(s) within 7 days (1",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The evidence restricts the cancellation rule to participants with PayPal or Amazon Payments set as default, whereas the claim generalizes this to any Customer, leaving the behavior for other payment methods unsupported.",
+      "slot_fit_rationale": "The claim describes a timeout-based error condition and its handling (cancellation/hold), which substantively fits the definition of an exception flow.",
+      "evidence_refs": [
+        "EC-EF-005",
+        "EC-EF-008"
+      ],
+      "evidence_modalities": {
+        "EC-EF-005": "card_text",
+        "EC-EF-008": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from Step 5: If the Customer fails to complete the payment transaction within seven days (1",
+      "entailment": "neutral",
+      "slot_fit": true,
+      "qualified_grounding": false,
+      "grounding_status": "neutral",
+      "rationale": "The claim introduces a specific detail about an email notification that is not present in the evidence, which only states that the account may be suspended.",
+      "slot_fit_rationale": "The claim describes a deviation from the main flow due to a failure condition (timeout) and its handling, which aligns with the definition of an exception flow.",
+      "evidence_refs": [
+        "EC-EF-007"
+      ],
+      "evidence_modalities": {
+        "EC-EF-007": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "exception_flow",
+      "claim": "Diverges from Step 5: If a PayPal or Amazon Payments Customer's unpaid order(s) are more than 7 days",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is fully supported by the union of Evidence [EC-EF-010] and [EC-EF-011], which collectively confirm the automatic account lock, 'Review Status', order cancellation after 7 days, and the inability for the customer to unlock the account via payment.",
+      "slot_fit_rationale": "The claim describes an abnormal condition (expired unpaid orders) and its specific system handling (account lock, status change, termination without payment), which constitutes a substantive exception flow in Cockburn use-case semantics.",
+      "evidence_refs": [
+        "EC-EF-010",
+        "EC-EF-011"
+      ],
+      "evidence_modalities": {
+        "EC-EF-010": "card_text",
+        "EC-EF-011": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    },
+    {
+      "slot": "postconditions",
+      "claim": "The 'Payment Status' column in the 'Items I've Won' table displays 'Paid' for items where the transa",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is a verbatim match to Evidence [EC-PO-001], which explicitly states that the 'Payment Status' column displays 'Paid' upon successful transaction completion.",
+      "slot_fit_rationale": "The claim describes the resulting system state (visible 'Paid' status) after the successful completion of the interaction, which aligns with the definition of a postcondition.",
+      "evidence_refs": [
+        "EC-PO-001"
+      ],
+      "evidence_modalities": {
+        "EC-PO-001": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": true
+    },
+    {
+      "slot": "postconditions",
+      "claim": "After the Customer completes the Amazon or PayPal checkout process, the Customer is returned to a Th",
+      "entailment": "entailment",
+      "slot_fit": true,
+      "qualified_grounding": true,
+      "grounding_status": "entailed_and_slot_fit",
+      "rationale": "The claim is directly supported by Evidence [EC-PO-002], which states that upon completing the checkout process, the user is returned to a Thank You page with the specified header, footer, and link.",
+      "slot_fit_rationale": "The claim describes the immediate observable system state (display of a specific page) resulting from the successful completion of the use case, which aligns with the definition of postconditions.",
+      "evidence_refs": [
+        "EC-PO-002"
+      ],
+      "evidence_modalities": {
+        "EC-PO-002": "card_text"
+      },
+      "evidence_representation": "evidence_card_text",
+      "judgment_mode": "joint_cited_evidence_plus_slot_fit",
+      "judge_model": "qwen3.7-plus",
+      "judge_attempts": 1,
+      "judge_cache_hit": false
+    }
+  ],
+  "nli_parse_failures": [],
+  "nli_evaluated": true,
+  "l2_evaluated": true
+}

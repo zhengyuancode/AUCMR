@@ -1,0 +1,1728 @@
+{
+  "use_case_name": "Transfer Reporting Responsibility",
+  "actor": "C2 JU",
+  "slots": {
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At main-flow step 2 (correlation), if the two tracks have different Mode II codes and the local Mode II code is current, the C² JU does not automatically correlate them. Exit: correlation is prevented, so the transfer cannot proceed via this track.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "At main-flow step 2 (correlation), if the track is a subsurface track, the C² JU does not correlate it with an IU. Exit: reporting-responsibility transfer is prevented for the subsurface track.",
+          "evidence_refs": [
+            "EC-EF-017"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "At main-flow step 2 (correlation), if a correlation is not found between the received J2 PPLI report and local data, the C² JU integrates the report into its surveillance database as part of the surveillance picture. Exit: if no subsequent J2 messages are received and the C² JU still has no local data, the C² JU assumes no responsibility for reporting the subject JU on the Surveillance Network PG.",
+          "evidence_refs": [
+            "EC-EF-031",
+            "EC-EF-003",
+            "EC-EF-032"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "After integration, if no subsequent J2 messages are received and the C² JU still has no local data, the C² JU assumes no responsibility for reporting the subject JU on the Surveillance Network PG.",
+          "evidence_refs": [
+            "EC-EF-003",
+            "EC-EF-032"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "At main-flow step 2 (correlation/decorrelation), if position or other data in the PPLI meet decorrelation criteria, the C² JU decorrelates the PPLI and local track data, initiates a new surveillance track report with locally held data using a new track number, and reports the PPLI Track Number/Identity Indicator and IFF/SIF Indicator fields as 'No Statement'.",
+          "evidence_refs": [
+            "EC-EF-033"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "At main-flow step 2 (correlation), if a correlation is found with a track for which another C² JU has R² and the TNs are different, the C² JU transmits J7.2 (RV=1) with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "EC-EF-001"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "At main-flow step 4 (transfer/confirmation), if a correlation is found with a track for which the C² JU has R² and the J7.2 Correlation message is transmitted with RV=1 (Reverse Correlation Not Acceptable), the C² JU ceases reporting the track and transmits J7.0 (ACT=0) Drop Track message on the surveillance TN. Exit: the track is dropped and the transfer attempt ends.",
+          "evidence_refs": [
+            "EC-EF-000"
+          ],
+          "step_number": 7,
+          "is_cross_page": true
+        },
+        {
+          "content": "At main-flow step 4 (J7.2 rejection handling), if a C² JU rejects a J7.2 message and holds the Dropped TN as a local or common local track, it does not interpret the J7.2 message as a Drop Track message for the purpose of determining R².",
+          "evidence_refs": [
+            "EC-EF-030"
+          ],
+          "step_number": 8
+        },
+        {
+          "content": "At main-flow step 5 (cessation), if the C² JU ceases reporting a track because it has relinquished R² to another JU, it does not transmit J7.0 (ACT=0). Exit: the transfer completes without sending the Drop Track message.",
+          "evidence_refs": [
+            "EC-EF-022",
+            "EC-EF-012"
+          ],
+          "step_number": 9,
+          "is_cross_page": true
+        },
+        {
+          "content": "At main-flow step 5 (cessation), if the C² JU ceases reporting a track because that track has become an Active IU on the network with the same TN, it does not transmit J7.0 (ACT=0). Exit: cessation occurs without the normal Drop Track message.",
+          "evidence_refs": [
+            "EC-EF-012"
+          ],
+          "step_number": 10,
+          "is_cross_page": true
+        },
+        {
+          "content": "At the post-transfer monitoring step, if the system does not receive a J7.0 (ACT=0) message and receives no further updates on a remote track, it automatically purges those tracks (DRT=0-3) after a specific time interval; under this condition, a J7.0 (ACT=0) message is not transmitted.",
+          "evidence_refs": [
+            "EC-EF-023"
+          ],
+          "step_number": 11
+        },
+        {
+          "content": "At the transfer step for a ballistic missile track (main-flow step 4), the unit assuming R² for the ballistic missile track need not assume R² for the associated launch point, and the unit no longer holding R² on the ballistic missile track may continue to report the launch point in accordance with the transmit/receive rules. Exit: missile-track transfer is decoupled from launch-point reporting.",
+          "evidence_refs": [
+            "EC-EF-014",
+            "EC-EF-040"
+          ],
+          "step_number": 12,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-005",
+        "EC-EF-017",
+        "EC-EF-031",
+        "EC-EF-003",
+        "EC-EF-032",
+        "EC-EF-033",
+        "EC-EF-001",
+        "EC-EF-000",
+        "EC-EF-030",
+        "EC-EF-022",
+        "EC-EF-012",
+        "EC-EF-023",
+        "EC-EF-014",
+        "EC-EF-040"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: If the C² JU receives a J7.0 (ACT=0) Drop Track message on a locally held track, it assumes R² at the next opportunity to transmit the track, provided local reporting eligibility remains and a remote report has not been received on that track.",
+          "evidence_refs": [
+            "EC-AF-003"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 1: If the C² JU receives a J2 PPLI message with the NPS Indicator set to Inactive, Conditional Radio Silence, or TDS Failure from a JU that has R² of a locally held track, it may assume R² at the next opportunity to transmit the track if local reporting eligibility remains and a remote report has not been received on that track.",
+          "evidence_refs": [
+            "EC-AF-005"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 1: If a J2 PPLI message (other than J2.0) is received with the NPS Indicator set to Inactive or Conditional Radio Silence, the C² JU shall assume R² of the IU if it has correlated local sensor data.",
+          "evidence_refs": [
+            "EC-AF-014"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 1: If the Geodetic Position Quality in the J2 PPLI message is set to value 0, the C² JU shall assume R² of the IU if it has correlated local sensor data.",
+          "evidence_refs": [
+            "EC-AF-016"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges from Step 1: If a J2 PPLI message is not received for 40 to 60 seconds, the C² JU shall assume R² of an IU (including C² and non-C² JUs and forwarded PUs/RUs) in accordance with the reporting rules for a real-time track if it has correlated local sensor data.",
+          "evidence_refs": [
+            "EC-AF-013"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Diverges from Step 1: If the C² JU has not received a remote report on a locally held Air or Surface (Maritime) track for approximately 40 seconds, or on a locally held Land (Ground) track for approximately 120 seconds, it assumes R².",
+          "evidence_refs": [
+            "EC-AF-020"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 1: If no periodic update is received for three consecutive update intervals, another IU (the C² JU) may, by operator action only, assume R² for the point using the same Reference TN.",
+          "evidence_refs": [
+            "EC-AF-007"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "Diverges from Step 2: When the C² JU receives a Surveillance message or a J7.0 (ACT=1) message in which the air, surface (maritime), or land (ground) Environment/Category and ID are different from the local Environment/Category and ID, the Environment/Category conflict is processed and resolved prior to resolution of the ID conflict.",
+          "evidence_refs": [
+            "EC-AF-011"
+          ],
+          "step_number": 8
+        },
+        {
+          "content": "Diverges from Step 2: If correlation is found with a track for which another C² JU has R² and the TNs are different, the C² JU transmits J7.2 (RV=1) Correlation message, with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "EC-AF-000"
+          ],
+          "step_number": 9
+        },
+        {
+          "content": "Diverges from Step 3: A JU assumes reporting responsibility (R²) on a common track if its local Track Quality (TQ) at the time of transmission exceeds the received TQ by 2 or more.",
+          "evidence_refs": [
+            "EC-AF-019"
+          ],
+          "step_number": 10,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3: A JU relinquishes R² for a real-time track upon reception of a remote track report with TQ equal to the local TQ from a JU whose Source TN is greater than the local Source TN.",
+          "evidence_refs": [
+            "EC-AF-024"
+          ],
+          "step_number": 11,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 3: A JU assumes R² on a ballistic missile track if its local TQ at or before the time of the remote track time tag exceeds the received TQ by 1 or more.",
+          "evidence_refs": [
+            "EC-AF-025"
+          ],
+          "step_number": 12,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 1: For a non-real-time track with the TQ field set to value 0, a JU without R² assumes R² for that track when the track is locally updated by a new non-real-time report.",
+          "evidence_refs": [
+            "EC-AF-004"
+          ],
+          "step_number": 13,
+          "is_cross_page": true
+        },
+        {
+          "content": "Diverges from Step 4: For a ballistic missile track, the C² JU assuming R² for the ballistic missile track need not assume R² for the associated launch point; the unit no longer holding R² on the ballistic missile track may continue to report the launch point in accordance with transmit/receive rules.",
+          "evidence_refs": [
+            "EC-AF-010"
+          ],
+          "step_number": 14
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-003",
+        "EC-AF-005",
+        "EC-AF-014",
+        "EC-AF-016",
+        "EC-AF-013",
+        "EC-AF-020",
+        "EC-AF-007",
+        "EC-AF-011",
+        "EC-AF-000",
+        "EC-AF-019",
+        "EC-AF-024",
+        "EC-AF-025",
+        "EC-AF-004",
+        "EC-AF-010"
+      ]
+    },
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The R² procedures are designed to ensure that only the JU having the best positional data available is reporting the track on the interface.",
+          "evidence_refs": [
+            "EC-G-006"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-006"
+      ],
+      "scope_contract": {
+        "goal_statement": "The R² procedures are designed to ensure that only the JU having the best positional data available is reporting the track on the interface.",
+        "canonical_success_scenario": "A C2 JU that currently holds reporting responsibility for a track transfers that responsibility to another JU with better positional data; after the transfer, only the receiving JU reports the track on the interface.",
+        "start_boundary": "The C2 JU holds reporting responsibility for a track and another JU has better positional data available for that track, making a transfer of responsibility appropriate.",
+        "success_boundary": "The receiving JU has assumed reporting responsibility and is reporting the track on the interface; the previous reporting JU no longer reports that track.",
+        "in_scope_actions": [
+          "Transfer R² to the JU with the best positional data",
+          "Assume or relinquish reporting responsibility as part of the transfer",
+          "Ensure only the best-positioned JU reports the track on the interface"
+        ],
+        "excluded_adjacent_actions": [
+          "Initial assignment of R² to the first JU that reports a contact",
+          "Retention of R² by an originator while it remains active",
+          "General conflict-determination between local sensor data and interface reports",
+          "Post-transfer administrative processing or downstream track-management use cases"
+        ],
+        "variant_dimensions": [
+          "Reporting entity category (emergency point vs point/line/area) affecting assumption rules",
+          "Basis for taking over (better positional data, additional/current information)"
+        ],
+        "evidence_refs": [
+          "EC-G-006"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The remote JU with the superior TQ has assumed R² for the track and is now the reporting JU; the C2 JU has relinquished R² and is no longer reporting the track.",
+          "evidence_refs": [
+            "EC-PO-001",
+            "EC-PO-003"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The latest JU to report the point has R² for that point.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "Only the JU having the best positional data available is reporting the track on the interface.",
+          "evidence_refs": [
+            "EC-G-006",
+            "EC-PO-001"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "For a ballistic missile track, the unit assuming R² for the ballistic missile track need not assume R² for the associated launch point; the unit no longer holding R² on the ballistic missile track may continue to report the launch point.",
+          "evidence_refs": [
+            "EC-PO-005"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-001",
+        "EC-PO-003",
+        "EC-PO-000",
+        "EC-G-006",
+        "EC-PO-005"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-transfer-complete",
+          "PC-latest-reporter-r2",
+          "PC-only-best-data-reporter",
+          "PC-ballistic-launch-point-decoupling"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "A Subsurface contact is already being reported on the interface by a JU that holds reporting responsibility for a specific Track Number (TN).",
+          "evidence_refs": [
+            "EC-PC-004"
+          ]
+        },
+        {
+          "content": "No other JU is currently reporting the same contact using the same Track Number.",
+          "evidence_refs": [
+            "EC-PC-005"
+          ]
+        },
+        {
+          "content": "Another JU has better positional data available for the track than the current reporting JU (for a common track, its local TQ at the time of transmission exceeds the received TQ by 2 or more).",
+          "evidence_refs": [
+            "EC-G-006",
+            "EC-PC-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-004",
+        "EC-PC-005",
+        "EC-G-006",
+        "EC-PC-002"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "A JU holds R² for a track.",
+          "evidence_refs": [
+            "EC-MF-005"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C² JU receives a remote track report in which the remote TQ is greater than the local TQ.",
+          "evidence_refs": [
+            "EC-MF-004",
+            "EC-MF-009"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "Because a remote track report has TQ greater than the local TQ, the JU relinquishes R² for the track to that remote JU.",
+          "evidence_refs": [
+            "EC-MF-004",
+            "EC-MF-009"
+          ],
+          "step_number": 3,
+          "is_cross_page": true
+        },
+        {
+          "content": "The C² JU ceases reporting the track; because it has relinquished R² to another JU, it does not transmit a J7.0 (ACT=0) Drop Track message.",
+          "evidence_refs": [
+            "EC-MF-006",
+            "EC-MF-013"
+          ],
+          "step_number": 4,
+          "is_cross_page": true
+        },
+        {
+          "content": "The remote JU with the superior TQ is now the reporting JU for the track, and the C² JU is no longer reporting it.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-005",
+        "EC-MF-004",
+        "EC-MF-009",
+        "EC-MF-006",
+        "EC-MF-013",
+        "EC-PO-001"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The JU currently holding reporting responsibility (R²) for a real-time track receives a remote track report whose track quality (TQ) exceeds its local TQ.",
+          "evidence_refs": [
+            "EC-TR-009"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-009"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception-flow claim at step_number 5 (decorrelation) describes decorrelating and initiating a new track report, but lacks a clear exit/outcome; it does not state whether the transfer path is abandoned or continues. (atomic grounding: candidate remains incomplete (Explicit recovery/exit evidence for the decorrelation branch is not cited; e.g., that the original correlated pair is dissolved, that the transfer attempt on the correlated track is abandoned, and that the locally held data is reported under the new track number.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception-flow claim at step_number 6 (TN conflict) describes transmitting J7.2 with Retained/Dropped TN but has no clear outcome; the branch does not state what happens after the message (resolution, continuation, or termination). (atomic grounding: candidate remains incomplete (Explicit recovery/exit evidence for resolution of the TN conflict and termination of the correlation branch without proceeding on the surveillance TN.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_trigger_continuity] Preconditions and Trigger both specify that R² is transferred only when the remote TQ exceeds the local TQ by 2 or more, but Main Flow steps 2 and 3 restate this as merely \"greater than local TQ\" and make any greater TQ the cause for relinquishment. This over-broadens the defined transfer condition. (atomic grounding: candidate remains incomplete (Unsupported detail: 'by 2 or more' is not supported by the cited relinquishment evidence; EC-PC-002 addresses assumption when local TQ exceeds remote TQ, not relinquishment.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] Precondition 1 does not establish the starting state required by the Trigger and used in the Main Flow. The Trigger starts from a JU that currently holds R² for a real-time track, and the Main Flow makes clear that this JU is the C² JU. Precondition 1 only says 'A Subsurface contact ... by a JU', which leaves the actor ambiguous and narrows the scope to Subsurface contacts while the rest of the use case (real-time track, ballistic missile track) is generic.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "alternative_flow",
+      "detail": "[altflow_diverge_points] Multiple alternative-flow branches (especially indexes 0-6 and 12-13) attach to main-flow Step 1 or Step 4 but do not logically branch from the C2 JU's transfer of R² away to a remote JU with superior TQ. They describe the C2 JU or another IU assuming R² after Drop Track, PPLI loss, NPS inactive, timeout, non-real-time update, or ballistic-missile launch-point decoupling. These are assumption-of-responsibility scenarios, not alternate paths in the transfer-to-better-TQ main flow.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception claim 6 ends with 'transmits J7.2 (RV=1) Correlation message' but does not state whether the flow returns to a main-flow step, terminates, or reaches a terminal failure/prevention state.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception claim 8 only states that a rejected J7.2 message is not interpreted as a Drop Track message for R² determination; it provides no outcome for the branch, so there is no clear return, termination, handoff, or terminal failure/prevention state.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill_from_reused_evidence",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "trigger",
+        "main_flow",
+        "alternative_flow",
+        "exception_flow",
+        "preconditions"
+      ],
+      "inconsistency_hints": [
+        "Precondition 3 requires the remote JU's TQ to exceed the local TQ by 2 or more, but the Trigger only requires the remote TQ to be greater than the local TQ. A TQ difference of 1 would start the use case even though the stated R2 transfer threshold is not met.",
+        "The Main Flow transfers R2 to whichever remote JU sent a better-TQ report, but Postcondition 3 requires that only the JU with the best positional data available reports the track. The flow does not ensure the remote JU in the triggered report is the best-positioned JU, so the postcondition is not necessarily reachable.",
+        "The alternative-flow claim with step_number 10 says 'Diverges from Step 4', but main-flow step 4 is the post-relinquishment cessation/no-Drop step. The condition 'local TQ exceeds received TQ by 2 or more' concerns the TQ-based R² decision, which belongs at step 3 (or step 2), not step 4.",
+        "The alternative-flow claim with step_number 11 says 'Diverges from Step 4', but step 4 is cessation after R² has already been relinquished. The equal-TQ/Source-TN relinquishment condition is a TQ-comparison branch at step 2/3, not a cessation branch.",
+        "The alternative-flow claim with step_number 12 says 'Diverges from Step 4', but the ballistic-missile TQ-threshold assumption decision belongs to the TQ comparison/assumption step, not step 4 cessation.",
+        "The alternative-flow claim with step_number 13 says 'Diverges from Step 4', but step 4 is cessation/no-Drop in the transfer flow. The non-real-time TQ=0 local-update assumption is a separate assumption-of-R² branch, not a cessation branch.",
+        "Exception-flow claim at step_number 3 (no correlation found) describes integrating the report into the surveillance database but has no clear outcome: it does not state whether the branch terminates, returns to main flow, or prevents transfer.",
+        "The first Precondition restricts the existing reporting situation to a \"Subsurface contact\", but the Trigger and Main Flow are about a generic \"track\" being reported. The Trigger's required state (a real-time track is currently held with R²) is therefore not fully covered for non-subsurface tracks.",
+        "The Trigger is written as already containing the transfer outcome (\"causing it to relinquish R² and the remote JU to assume R²\"), so the Main Flow does not continue from the Trigger. It restarts at a pre-transfer state: Step 1 again asserts that a JU holds R², and Step 2 re-introduces the receipt of the remote report.",
+        "Alternative flow claim 13 does not identify a divergence point in main_flow: it begins 'For a non-real-time track...' without referencing an existing main_flow step, so the branch cannot be positioned relative to the main flow."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 116,
+    "cross_page_cards": 63,
+    "modalities": {
+      "text": 116
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 3106.534,
+    "llm_calls": 39.0,
+    "llm_seconds": 2990.265,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 116.026,
+    "llm_retry_calls": 0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 7.0,
+    "judge_calls": 0,
+    "cards_collected": 116,
+    "cards_referenced": 42,
+    "evidence_reused": true,
+    "reused_card_count": 116,
+    "evidence_reuse_source": "/home/dzy/code/TOSEM2026/AUCMR/outputs/history/prompt-v1-pre-rewrite/crest_without_dra/milstd6016b_sec4/C2_JU_Transfer_Reporting_Responsibility-evidence.json",
+    "dra_elapsed_seconds": 1978.35,
+    "dra_llm_calls": 32,
+    "dra_llm_seconds": 1978.307,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_retry_calls": 0,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_calls": 0,
+    "dra_judge_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "At main-flow step 2 (correlation), if the two tracks have different Mode II codes and the local Mode II code is current, the C² JU does not automatically correlate them. Exit: correlation is prevented, so the transfer cannot proceed via this track.",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At main-flow step 2 (correlation), if the track is a subsurface track, the C² JU does not correlate it with an IU. Exit: reporting-responsibility transfer is prevented for the subsurface track.",
+            "evidence_refs": [
+              "EC-EF-017"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "At main-flow step 2 (correlation), if a correlation is not found between the received J2 PPLI report and local data, the C² JU integrates the report into its surveillance database as part of the surveillance picture. Exit: if no subsequent J2 messages are received and the C² JU still has no local data, the C² JU assumes no responsibility for reporting the subject JU on the Surveillance Network PG.",
+            "evidence_refs": [
+              "EC-EF-031",
+              "EC-EF-003",
+              "EC-EF-032"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "After integration, if no subsequent J2 messages are received and the C² JU still has no local data, the C² JU assumes no responsibility for reporting the subject JU on the Surveillance Network PG.",
+            "evidence_refs": [
+              "EC-EF-003",
+              "EC-EF-032"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "At main-flow step 2 (correlation/decorrelation), if position or other data in the PPLI meet decorrelation criteria, the C² JU decorrelates the PPLI and local track data, initiates a new surveillance track report with locally held data using a new track number, and reports the PPLI Track Number/Identity Indicator and IFF/SIF Indicator fields as 'No Statement'.",
+            "evidence_refs": [
+              "EC-EF-033"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "At main-flow step 2 (correlation), if a correlation is found with a track for which another C² JU has R² and the TNs are different, the C² JU transmits J7.2 (RV=1) with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+            "evidence_refs": [
+              "EC-EF-001"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "At main-flow step 4 (transfer/confirmation), if a correlation is found with a track for which the C² JU has R² and the J7.2 Correlation message is transmitted with RV=1 (Reverse Correlation Not Acceptable), the C² JU ceases reporting the track and transmits J7.0 (ACT=0) Drop Track message on the surveillance TN. Exit: the track is dropped and the transfer attempt ends.",
+            "evidence_refs": [
+              "EC-EF-000"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "At main-flow step 4 (J7.2 rejection handling), if a C² JU rejects a J7.2 message and holds the Dropped TN as a local or common local track, it does not interpret the J7.2 message as a Drop Track message for the purpose of determining R².",
+            "evidence_refs": [
+              "EC-EF-030"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "At main-flow step 5 (cessation), if the C² JU ceases reporting a track because it has relinquished R² to another JU, it does not transmit J7.0 (ACT=0). Exit: the transfer completes without sending the Drop Track message.",
+            "evidence_refs": [
+              "EC-EF-022",
+              "EC-EF-012"
+            ],
+            "step_number": 9
+          },
+          {
+            "content": "At main-flow step 5 (cessation), if the C² JU ceases reporting a track because that track has become an Active IU on the network with the same TN, it does not transmit J7.0 (ACT=0). Exit: cessation occurs without the normal Drop Track message.",
+            "evidence_refs": [
+              "EC-EF-012"
+            ],
+            "step_number": 10
+          },
+          {
+            "content": "At the post-transfer monitoring step, if the system does not receive a J7.0 (ACT=0) message and receives no further updates on a remote track, it automatically purges those tracks (DRT=0-3) after a specific time interval; under this condition, a J7.0 (ACT=0) message is not transmitted.",
+            "evidence_refs": [
+              "EC-EF-023"
+            ],
+            "step_number": 11
+          },
+          {
+            "content": "At the transfer step for a ballistic missile track (main-flow step 4), the unit assuming R² for the ballistic missile track need not assume R² for the associated launch point, and the unit no longer holding R² on the ballistic missile track may continue to report the launch point in accordance with the transmit/receive rules. Exit: missile-track transfer is decoupled from launch-point reporting.",
+            "evidence_refs": [
+              "EC-EF-014",
+              "EC-EF-040"
+            ],
+            "step_number": 12
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: If the C² JU receives a J7.0 (ACT=0) Drop Track message on a locally held track, it assumes R² at the next opportunity to transmit the track, provided local reporting eligibility remains and a remote report has not been received on that track.",
+            "evidence_refs": [
+              "EC-AF-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 1: If the C² JU receives a J2 PPLI message with the NPS Indicator set to Inactive, Conditional Radio Silence, or TDS Failure from a JU that has R² of a locally held track, it may assume R² at the next opportunity to transmit the track if local reporting eligibility remains and a remote report has not been received on that track.",
+            "evidence_refs": [
+              "EC-AF-005"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 1: If a J2 PPLI message (other than J2.0) is received with the NPS Indicator set to Inactive or Conditional Radio Silence, the C² JU shall assume R² of the IU if it has correlated local sensor data.",
+            "evidence_refs": [
+              "EC-AF-014"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 1: If the Geodetic Position Quality in the J2 PPLI message is set to value 0, the C² JU shall assume R² of the IU if it has correlated local sensor data.",
+            "evidence_refs": [
+              "EC-AF-016"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 1: If a J2 PPLI message is not received for 40 to 60 seconds, the C² JU shall assume R² of an IU (including C² and non-C² JUs and forwarded PUs/RUs) in accordance with the reporting rules for a real-time track if it has correlated local sensor data.",
+            "evidence_refs": [
+              "EC-AF-013"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges from Step 1: If the C² JU has not received a remote report on a locally held Air or Surface (Maritime) track for approximately 40 seconds, or on a locally held Land (Ground) track for approximately 120 seconds, it assumes R².",
+            "evidence_refs": [
+              "EC-AF-020"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Diverges from Step 1: If no periodic update is received for three consecutive update intervals, another IU (the C² JU) may, by operator action only, assume R² for the point using the same Reference TN.",
+            "evidence_refs": [
+              "EC-AF-007"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "Diverges from Step 2: When the C² JU receives a Surveillance message or a J7.0 (ACT=1) message in which the air, surface (maritime), or land (ground) Environment/Category and ID are different from the local Environment/Category and ID, the Environment/Category conflict is processed and resolved prior to resolution of the ID conflict.",
+            "evidence_refs": [
+              "EC-AF-011"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "Diverges from Step 2: If correlation is found with a track for which another C² JU has R² and the TNs are different, the C² JU transmits J7.2 (RV=1) Correlation message, with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+            "evidence_refs": [
+              "EC-AF-000"
+            ],
+            "step_number": 9
+          },
+          {
+            "content": "Diverges from Step 3: A JU assumes reporting responsibility (R²) on a common track if its local Track Quality (TQ) at the time of transmission exceeds the received TQ by 2 or more.",
+            "evidence_refs": [
+              "EC-AF-019"
+            ],
+            "step_number": 10
+          },
+          {
+            "content": "Diverges from Step 3: A JU relinquishes R² for a real-time track upon reception of a remote track report with TQ equal to the local TQ from a JU whose Source TN is greater than the local Source TN.",
+            "evidence_refs": [
+              "EC-AF-024"
+            ],
+            "step_number": 11
+          },
+          {
+            "content": "Diverges from Step 3: A JU assumes R² on a ballistic missile track if its local TQ at or before the time of the remote track time tag exceeds the received TQ by 1 or more.",
+            "evidence_refs": [
+              "EC-AF-025"
+            ],
+            "step_number": 12
+          },
+          {
+            "content": "Diverges from Step 1: For a non-real-time track with the TQ field set to value 0, a JU without R² assumes R² for that track when the track is locally updated by a new non-real-time report.",
+            "evidence_refs": [
+              "EC-AF-004"
+            ],
+            "step_number": 13
+          },
+          {
+            "content": "Diverges from Step 4: For a ballistic missile track, the C² JU assuming R² for the ballistic missile track need not assume R² for the associated launch point; the unit no longer holding R² on the ballistic missile track may continue to report the launch point in accordance with transmit/receive rules.",
+            "evidence_refs": [
+              "EC-AF-010"
+            ],
+            "step_number": 14
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013"
+        ]
+      },
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The R² procedures are designed to ensure that only the JU having the best positional data available is reporting the track on the interface.",
+            "evidence_refs": [
+              "EC-G-006"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The remote JU with the superior TQ has assumed R² for the track and is now the reporting JU; the C2 JU has relinquished R² and is no longer reporting the track.",
+            "evidence_refs": [
+              "EC-PO-001",
+              "EC-PO-003"
+            ]
+          },
+          {
+            "content": "The latest JU to report the point has R² for that point.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "Only the JU having the best positional data available is reporting the track on the interface.",
+            "evidence_refs": [
+              "EC-G-006",
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "For a ballistic missile track, the unit assuming R² for the ballistic missile track need not assume R² for the associated launch point; the unit no longer holding R² on the ballistic missile track may continue to report the launch point.",
+            "evidence_refs": [
+              "EC-PO-005"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "A Subsurface contact is already being reported on the interface by a JU that holds reporting responsibility for a specific Track Number (TN).",
+            "evidence_refs": [
+              "EC-PC-004"
+            ]
+          },
+          {
+            "content": "No other JU is currently reporting the same contact using the same Track Number.",
+            "evidence_refs": [
+              "EC-PC-005"
+            ]
+          },
+          {
+            "content": "Another JU has better positional data available for the track than the current reporting JU (for a common track, its local TQ at the time of transmission exceeds the received TQ by 2 or more).",
+            "evidence_refs": [
+              "EC-G-006",
+              "EC-PC-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "A JU holds R² for a track.",
+            "evidence_refs": [
+              "EC-MF-005"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C² JU receives a remote track report in which the remote TQ is greater than the local TQ.",
+            "evidence_refs": [
+              "EC-MF-004",
+              "EC-MF-009"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Because a remote track report has TQ greater than the local TQ, the JU relinquishes R² for the track to that remote JU.",
+            "evidence_refs": [
+              "EC-MF-004",
+              "EC-MF-009"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The C² JU ceases reporting the track; because it has relinquished R² to another JU, it does not transmit a J7.0 (ACT=0) Drop Track message.",
+            "evidence_refs": [
+              "EC-MF-006",
+              "EC-MF-013"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The remote JU with the superior TQ is now the reporting JU for the track, and the C² JU is no longer reporting it.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The JU currently holding reporting responsibility (R²) for a real-time track receives a remote track report whose track quality (TQ) exceeds its local TQ.",
+            "evidence_refs": [
+              "EC-TR-009"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-G-007",
+          "EC-G-008",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013"
+        ]
+      }
+    }
+  },
+  "method": "CREST - Cockburn order [seed=101]",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "ablation_generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector-crest-components-v4",
+  "ablation": {
+    "key": "random_order",
+    "method": "CREST - Cockburn order [seed=101]",
+    "directory": "random_order/seed_101",
+    "seed": 101,
+    "slot_order": [
+      "primary_actor",
+      "exception_flow",
+      "alternative_flow",
+      "goal",
+      "postconditions",
+      "preconditions",
+      "main_flow",
+      "trigger"
+    ],
+    "reuse_prior_evidence": true,
+    "single_page_only": false,
+    "enforce_evidence_refs": true,
+    "dra_enabled": true
+  },
+  "artifact_revision_id": "ca3b6064760046fdac775d11ff6d49a2"
+}
