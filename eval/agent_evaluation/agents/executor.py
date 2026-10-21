@@ -9,6 +9,7 @@ from jsonschema import ValidationError
 from ..common import Blocked, EvaluationError, append_jsonl, canonical, digest, now, read_json, read_jsonl, write_json
 from ..schemas import record
 from .roles import prompt, role_binding
+from .recovery import TaskRecovery, append_unique
 
 
 class Executor:
@@ -48,6 +49,7 @@ class Executor:
                 return cached["records"]
             if cached["status"] != "OK":
                 raise EvaluationError("Bounded attempts exhausted previously; preserved as technical failure")
+        recovery = TaskRecovery(self.run_dir, task_id, fingerprint, self.budget, self.transport)
         session = digest([task_id, role, fingerprint])
         source.session_id = session
         task = {"task_id": task_id, "session_id": session, "role": role, "materials": materials}
@@ -59,7 +61,6 @@ class Executor:
         while request_count < limit["max_requests_per_task"]:
             request_count += 1
             # Conservative UTF-8 byte bound (not a provider token estimate); fail instead of truncate.
-            bytes_without_images = len(canonical(messages).encode())
             text_bytes = sum(len(canonical(m["content"]).encode()) if isinstance(m["content"], str) else
                 sum(len(part.get("text", "").encode()) for part in m["content"]) for m in messages)
             image_count = sum(sum(p.get("type") == "image_url" for p in m["content"]) for m in messages if isinstance(m["content"], list))
@@ -68,19 +69,9 @@ class Executor:
                 raise Blocked("Image input bound is not verified")
             if text_bytes + image_count * (image_bound or 0) > limit["max_input_tokens_per_request"]:
                 raise Blocked("Complete context exceeds configured bound; no silent truncation")
-            request_id = digest([task_id, fingerprint, request_count])
+            request_id = digest(["L3", str(self.run_dir.resolve()), task_id, fingerprint, request_count])
             upper = {k: 0 for k in ("input", "output", "reasoning", "images", "other")} if self.transport.mode == "mock" else binding.get("per_request_upper_bound")
-            self.budget.reserve(request_id, binding["provider"], upper)
-            start = now()
-            result, error, status = None, None, "OK"
-            try:
-                result = self.transport.request(binding, messages, task, request_count)
-            except Exception as exc:
-                error, status = type(exc).__name__, "TRANSPORT_FAILED"
-            try:
-                self.budget.settle(request_id, result.get("cost_cny") if result else (0 if self.transport.mode == "mock" else None))
-            except Blocked:
-                status = "UNKNOWN"
+            result, error, status, start = recovery.request(request_id, binding, messages, task, request_count, upper)
             response_body = result.get("body") if result else None
             try:
                 if status != "OK":
@@ -113,9 +104,9 @@ class Executor:
                 "reserved_cny": sum(upper.values()), "search_calls": source.searches, "page_reads": len(source.read_pages)}
             call = record("call", payload, run_id=self.run_dir.name, target_id=target_id, artifact_id=artifact_id,
                           role=role, view="SYSTEM", input_hash=fingerprint, version=version)
-            append_jsonl(self.run_dir / "call_ledger.jsonl", call)
-            append_jsonl(self.run_dir / "request_trace.jsonl", {"request_record_id": call["record_id"], "session_id": session,
-                "started": start, "finished": now(), "response": result, "error": error, "messages_hash": digest(messages)})
+            append_unique(self.run_dir / "call_ledger.jsonl", call)
+            append_unique(self.run_dir / "request_trace.jsonl", {"request_record_id": call["record_id"], "session_id": session,
+                "started": start, "finished": now(), "response": result, "error": error, "messages_hash": digest(messages)}, key="request_record_id")
             if status == "UNKNOWN":
                 raise Blocked("Unknown charge; request persisted, manual reconciliation required")
             if status != "OK":
@@ -127,8 +118,8 @@ class Executor:
                 continue
             messages.append({"role": "assistant", "content": canonical(response)})
             if "tool_calls" in response:
-                for tool in response["tool_calls"]:
-                    answer = source.invoke(tool["name"], tool["arguments"])
+                for index, tool in enumerate(response["tool_calls"]):
+                    answer = recovery.tool(request_count, index, tool, source)
                     if "image_base64" in answer:
                         encoded = answer.pop("image_base64")
                         messages.append({"role": "user", "content": [
@@ -141,7 +132,7 @@ class Executor:
                        artifact_id=artifact_id, role=role, view=view, input_hash=fingerprint, version=version)
                        for r in response["records"]]
             for r in records:
-                append_jsonl(self.run_dir / "records.jsonl", r)
+                append_unique(self.run_dir / "records.jsonl", r)
             write_json(cached_path, {"input_hash": fingerprint, "status": "OK", "records": records})
             return records
         raise Blocked("Logical task request limit exhausted")
