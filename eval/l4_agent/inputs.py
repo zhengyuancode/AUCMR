@@ -152,6 +152,9 @@ def collect(config: dict) -> dict:
         sources.append(entry)
     tasks = {t["task_id"]: t for t in config["targets"]}
     artifacts = [adapt(b, tasks[b["task_id"]], config["methods"]) for b in config["input_bindings"]]
+    for binding, artifact in zip(config["input_bindings"], artifacts):
+        if "sha256" in binding and artifact["input_sha256"] != binding["sha256"]:
+            raise L4Error("Frozen batch output changed or disappeared; prepare a new batch")
     manifest = {"batch_id": config["batch_id"], "data_class": config["data_class"],
                 "research_status": "NOT_RESEARCH_DATA" if config["data_class"] == "MOCK_ONLY" else "STRUCTURE_ONLY_NOT_SCORED",
                 "config_sha256": digest(config), "versions": versions(),

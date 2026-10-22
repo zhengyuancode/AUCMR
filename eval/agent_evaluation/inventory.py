@@ -11,24 +11,58 @@ from .common import DESIGN, REPO, PROTOCOL_VERSION, EvaluationError, confined, d
 
 def collect(config: dict) -> dict:
     import fitz
-    cohort = read_json(DESIGN / "cohort.json")
-    old = read_json(DESIGN / "input_inventory.json")
+    external = config.get("batch_file")
+    batch = None
+    if external:
+        batch_path = confined(REPO, external)
+        if file_hash(batch_path) != config.get("batch_sha256"):
+            raise EvaluationError("External batch missing or changed; prepare a new batch")
+        batch = read_json(batch_path)
+        if batch.get("status") != "FROZEN_INPUTS":
+            raise EvaluationError("Draft batch cannot be evaluated; freeze after generation completes")
+        cohort = batch["cohort"]
+        cohort_hash = file_hash(batch_path)
+        roots = [confined(REPO, name) for name in batch["output_roots"]]
+        if not roots or any(root == (REPO / "outputs").resolve() or
+                            not root.is_relative_to((REPO / "outputs").resolve()) for root in roots):
+            raise EvaluationError("Register explicit batch subdirectories beneath outputs")
+        if config["input_bindings"] != batch["input_bindings"]:
+            raise EvaluationError("Config bindings do not match the external batch")
+        old = {"artifacts": [], "source_documents": []}
+    else:
+        cohort = read_json(DESIGN / "cohort.json")
+        cohort_hash = file_hash(DESIGN / "cohort.json")
+        old = read_json(DESIGN / "input_inventory.json")
+        roots = [REPO / "outputs" / name for name in ("aucmr_full", "crest_without_dra", "baselines")]
     # All files in the registered batch are inspected, including unexpected additions.
-    roots = [REPO / "outputs" / name for name in ("aucmr_full", "crest_without_dra", "baselines")]
     discovered = sorted(p for root in roots for p in root.rglob("*.json") if not p.name.endswith("-evidence.json"))
     old_map = {Path(e["path"].replace("\\", "/")).as_posix().split("/outputs/", 1)[1]: e for e in old["artifacts"]}
     bindings = config["input_bindings"]
     targets = {t["target_id"]: t for t in cohort["targets"]}
+    if not targets or len(targets) != len(cohort["targets"]) or len(set(cohort["methods"])) != len(cohort["methods"]):
+        raise EvaluationError("Empty or duplicate targets/methods")
+    if not set(config.get("pilot_targets", [])) <= set(targets):
+        raise EvaluationError("Pilot targets are outside the registered batch")
+    source_ids = [s["source_id"] for s in cohort["source_documents"]]
+    source_projects = {s["project_id"] for s in cohort["source_documents"]}
+    if len(source_ids) != len(set(source_ids)) or any(t["project_id"] not in source_projects for t in targets.values()):
+        raise EvaluationError("Sources must have unique IDs and cover every target project")
     seen, artifacts = set(), []
+    bound_files = set()
     for binding in bindings:
         key = (binding["target_id"], binding["method"])
         if key in seen:
             raise EvaluationError("Duplicate target/method input binding")
         seen.add(key)
         path = confined(REPO, binding["path"])
+        if path in bound_files:
+            raise EvaluationError("One file cannot represent multiple task/method pairs")
+        bound_files.add(path)
         if not any(path.is_relative_to(root.resolve()) for root in roots):
             raise EvaluationError("Input outside registered outputs batch")
         artifacts.append(adapt(path, targets[key[0]], key[1]))
+        if batch and artifacts[-1]["sha256"] != binding.get("sha256"):
+            raise EvaluationError("Frozen output changed or disappeared; prepare a new batch")
     expected = {(t, m) for t in targets for m in cohort["methods"]}
     if seen != expected:
         raise EvaluationError("Missing or extra target/method bindings")
@@ -36,9 +70,11 @@ def collect(config: dict) -> dict:
     extra = [{"path": str(p), "sha256": file_hash(p)} for p in discovered if p not in bound_paths]
     sources = []
     for src in cohort["source_documents"]:
-        path = REPO / "data" / Path(src["pdf"]).name
+        path = confined(REPO, src["pdf"]) if batch else REPO / "data" / Path(src["pdf"]).name
         with fitz.open(path) as pdf:
             sources.append({**src, "pdf": str(path), "sha256": file_hash(path), "pages": len(pdf)})
+        if batch and src.get("sha256") != sources[-1]["sha256"]:
+            raise EvaluationError("Frozen source changed; prepare a new batch")
     main = [a for a in artifacts if a["planned_group"] == "MAIN"]
     summary = {"artifact_files": sum(a["sha256"] is not None for a in artifacts), "registered_pairs": len(artifacts),
                "main_artifact_files": sum(a["sha256"] is not None for a in main),
@@ -47,20 +83,20 @@ def collect(config: dict) -> dict:
                "main_states": dict(Counter(a["state"] for a in main)),
                "all_states": dict(Counter(a["state"] for a in artifacts)), "unexpected_files": len(extra)}
     drift = []
-    for a in artifacts:
+    for a in ([] if batch else artifacts):
         rel = Path(a["path"]).relative_to(REPO / "outputs").as_posix()
         prior = old_map.get(rel)
         if prior is None or prior["sha256"] != a["sha256"]:
             drift.append({"path": rel, "old": prior["sha256"] if prior else None, "new": a["sha256"]})
-    for src in sources:
+    for src in ([] if batch else sources):
         prior = next(x for x in old["source_documents"] if x["source_id"] == src["source_id"])
         if src["sha256"] != prior["sha256"]:
             drift.append({"source_id": src["source_id"], "old": prior["sha256"], "new": src["sha256"]})
     return {"protocol_version": PROTOCOL_VERSION, "data_type": "REAL_INPUT_STRUCTURE_ONLY",
-            "source_semantics": "NOT_RUN", "config_hash": digest(config), "cohort_hash": file_hash(DESIGN / "cohort.json"),
+            "source_semantics": "NOT_RUN", "config_hash": digest(config), "cohort_hash": cohort_hash,
             "sources": sources, "cohort": cohort, "artifacts": artifacts, "summary": summary,
             "input_drift": drift, "unexpected_files": extra,
-            "historical_model_provenance": "NOT_VERIFIED", "input_batch_status": "CANDIDATE_REQUIRES_CONFIRMATION"}
+            "historical_model_provenance": "NOT_VERIFIED", "input_batch_status": "CONFIRMED" if batch else "CANDIDATE_REQUIRES_CONFIRMATION"}
 
 
 def inventory(config_path: Path, run_dir: Path) -> dict:
