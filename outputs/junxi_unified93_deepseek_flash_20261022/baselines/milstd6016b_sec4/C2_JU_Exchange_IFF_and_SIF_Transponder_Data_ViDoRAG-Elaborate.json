@@ -1,0 +1,583 @@
+{
+  "use_case_name": "Exchange IFF and SIF Transponder Data",
+  "actor": "C2 JU",
+  "method": "ViDoRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "Enable C2 JU to exchange IFF/SIF transponder data via standardized message protocols (J7.5, J3.XC1) as defined in MIL-STD-6016B",
+          "evidence_refs": [
+            "P46",
+            "P44",
+            "P123"
+          ]
+        }
+      ],
+      "raw_text": "Enable C2 JU to exchange IFF/SIF transponder data via standardized message protocols (J7.5, J3.XC1) as defined in MIL-STD-6016B",
+      "evidence_card_ids": [
+        "P46",
+        "P44",
+        "P123"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU must be capable of transmitting and receiving IFF/SIF surveillance data reports (J3.XC1) and J7.5 messages as defined in MIL-STD-6016B.",
+          "evidence_refs": [
+            "P44",
+            "P46",
+            "P47"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The C2 JU must have valid local or remote track/mode data available for reporting, or be able to respond to requests for such data from other units (R², non-R²).",
+          "evidence_refs": [
+            "P123",
+            "P47"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "For Mode II code exchanges, the C2 JU must maintain Mode II code uniqueness to prevent erroneous track correlations; if a duplicate is detected, it shall not initiate changes until resolved.",
+          "evidence_refs": [
+            "P119"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If initiating an update request via J7.5 (ACT = 2), the C2 JU must ensure that the target unit (R² or non-R²) is capable of responding per specified rules (e.g., R² responds regardless of No Data status; non-R² only if holding valid local data).",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The C2 JU must be configured to monitor and report differences in IFF/SIF data using the IFF/SIF Difference Resolution Matrix (Table 4.7-5) when applicable.",
+          "evidence_refs": [
+            "P123",
+            "P47"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P44",
+        "P46",
+        "P47",
+        "P123",
+        "P119"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered by any JU without R² entering a change of nonzero to nonzero or zero to nonzero value to its locally held Mode I, III or IV IFF/SIF data, or a change from zero to nonzero Mode II data, which shall automatically report the new data in a J7.5 (ACT = 1) message.",
+          "evidence_refs": [
+            "P122"
+          ]
+        }
+      ],
+      "raw_text": "The use case is triggered by any JU without R² entering a change of nonzero to nonzero or zero to nonzero value to its locally held Mode I, III or IV IFF/SIF data, or a change from zero to nonzero Mode II data, which shall automatically report the new data in a J7.5 (ACT = 1) message.",
+      "evidence_card_ids": [
+        "P122"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU transmits IFF/SIF surveillance data periodically via J3.XC1 messages, including own unit data and track information with associated mode codes.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Upon detecting a change in locally held Mode I, III, or IV IFF/SIF data (nonzero to nonzero or zero to nonzero), or a change from zero to nonzero Mode II data, the C2 JU automatically reports the new data in a J7.5 (ACT = 1) message.",
+          "evidence_refs": [
+            "P122"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If an operator receives an IFF/SIF data conflict alert, the C2 JU may initiate manual resolution actions such as updating local data manually, initiating a J7.5 (ACT = 0) Clear IFF/SIF message, or initiating a J7.5 (ACT = 1) Difference Report message.",
+          "evidence_refs": [
+            "P122"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "When responding to a J7.5 (ACT = 2) Update Request message, if the C2 JU is an R² unit, it shall respond by initiating a J3.XC1 message regardless of No Data status.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "When responding to a J7.5 (ACT = 2) Update Request message, if the C2 JU is a non-R² unit holding valid local data for the requested mode(s), it shall respond by initiating a J7.5 (ACT = 1) message; otherwise, it need not respond.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The C2 JU may transmit a J7.5 (ACT = 3) message to exchange codes that have special meaning for implementing JUs, following applicable rules defined in the standard.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P46",
+        "P122",
+        "P123"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If the C2 JU receives a J7.5 (ACT = 2) message from an R² unit, it shall respond by initiating a J3.XC1 message regardless of No Data status.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "If the C2 JU is a non-R² unit and receives a J7.5 (ACT = 2) message, it will respond only if valid local data (nonzero codes) are held for the requested mode(s); otherwise, it need not respond.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the C2 JU receives a J7.5 (ACT = 2) message from another non-R² unit, it will not respond to the request.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Simulated tracks may be originated from simulated video mixed with live video, from message input provided by previously recorded or generated messages, or from a TDS’s internal simulation program; when Simulation Indicator is set in a J2 or J3 message, all associated data should be marked as simulated and not correlated with live tracks.",
+          "evidence_refs": [
+            "P9"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Prior coordination with all interface participants is required when transmitting simulated tracks on the interface to ensure they are not assigned TNs from other systems’ TN blocks.",
+          "evidence_refs": [
+            "P9"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P123",
+        "P9"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a C2 JU receives a J7.5 (ACT = 0) message, it shall automatically set the designated mode(s) for the specified track to No Data status, except that acceptance or rejection of a received J7.5 (ACT=0) Mode IV Clear message may be automatic or by operator determination.",
+          "evidence_refs": [
+            "P120"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If a C2 JU with R² initiates or receives a J7.5 (ACT = 0) message resulting in no IFF/SIF data being held on the track, it shall not continue transmitting the periodic J3 message that includes the continuation word containing IFF/SIF data.",
+          "evidence_refs": [
+            "P120"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Any C2 JU may change a local mode to a No Data status without transmitting a J7.5 (ACT = 0) message.",
+          "evidence_refs": [
+            "P120"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The operator display shall indicate that a J7.5 (ACT = 0) message was received, and if accepted, the No Data status should be used for all subsequent interface functions and data link messages until updated by valid code responses from local or remote sources.",
+          "evidence_refs": [
+            "P120"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P120"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "IFF/SIF surveillance data has been successfully exchanged between C2 JU and other units via J3.XC1 or J7.5 messages as appropriate.",
+          "evidence_refs": [
+            "P44",
+            "P46"
+          ]
+        },
+        {
+          "content": "If a J7.5 (ACT = 0) Clear IFF/SIF message was accepted, the designated mode(s) for the specified track are set to No Data status.",
+          "evidence_refs": [
+            "P46"
+          ]
+        },
+        {
+          "content": "If a J7.5 (ACT = 1) Difference Report message was transmitted, the recipient unit(s) have received updated IFF/SIF code differences per the IFF/SIF Difference Resolution Matrix.",
+          "evidence_refs": [
+            "P46"
+          ]
+        },
+        {
+          "content": "If a J7.5 (ACT = 2) Update Request was responded to by an R² unit, a J3.XC1 message was initiated regardless of No Data status.",
+          "evidence_refs": [
+            "P123"
+          ]
+        },
+        {
+          "content": "If a J7.5 (ACT = 2) Update Request was responded to by a non-R² unit holding valid local data, a J7.5 (ACT = 1) message was initiated with the requested mode codes.",
+          "evidence_refs": [
+            "P123"
+          ]
+        },
+        {
+          "content": "Any special meaning codes exchanged via J7.5 (ACT = 3) have been processed according to applicable rules for implementing JUs.",
+          "evidence_refs": [
+            "P123"
+          ]
+        },
+        {
+          "content": "Simulated tracks, if any were exchanged, are marked with Simulation Indicator and not correlated with live tracks.",
+          "evidence_refs": [
+            "P46"
+          ]
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P44",
+        "P46",
+        "P123"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "Enable C2 JU to exchange IFF/SIF transponder data via standardized message protocols (J7.5, J3.XC1) as defined in MIL-STD-6016B",
+            "evidence_refs": [
+              "P46",
+              "P44",
+              "P123"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P46",
+          "P44",
+          "P123"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The C2 JU must be capable of transmitting and receiving IFF/SIF surveillance data reports (J3.XC1) and J7.5 messages as defined in MIL-STD-6016B.",
+            "evidence_refs": [
+              "P44",
+              "P46",
+              "P47"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU must have valid local or remote track/mode data available for reporting, or be able to respond to requests for such data from other units (R², non-R²).",
+            "evidence_refs": [
+              "P123",
+              "P47"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "For Mode II code exchanges, the C2 JU must maintain Mode II code uniqueness to prevent erroneous track correlations; if a duplicate is detected, it shall not initiate changes until resolved.",
+            "evidence_refs": [
+              "P119"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If initiating an update request via J7.5 (ACT = 2), the C2 JU must ensure that the target unit (R² or non-R²) is capable of responding per specified rules (e.g., R² responds regardless of No Data status; non-R² only if holding valid local data).",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The C2 JU must be configured to monitor and report differences in IFF/SIF data using the IFF/SIF Difference Resolution Matrix (Table 4.7-5) when applicable.",
+            "evidence_refs": [
+              "P123",
+              "P47"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P123",
+          "P46",
+          "P47",
+          "P119"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The use case is triggered by any JU without R² entering a change of nonzero to nonzero or zero to nonzero value to its locally held Mode I, III or IV IFF/SIF data, or a change from zero to nonzero Mode II data, which shall automatically report the new data in a J7.5 (ACT = 1) message.",
+            "evidence_refs": [
+              "P122"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P46",
+          "P122"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU transmits IFF/SIF surveillance data periodically via J3.XC1 messages, including own unit data and track information with associated mode codes.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Upon detecting a change in locally held Mode I, III, or IV IFF/SIF data (nonzero to nonzero or zero to nonzero), or a change from zero to nonzero Mode II data, the C2 JU automatically reports the new data in a J7.5 (ACT = 1) message.",
+            "evidence_refs": [
+              "P122"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If an operator receives an IFF/SIF data conflict alert, the C2 JU may initiate manual resolution actions such as updating local data manually, initiating a J7.5 (ACT = 0) Clear IFF/SIF message, or initiating a J7.5 (ACT = 1) Difference Report message.",
+            "evidence_refs": [
+              "P122"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "When responding to a J7.5 (ACT = 2) Update Request message, if the C2 JU is an R² unit, it shall respond by initiating a J3.XC1 message regardless of No Data status.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "When responding to a J7.5 (ACT = 2) Update Request message, if the C2 JU is a non-R² unit holding valid local data for the requested mode(s), it shall respond by initiating a J7.5 (ACT = 1) message; otherwise, it need not respond.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The C2 JU may transmit a J7.5 (ACT = 3) message to exchange codes that have special meaning for implementing JUs, following applicable rules defined in the standard.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P123",
+          "P122",
+          "P46"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If the C2 JU receives a J7.5 (ACT = 2) message from an R² unit, it shall respond by initiating a J3.XC1 message regardless of No Data status.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "If the C2 JU is a non-R² unit and receives a J7.5 (ACT = 2) message, it will respond only if valid local data (nonzero codes) are held for the requested mode(s); otherwise, it need not respond.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the C2 JU receives a J7.5 (ACT = 2) message from another non-R² unit, it will not respond to the request.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Simulated tracks may be originated from simulated video mixed with live video, from message input provided by previously recorded or generated messages, or from a TDS’s internal simulation program; when Simulation Indicator is set in a J2 or J3 message, all associated data should be marked as simulated and not correlated with live tracks.",
+            "evidence_refs": [
+              "P9"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Prior coordination with all interface participants is required when transmitting simulated tracks on the interface to ensure they are not assigned TNs from other systems’ TN blocks.",
+            "evidence_refs": [
+              "P9"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P9",
+          "P46",
+          "P123",
+          "P45"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If a C2 JU receives a J7.5 (ACT = 0) message, it shall automatically set the designated mode(s) for the specified track to No Data status, except that acceptance or rejection of a received J7.5 (ACT=0) Mode IV Clear message may be automatic or by operator determination.",
+            "evidence_refs": [
+              "P120"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If a C2 JU with R² initiates or receives a J7.5 (ACT = 0) message resulting in no IFF/SIF data being held on the track, it shall not continue transmitting the periodic J3 message that includes the continuation word containing IFF/SIF data.",
+            "evidence_refs": [
+              "P120"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Any C2 JU may change a local mode to a No Data status without transmitting a J7.5 (ACT = 0) message.",
+            "evidence_refs": [
+              "P120"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The operator display shall indicate that a J7.5 (ACT = 0) message was received, and if accepted, the No Data status should be used for all subsequent interface functions and data link messages until updated by valid code responses from local or remote sources.",
+            "evidence_refs": [
+              "P120"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P46",
+          "P120"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "IFF/SIF surveillance data has been successfully exchanged between C2 JU and other units via J3.XC1 or J7.5 messages as appropriate.",
+            "evidence_refs": [
+              "P44",
+              "P46"
+            ]
+          },
+          {
+            "content": "If a J7.5 (ACT = 0) Clear IFF/SIF message was accepted, the designated mode(s) for the specified track are set to No Data status.",
+            "evidence_refs": [
+              "P46"
+            ]
+          },
+          {
+            "content": "If a J7.5 (ACT = 1) Difference Report message was transmitted, the recipient unit(s) have received updated IFF/SIF code differences per the IFF/SIF Difference Resolution Matrix.",
+            "evidence_refs": [
+              "P46"
+            ]
+          },
+          {
+            "content": "If a J7.5 (ACT = 2) Update Request was responded to by an R² unit, a J3.XC1 message was initiated regardless of No Data status.",
+            "evidence_refs": [
+              "P123"
+            ]
+          },
+          {
+            "content": "If a J7.5 (ACT = 2) Update Request was responded to by a non-R² unit holding valid local data, a J7.5 (ACT = 1) message was initiated with the requested mode codes.",
+            "evidence_refs": [
+              "P123"
+            ]
+          },
+          {
+            "content": "Any special meaning codes exchanged via J7.5 (ACT = 3) have been processed according to applicable rules for implementing JUs.",
+            "evidence_refs": [
+              "P123"
+            ]
+          },
+          {
+            "content": "Simulated tracks, if any were exchanged, are marked with Simulation Indicator and not correlated with live tracks.",
+            "evidence_refs": [
+              "P46"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P46",
+          "P123",
+          "P45",
+          "P47"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 167.3
+}

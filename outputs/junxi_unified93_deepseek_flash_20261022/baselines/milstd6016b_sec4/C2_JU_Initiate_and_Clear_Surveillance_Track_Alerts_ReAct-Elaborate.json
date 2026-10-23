@@ -1,0 +1,601 @@
+{
+  "use_case_name": "Initiate and Clear Surveillance Track Alerts",
+  "actor": "C2 JU",
+  "method": "ReAct-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "Enable the C2 JU to initiate and clear surveillance track alerts (force tell and emergency) by setting or clearing appropriate alert indicators in J-series messages.",
+          "evidence_refs": [
+            "P10",
+            "P104",
+            "P105",
+            "P102"
+          ]
+        }
+      ],
+      "raw_text": "Enable the C2 JU to initiate and clear surveillance track alerts (force tell and emergency) by setting or clearing appropriate alert indicators in J-series messages.",
+      "evidence_card_ids": [
+        "P10",
+        "P104",
+        "P105",
+        "P102"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU must have the capability to initiate/terminate a force tell alert on another JU by setting/clearing the FT IND in a J7.0 (ACT = 4) message.",
+          "evidence_refs": [
+            "P102"
+          ]
+        },
+        {
+          "content": "For tracks, the initiating JU must possess R² capability to set EMG IND or FT IND in J3.2, J3.3, J3.4, or J3.5 messages; otherwise, it must use J7.0 (ACT = 3 or 4).",
+          "evidence_refs": [
+            "P104",
+            "P105"
+          ]
+        },
+        {
+          "content": "For land (ground) points or subsurface contacts, the initiating JU must possess R² capability to set EMG IND or FT IND in J3.5 (PTI = 0) or J5.4 messages; otherwise, it must use J7.0 (ACT = 3 or 4).",
+          "evidence_refs": [
+            "P105"
+          ]
+        },
+        {
+          "content": "For Electronic Warfare Product Information, the initiating JU must possess R² capability to set EMG IND or FT IND in the J3.7 message; otherwise, it must use J7.0 (ACT = 3 or 4).",
+          "evidence_refs": [
+            "P106"
+          ]
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P102",
+        "P104",
+        "P105",
+        "P106"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU operator initiates an action to set or clear the emergency (EMG IND) or force tell (FT IND) alert indicators for a surveillance track.",
+          "evidence_refs": [
+            "P104",
+            "P105",
+            "P106"
+          ]
+        }
+      ],
+      "raw_text": "The C2 JU operator initiates an action to set or clear the emergency (EMG IND) or force tell (FT IND) alert indicators for a surveillance track.",
+      "evidence_card_ids": [
+        "P104",
+        "P105",
+        "P106"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "A JU with R² capability initiates an emergency or force tell alert on a surveillance track by setting the appropriate EMG IND or FT IND in the J3.2 Air Track, J3.3 Surface Track, J3.4 Subsurface Track, or J3.5 Land Point/Track message.",
+          "evidence_refs": [
+            "P104"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "All receiving JUs accept the alert indicator set by the initiating JU in their databases upon receipt of the J3.X track message.",
+          "evidence_refs": [
+            "P104"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "A JU with R² capability terminates an emergency or force tell alert by transmitting a J7.0 (ACT = 3 or 4) message to terminate the alert.",
+          "evidence_refs": [
+            "P104"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "After sending the J7.0 termination message, the initiating JU sets the appropriate EMG IND or FT IND field to 0 in subsequent J3.2, J3.3, J3.4, or J3.5 messages for that track.",
+          "evidence_refs": [
+            "P104"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "All receiving JUs terminate the alert in their databases upon receipt of the J7.0 (ACT = 3 or 4) message.",
+          "evidence_refs": [
+            "P104"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Optionally, alerts may be cleared by reception of a J3.X message with the EMG IND and/or FT IND set to value 0.",
+          "evidence_refs": [
+            "P104"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "A JU without R² capability initiates or terminates an emergency or force tell alert by setting or clearing the appropriate EMG IND or FT IND in a J7.0 (ACT = 3 or 4) message.",
+          "evidence_refs": [
+            "P105"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "Upon receipt of a J7.0 (ACT = 3 or 4) message from a JU without R², the JU with R² sets or clears the appropriate EMG IND or FT IND in the J3.2, J3.3, J3.4, or J3.5 message.",
+          "evidence_refs": [
+            "P105"
+          ],
+          "step_number": 8
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P104",
+        "P105"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Optionally, alerts on tracks may be cleared by reception of a J3.X message (J3.2, J3.3, J3.4, or J3.5) with the EMG IND and/or FT IND set to value 0, instead of requiring a J7.0 (ACT = 3 or 4) termination message.",
+          "evidence_refs": [
+            "P104"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A JU without R² capability initiates or terminates an emergency or force tell alert on tracks by setting/clearing the appropriate EMG IND or FT IND in a J7.0 (ACT = 3 or 4) message; upon receipt, the JU with R² sets/clears the indicator in subsequent J3.2, J3.3, J3.4, or J3.5 messages.",
+          "evidence_refs": [
+            "P105"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "For Electronic Warfare Product Information, optionally, alerts may be cleared by reception of a J3.7 message with the EMG IND and/or FT IND set to value 0, as an alternative to J7.0 termination.",
+          "evidence_refs": [
+            "P106"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "For land (ground) points or subsurface contacts, optionally, alerts may be cleared by reception of a J3.5 or J5.4 message with the EMG IND and/or FT IND set to 0, instead of using J7.0 (ACT = 3 or 4).",
+          "evidence_refs": [
+            "P105"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "When terminating a force tell alert on a track, the JU shall also terminate the force tell alert on any reference point or area that is slaved to the track.",
+          "evidence_refs": [
+            "P104"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "A JU initiating a force tell alert on a slaved reference point or area shall also initiate an alert on the Related TN if it does not already have the FT IND set; when terminating the alert for the reference point or area, the JU shall also terminate the alert for the Related TN unless it had the FT IND set prior to initiation.",
+          "evidence_refs": [
+            "P104"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "For reference points, lines, and areas, optionally, alerts may be cleared by reception of a J3.0 message with the FT IND set to value 0, as an alternative to J7.0 (ACT = 4) termination.",
+          "evidence_refs": [
+            "P103"
+          ],
+          "step_number": 7
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P104",
+        "P105",
+        "P106",
+        "P103"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a system with limited track capacity (e.g., F-15) is at risk of being saturated by force tell and emergency alerts, it must manage its database to ensure it shall not be saturated.",
+          "evidence_refs": [
+            "P10"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A JU shall not initiate or terminate an emergency alert on another Active JU; this action is prohibited.",
+          "evidence_refs": [
+            "P102"
+          ],
+          "step_number": 2
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P10",
+        "P102"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "All receiving JUs have accepted the alert indicator (EMG IND or FT IND) set by the initiating JU in their databases upon receipt of the J3.X track message (J3.2, J3.3, J3.4, or J3.5).",
+          "evidence_refs": [
+            "P101",
+            "P105",
+            "P106"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "All receiving JUs have terminated the alert in their databases upon receipt of the J7.0 (ACT = 3 or 4) termination message.",
+          "evidence_refs": [
+            "P101",
+            "P105",
+            "P106"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The initiating JU has set the appropriate EMG IND or FT IND field to 0 in subsequent J3.2, J3.3, J3.4, or J3.5 messages for that track after sending the J7.0 termination message.",
+          "evidence_refs": [
+            "P101",
+            "P105"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "For Electronic Warfare Product Information, all receiving JUs have accepted the alert in their databases upon receipt of the J3.7 message with EMG IND or FT IND set.",
+          "evidence_refs": [
+            "P101",
+            "P106"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "For land (ground) points or subsurface contacts, all receiving JUs have accepted the alert upon receipt of the J3.5 (PTI = 0) or J5.4 message with EMG IND or FT IND set.",
+          "evidence_refs": [
+            "P101",
+            "P105"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P101",
+        "P105",
+        "P106"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "Enable the C2 JU to initiate and clear surveillance track alerts (force tell and emergency) by setting or clearing appropriate alert indicators in J-series messages.",
+            "evidence_refs": [
+              "P10",
+              "P104",
+              "P105",
+              "P102"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P8",
+          "P104",
+          "P10",
+          "P105",
+          "P102"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The C2 JU must have the capability to initiate/terminate a force tell alert on another JU by setting/clearing the FT IND in a J7.0 (ACT = 4) message.",
+            "evidence_refs": [
+              "P102"
+            ]
+          },
+          {
+            "content": "For tracks, the initiating JU must possess R² capability to set EMG IND or FT IND in J3.2, J3.3, J3.4, or J3.5 messages; otherwise, it must use J7.0 (ACT = 3 or 4).",
+            "evidence_refs": [
+              "P104",
+              "P105"
+            ]
+          },
+          {
+            "content": "For land (ground) points or subsurface contacts, the initiating JU must possess R² capability to set EMG IND or FT IND in J3.5 (PTI = 0) or J5.4 messages; otherwise, it must use J7.0 (ACT = 3 or 4).",
+            "evidence_refs": [
+              "P105"
+            ]
+          },
+          {
+            "content": "For Electronic Warfare Product Information, the initiating JU must possess R² capability to set EMG IND or FT IND in the J3.7 message; otherwise, it must use J7.0 (ACT = 3 or 4).",
+            "evidence_refs": [
+              "P106"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P10",
+          "P102",
+          "P104",
+          "P105",
+          "P106"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The C2 JU operator initiates an action to set or clear the emergency (EMG IND) or force tell (FT IND) alert indicators for a surveillance track.",
+            "evidence_refs": [
+              "P104",
+              "P105",
+              "P106"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P10",
+          "P104",
+          "P102",
+          "P105",
+          "P106",
+          "P103"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "A JU with R² capability initiates an emergency or force tell alert on a surveillance track by setting the appropriate EMG IND or FT IND in the J3.2 Air Track, J3.3 Surface Track, J3.4 Subsurface Track, or J3.5 Land Point/Track message.",
+            "evidence_refs": [
+              "P104"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "All receiving JUs accept the alert indicator set by the initiating JU in their databases upon receipt of the J3.X track message.",
+            "evidence_refs": [
+              "P104"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "A JU with R² capability terminates an emergency or force tell alert by transmitting a J7.0 (ACT = 3 or 4) message to terminate the alert.",
+            "evidence_refs": [
+              "P104"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "After sending the J7.0 termination message, the initiating JU sets the appropriate EMG IND or FT IND field to 0 in subsequent J3.2, J3.3, J3.4, or J3.5 messages for that track.",
+            "evidence_refs": [
+              "P104"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "All receiving JUs terminate the alert in their databases upon receipt of the J7.0 (ACT = 3 or 4) message.",
+            "evidence_refs": [
+              "P104"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Optionally, alerts may be cleared by reception of a J3.X message with the EMG IND and/or FT IND set to value 0.",
+            "evidence_refs": [
+              "P104"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "A JU without R² capability initiates or terminates an emergency or force tell alert by setting or clearing the appropriate EMG IND or FT IND in a J7.0 (ACT = 3 or 4) message.",
+            "evidence_refs": [
+              "P105"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "Upon receipt of a J7.0 (ACT = 3 or 4) message from a JU without R², the JU with R² sets or clears the appropriate EMG IND or FT IND in the J3.2, J3.3, J3.4, or J3.5 message.",
+            "evidence_refs": [
+              "P105"
+            ],
+            "step_number": 8
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P104",
+          "P102",
+          "P105",
+          "P106",
+          "P101"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "Optionally, alerts on tracks may be cleared by reception of a J3.X message (J3.2, J3.3, J3.4, or J3.5) with the EMG IND and/or FT IND set to value 0, instead of requiring a J7.0 (ACT = 3 or 4) termination message.",
+            "evidence_refs": [
+              "P104"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A JU without R² capability initiates or terminates an emergency or force tell alert on tracks by setting/clearing the appropriate EMG IND or FT IND in a J7.0 (ACT = 3 or 4) message; upon receipt, the JU with R² sets/clears the indicator in subsequent J3.2, J3.3, J3.4, or J3.5 messages.",
+            "evidence_refs": [
+              "P105"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "For Electronic Warfare Product Information, optionally, alerts may be cleared by reception of a J3.7 message with the EMG IND and/or FT IND set to value 0, as an alternative to J7.0 termination.",
+            "evidence_refs": [
+              "P106"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "For land (ground) points or subsurface contacts, optionally, alerts may be cleared by reception of a J3.5 or J5.4 message with the EMG IND and/or FT IND set to 0, instead of using J7.0 (ACT = 3 or 4).",
+            "evidence_refs": [
+              "P105"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "When terminating a force tell alert on a track, the JU shall also terminate the force tell alert on any reference point or area that is slaved to the track.",
+            "evidence_refs": [
+              "P104"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "A JU initiating a force tell alert on a slaved reference point or area shall also initiate an alert on the Related TN if it does not already have the FT IND set; when terminating the alert for the reference point or area, the JU shall also terminate the alert for the Related TN unless it had the FT IND set prior to initiation.",
+            "evidence_refs": [
+              "P104"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "For reference points, lines, and areas, optionally, alerts may be cleared by reception of a J3.0 message with the FT IND set to value 0, as an alternative to J7.0 (ACT = 4) termination.",
+            "evidence_refs": [
+              "P103"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P106",
+          "P104",
+          "P105",
+          "P102",
+          "P103"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If a system with limited track capacity (e.g., F-15) is at risk of being saturated by force tell and emergency alerts, it must manage its database to ensure it shall not be saturated.",
+            "evidence_refs": [
+              "P10"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A JU shall not initiate or terminate an emergency alert on another Active JU; this action is prohibited.",
+            "evidence_refs": [
+              "P102"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P105",
+          "P10",
+          "P102",
+          "P106",
+          "P104"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "All receiving JUs have accepted the alert indicator (EMG IND or FT IND) set by the initiating JU in their databases upon receipt of the J3.X track message (J3.2, J3.3, J3.4, or J3.5).",
+            "evidence_refs": [
+              "P101",
+              "P105",
+              "P106"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "All receiving JUs have terminated the alert in their databases upon receipt of the J7.0 (ACT = 3 or 4) termination message.",
+            "evidence_refs": [
+              "P101",
+              "P105",
+              "P106"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The initiating JU has set the appropriate EMG IND or FT IND field to 0 in subsequent J3.2, J3.3, J3.4, or J3.5 messages for that track after sending the J7.0 termination message.",
+            "evidence_refs": [
+              "P101",
+              "P105"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "For Electronic Warfare Product Information, all receiving JUs have accepted the alert in their databases upon receipt of the J3.7 message with EMG IND or FT IND set.",
+            "evidence_refs": [
+              "P101",
+              "P106"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "For land (ground) points or subsurface contacts, all receiving JUs have accepted the alert upon receipt of the J3.5 (PTI = 0) or J5.4 message with EMG IND or FT IND set.",
+            "evidence_refs": [
+              "P101",
+              "P105"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P101",
+          "P102",
+          "P106",
+          "P105",
+          "P103"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 123.8
+}

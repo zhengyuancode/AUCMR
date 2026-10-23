@@ -1,0 +1,502 @@
+{
+  "use_case_name": "Retrieve Historical Reports",
+  "actor": "Management",
+  "method": "ViDoRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The user shall be able to retrieve historic reports from the COTS reporting system based on date range and report name.",
+          "evidence_refs": [
+            "P22"
+          ]
+        }
+      ],
+      "raw_text": "The user shall be able to retrieve historic reports from the COTS reporting system based on date range and report name.",
+      "evidence_card_ids": [
+        "P22"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Management",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Management",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The user must be logged into the RLCS Application.",
+          "evidence_refs": [
+            "P11"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The user must have 'Management' privileges, which include reporting and status checking capabilities only.",
+          "evidence_refs": [
+            "P11"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Historic reports must exist within the COTS reporting system.",
+          "evidence_refs": [
+            "P22"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P11",
+        "P22"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The user requests to retrieve historic reports from the COTS reporting system based on date range and report name.",
+          "evidence_refs": [
+            "P22"
+          ]
+        }
+      ],
+      "raw_text": "The user requests to retrieve historic reports from the COTS reporting system based on date range and report name.",
+      "evidence_card_ids": [
+        "P22"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The user initiates the retrieval of historic reports from the COTS reporting system based on date range and report name.",
+          "evidence_refs": [
+            "P22"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The system displays or allows modification of parameters for the selected report type (e.g., 'Current Command Summary Report', 'Event Log Report', etc.).",
+          "evidence_refs": [
+            "P22"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The user selects a specific report type from the available options listed in sections 3.2.1.9.1 through 3.2.1.9.11.",
+          "evidence_refs": [
+            "P22"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system retrieves the requested historic report data from the COTS reporting package data store using the specified date range and report name.",
+          "evidence_refs": [
+            "P22",
+            "P31"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The system formats the retrieved data according to the selected report type’s definition (as specified in section 3.2.5.x).",
+          "evidence_refs": [
+            "P31"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The system presents the formatted report to the user via GUI display, print/export output, or file storage as configured.",
+          "evidence_refs": [
+            "P31"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P22",
+        "P31"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If the user selects a report type that requires specific entities not available in the database (e.g., 'Failure Summary Report' when no failure status values exist), the system shall generate an empty or partial report indicating no data found for the specified criteria.",
+          "evidence_refs": [
+            "P31"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the user attempts to retrieve a report outside the allowed date range or with invalid parameters, the system shall display an error message and prompt for valid input before proceeding.",
+          "evidence_refs": [
+            "P22"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the COTS reporting tool is unavailable or fails to connect to the RLCS database, the system shall notify the user and log the failure event via the 'System Operation Command Log' entity.",
+          "evidence_refs": [
+            "P31"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the user requests a report that requires personnel or device sensor data not currently exported to the COTS tool (e.g., 'Current User Report' or 'Safety Report'), the system shall indicate missing source entities and prevent report generation until data is available.",
+          "evidence_refs": [
+            "P31"
+          ],
+          "step_number": 2
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P31",
+        "P22"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the user is not logged in or lacks 'Management' privileges, the system shall deny access to report retrieval functions and display an authorization error.",
+          "evidence_refs": [
+            "P11"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "If the requested report name does not match any of the defined report types (sections 3.2.1.9.1–3.2.1.9.11), the system shall reject the request and prompt for a valid report name.",
+          "evidence_refs": [
+            "P22"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the specified date range is invalid (e.g., end date before start date, or outside configured retention period), the system shall display an error and require correction before proceeding.",
+          "evidence_refs": [
+            "P34"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the COTS reporting tool fails to retrieve data from the RLCS database within the required response time (less than 2 seconds for GUI updates), the system shall timeout and notify the user of a performance failure.",
+          "evidence_refs": [
+            "P34"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the underlying entities required for a specific report (e.g., ‘Device Sensor Command Log’ for Failure Summary Report) are missing or corrupted, the system shall generate an error log entry via ‘System Operation Command Log’ and present a partial or empty report with a warning.",
+          "evidence_refs": [
+            "P31",
+            "P34"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If audit logging fails during report retrieval (as required by constraint e), the system shall still allow report generation but flag the event in the security log for later review.",
+          "evidence_refs": [
+            "P11"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P11",
+        "P22",
+        "P34",
+        "P31"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The requested historic report is successfully retrieved and presented to the user via GUI display, print/export output, or file storage as configured.",
+          "evidence_refs": [
+            "P31"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Report output parameters are passed to the COTS reporting package data store for formatting and delivery.",
+          "evidence_refs": [
+            "P31"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "No data is written back to the RLCS database; only reporting parameters and outputs are generated externally.",
+          "evidence_refs": [
+            "P31"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P31"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "The user shall be able to retrieve historic reports from the COTS reporting system based on date range and report name.",
+            "evidence_refs": [
+              "P22"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P22",
+          "P11"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The user must be logged into the RLCS Application.",
+            "evidence_refs": [
+              "P11"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The user must have 'Management' privileges, which include reporting and status checking capabilities only.",
+            "evidence_refs": [
+              "P11"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Historic reports must exist within the COTS reporting system.",
+            "evidence_refs": [
+              "P22"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P22",
+          "P11"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The user requests to retrieve historic reports from the COTS reporting system based on date range and report name.",
+            "evidence_refs": [
+              "P22"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P22"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The user initiates the retrieval of historic reports from the COTS reporting system based on date range and report name.",
+            "evidence_refs": [
+              "P22"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system displays or allows modification of parameters for the selected report type (e.g., 'Current Command Summary Report', 'Event Log Report', etc.).",
+            "evidence_refs": [
+              "P22"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The user selects a specific report type from the available options listed in sections 3.2.1.9.1 through 3.2.1.9.11.",
+            "evidence_refs": [
+              "P22"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system retrieves the requested historic report data from the COTS reporting package data store using the specified date range and report name.",
+            "evidence_refs": [
+              "P22",
+              "P31"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The system formats the retrieved data according to the selected report type’s definition (as specified in section 3.2.5.x).",
+            "evidence_refs": [
+              "P31"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The system presents the formatted report to the user via GUI display, print/export output, or file storage as configured.",
+            "evidence_refs": [
+              "P31"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P22",
+          "P31"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If the user selects a report type that requires specific entities not available in the database (e.g., 'Failure Summary Report' when no failure status values exist), the system shall generate an empty or partial report indicating no data found for the specified criteria.",
+            "evidence_refs": [
+              "P31"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the user attempts to retrieve a report outside the allowed date range or with invalid parameters, the system shall display an error message and prompt for valid input before proceeding.",
+            "evidence_refs": [
+              "P22"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the COTS reporting tool is unavailable or fails to connect to the RLCS database, the system shall notify the user and log the failure event via the 'System Operation Command Log' entity.",
+            "evidence_refs": [
+              "P31"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the user requests a report that requires personnel or device sensor data not currently exported to the COTS tool (e.g., 'Current User Report' or 'Safety Report'), the system shall indicate missing source entities and prevent report generation until data is available.",
+            "evidence_refs": [
+              "P31"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P22",
+          "P31",
+          "P11"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the user is not logged in or lacks 'Management' privileges, the system shall deny access to report retrieval functions and display an authorization error.",
+            "evidence_refs": [
+              "P11"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "If the requested report name does not match any of the defined report types (sections 3.2.1.9.1–3.2.1.9.11), the system shall reject the request and prompt for a valid report name.",
+            "evidence_refs": [
+              "P22"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the specified date range is invalid (e.g., end date before start date, or outside configured retention period), the system shall display an error and require correction before proceeding.",
+            "evidence_refs": [
+              "P34"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the COTS reporting tool fails to retrieve data from the RLCS database within the required response time (less than 2 seconds for GUI updates), the system shall timeout and notify the user of a performance failure.",
+            "evidence_refs": [
+              "P34"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the underlying entities required for a specific report (e.g., ‘Device Sensor Command Log’ for Failure Summary Report) are missing or corrupted, the system shall generate an error log entry via ‘System Operation Command Log’ and present a partial or empty report with a warning.",
+            "evidence_refs": [
+              "P31",
+              "P34"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If audit logging fails during report retrieval (as required by constraint e), the system shall still allow report generation but flag the event in the security log for later review.",
+            "evidence_refs": [
+              "P11"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P22",
+          "P11",
+          "P31",
+          "P34"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The requested historic report is successfully retrieved and presented to the user via GUI display, print/export output, or file storage as configured.",
+            "evidence_refs": [
+              "P31"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Report output parameters are passed to the COTS reporting package data store for formatting and delivery.",
+            "evidence_refs": [
+              "P31"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "No data is written back to the RLCS database; only reporting parameters and outputs are generated externally.",
+            "evidence_refs": [
+              "P31"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P22",
+          "P31"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 169.4
+}

@@ -1,0 +1,606 @@
+{
+  "use_case_name": "Create a User Account",
+  "actor": "System Administrator",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To create individual users under any user group.",
+          "evidence_refs": [
+            "EC-G-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "To create individual users under any user group.",
+        "canonical_success_scenario": "The System Administrator creates one individual user account under a selected user group.",
+        "start_boundary": "The System Administrator begins creating an individual user account under a user group in the system.",
+        "success_boundary": "The individual user account exists under the intended user group.",
+        "in_scope_actions": [
+          "create an individual user account",
+          "place the individual user account under a user group"
+        ],
+        "excluded_adjacent_actions": [
+          "capturing VSP staff details and necessary master information while entering a claim",
+          "claim entry"
+        ],
+        "variant_dimensions": [
+          "user group under which the individual user account is created"
+        ],
+        "evidence_refs": [
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "System Administrator",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "System Administrator"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The System Administrator is logged into the system with appropriate privileges.",
+          "evidence_refs": [
+            "EC-PC-001"
+          ]
+        },
+        {
+          "content": "At least one User Group is defined in the system.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-001",
+        "EC-PC-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-authentication-and-privileges",
+          "PC-user-group-exists",
+          "preconditions"
+        ],
+        "missing_aspects": [
+          "preconditions"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The System Administrator initiates the creation of an individual user account.",
+          "evidence_refs": [
+            "EC-TR-001",
+            "EC-TR-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-001",
+        "EC-TR-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger",
+          "trigger-context"
+        ],
+        "missing_aspects": [
+          "trigger",
+          "Selection of User Group"
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The System Administrator selects the Group Name from the existing User Groups.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-TR-001"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The System Administrator enters the User Name, Password, and Verify Password.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The system validates that the Password and Verify Password values are equal.",
+          "evidence_refs": [
+            "EC-MF-001"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system saves the user information, creating the individual user account under the selected User Group.",
+          "evidence_refs": [
+            "EC-MF-001",
+            "EC-MF-000",
+            "EC-G-001"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-TR-001",
+        "EC-MF-001",
+        "EC-G-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-group-selection",
+          "MF-user-details-entry",
+          "MF-password-validation",
+          "MF-save-and-create",
+          "data_entry_steps",
+          "validation_step"
+        ],
+        "missing_aspects": [
+          "main_flow"
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2: If the User Name entered already exists, the system gives a warning message to have the duplicate name or to change the name.",
+          "evidence_refs": [
+            "EC-AF-004"
+          ],
+          "step_number": 1
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-duplicate-name-override",
+          "AF-duplicate-name-handling",
+          "alternative_flow_duplicate_handling",
+          "alternative_flow_missing_master_data_navigation",
+          "AF-name-conflict-prevention"
+        ],
+        "missing_aspects": [
+          "alternative_flow",
+          "Evidence is needed to support that the System Administrator may choose to retain the duplicate name and that the use case continues with the remaining main-flow steps."
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the Password and Verify Password values are not equal, the system does not save the user information.",
+          "evidence_refs": [
+            "EC-EF-007"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system does not allow the creation of an Individual User with an existing name.",
+          "evidence_refs": [
+            "EC-EF-004"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-007",
+        "EC-EF-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-password-mismatch-prevents-save",
+          "EF-existing-individual-user-name-prevents-creation",
+          "EF-validation-failure-at-step-3",
+          "EF-validation-failure-at-step-4",
+          "EF-duplicate-ID-warning",
+          "EF-delete-dependency-check",
+          "exception_flow_duplicate_name_rejection",
+          "exception_duplicate_name_override_allowed",
+          "exception_flow_duplicate_name_prevention"
+        ],
+        "missing_aspects": [
+          "Recovery or retry path after Password and Verify Password values do not match is not documented.",
+          "Recovery or retry path after rejection of an existing individual user name is not documented.",
+          "Main flow does not show an explicit duplicate-user-name validation step; the existing-name exception is anchored to the save/create step.",
+          "Explicit exit or termination path for these exception branches is not documented.",
+          "Explicit evidence for the step number (Step 3) where this exception occurs.",
+          "Explicit evidence for the step number (Step 4) where this exception occurs."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The individual user account has been created in the system.",
+          "evidence_refs": [
+            "EC-G-001",
+            "EC-MF-001"
+          ]
+        },
+        {
+          "content": "The individual user account is associated with the selected User Group.",
+          "evidence_refs": [
+            "EC-G-001",
+            "EC-MF-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001",
+        "EC-MF-001",
+        "EC-MF-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postcondition-individual-user-account-created",
+          "postcondition-individual-user-account-under-selected-user-group"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 33,
+    "cross_page_cards": 1,
+    "modalities": {
+      "text": 33
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 908.375,
+    "judge_calls": 0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 530.317,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 75.0,
+    "llm_calls": 37.0,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 365.991,
+    "cards_collected": 33,
+    "cards_referenced": 10,
+    "dra_elapsed_seconds": 33.686,
+    "dra_judge_calls": 0,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_seconds": 33.685,
+    "dra_llm_retry_calls": 0,
+    "dra_lvlm_calls": 0,
+    "dra_llm_calls": 2,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_seconds": 0.0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "To create individual users under any user group.",
+            "evidence_refs": [
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The System Administrator is logged into the system with appropriate privileges.",
+            "evidence_refs": [
+              "EC-PC-001"
+            ]
+          },
+          {
+            "content": "At least one User Group is defined in the system.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000",
+          "EC-PC-001"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The System Administrator initiates the creation of an individual user account.",
+            "evidence_refs": [
+              "EC-TR-001",
+              "EC-TR-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The System Administrator selects the Group Name from the existing User Groups.",
+            "evidence_refs": [
+              "EC-MF-000",
+              "EC-TR-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The System Administrator enters the User Name, Password, and Verify Password.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system validates that the Password and Verify Password values are equal.",
+            "evidence_refs": [
+              "EC-MF-001"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system saves the user information, creating the individual user account under the selected User Group.",
+            "evidence_refs": [
+              "EC-MF-001",
+              "EC-MF-000",
+              "EC-G-001"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 2: If the User Name entered already exists, the system gives a warning message to have the duplicate name or to change the name.",
+            "evidence_refs": [
+              "EC-AF-004"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "If the Password and Verify Password values are not equal, the system does not save the user information.",
+            "evidence_refs": [
+              "EC-EF-007"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system does not allow the creation of an Individual User with an existing name.",
+            "evidence_refs": [
+              "EC-EF-004"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The individual user account has been created in the system.",
+            "evidence_refs": [
+              "EC-G-001",
+              "EC-MF-001"
+            ]
+          },
+          {
+            "content": "The individual user account is associated with the selected User Group.",
+            "evidence_refs": [
+              "EC-G-001",
+              "EC-MF-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "95e5b892386e4840b35d82c66f6da02d"
+}

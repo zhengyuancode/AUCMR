@@ -1,0 +1,1236 @@
+{
+  "use_case_name": "Decorrelate Diverging Air or Surface Tracks",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The goal of the use case is to decorrelate any two air tracks or any two surface tracks.",
+          "evidence_refs": [
+            "EC-G-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002"
+      ],
+      "scope_contract": {
+        "goal_statement": "The goal of the use case is to decorrelate any two air tracks or any two surface tracks.",
+        "canonical_success_scenario": "C2 JU decorrelates two air tracks or two surface tracks.",
+        "start_boundary": "C2 JU has two air tracks or two surface tracks to decorrelate.",
+        "success_boundary": "The two air tracks or two surface tracks are decorrelated.",
+        "in_scope_actions": [
+          "Decorrelate any two air tracks or any two surface tracks."
+        ],
+        "excluded_adjacent_actions": [
+          "Automatically correlate two tracks.",
+          "Resolve dual designations through correlation.",
+          "Prevent or eliminate dual designations by comparing locally derived sensor data with interface data."
+        ],
+        "variant_dimensions": [
+          "Air-track pair",
+          "Surface-track pair"
+        ],
+        "evidence_refs": [
+          "EC-G-002"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal",
+          "high-level objective to prevent automatic correlation under divergence conditions",
+          "high-level objective",
+          "goal definition"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "C2 JU has initiated real-time air or surface tracks.",
+          "evidence_refs": [
+            "EC-PC-016"
+          ]
+        },
+        {
+          "content": "The position or other data in a PPLI meet the system's decorrelation criteria.",
+          "evidence_refs": [
+            "EC-PC-008"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-016",
+        "EC-PC-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-tracks-initiated",
+          "PC-decorrelation-criteria-met",
+          "specific system state or conditions required before decorrelation can begin",
+          "correlation test components",
+          "timing constraints",
+          "successful correlation criteria",
+          "specific system state conditions blocking automatic correlation",
+          "configurable override mechanisms for those conditions",
+          "Track Number selection constraints",
+          "Operational Control Code (OCC) restrictions",
+          "existence of real-time air/surface tracks",
+          "existence of common local track",
+          "receipt of J2/J3 message",
+          "system state: recognition of two eligible tracks"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "C2 JU receives or generates a J7.2 message with the RV field set to value 2 (Correlation Rejection), or receives a J2 or J3 message on a common local track which initiates an automatic decorrelation test.",
+          "evidence_refs": [
+            "EC-TR-005",
+            "EC-TR-008"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-005",
+        "EC-TR-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-correlation-rejection",
+          "trigger-J2-J3-message",
+          "trigger-divergence-conditions",
+          "trigger-event-definition",
+          "trigger event: existence of two eligible tracks meeting decorrelation criteria",
+          "trigger event: detection of conflicting track data conditions",
+          "scope limitation: automatic vs. manual correlation",
+          "automatic trigger event",
+          "trigger event: recognition of track correlation eligibility",
+          "trigger event: receipt of J7.2 message with RV=3 initiating automatic correlation evaluation",
+          "trigger condition: operator alert generated upon manual correlation rejection"
+        ],
+        "missing_aspects": [
+          "explicit trigger for initiating decorrelation of diverging tracks (e.g., operator command, automated divergence detection)",
+          "The claim incorrectly attributes the 'Correlation Restrictions' (ID conflict, Mode II mismatch, etc.) from EC-TR-007 as the cause for the automatic decorrelation test triggered by J2/J3 messages. The evidence supports that J2/J3 receipt triggers the test, and separately lists conditions that restrict automatic correlation, but does not link them causally as stated."
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "C2 JU automatically tests the local track once for correlation against remote tracks, not against common local tracks, after the common local track (TN A) satisfies the criteria for automatic or manual decorrelation.",
+          "evidence_refs": [
+            "EC-MF-005"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the automatic correlation test fails, C2 JU assigns a new track number (TN B) to the local track and reports TN B in a J3.2 or J3.3 message.",
+          "evidence_refs": [
+            "EC-MF-006"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "C2 JU decorrelates the PPLI and local track data when the position or other data in the PPLI meet the system's decorrelation criteria.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "After decorrelation, C2 JU initiates a surveillance track report with locally held data using a new track number.",
+          "evidence_refs": [
+            "EC-MF-001"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "In that report, C2 JU reports the PPLI Track Number and Identity Indicator field and the PPLI IFF/SIF Indicator field as No Statement.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-005",
+        "EC-MF-006",
+        "EC-MF-000",
+        "EC-MF-001",
+        "EC-MF-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-decorrelation-criteria-met",
+          "MF-automatic-recorrelation-test",
+          "MF-test-failure",
+          "MF-new-track-number",
+          "MF-PPLI-local-decorrelation",
+          "MF-post-decorrelation-surveillance-report",
+          "MF-new-TN-report-J3.2-J3.3",
+          "MF-PPLI-fields-no-statement",
+          "MF-canonical-success",
+          "execution steps for dropping the track",
+          "final system state after successful decorrelation",
+          "course comparison threshold (f degrees)",
+          "speed comparison thresholds (g%, g*200/S_F%, g*20/S_F%)",
+          "temporal extrapolation for velocity comparison",
+          "altitude differential threshold (h) under specific source conditions",
+          "exclusion of altitude test when source is 0 or 2",
+          "automatic correlation inhibition conditions",
+          "configurable override for ID/Mode II restrictions",
+          "default behavior without explicit interface direction",
+          "execution step: automatic correlation test against remote tracks",
+          "execution step: assignment of new TN upon test failure",
+          "execution step: message transmission (J3.2/J3.3) to report new TN",
+          "manual initiation of resolution via J7.0 (ACT=2)",
+          "automatic acceptance conditions for PPLI updates",
+          "retention of platform data during ID changes",
+          "lockout period enforcement",
+          "execution steps for dropping the track (e.g., message transmission)",
+          "message content identifying TN to be retained/dropped",
+          "reporting rejection via J7.2 with RV=2"
+        ],
+        "missing_aspects": [
+          "execution steps for dropping the track",
+          "final system state after successful decorrelation",
+          "explicit step-by-step execution sequence for decorrelating diverging tracks",
+          "message transmission actions during decorrelation",
+          "final system state after successful decorrelation (e.g., confirmation that tracks are now treated as separate entities, no further correlation attempted)"
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 3: when TN A is controlled by own unit (subject of a J10.5 Controlling Unit Report), decorrelation is manually initiated rather than automatic; upon manual decorrelation, C2 JU alerts the operator to report termination of control on TN A.",
+          "evidence_refs": [
+            "EC-AF-013"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 3: when TN A has been paired by own unit (subject of a J10.6 message), C2 JU decorrelates and alerts the operator as a cue to terminate the pairing on TN A and initiate the pairing on TN B if appropriate.",
+          "evidence_refs": [
+            "EC-AF-014"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 3: when selecting the TN to be dropped during decorrelation, if a TN has any of the OCCs listed in paragraph 4.4.4.3.1g(6 7), C2 JU excludes it from automatic selection; absent such a selection constraint, C2 JU selects the higher TN as the TN to be dropped.",
+          "evidence_refs": [
+            "EC-AF-006"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 3: when own unit has R² for the Dropped TN, C2 JU transmits a J7.0 (ACT = 0) Drop Track message for the Dropped TN; if the Dropped TN is subsequently reported by another IU after transmission, C2 JU retains it as a remote track and does not reattempt to correlate the Retained TN and the Dropped TN for 60 seconds after transmission.",
+          "evidence_refs": [
+            "EC-AF-010"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-013",
+        "EC-AF-014",
+        "EC-AF-006",
+        "EC-AF-010"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "manual override as alternative to automatic correlation",
+          "conditions under which manual correlation is prohibited despite override capability",
+          "alternative flow: ID conflict exception allowing correlation",
+          "alternative flow: specific condition for Unknown/Hostile vs Friend tracks",
+          "alternative flow: outcome of dropping the hostile track",
+          "AF-engagement-status-trigger",
+          "AF-pending-command-reply",
+          "AF-controlled-track-manual-only",
+          "AF-paired-track-termination",
+          "AF-index-number-reassignment",
+          "AF-handover-delay",
+          "exception to TQ assignment rule upon local correlation",
+          "alternative flow: setting identity descriptor to Exercise Friend",
+          "alternative flow: clearing artificial data and resetting Exercise Indicator",
+          "alternative flow: breaking local engagements via J10.2 message",
+          "alternative flow: terminating command messages via J9.0 message",
+          "Alternative flow: Response to Data Update Requests for Electronic Warfare Data",
+          "Condition: Reference TN reported in J3.7 message",
+          "Condition: Collectively addressed request",
+          "Condition: Specifically addressed request",
+          "Action: Transmission of J14.2 message with specific EW Action Values"
+        ],
+        "missing_aspects": [
+          "Explicitly state that this rule applies specifically to 'C² JUs' (Command and Control Joint Units) as per the source text, rather than the general 'C2 JU' terminology used elsewhere, to ensure precise actor alignment with the cited evidence."
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At Step 1, if local/remote data held indicates any of the following conditions — (1) an Identity (ID) difference constituting a conflict; (2) different Mode II codes with the local Mode II code current; (3) both tracks are locally derived real-time tracks; or (4) either track has its Strength field set to a value greater than 1 — C2 JU shall not automatically correlate the two tracks. These restrictions do not apply to manual correlation, and no other correlation restrictions shall be applied for two tracks that pass the specified correlation tests. Exit: automatic correlation is inhibited; manual correlation remains permitted.",
+          "evidence_refs": [
+            "EC-EF-004",
+            "EC-EF-006"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At Step 1, when an initialization parameter or operator-selectable capability is set to inhibit the automatic restriction for ID conflicts or Mode II code mismatches, subject to interface coordination and promulgation to all C² IUs, the automatic restriction is inhibited. If no specific interface direction exists, all IUs restrict automatic correlation by default. Exit: the restriction is either inhibited by the configured override or applied by default.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At Step 1, if the automatic correlation test fails during decorrelation execution, C2 JU assigns a new Track Number (TN B) to the local track and reports TN B in a J3.2 or J3.3 message. Exit: the track is reported under TN B.",
+          "evidence_refs": [
+            "EC-EF-010"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At Step 4, if an operator action has selectively released a new local track for reporting, C2 JU shall transmit it regardless of the results of correlation testing. Exit: the released track is transmitted.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-004",
+        "EC-EF-006",
+        "EC-EF-005",
+        "EC-EF-010",
+        "EC-EF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-automatic-correlation-inhibited-on-ID-ModeII-local-Strength",
+          "EF-manual-correlation-permitted",
+          "EF-configurable-override-for-correlation-restrictions",
+          "EF-default-restrict-without-interface-direction",
+          "EF-automatic-correlation-test-failure-assign-new-TN-report",
+          "EF-operator-released-new-local-track-transmit-regardless-of-correlation-test",
+          "exception_flow: handling of TN mismatch between C2 JUs",
+          "exception_flow: handling of duplicate TNs with conflicting data sources",
+          "exception_flow: quality-based override of data acceptance",
+          "exception_flow: Operator override of correlation logic",
+          "exception condition: ID conflict between tracks",
+          "exception condition: Mode II code mismatch with local code current",
+          "exception condition: both tracks locally derived real-time",
+          "exception condition: Strength field > 1 on either track",
+          "configurable override mechanism for ID/Mode II exceptions",
+          "default behavior without interface direction: restrict automatic correlation",
+          "scope limitation: restrictions apply only to automatic correlation, not manual",
+          "no additional restrictions beyond listed conditions",
+          "timeout failure condition leading to cancellation",
+          "disposition logic when own unit holds Dropped TN locally",
+          "drop message transmission and 60-second re-correlation lockout upon external reporting",
+          "exception_flow: automatic correlation test failure triggers new TN assignment and J3.2/J3.3 reporting",
+          "exception handling: receipt of Drop Track message (J7.0 ACT=0)",
+          "exception response: assumption of R² (responsibility retention)",
+          "exception recovery: mandatory correlation test execution"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "C2 JU assigns a new Track Number (TN B) to the local track.",
+          "evidence_refs": [
+            "EC-PO-002",
+            "EC-PO-004"
+          ]
+        },
+        {
+          "content": "C2 JU initiates a surveillance track report with locally held data using the new track number.",
+          "evidence_refs": [
+            "EC-PO-003",
+            "EC-PO-006"
+          ]
+        },
+        {
+          "content": "In the post-decorrelation surveillance track report, the PPLI Track Number and Identity Indicator field and the PPLI IFF/SIF Indicator field are reported as No Statement.",
+          "evidence_refs": [
+            "EC-PO-001",
+            "EC-PO-003",
+            "EC-PO-007"
+          ]
+        },
+        {
+          "content": "C2 JU reports the new Track Number (TN B) in a J3.2 or J3.3 message.",
+          "evidence_refs": [
+            "EC-PO-002",
+            "EC-PO-005"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-002",
+        "EC-PO-004",
+        "EC-PO-003",
+        "EC-PO-006",
+        "EC-PO-001",
+        "EC-PO-007",
+        "EC-PO-005"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "post-new-TN-assigned",
+          "post-surveillance-report-initiated",
+          "post-PPLI-fields-no-statement",
+          "post-new-TN-reported-J3.2-J3.3",
+          "Initiation of new surveillance track with new TN",
+          "Reporting PPLI fields as No Statement",
+          "postcondition-new-TN-assigned-and-reported",
+          "postcondition-surveillance-report-initiated-with-local-data",
+          "postcondition-PPLI-fields-set-to-No-Statement",
+          "assignment of new Track Number (TN B) upon test failure",
+          "reporting of new Track Number via J3.2/J3.3 message",
+          "post-decorrelation track report initiation",
+          "new track number assignment in report",
+          "PPLI-related fields set to 'No Statement' in post-decorrelation report",
+          "postconditions: manual correlation lockout period",
+          "postconditions: operator alert upon rejection"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 133,
+    "cross_page_cards": 0,
+    "modalities": {
+      "text": 133
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1302.69,
+    "judge_calls": 0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 664.864,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 94,
+    "llm_calls": 31,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 622.696,
+    "cards_collected": 133,
+    "cards_referenced": 26
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The goal of the use case is to decorrelate any two air tracks or any two surface tracks.",
+            "evidence_refs": [
+              "EC-G-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "C2 JU has initiated real-time air or surface tracks.",
+            "evidence_refs": [
+              "EC-PC-016"
+            ]
+          },
+          {
+            "content": "The position or other data in a PPLI meet the system's decorrelation criteria.",
+            "evidence_refs": [
+              "EC-PC-008"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "C2 JU receives or generates a J7.2 message with the RV field set to value 2 (Correlation Rejection), or receives a J2 or J3 message on a common local track which initiates an automatic decorrelation test.",
+            "evidence_refs": [
+              "EC-TR-005",
+              "EC-TR-008"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "C2 JU automatically tests the local track once for correlation against remote tracks, not against common local tracks, after the common local track (TN A) satisfies the criteria for automatic or manual decorrelation.",
+            "evidence_refs": [
+              "EC-MF-005"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the automatic correlation test fails, C2 JU assigns a new track number (TN B) to the local track and reports TN B in a J3.2 or J3.3 message.",
+            "evidence_refs": [
+              "EC-MF-006"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "C2 JU decorrelates the PPLI and local track data when the position or other data in the PPLI meet the system's decorrelation criteria.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "After decorrelation, C2 JU initiates a surveillance track report with locally held data using a new track number.",
+            "evidence_refs": [
+              "EC-MF-001"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "In that report, C2 JU reports the PPLI Track Number and Identity Indicator field and the PPLI IFF/SIF Indicator field as No Statement.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 3: when TN A is controlled by own unit (subject of a J10.5 Controlling Unit Report), decorrelation is manually initiated rather than automatic; upon manual decorrelation, C2 JU alerts the operator to report termination of control on TN A.",
+            "evidence_refs": [
+              "EC-AF-013"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 3: when TN A has been paired by own unit (subject of a J10.6 message), C2 JU decorrelates and alerts the operator as a cue to terminate the pairing on TN A and initiate the pairing on TN B if appropriate.",
+            "evidence_refs": [
+              "EC-AF-014"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 3: when selecting the TN to be dropped during decorrelation, if a TN has any of the OCCs listed in paragraph 4.4.4.3.1g(6 7), C2 JU excludes it from automatic selection; absent such a selection constraint, C2 JU selects the higher TN as the TN to be dropped.",
+            "evidence_refs": [
+              "EC-AF-006"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 3: when own unit has R² for the Dropped TN, C2 JU transmits a J7.0 (ACT = 0) Drop Track message for the Dropped TN; if the Dropped TN is subsequently reported by another IU after transmission, C2 JU retains it as a remote track and does not reattempt to correlate the Retained TN and the Dropped TN for 60 seconds after transmission.",
+            "evidence_refs": [
+              "EC-AF-010"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-AF-032",
+          "EC-AF-033",
+          "EC-AF-034",
+          "EC-AF-035",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "At Step 1, if local/remote data held indicates any of the following conditions — (1) an Identity (ID) difference constituting a conflict; (2) different Mode II codes with the local Mode II code current; (3) both tracks are locally derived real-time tracks; or (4) either track has its Strength field set to a value greater than 1 — C2 JU shall not automatically correlate the two tracks. These restrictions do not apply to manual correlation, and no other correlation restrictions shall be applied for two tracks that pass the specified correlation tests. Exit: automatic correlation is inhibited; manual correlation remains permitted.",
+            "evidence_refs": [
+              "EC-EF-004",
+              "EC-EF-006"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At Step 1, when an initialization parameter or operator-selectable capability is set to inhibit the automatic restriction for ID conflicts or Mode II code mismatches, subject to interface coordination and promulgation to all C² IUs, the automatic restriction is inhibited. If no specific interface direction exists, all IUs restrict automatic correlation by default. Exit: the restriction is either inhibited by the configured override or applied by default.",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At Step 1, if the automatic correlation test fails during decorrelation execution, C2 JU assigns a new Track Number (TN B) to the local track and reports TN B in a J3.2 or J3.3 message. Exit: the track is reported under TN B.",
+            "evidence_refs": [
+              "EC-EF-010"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At Step 4, if an operator action has selectively released a new local track for reporting, C2 JU shall transmit it regardless of the results of correlation testing. Exit: the released track is transmitted.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-AF-032",
+          "EC-AF-033",
+          "EC-AF-034",
+          "EC-AF-035",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "C2 JU assigns a new Track Number (TN B) to the local track.",
+            "evidence_refs": [
+              "EC-PO-002",
+              "EC-PO-004"
+            ]
+          },
+          {
+            "content": "C2 JU initiates a surveillance track report with locally held data using the new track number.",
+            "evidence_refs": [
+              "EC-PO-003",
+              "EC-PO-006"
+            ]
+          },
+          {
+            "content": "In the post-decorrelation surveillance track report, the PPLI Track Number and Identity Indicator field and the PPLI IFF/SIF Indicator field are reported as No Statement.",
+            "evidence_refs": [
+              "EC-PO-001",
+              "EC-PO-003",
+              "EC-PO-007"
+            ]
+          },
+          {
+            "content": "C2 JU reports the new Track Number (TN B) in a J3.2 or J3.3 message.",
+            "evidence_refs": [
+              "EC-PO-002",
+              "EC-PO-005"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-AF-028",
+          "EC-AF-029",
+          "EC-AF-030",
+          "EC-AF-031",
+          "EC-AF-032",
+          "EC-AF-033",
+          "EC-AF-034",
+          "EC-AF-035",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016"
+        ]
+      }
+    }
+  },
+  "method": "CREST w/o cross-slot",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "c0228d88049b4d0495b9f54cfdbf4759"
+}

@@ -1,0 +1,638 @@
+{
+  "use_case_name": "Publish Subsurface Surveillance and Acoustic Contact Reports",
+  "actor": "C2 JU",
+  "method": "ViDoRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "Enable C2 JU to publish accurate, timely, correlated subsurface surveillance and acoustic contact reports per MIL-STD-6016B.",
+          "evidence_refs": [
+            "P58",
+            "P55"
+          ]
+        }
+      ],
+      "raw_text": "Enable C2 JU to publish accurate, timely, correlated subsurface surveillance and acoustic contact reports per MIL-STD-6016B.",
+      "evidence_card_ids": [
+        "P58",
+        "P55"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has initially achieved Active status, or has returned to Active status from Inactive status or TDS Failure.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Sufficient reporting responsibility checks, correlation, and data registration have been performed for the tracks to be reported.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "For air and surface tracks, a minimum wait time of 12 seconds has elapsed since achieving/returning to Active status; for land tracks, 48 seconds has elapsed.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P54"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The decision to report a DATUM shall be an operator function, or contact is lost requiring track reporting per established criteria.",
+          "evidence_refs": [
+            "P58"
+          ]
+        }
+      ],
+      "raw_text": "The decision to report a DATUM shall be an operator function, or contact is lost requiring track reporting per established criteria.",
+      "evidence_card_ids": [
+        "P58"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU determines that a subsurface surveillance track or acoustic contact meets reporting criteria based on completeness, accuracy, timeliness, and proper rules for track reporting.",
+          "evidence_refs": [
+            "P55"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If reporting a DATUM due to lost contact, the C2 JU operator initiates the report as an operator function.",
+          "evidence_refs": [
+            "P58"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The C2 JU reports the DATUM in a J3.4 message with Reference TN set to the track for which contact was lost, and includes: Data Report Type (DRPT = 4), ASM Time Function = 3 (Time Contact Lost) or 1 (Time Datum Established), Hour and Minute of loss/establishment, and Latitude, Longitude, 15 Meters Depth, and Depth Contact at last known position.",
+          "evidence_refs": [
+            "P58"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "For established local tracks, the C2 JU reports all known parameters at the next reporting opportunity, ensuring source data is provided via Source TN.",
+          "evidence_refs": [
+            "P55"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "All reported data shall be time tagged.",
+          "evidence_refs": [
+            "P55"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "For acoustic bearing/range information, the C2 JU uses J5.4 messages to exchange bearings (ambiguous and resolved) and/or range derived from ASW sensors, without requiring source frequency reporting.",
+          "evidence_refs": [
+            "P55"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "In J5.4 messages, latitude and longitude fields are set to the position of the acoustic bearing origin.",
+          "evidence_refs": [
+            "P55"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "If the detecting sensor is integral to the reporting JU, the Origin TN field contains the TN of the reporting JU; if integral to another unit, track, or point, it contains the TN of that entity.",
+          "evidence_refs": [
+            "P55"
+          ],
+          "step_number": 8
+        },
+        {
+          "content": "Positional data (geodetic latitude and longitude) for each subsurface surveillance track is reported in the J3.x message, including depth when available.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 9
+        },
+        {
+          "content": "Velocity of subsurface surveillance tracks is reported as course and speed in data miles per hour, with course in degrees relative to true north.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 10
+        },
+        {
+          "content": "Track identity is exchanged using the Identity field; Platform and Platform Activity may also be reported in the J3.41 message per paragraph 4.4.9.1.1.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 11
+        },
+        {
+          "content": "Discrete Identifier Codes (Special) are reported in the J7.5 message per paragraph 4.7.6.5.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 12
+        },
+        {
+          "content": "Time reported is the time contact was first acquired/time datum established, current positional data time, or time contact was lost — reported in Hour, Minute, and Time Function, ASW fields of the J3.4C1 word.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 13
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P55",
+        "P58",
+        "P60"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If a correlation is found with a track for which the C2 JU has R2 and the TNs are different, the J7.2 (R2 = 1) Correlation message shall be transmitted, with the Source TN in the header word of the J2 PDL message as the Retained TN and the surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "If a correlation is found with a track for which another C2 JU has R2 and the TNs are the same, the JU receiving the J2 shall accept the PDL information into its surveillance database and shall disregard the J3 surveillance data on the specified track except when Geosetic Position Quality in the PDL message is set to value 0, in which case the surveillance track is accepted and the PDL message shall be discarded.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Subsurface tracks shall not be correlated with IDs.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "System design should allow for longer wait times as well as an override in cases where operational necessity requires a shorter wait time or none at all for reporting air and surface tracks after achieving Active status.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P7",
+        "P54"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the C2 JU is not in Active status (e.g., Inactive or TDS Failure), it shall not transmit air, surface, or land tracks until sufficient reporting responsibility checks, correlation, and data registration are performed.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "For air and surface tracks, if less than 12 seconds have elapsed since achieving/returning to Active status, track transmission is prohibited unless overridden by operational necessity.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "For land tracks, if less than 48 seconds have elapsed since achieving/returning to Active status, track transmission is prohibited unless overridden by operational necessity.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If a J7.0 (ACT = 0) message is transmitted for EW product information termination, remote reports may be automatically purged based on system criteria, but the J7.0 message itself shall not be retransmitted.",
+          "evidence_refs": [
+            "P87"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If Geosetic Position Quality in a PDL message is set to value 0 during correlation with an existing track having same TN, the surveillance track is accepted and the PDL message shall be discarded — this constitutes an exception to normal PDL acceptance logic.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P54",
+        "P87",
+        "P7"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The information on the track is as complete, accurate, and timely as possible.",
+          "evidence_refs": [
+            "P55"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "The proper rules for reporting a track are followed.",
+          "evidence_refs": [
+            "P55"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A DATUM has been reported in a J3.4 message with Reference TN set to the track for which contact was lost, including DRPT = 4, ASW Time Function = 3 or 1, truncated time of loss/establishment, and last known position (Latitude, Longitude, 15 Meters Depth, Depth Contact).",
+          "evidence_refs": [
+            "P58"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "All reported data is time tagged.",
+          "evidence_refs": [
+            "P55"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Acoustic bearing/range information has been exchanged via J5.4 messages, with latitude and longitude fields set to the acoustic bearing origin position, and Origin TN field populated per sensor integration status.",
+          "evidence_refs": [
+            "P55"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Subsurface surveillance tracks have been reported with geodetic latitude and longitude, depth when available, course and speed in data miles per hour relative to true north, identity, platform, platform activity, discrete identifier codes (if applicable), and appropriate time function fields.",
+          "evidence_refs": [
+            "P58",
+            "P55"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P55",
+        "P58"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "Enable C2 JU to publish accurate, timely, correlated subsurface surveillance and acoustic contact reports per MIL-STD-6016B.",
+            "evidence_refs": [
+              "P58",
+              "P55"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P58",
+          "P55",
+          "P7"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The C2 JU has initially achieved Active status, or has returned to Active status from Inactive status or TDS Failure.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Sufficient reporting responsibility checks, correlation, and data registration have been performed for the tracks to be reported.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "For air and surface tracks, a minimum wait time of 12 seconds has elapsed since achieving/returning to Active status; for land tracks, 48 seconds has elapsed.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P54"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The decision to report a DATUM shall be an operator function, or contact is lost requiring track reporting per established criteria.",
+            "evidence_refs": [
+              "P58"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P58",
+          "P54",
+          "P55"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU determines that a subsurface surveillance track or acoustic contact meets reporting criteria based on completeness, accuracy, timeliness, and proper rules for track reporting.",
+            "evidence_refs": [
+              "P55"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If reporting a DATUM due to lost contact, the C2 JU operator initiates the report as an operator function.",
+            "evidence_refs": [
+              "P58"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The C2 JU reports the DATUM in a J3.4 message with Reference TN set to the track for which contact was lost, and includes: Data Report Type (DRPT = 4), ASM Time Function = 3 (Time Contact Lost) or 1 (Time Datum Established), Hour and Minute of loss/establishment, and Latitude, Longitude, 15 Meters Depth, and Depth Contact at last known position.",
+            "evidence_refs": [
+              "P58"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "For established local tracks, the C2 JU reports all known parameters at the next reporting opportunity, ensuring source data is provided via Source TN.",
+            "evidence_refs": [
+              "P55"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "All reported data shall be time tagged.",
+            "evidence_refs": [
+              "P55"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "For acoustic bearing/range information, the C2 JU uses J5.4 messages to exchange bearings (ambiguous and resolved) and/or range derived from ASW sensors, without requiring source frequency reporting.",
+            "evidence_refs": [
+              "P55"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "In J5.4 messages, latitude and longitude fields are set to the position of the acoustic bearing origin.",
+            "evidence_refs": [
+              "P55"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "If the detecting sensor is integral to the reporting JU, the Origin TN field contains the TN of the reporting JU; if integral to another unit, track, or point, it contains the TN of that entity.",
+            "evidence_refs": [
+              "P55"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "Positional data (geodetic latitude and longitude) for each subsurface surveillance track is reported in the J3.x message, including depth when available.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 9
+          },
+          {
+            "content": "Velocity of subsurface surveillance tracks is reported as course and speed in data miles per hour, with course in degrees relative to true north.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 10
+          },
+          {
+            "content": "Track identity is exchanged using the Identity field; Platform and Platform Activity may also be reported in the J3.41 message per paragraph 4.4.9.1.1.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 11
+          },
+          {
+            "content": "Discrete Identifier Codes (Special) are reported in the J7.5 message per paragraph 4.7.6.5.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 12
+          },
+          {
+            "content": "Time reported is the time contact was first acquired/time datum established, current positional data time, or time contact was lost — reported in Hour, Minute, and Time Function, ASW fields of the J3.4C1 word.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 13
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P58",
+          "P54",
+          "P55",
+          "P7",
+          "P60"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If a correlation is found with a track for which the C2 JU has R2 and the TNs are different, the J7.2 (R2 = 1) Correlation message shall be transmitted, with the Source TN in the header word of the J2 PDL message as the Retained TN and the surveillance TN as the Dropped TN.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "If a correlation is found with a track for which another C2 JU has R2 and the TNs are the same, the JU receiving the J2 shall accept the PDL information into its surveillance database and shall disregard the J3 surveillance data on the specified track except when Geosetic Position Quality in the PDL message is set to value 0, in which case the surveillance track is accepted and the PDL message shall be discarded.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Subsurface tracks shall not be correlated with IDs.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "System design should allow for longer wait times as well as an override in cases where operational necessity requires a shorter wait time or none at all for reporting air and surface tracks after achieving Active status.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P58",
+          "P54",
+          "P7",
+          "P60",
+          "P55"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the C2 JU is not in Active status (e.g., Inactive or TDS Failure), it shall not transmit air, surface, or land tracks until sufficient reporting responsibility checks, correlation, and data registration are performed.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "For air and surface tracks, if less than 12 seconds have elapsed since achieving/returning to Active status, track transmission is prohibited unless overridden by operational necessity.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "For land tracks, if less than 48 seconds have elapsed since achieving/returning to Active status, track transmission is prohibited unless overridden by operational necessity.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If a J7.0 (ACT = 0) message is transmitted for EW product information termination, remote reports may be automatically purged based on system criteria, but the J7.0 message itself shall not be retransmitted.",
+            "evidence_refs": [
+              "P87"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If Geosetic Position Quality in a PDL message is set to value 0 during correlation with an existing track having same TN, the surveillance track is accepted and the PDL message shall be discarded — this constitutes an exception to normal PDL acceptance logic.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P58",
+          "P54",
+          "P7",
+          "P55",
+          "P87"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The information on the track is as complete, accurate, and timely as possible.",
+            "evidence_refs": [
+              "P55"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "The proper rules for reporting a track are followed.",
+            "evidence_refs": [
+              "P55"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A DATUM has been reported in a J3.4 message with Reference TN set to the track for which contact was lost, including DRPT = 4, ASW Time Function = 3 or 1, truncated time of loss/establishment, and last known position (Latitude, Longitude, 15 Meters Depth, Depth Contact).",
+            "evidence_refs": [
+              "P58"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "All reported data is time tagged.",
+            "evidence_refs": [
+              "P55"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Acoustic bearing/range information has been exchanged via J5.4 messages, with latitude and longitude fields set to the acoustic bearing origin position, and Origin TN field populated per sensor integration status.",
+            "evidence_refs": [
+              "P55"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Subsurface surveillance tracks have been reported with geodetic latitude and longitude, depth when available, course and speed in data miles per hour relative to true north, identity, platform, platform activity, discrete identifier codes (if applicable), and appropriate time function fields.",
+            "evidence_refs": [
+              "P58",
+              "P55"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P54",
+          "P58",
+          "P55"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 214.1
+}

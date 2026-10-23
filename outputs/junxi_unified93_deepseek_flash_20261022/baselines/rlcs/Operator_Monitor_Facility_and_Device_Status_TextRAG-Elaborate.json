@@ -1,0 +1,547 @@
+{
+  "use_case_name": "Monitor Facility and Device Status",
+  "actor": "Operator",
+  "method": "TextRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To enable the Operator to monitor and display the status of all system field elements so that any change in device state is reported on the screen.",
+          "evidence_refs": [
+            "rlcs:P24#C98"
+          ]
+        }
+      ],
+      "raw_text": "To enable the Operator to monitor and display the status of all system field elements so that any change in device state is reported on the screen.",
+      "evidence_card_ids": [
+        "rlcs:P24#C98"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Operator",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Operator",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Operator is logged on to the RLCS, and the number of logged-on users is within the limit of the number of users defined in the database.",
+          "evidence_refs": [
+            "rlcs:P33#C128"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The Operator’s access level and authorized workstation permit access based on the user’s access level and authorized workstations.",
+          "evidence_refs": [
+            "rlcs:P25#C101"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The current status for all devices is maintained at each controller unit.",
+          "evidence_refs": [
+            "rlcs:P25#C101"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Each device has one or more Alarm Criteria.",
+          "evidence_refs": [
+            "rlcs:P50#C204"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The monitoring frequency for the current mode is specified in the System Control Parameters.",
+          "evidence_refs": [
+            "rlcs:P24#C99"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "rlcs:P33#C128",
+        "rlcs:P25#C101",
+        "rlcs:P50#C204",
+        "rlcs:P24#C99"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The frequency specified in the System Control Parameters for that mode is reached.",
+          "evidence_refs": [
+            "rlcs:P24#C99"
+          ]
+        }
+      ],
+      "raw_text": "The frequency specified in the System Control Parameters for that mode is reached.",
+      "evidence_card_ids": [
+        "rlcs:P24#C99"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "At the frequency specified in the System Control Parameters for that mode, the system monitors the status of all field devices.",
+          "evidence_refs": [
+            "rlcs:P24#C99"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Monitor Devices 3.2.2.1 receives Device Sensor Status from RLCS Field Devices.",
+          "evidence_refs": [
+            "rlcs:P46#C182"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Monitor Devices 3.2.2.1 sends Device Sensor Status to Process GUI Commands 3.2.2.4.",
+          "evidence_refs": [
+            "rlcs:P46#C182"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Process GUI Commands 3.2.2.4 receives Command, Device Description, Device Sensor Status, and Security Level from Data Processing and Security 3.2.4.",
+          "evidence_refs": [
+            "rlcs:P46#C184"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The Operator performs a status check of All devices at All locations.",
+          "evidence_refs": [
+            "rlcs:P63#C280"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The Operator exchanges RLCS Status and Control with the RLCS.",
+          "evidence_refs": [
+            "rlcs:P8#C16"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "rlcs:P24#C99",
+        "rlcs:P46#C182",
+        "rlcs:P46#C184",
+        "rlcs:P63#C280",
+        "rlcs:P8#C16"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "1. During ‘degraded’ mode, the system monitors device sensors at the frequency rate stored in the database to take effect only during ‘degraded’ mode.",
+          "evidence_refs": [
+            "rlcs:P24#C99"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "2. If an intermediate step resulted in a device control failure, Device Override allows an operator with the proper security to continue an operating sequence through to the end by allowing the operator to input a device status thereby overriding the status coming from the field.",
+          "evidence_refs": [
+            "rlcs:P42#C171"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "rlcs:P24#C99",
+        "rlcs:P42#C171"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "3.2.2.4.2 Each device control command shall check the current status of all closure devices in the system and shall abort if any closure control device status is unknown. Exit: abort.",
+          "evidence_refs": [
+            "rlcs:P24#C99"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Track # of Failed Device Commands 3.2.2.5 receives Command Failure Count from Monitor Devices 3.2.2.1 and sends Command Data (for retry) to Control Devices 3.2.2.2. Exit: Command Data (for retry) sent to Control Devices 3.2.2.2.",
+          "evidence_refs": [
+            "rlcs:P46#C182",
+            "rlcs:P46#C183"
+          ],
+          "step_number": 2
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "rlcs:P24#C99",
+        "rlcs:P46#C182",
+        "rlcs:P46#C183"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The RLCS software has monitored, displayed, and updated the database with the status of all system field elements.",
+          "evidence_refs": [
+            "rlcs:P24#C98"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Any change in device state has been reported on the screen not later than 2 seconds from the time it occurs.",
+          "evidence_refs": [
+            "rlcs:P24#C98"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Each status received from device sensors has been checked against alarm conditions for that device sensor, and the status has been updated to indicate an alarm.",
+          "evidence_refs": [
+            "rlcs:P25#C101"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The current status for all devices is maintained at each controller unit.",
+          "evidence_refs": [
+            "rlcs:P25#C101"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Device sensor status is displayed using dynamic icons for all field device sensors and controllers.",
+          "evidence_refs": [
+            "rlcs:P20#C87"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The status check by Operator of All devices at All locations has been performed.",
+          "evidence_refs": [
+            "rlcs:P63#C280"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "rlcs:P24#C98",
+        "rlcs:P25#C101",
+        "rlcs:P20#C87",
+        "rlcs:P63#C280"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "To enable the Operator to monitor and display the status of all system field elements so that any change in device state is reported on the screen.",
+            "evidence_refs": [
+              "rlcs:P24#C98"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "rlcs:P63#C286",
+          "rlcs:P63#C282",
+          "rlcs:P63#C289",
+          "rlcs:P46#C184",
+          "rlcs:P22#C92",
+          "rlcs:P24#C99",
+          "rlcs:P63#C279",
+          "rlcs:P46#C182",
+          "rlcs:P24#C98",
+          "rlcs:P42#C171"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The Operator is logged on to the RLCS, and the number of logged-on users is within the limit of the number of users defined in the database.",
+            "evidence_refs": [
+              "rlcs:P33#C128"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Operator’s access level and authorized workstation permit access based on the user’s access level and authorized workstations.",
+            "evidence_refs": [
+              "rlcs:P25#C101"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The current status for all devices is maintained at each controller unit.",
+            "evidence_refs": [
+              "rlcs:P25#C101"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Each device has one or more Alarm Criteria.",
+            "evidence_refs": [
+              "rlcs:P50#C204"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The monitoring frequency for the current mode is specified in the System Control Parameters.",
+            "evidence_refs": [
+              "rlcs:P24#C99"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "rlcs:P22#C92",
+          "rlcs:P25#C101",
+          "rlcs:P20#C87",
+          "rlcs:P24#C99",
+          "rlcs:P24#C98",
+          "rlcs:P33#C128",
+          "rlcs:P25#C103",
+          "rlcs:P46#C184",
+          "rlcs:P50#C204",
+          "rlcs:P26#C105"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The frequency specified in the System Control Parameters for that mode is reached.",
+            "evidence_refs": [
+              "rlcs:P24#C99"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "rlcs:P46#C184",
+          "rlcs:P24#C99",
+          "rlcs:P65#C293",
+          "rlcs:P46#C182",
+          "rlcs:P24#C98",
+          "rlcs:P25#C101",
+          "rlcs:P46#C183",
+          "rlcs:P48#C191",
+          "rlcs:P25#C103",
+          "rlcs:P46#C185"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "At the frequency specified in the System Control Parameters for that mode, the system monitors the status of all field devices.",
+            "evidence_refs": [
+              "rlcs:P24#C99"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Monitor Devices 3.2.2.1 receives Device Sensor Status from RLCS Field Devices.",
+            "evidence_refs": [
+              "rlcs:P46#C182"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Monitor Devices 3.2.2.1 sends Device Sensor Status to Process GUI Commands 3.2.2.4.",
+            "evidence_refs": [
+              "rlcs:P46#C182"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Process GUI Commands 3.2.2.4 receives Command, Device Description, Device Sensor Status, and Security Level from Data Processing and Security 3.2.4.",
+            "evidence_refs": [
+              "rlcs:P46#C184"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The Operator performs a status check of All devices at All locations.",
+            "evidence_refs": [
+              "rlcs:P63#C280"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The Operator exchanges RLCS Status and Control with the RLCS.",
+            "evidence_refs": [
+              "rlcs:P8#C16"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "rlcs:P46#C182",
+          "rlcs:P46#C183",
+          "rlcs:P46#C184",
+          "rlcs:P46#C185",
+          "rlcs:P63#C280",
+          "rlcs:P63#C286",
+          "rlcs:P10#C24",
+          "rlcs:P8#C16",
+          "rlcs:P63#C283",
+          "rlcs:P24#C99"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "1. During ‘degraded’ mode, the system monitors device sensors at the frequency rate stored in the database to take effect only during ‘degraded’ mode.",
+            "evidence_refs": [
+              "rlcs:P24#C99"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "2. If an intermediate step resulted in a device control failure, Device Override allows an operator with the proper security to continue an operating sequence through to the end by allowing the operator to input a device status thereby overriding the status coming from the field.",
+            "evidence_refs": [
+              "rlcs:P42#C171"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "rlcs:P46#C184",
+          "rlcs:P46#C183",
+          "rlcs:P46#C182",
+          "rlcs:P24#C99",
+          "rlcs:P63#C283",
+          "rlcs:P63#C280",
+          "rlcs:P46#C185",
+          "rlcs:P63#C286",
+          "rlcs:P42#C171",
+          "rlcs:P39#C163"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "3.2.2.4.2 Each device control command shall check the current status of all closure devices in the system and shall abort if any closure control device status is unknown. Exit: abort.",
+            "evidence_refs": [
+              "rlcs:P24#C99"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Track # of Failed Device Commands 3.2.2.5 receives Command Failure Count from Monitor Devices 3.2.2.1 and sends Command Data (for retry) to Control Devices 3.2.2.2. Exit: Command Data (for retry) sent to Control Devices 3.2.2.2.",
+            "evidence_refs": [
+              "rlcs:P46#C182",
+              "rlcs:P46#C183"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "rlcs:P46#C183",
+          "rlcs:P46#C184",
+          "rlcs:P46#C182",
+          "rlcs:P46#C185",
+          "rlcs:P24#C99",
+          "rlcs:P63#C280",
+          "rlcs:P63#C283",
+          "rlcs:P63#C286",
+          "rlcs:P63#C281",
+          "rlcs:P24#C98"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The RLCS software has monitored, displayed, and updated the database with the status of all system field elements.",
+            "evidence_refs": [
+              "rlcs:P24#C98"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Any change in device state has been reported on the screen not later than 2 seconds from the time it occurs.",
+            "evidence_refs": [
+              "rlcs:P24#C98"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Each status received from device sensors has been checked against alarm conditions for that device sensor, and the status has been updated to indicate an alarm.",
+            "evidence_refs": [
+              "rlcs:P25#C101"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The current status for all devices is maintained at each controller unit.",
+            "evidence_refs": [
+              "rlcs:P25#C101"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Device sensor status is displayed using dynamic icons for all field device sensors and controllers.",
+            "evidence_refs": [
+              "rlcs:P20#C87"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The status check by Operator of All devices at All locations has been performed.",
+            "evidence_refs": [
+              "rlcs:P63#C280"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "rlcs:P24#C99",
+          "rlcs:P63#C280",
+          "rlcs:P25#C101",
+          "rlcs:P63#C286",
+          "rlcs:P63#C283",
+          "rlcs:P46#C184",
+          "rlcs:P63#C282",
+          "rlcs:P24#C98",
+          "rlcs:P20#C87",
+          "rlcs:P33#C128"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 145.6
+}

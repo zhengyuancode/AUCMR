@@ -1,0 +1,488 @@
+{
+  "use_case_name": "Acquire System Command Control",
+  "actor": "Operator",
+  "method": "VDocRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The use case accomplishes the issuance of control commands by an Operator to change the state of devices or system operations within the RLCS.",
+          "evidence_refs": [
+            "P29"
+          ]
+        }
+      ],
+      "raw_text": "The use case accomplishes the issuance of control commands by an Operator to change the state of devices or system operations within the RLCS.",
+      "evidence_card_ids": [
+        "P29"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Operator",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Operator",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Operator must be a valid Personnel entity with an associated Personnel Security Level.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The Operator's Personnel Security Level must define the authorized Command Level (Status Only, Control, or Override).",
+          "evidence_refs": [
+            "P29",
+            "P51"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Operator must have access to a Workstation associated with their Personnel record.",
+          "evidence_refs": [
+            "P36",
+            "P50",
+            "P51"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The target Device or System Operation must exist in the database and have a defined status.",
+          "evidence_refs": [
+            "P36",
+            "P47",
+            "P50"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P36",
+        "P50",
+        "P29",
+        "P51",
+        "P47"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Operator initiates a request to issue a Device control, Device Macro, Super Macro, or Override command to change the state of a device or system operation.",
+          "evidence_refs": [
+            "P29"
+          ]
+        }
+      ],
+      "raw_text": "The Operator initiates a request to issue a Device control, Device Macro, Super Macro, or Override command to change the state of a device or system operation.",
+      "evidence_card_ids": [
+        "P29"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Operator selects the type of command to issue: Device control, Device Macro, Super Macro, or Override.",
+          "evidence_refs": [
+            "P29"
+          ]
+        },
+        {
+          "content": "If issuing a Device control command, the Operator specifies the single command to change the state of a device.",
+          "evidence_refs": [
+            "P29"
+          ]
+        },
+        {
+          "content": "If issuing a Device Macro Command, the system executes a group of two or more sequentially executed commands that change the states of two or more closure devices.",
+          "evidence_refs": [
+            "P29"
+          ]
+        },
+        {
+          "content": "If issuing a Super Macro Command, the system executes a group of two or more sequentially executed macros that change the states of an Entrance.",
+          "evidence_refs": [
+            "P29"
+          ]
+        },
+        {
+          "content": "If issuing an Override Command, the system forces the status of a device to a temporary known state for the purpose of completing an operation which otherwise would be blocked.",
+          "evidence_refs": [
+            "P29"
+          ]
+        },
+        {
+          "content": "The RLCS application software updates and reads database tables to support the system operations associated with the command.",
+          "evidence_refs": [
+            "P29"
+          ]
+        },
+        {
+          "content": "The system logs the command execution in the appropriate log entity (Device Command Log or System Operation Command Log).",
+          "evidence_refs": [
+            "P36",
+            "P47",
+            "P48"
+          ]
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P29",
+        "P36",
+        "P47",
+        "P48"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [],
+      "raw_text": ""
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the Operator's Personnel Security Level does not permit the requested Command Level (e.g., 'Status Only' user attempts a control command), the system denies the command issuance.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the target Device is in a prohibited status as defined by Device Rules, the system prevents the execution of the command sequence.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If an Override Command is issued but the configurable period for the temporary status change expires before the operation completes, the system reverts the device status and halts the dependent command sequence.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P29",
+        "P36",
+        "P50"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The state of the targeted Device(s) or System Operation has been changed according to the issued command.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A new entry is created in the Device Command Log entity recording the Device Command ID, Date, Time, Device Status ID, and Operator ID.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If a System Operational Command was executed, a new entry is created in the System Operation Command Log entity recording the System Operation Command Log ID, Date, Time, System Operational Command ID, System Operation Status ID, and Operator ID.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The Operator's Personnel record is referenced in the newly created log entry (Device Command Log or System Operation Command Log).",
+          "evidence_refs": [
+            "P51"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If an Override Command was issued, the status of the device in the database is temporarily changed for a configurable period of time to allow the command sequence to continue.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P29",
+        "P36",
+        "P50",
+        "P51"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No content produced for slot 'alternative_flow' by VDocRAG-Elaborate."
+    }
+  ],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "The use case accomplishes the issuance of control commands by an Operator to change the state of devices or system operations within the RLCS.",
+            "evidence_refs": [
+              "P29"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P29",
+          "P47",
+          "P50",
+          "P51"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The Operator must be a valid Personnel entity with an associated Personnel Security Level.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Operator's Personnel Security Level must define the authorized Command Level (Status Only, Control, or Override).",
+            "evidence_refs": [
+              "P29",
+              "P51"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Operator must have access to a Workstation associated with their Personnel record.",
+            "evidence_refs": [
+              "P36",
+              "P50",
+              "P51"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The target Device or System Operation must exist in the database and have a defined status.",
+            "evidence_refs": [
+              "P36",
+              "P47",
+              "P50"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P29",
+          "P47",
+          "P51",
+          "P50"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The Operator initiates a request to issue a Device control, Device Macro, Super Macro, or Override command to change the state of a device or system operation.",
+            "evidence_refs": [
+              "P29"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P29",
+          "P50",
+          "P48"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The Operator selects the type of command to issue: Device control, Device Macro, Super Macro, or Override.",
+            "evidence_refs": [
+              "P29"
+            ]
+          },
+          {
+            "content": "If issuing a Device control command, the Operator specifies the single command to change the state of a device.",
+            "evidence_refs": [
+              "P29"
+            ]
+          },
+          {
+            "content": "If issuing a Device Macro Command, the system executes a group of two or more sequentially executed commands that change the states of two or more closure devices.",
+            "evidence_refs": [
+              "P29"
+            ]
+          },
+          {
+            "content": "If issuing a Super Macro Command, the system executes a group of two or more sequentially executed macros that change the states of an Entrance.",
+            "evidence_refs": [
+              "P29"
+            ]
+          },
+          {
+            "content": "If issuing an Override Command, the system forces the status of a device to a temporary known state for the purpose of completing an operation which otherwise would be blocked.",
+            "evidence_refs": [
+              "P29"
+            ]
+          },
+          {
+            "content": "The RLCS application software updates and reads database tables to support the system operations associated with the command.",
+            "evidence_refs": [
+              "P29"
+            ]
+          },
+          {
+            "content": "The system logs the command execution in the appropriate log entity (Device Command Log or System Operation Command Log).",
+            "evidence_refs": [
+              "P36",
+              "P47",
+              "P48"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P29",
+          "P48",
+          "P50"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P29",
+          "P48",
+          "P50"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the Operator's Personnel Security Level does not permit the requested Command Level (e.g., 'Status Only' user attempts a control command), the system denies the command issuance.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the target Device is in a prohibited status as defined by Device Rules, the system prevents the execution of the command sequence.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If an Override Command is issued but the configurable period for the temporary status change expires before the operation completes, the system reverts the device status and halts the dependent command sequence.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P29",
+          "P48",
+          "P50"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The state of the targeted Device(s) or System Operation has been changed according to the issued command.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A new entry is created in the Device Command Log entity recording the Device Command ID, Date, Time, Device Status ID, and Operator ID.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If a System Operational Command was executed, a new entry is created in the System Operation Command Log entity recording the System Operation Command Log ID, Date, Time, System Operational Command ID, System Operation Status ID, and Operator ID.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The Operator's Personnel record is referenced in the newly created log entry (Device Command Log or System Operation Command Log).",
+            "evidence_refs": [
+              "P51"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If an Override Command was issued, the status of the device in the database is temporarily changed for a configurable period of time to allow the command sequence to continue.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P29",
+          "P47",
+          "P51",
+          "P50"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 269.0
+}

@@ -1,0 +1,588 @@
+{
+  "use_case_name": "Terminate and Purge Surveillance Tracks",
+  "actor": "C2 JU",
+  "method": "ReAct-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The C2 JU terminates the reporting of surveillance tracks by transmitting a drop track message when the track is no longer valid or responsibility is relinquished, and systems purge remote track data automatically when updates cease or specific criteria are met.",
+          "evidence_refs": [
+            "P87",
+            "P53",
+            "P10"
+          ]
+        }
+      ],
+      "raw_text": "The C2 JU terminates the reporting of surveillance tracks by transmitting a drop track message when the track is no longer valid or responsibility is relinquished, and systems purge remote track data automatically when updates cease or specific criteria are met.",
+      "evidence_card_ids": [
+        "P87",
+        "P53",
+        "P10"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU currently has R² (responsibility) for the surveillance track being terminated.",
+          "evidence_refs": [
+            "P53",
+            "P82"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The surveillance track is no longer valid, or the C2 JU is relinquishing responsibility to another JU.",
+          "evidence_refs": [
+            "P53",
+            "P82",
+            "P87"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "For remote tracks, the system has not received further updates and may need to purge based on a specific time interval if no drop track message is received.",
+          "evidence_refs": [
+            "P53",
+            "P82",
+            "P62",
+            "P10"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system has the capability to automatically purge remote tracks after a specified time interval has elapsed since the last report.",
+          "evidence_refs": [
+            "P10",
+            "P82",
+            "P62"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P82",
+        "P87",
+        "P62",
+        "P10"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU transmits a J7.0 (ACT = 0) drop track message when it ceases reporting a surveillance track for which it currently has responsibility (R²), such as when the track is no longer valid or responsibility is relinquished to another JU.",
+          "evidence_refs": [
+            "P53",
+            "P82",
+            "P62",
+            "P87"
+          ]
+        }
+      ],
+      "raw_text": "The C2 JU transmits a J7.0 (ACT = 0) drop track message when it ceases reporting a surveillance track for which it currently has responsibility (R²), such as when the track is no longer valid or responsibility is relinquished to another JU.",
+      "evidence_card_ids": [
+        "P53",
+        "P82",
+        "P62",
+        "P87"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU transmits a J7.0 (ACT = 0) message when it ceases reporting a surveillance track for which it currently has responsibility (R²), except in cases where responsibility is relinquished to another JU or the track becomes an Active IU on the network with the same TN.",
+          "evidence_refs": [
+            "P53",
+            "P62",
+            "P82"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "For NOTACK areas, Moving Havens, and FWDAs, the C2 JU transmits a J7.0 (ACT=0) message at the time of deactivation.",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If a system does not receive a J7.0 (ACT = 0) message and receives no further updates on a remote track, the system automatically purges those tracks after a specific system-selected time interval.",
+          "evidence_refs": [
+            "P53",
+            "P62",
+            "P82",
+            "P87",
+            "P88"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "DATUMS (DRT = 4) are not purged automatically.",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P62",
+        "P82",
+        "P87",
+        "P88"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "When a JU ceases reporting a track because it has relinquished R² to another JU, a J7.0 (ACT = 0) message shall not be transmitted.",
+          "evidence_refs": [
+            "P53",
+            "P90"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "When a track becomes an Active IU on the network with the same TN, a J7.0 (ACT = 0) message shall not be transmitted.",
+          "evidence_refs": [
+            "P53",
+            "P62"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "For NOTACK areas, Moving Havens, and FWDAs, a J7.0 (ACT=0) message shall be transmitted at time of deactivation, regardless of other conditions.",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P90",
+        "P62"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "A J7.0 (ACT = 0) message shall not be transmitted when a JU ceases reporting a track because it has relinquished R² to another JU.",
+          "evidence_refs": [
+            "P53",
+            "P82",
+            "P90"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A J7.0 (ACT = 0) message shall not be transmitted when a track becomes an Active IU on the network with the same TN.",
+          "evidence_refs": [
+            "P53"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "DATUMS (DRT = 4) shall not be purged automatically even if no further updates are received.",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The JU shall not transmit a J7.0 (ACT = 0) message on a remote track/point that has been automatically purged after a specified time interval.",
+          "evidence_refs": [
+            "P10"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Under conditions where a system does not receive a J7.0 (ACT = 0) message and receives no further updates on a remote track, a J7.0 (ACT = 0) message shall not be transmitted by the purging system.",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P82",
+        "P90",
+        "P62",
+        "P10"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has transmitted a J7.0 (ACT = 0) drop track message when ceasing to report a surveillance track for which it had R² responsibility, except when relinquishing R² to another JU or when the track becomes an Active IU on the network with the same TN.",
+          "evidence_refs": [
+            "P62",
+            "P53",
+            "P90"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "For NOTACK areas, Moving Havens, and FWDAs, a J7.0 (ACT=0) message has been transmitted at the time of deactivation.",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Remote tracks (DRT = 0-3) have been automatically purged by systems after a specific system-selected time interval elapsed since the last report, in cases where no J7.0 (ACT = 0) message was received and no further updates were received.",
+          "evidence_refs": [
+            "P62",
+            "P10"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "DATUMS (DRT = 4) have not been automatically purged even if no further updates were received.",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "No J7.0 (ACT = 0) message has been transmitted by a system on a remote track/point that was automatically purged after the specified time interval.",
+          "evidence_refs": [
+            "P62",
+            "P10"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "For ballistic missile tracks, a J7.0 message with Track Management Action field set to value 0 (Drop Track Report) has been transmitted when a JU ceases reporting a ballistic missile track for which it had R², except when relinquishing R² to another JU.",
+          "evidence_refs": [
+            "P82"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P62",
+        "P53",
+        "P90",
+        "P10",
+        "P82"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "The C2 JU terminates the reporting of surveillance tracks by transmitting a drop track message when the track is no longer valid or responsibility is relinquished, and systems purge remote track data automatically when updates cease or specific criteria are met.",
+            "evidence_refs": [
+              "P87",
+              "P53",
+              "P10"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P87",
+          "P53",
+          "P82",
+          "P10",
+          "P8"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The C2 JU currently has R² (responsibility) for the surveillance track being terminated.",
+            "evidence_refs": [
+              "P53",
+              "P82"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The surveillance track is no longer valid, or the C2 JU is relinquishing responsibility to another JU.",
+            "evidence_refs": [
+              "P53",
+              "P82",
+              "P87"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "For remote tracks, the system has not received further updates and may need to purge based on a specific time interval if no drop track message is received.",
+            "evidence_refs": [
+              "P53",
+              "P82",
+              "P62",
+              "P10"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system has the capability to automatically purge remote tracks after a specified time interval has elapsed since the last report.",
+            "evidence_refs": [
+              "P10",
+              "P82",
+              "P62"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P10",
+          "P82",
+          "P87",
+          "P62"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The C2 JU transmits a J7.0 (ACT = 0) drop track message when it ceases reporting a surveillance track for which it currently has responsibility (R²), such as when the track is no longer valid or responsibility is relinquished to another JU.",
+            "evidence_refs": [
+              "P53",
+              "P82",
+              "P62",
+              "P87"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P87",
+          "P82",
+          "P62",
+          "P10"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU transmits a J7.0 (ACT = 0) message when it ceases reporting a surveillance track for which it currently has responsibility (R²), except in cases where responsibility is relinquished to another JU or the track becomes an Active IU on the network with the same TN.",
+            "evidence_refs": [
+              "P53",
+              "P62",
+              "P82"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "For NOTACK areas, Moving Havens, and FWDAs, the C2 JU transmits a J7.0 (ACT=0) message at the time of deactivation.",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If a system does not receive a J7.0 (ACT = 0) message and receives no further updates on a remote track, the system automatically purges those tracks after a specific system-selected time interval.",
+            "evidence_refs": [
+              "P53",
+              "P62",
+              "P82",
+              "P87",
+              "P88"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "DATUMS (DRT = 4) are not purged automatically.",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P87",
+          "P62",
+          "P88",
+          "P82"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "When a JU ceases reporting a track because it has relinquished R² to another JU, a J7.0 (ACT = 0) message shall not be transmitted.",
+            "evidence_refs": [
+              "P53",
+              "P90"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "When a track becomes an Active IU on the network with the same TN, a J7.0 (ACT = 0) message shall not be transmitted.",
+            "evidence_refs": [
+              "P53",
+              "P62"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "For NOTACK areas, Moving Havens, and FWDAs, a J7.0 (ACT=0) message shall be transmitted at time of deactivation, regardless of other conditions.",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P62",
+          "P53",
+          "P90",
+          "P37",
+          "P52"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "A J7.0 (ACT = 0) message shall not be transmitted when a JU ceases reporting a track because it has relinquished R² to another JU.",
+            "evidence_refs": [
+              "P53",
+              "P82",
+              "P90"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A J7.0 (ACT = 0) message shall not be transmitted when a track becomes an Active IU on the network with the same TN.",
+            "evidence_refs": [
+              "P53"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "DATUMS (DRT = 4) shall not be purged automatically even if no further updates are received.",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The JU shall not transmit a J7.0 (ACT = 0) message on a remote track/point that has been automatically purged after a specified time interval.",
+            "evidence_refs": [
+              "P10"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Under conditions where a system does not receive a J7.0 (ACT = 0) message and receives no further updates on a remote track, a J7.0 (ACT = 0) message shall not be transmitted by the purging system.",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P62",
+          "P53",
+          "P10",
+          "P82",
+          "P90"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The C2 JU has transmitted a J7.0 (ACT = 0) drop track message when ceasing to report a surveillance track for which it had R² responsibility, except when relinquishing R² to another JU or when the track becomes an Active IU on the network with the same TN.",
+            "evidence_refs": [
+              "P62",
+              "P53",
+              "P90"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "For NOTACK areas, Moving Havens, and FWDAs, a J7.0 (ACT=0) message has been transmitted at the time of deactivation.",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Remote tracks (DRT = 0-3) have been automatically purged by systems after a specific system-selected time interval elapsed since the last report, in cases where no J7.0 (ACT = 0) message was received and no further updates were received.",
+            "evidence_refs": [
+              "P62",
+              "P10"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "DATUMS (DRT = 4) have not been automatically purged even if no further updates were received.",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "No J7.0 (ACT = 0) message has been transmitted by a system on a remote track/point that was automatically purged after the specified time interval.",
+            "evidence_refs": [
+              "P62",
+              "P10"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "For ballistic missile tracks, a J7.0 message with Track Management Action field set to value 0 (Drop Track Report) has been transmitted when a JU ceases reporting a ballistic missile track for which it had R², except when relinquishing R² to another JU.",
+            "evidence_refs": [
+              "P82"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P62",
+          "P53",
+          "P90",
+          "P10",
+          "P82"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 80.5
+}

@@ -268,6 +268,14 @@ def _normalize_uncited_slot_response(slot_name: str, parsed: Any) -> Dict[str, A
     parsed = _unwrap_slot_payload(parsed, slot_name)
     if not isinstance(parsed, dict):
         return {"slot": slot_name, "claims": [], "raw_text": ""}
+    # LVLM-Direct also returns {slot: text} or {slot: [claim, ...]}.
+    # Preserve existing flat/common-envelope precedence and leave cited methods alone.
+    if not any(key in parsed for key in ("raw_text", "claims", "content", "evidence_refs")):
+        payload = parsed.get(slot_name)
+        if slot_name in ("goal", "trigger", "primary_actor") and isinstance(payload, str):
+            parsed = {"raw_text": payload}
+        elif slot_name in ("preconditions", "main_flow", "alternative_flow", "exception_flow", "postconditions") and isinstance(payload, list):
+            parsed = {"claims": payload}
     if slot_name in ("goal", "trigger", "primary_actor"):
         raw_text = str(parsed.get("raw_text", "")).strip()
         if not raw_text:

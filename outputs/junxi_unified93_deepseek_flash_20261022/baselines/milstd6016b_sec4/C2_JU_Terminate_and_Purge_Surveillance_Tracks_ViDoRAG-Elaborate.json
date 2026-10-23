@@ -1,0 +1,584 @@
+{
+  "use_case_name": "Terminate and Purge Surveillance Tracks",
+  "actor": "C2 JU",
+  "method": "ViDoRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "Ensure track data integrity and network consistency by terminating local reporting of surveillance tracks and purging remote tracks when no further updates are received.",
+          "evidence_refs": [
+            "P53",
+            "P62",
+            "P82"
+          ]
+        }
+      ],
+      "raw_text": "Ensure track data integrity and network consistency by terminating local reporting of surveillance tracks and purging remote tracks when no further updates are received.",
+      "evidence_card_ids": [
+        "P53",
+        "P62",
+        "P82"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU is currently reporting a surveillance track (air, surface, land, subsurface, or ballistic missile) on the interface.",
+          "evidence_refs": [
+            "P53",
+            "P82",
+            "P62"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The C2 JU has detected that it will cease reporting the track — either because it has relinquished R² to another JU, or due to operator action, system design, or time-based purge criteria.",
+          "evidence_refs": [
+            "P53",
+            "P82",
+            "P87",
+            "P62"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "For remote tracks being purged, the system has not received a J7.0 (ACT = 0) message and no further updates are expected within a system-defined time interval.",
+          "evidence_refs": [
+            "P53",
+            "P82",
+            "P62"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The track is not an active IU on the network with the same TN as previously used for reference (except in KUMPAK areas, moving havens, and EWGAs where J7.0 must be transmitted at deactivation).",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If terminating electronic warfare surveillance data, the information is no longer valid or time-related update requirements are not met.",
+          "evidence_refs": [
+            "P87"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P82",
+        "P62",
+        "P87"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU ceases reporting a track for which it currently has R², or detects that no further updates are expected on a remote track within a system-defined time interval.",
+          "evidence_refs": [
+            "P53",
+            "P82",
+            "P62"
+          ]
+        }
+      ],
+      "raw_text": "The C2 JU ceases reporting a track for which it currently has R², or detects that no further updates are expected on a remote track within a system-defined time interval.",
+      "evidence_card_ids": [
+        "P53",
+        "P82",
+        "P62"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU transmits a J7.0 (ACT = 0) message to terminate reporting of a track for which it currently has R², except when the track becomes an active IU on the network with the same TN as previously used for reference.",
+          "evidence_refs": [
+            "P53",
+            "P62"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If terminating electronic warfare surveillance data, the C2 JU transmits a J7.0 (ACT = 0) message when the information is no longer valid or time-related update requirements are not met; this message shall not be transmitted on remote reports.",
+          "evidence_refs": [
+            "P87"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "For subsurface tracks in NOTACK areas, moving havens, and EWGAs, the C2 JU transmits a J7.0 (ACT=0) message at time of deactivation even if the track becomes an active IU with the same TN.",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "When a system does not receive a J7.0 (ACT = 0) message and receives no further updates on a remote track, it automatically purges those tracks after a system-selected time interval.",
+          "evidence_refs": [
+            "P53",
+            "P82",
+            "P62"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Under conditions where irregular reporting of subsurface surveillance tracks occurs and no J7.0 (ACT = 0) message is received, the system shall not transmit a J7.0 (ACT = 0) message but may still purge tracks based on system criteria.",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P62",
+        "P87",
+        "P82"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If a JU ceases reporting a track because it has relinquished R² to another JU, the J7.0 (ACT = 0) message is not transmitted.",
+          "evidence_refs": [
+            "P53"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "If the track becomes an Active IU on the network with the same TN, the J7.0 (ACT = 0) message is not transmitted — except in NOTACK areas, moving havens, and EWGAs where it shall be transmitted at deactivation.",
+          "evidence_refs": [
+            "P53",
+            "P62"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "For subsurface tracks, differences in position, velocity, or depth recognized by a JU are not resolved through automated conflict processing and shall not generate a J7.0 (ACT = 1 or 2) message.",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Under irregular reporting conditions for subsurface surveillance tracks, if no J7.0 (ACT = 0) message is received, the system shall not transmit a J7.0 (ACT = 0) message but may still purge tracks based on system criteria; DATUMS (DRT = 4) shall not be purged automatically.",
+          "evidence_refs": [
+            "P62"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Subsurface tracks shall not be correlated with IUs.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P62",
+        "P7"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If for any reason, such as operator error, it is desired to change the simulation status of a track, the track shall be dropped using the J7.0 (ACT = 0) message, and a new track shall be reported — except that a change from live to simulated shall be accepted if the track is being received from an IU.",
+          "evidence_refs": [
+            "P10"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "When purging remote ballistic missile tracks after a system-selected time interval with no J7.0 message and no further updates, each system should have the capability to automatically purge those tracks; however, DATUMS (DRT = 4) shall not be purged automatically.",
+          "evidence_refs": [
+            "P82",
+            "P62"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Remote EW product information reports may be automatically purged based on system criteria when transmission ceases due to invalidity or unmet update requirements, but the J7.0 (ACT = 0) message shall not be transmitted on remote reports.",
+          "evidence_refs": [
+            "P87"
+          ],
+          "step_number": 2
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P10",
+        "P82",
+        "P62",
+        "P87"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has ceased reporting the surveillance track on the interface, and no further updates are transmitted for that track by this JU.",
+          "evidence_refs": [
+            "P53",
+            "P82",
+            "P87",
+            "P62"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "If the track was relinquished to another JU or became an Active IU with the same TN (except in NOTACK areas, moving havens, EWGAs), no J7.0 (ACT = 0) message was transmitted by the terminating JU.",
+          "evidence_refs": [
+            "P53",
+            "P62"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Remote tracks for which no J7.0 (ACT = 0) message was received and no further updates occurred have been automatically purged after a system-selected time interval.",
+          "evidence_refs": [
+            "P53",
+            "P82",
+            "P62"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "DATUMS (DRT = 4) associated with subsurface or ballistic missile tracks have not been automatically purged, even under irregular reporting conditions.",
+          "evidence_refs": [
+            "P62",
+            "P82"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Electronic warfare product information reports that are no longer valid or fail to meet update requirements have been terminated locally; remote EW reports may be purged based on system criteria without transmitting J7.0 (ACT = 0).",
+          "evidence_refs": [
+            "P87"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P53",
+        "P82",
+        "P87",
+        "P62"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "Ensure track data integrity and network consistency by terminating local reporting of surveillance tracks and purging remote tracks when no further updates are received.",
+            "evidence_refs": [
+              "P53",
+              "P62",
+              "P82"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P82",
+          "P62"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The C2 JU is currently reporting a surveillance track (air, surface, land, subsurface, or ballistic missile) on the interface.",
+            "evidence_refs": [
+              "P53",
+              "P82",
+              "P62"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU has detected that it will cease reporting the track — either because it has relinquished R² to another JU, or due to operator action, system design, or time-based purge criteria.",
+            "evidence_refs": [
+              "P53",
+              "P82",
+              "P87",
+              "P62"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "For remote tracks being purged, the system has not received a J7.0 (ACT = 0) message and no further updates are expected within a system-defined time interval.",
+            "evidence_refs": [
+              "P53",
+              "P82",
+              "P62"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The track is not an active IU on the network with the same TN as previously used for reference (except in KUMPAK areas, moving havens, and EWGAs where J7.0 must be transmitted at deactivation).",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If terminating electronic warfare surveillance data, the information is no longer valid or time-related update requirements are not met.",
+            "evidence_refs": [
+              "P87"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P82",
+          "P87",
+          "P10",
+          "P62"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The C2 JU ceases reporting a track for which it currently has R², or detects that no further updates are expected on a remote track within a system-defined time interval.",
+            "evidence_refs": [
+              "P53",
+              "P82",
+              "P62"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P82",
+          "P87",
+          "P62",
+          "P10"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU transmits a J7.0 (ACT = 0) message to terminate reporting of a track for which it currently has R², except when the track becomes an active IU on the network with the same TN as previously used for reference.",
+            "evidence_refs": [
+              "P53",
+              "P62"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If terminating electronic warfare surveillance data, the C2 JU transmits a J7.0 (ACT = 0) message when the information is no longer valid or time-related update requirements are not met; this message shall not be transmitted on remote reports.",
+            "evidence_refs": [
+              "P87"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "For subsurface tracks in NOTACK areas, moving havens, and EWGAs, the C2 JU transmits a J7.0 (ACT=0) message at time of deactivation even if the track becomes an active IU with the same TN.",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "When a system does not receive a J7.0 (ACT = 0) message and receives no further updates on a remote track, it automatically purges those tracks after a system-selected time interval.",
+            "evidence_refs": [
+              "P53",
+              "P82",
+              "P62"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Under conditions where irregular reporting of subsurface surveillance tracks occurs and no J7.0 (ACT = 0) message is received, the system shall not transmit a J7.0 (ACT = 0) message but may still purge tracks based on system criteria.",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P82",
+          "P87",
+          "P62"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If a JU ceases reporting a track because it has relinquished R² to another JU, the J7.0 (ACT = 0) message is not transmitted.",
+            "evidence_refs": [
+              "P53"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "If the track becomes an Active IU on the network with the same TN, the J7.0 (ACT = 0) message is not transmitted — except in NOTACK areas, moving havens, and EWGAs where it shall be transmitted at deactivation.",
+            "evidence_refs": [
+              "P53",
+              "P62"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "For subsurface tracks, differences in position, velocity, or depth recognized by a JU are not resolved through automated conflict processing and shall not generate a J7.0 (ACT = 1 or 2) message.",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Under irregular reporting conditions for subsurface surveillance tracks, if no J7.0 (ACT = 0) message is received, the system shall not transmit a J7.0 (ACT = 0) message but may still purge tracks based on system criteria; DATUMS (DRT = 4) shall not be purged automatically.",
+            "evidence_refs": [
+              "P62"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Subsurface tracks shall not be correlated with IUs.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P62",
+          "P7"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If for any reason, such as operator error, it is desired to change the simulation status of a track, the track shall be dropped using the J7.0 (ACT = 0) message, and a new track shall be reported — except that a change from live to simulated shall be accepted if the track is being received from an IU.",
+            "evidence_refs": [
+              "P10"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "When purging remote ballistic missile tracks after a system-selected time interval with no J7.0 message and no further updates, each system should have the capability to automatically purge those tracks; however, DATUMS (DRT = 4) shall not be purged automatically.",
+            "evidence_refs": [
+              "P82",
+              "P62"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Remote EW product information reports may be automatically purged based on system criteria when transmission ceases due to invalidity or unmet update requirements, but the J7.0 (ACT = 0) message shall not be transmitted on remote reports.",
+            "evidence_refs": [
+              "P87"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P10",
+          "P82",
+          "P62",
+          "P87"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The C2 JU has ceased reporting the surveillance track on the interface, and no further updates are transmitted for that track by this JU.",
+            "evidence_refs": [
+              "P53",
+              "P82",
+              "P87",
+              "P62"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "If the track was relinquished to another JU or became an Active IU with the same TN (except in NOTACK areas, moving havens, EWGAs), no J7.0 (ACT = 0) message was transmitted by the terminating JU.",
+            "evidence_refs": [
+              "P53",
+              "P62"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Remote tracks for which no J7.0 (ACT = 0) message was received and no further updates occurred have been automatically purged after a system-selected time interval.",
+            "evidence_refs": [
+              "P53",
+              "P82",
+              "P62"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "DATUMS (DRT = 4) associated with subsurface or ballistic missile tracks have not been automatically purged, even under irregular reporting conditions.",
+            "evidence_refs": [
+              "P62",
+              "P82"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Electronic warfare product information reports that are no longer valid or fail to meet update requirements have been terminated locally; remote EW reports may be purged based on system criteria without transmitting J7.0 (ACT = 0).",
+            "evidence_refs": [
+              "P87"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P53",
+          "P82",
+          "P87",
+          "P62",
+          "P10"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 167.3
+}

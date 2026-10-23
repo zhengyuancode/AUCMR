@@ -1,0 +1,746 @@
+{
+  "use_case_name": "Publish Ballistic Missile Surveillance Reports",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To publish Ballistic Missile Surveillance Reports by transmitting Impact Point and/or Launch Point messages.",
+          "evidence_refs": [
+            "EC-G-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "To publish Ballistic Missile Surveillance Reports by transmitting Impact Point and/or Launch Point messages.",
+        "canonical_success_scenario": "C2 JU transmits or receives a Drop Track Report for a ballistic missile and transmits the corresponding Impact Point and/or Launch Point Ballistic Missile Surveillance Report.",
+        "start_boundary": "A Drop Track Report for a ballistic missile is transmitted or received.",
+        "success_boundary": "The corresponding Impact Point and/or Launch Point Ballistic Missile Surveillance Report has been transmitted.",
+        "in_scope_actions": [
+          "Transmit or receive a Drop Track Report for a ballistic missile",
+          "Transmit Impact Point and/or Launch Point Ballistic Missile Surveillance Report"
+        ],
+        "excluded_adjacent_actions": [
+          "Using PPLI data from J2 messages to reduce surveillance track reporting redundancy",
+          "Reporting all uncorrelated local ballistic missile tracks and assuming R²",
+          "Responding to a Ballistic Missile Update Request with a J3.6 Space Track message"
+        ],
+        "variant_dimensions": [
+          "Impact Point message vs Launch Point message",
+          "Drop Track Report transmitted vs received"
+        ],
+        "evidence_refs": [
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal",
+          "reporting obligation for uncorrelated tracks",
+          "Response trigger condition",
+          "Primary actor's objective"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "A ballistic missile surveillance track exists.",
+          "evidence_refs": [
+            "EC-PC-007"
+          ]
+        },
+        {
+          "content": "The C2 JU currently has R² for the ballistic missile track.",
+          "evidence_refs": [
+            "EC-PC-012"
+          ]
+        },
+        {
+          "content": "The C2 JU continuously correlates locally derived ballistic missile tracks with tracks reported on the Surveillance NPG to determine whether data points are currently reported and whether conflicts exist.",
+          "evidence_refs": [
+            "EC-PC-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-007",
+        "EC-PC-012",
+        "EC-PC-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "precondition-track-exists",
+          "precondition-r2-held",
+          "precondition-continuous-correlation",
+          "Participation requirement in J3 Surveillance message exchange",
+          "System state and conditions that must hold before the use case can begin",
+          "existence of ballistic missile surveillance tracks",
+          "Continuous correlation requirement between local and interface tracks",
+          "Responsibility to detect reporting status and conflicts pre-reporting",
+          "System state regarding track responsibility",
+          "System state conditions for response triggers",
+          "Contextual preconditions for status reporting"
+        ],
+        "missing_aspects": [
+          "System state and conditions that must hold before the use case can begin"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered when a Drop Track Report for a ballistic missile is transmitted or received.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-G-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-G-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-event",
+          "drop-track-report-transmitted-or-received",
+          "trigger_event_definition",
+          "Trigger condition: event of conflict",
+          "Trigger action: operator procedure/voice coordination to transmit J7",
+          "trigger_event"
+        ],
+        "missing_aspects": [
+          "trigger"
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU transmits or receives a Drop Track Report for a ballistic missile.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-G-001"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The C2 JU having R² for the Launch Point or Impact Point transmits the corresponding Impact Point and/or Launch Point message(s).",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The C2 JU transmits the corresponding Impact Point and/or Launch Point Ballistic Missile Surveillance Report with the Connect/Disconnect field set to value 1, Disconnect.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-G-001"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-G-001",
+        "EC-MF-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-trigger",
+          "MF-R2-selection",
+          "MF-transmit-report",
+          "MF-disconnect-field",
+          "primary_action_transmit_report",
+          "message_field_configuration",
+          "subsequent_reporting_behavior",
+          "continuous correlation requirement",
+          "reporting obligation for uncorrelated tracks",
+          "conflict resolution mechanism via J7/operator/voice",
+          "assumption of R² for uncorrelated tracks",
+          "Responsibility relinquishment logic (TQ comparison)",
+          "Responsibility relinquishment logic (Source TN tie-breaker)",
+          "Scope of responsibility assumption (missile vs launch point)"
+        ],
+        "missing_aspects": [
+          "main_flow"
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2: when the C2 JU no longer holds R² for the ballistic missile track, it may continue to report the associated Launch Point in accordance with transmit/receive rules; responsibility for the ballistic missile track and its launch point need not be coupled.",
+          "evidence_refs": [
+            "EC-AF-010"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 3: upon transmission or reception of a Drop Track Report for a ballistic missile, any subsequent reports of the Impact Point or Launch Point shall be transmitted with the Related 2 Track Number field of the J3.0C5 message set to value 0, No Statement.",
+          "evidence_refs": [
+            "EC-AF-005"
+          ],
+          "step_number": 2
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-010",
+        "EC-AF-005"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-decoupled-R2-launch-point",
+          "AF-subsequent-report-field-config",
+          "alternative_flow_conflict_resolution_same_TN",
+          "alternative_flow_conflict_resolution_different_TN_yield",
+          "alternative_flow_conflict_resolution_different_TN_retain",
+          "quality_based_exception_handling",
+          "uncorrelated_track_reporting_path",
+          "responsibility_assumption_path",
+          "post_disconnect_reporting_configuration",
+          "friendly_interceptor_reporting_variant",
+          "conflict_resolution_alternative_path",
+          "J7_message_transmission_option",
+          "operator_procedure_option",
+          "voice_coordination_option",
+          "Alternative path for receiving Drop Track Report with local eligibility",
+          "Alternative path for nonreal-time track updates",
+          "Decoupled responsibility for ballistic missile and launch point"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the JU ceases reporting a ballistic missile track for which it does not currently have R² (Responsibility), it shall not transmit a J7.0 message with the Track Management Action field set to value 0, Drop Track Report.",
+          "evidence_refs": [
+            "EC-PC-012"
+          ],
+          "step_number": 1
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-012"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EX-step1-DropTrack-requires-R2",
+          "EX-blocked-DropTrack-transmission"
+        ],
+        "missing_aspects": [
+          "Documented recovery or continuation path after the C2 JU lacks R² and cannot transmit the J7.0 Drop Track Report.",
+          "The specific exit behavior ('terminate this branch without transmitting') and the identification of the actor as 'C2 JU' are not supported by the cited evidence."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The corresponding Impact Point and/or Launch Point Ballistic Missile Surveillance Report has been transmitted with the Connect/Disconnect field set to value 1, Disconnect.",
+          "evidence_refs": [
+            "EC-PO-001",
+            "EC-G-001"
+          ]
+        },
+        {
+          "content": "The C2 JU ceases reporting the ballistic missile track for which it currently has R² (or the track specified in the Reference TN field).",
+          "evidence_refs": [
+            "EC-PO-005",
+            "EC-PO-007"
+          ]
+        },
+        {
+          "content": "The transmitted Impact Point and/or Launch Point report has the Related 2 Track Number field set to value 0 (No Statement).",
+          "evidence_refs": [
+            "EC-PO-002",
+            "EC-PO-008"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-001",
+        "EC-G-001",
+        "EC-PO-005",
+        "EC-PO-007",
+        "EC-PO-002",
+        "EC-PO-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "post-report-transmitted",
+          "post-disconnect-field",
+          "post-cease-reporting-track",
+          "post-related2-track-number-zero",
+          "termination_state",
+          "final_data_status",
+          "report_disconnect_status",
+          "subsequent_report_field_configuration",
+          "assumption_of_responsibility_R2_for_uncorrelated_tracks",
+          "conflict_resolution_mechanism_J7_operator_voice",
+          "data_consistency_state_post_correlation",
+          "cessation_of_reporting_for_missile_track",
+          "retention_of_launch_point_reporting_capability",
+          "cessation_of_track_reporting",
+          "configuration_of_subsequent_reports",
+          "postcondition-response-indicator-set-to-1-for-J3.0/J3.7/J6.0-messages"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 51,
+    "cross_page_cards": 1,
+    "modalities": {
+      "text": 51
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1031.964,
+    "judge_calls": 0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 720.846,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 46.0,
+    "llm_calls": 23.0,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 301.766,
+    "cards_collected": 51,
+    "cards_referenced": 13,
+    "dra_elapsed_seconds": 122.932,
+    "dra_judge_calls": 0,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_seconds": 122.932,
+    "dra_llm_retry_calls": 0,
+    "dra_lvlm_calls": 0,
+    "dra_llm_calls": 2,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_seconds": 0.0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "To publish Ballistic Missile Surveillance Reports by transmitting Impact Point and/or Launch Point messages.",
+            "evidence_refs": [
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "A ballistic missile surveillance track exists.",
+            "evidence_refs": [
+              "EC-PC-007"
+            ]
+          },
+          {
+            "content": "The C2 JU currently has R² for the ballistic missile track.",
+            "evidence_refs": [
+              "EC-PC-012"
+            ]
+          },
+          {
+            "content": "The C2 JU continuously correlates locally derived ballistic missile tracks with tracks reported on the Surveillance NPG to determine whether data points are currently reported and whether conflicts exist.",
+            "evidence_refs": [
+              "EC-PC-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The use case is triggered when a Drop Track Report for a ballistic missile is transmitted or received.",
+            "evidence_refs": [
+              "EC-TR-000",
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU transmits or receives a Drop Track Report for a ballistic missile.",
+            "evidence_refs": [
+              "EC-TR-000",
+              "EC-G-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU having R² for the Launch Point or Impact Point transmits the corresponding Impact Point and/or Launch Point message(s).",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The C2 JU transmits the corresponding Impact Point and/or Launch Point Ballistic Missile Surveillance Report with the Connect/Disconnect field set to value 1, Disconnect.",
+            "evidence_refs": [
+              "EC-MF-000",
+              "EC-G-001"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 2: when the C2 JU no longer holds R² for the ballistic missile track, it may continue to report the associated Launch Point in accordance with transmit/receive rules; responsibility for the ballistic missile track and its launch point need not be coupled.",
+            "evidence_refs": [
+              "EC-AF-010"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 3: upon transmission or reception of a Drop Track Report for a ballistic missile, any subsequent reports of the Impact Point or Launch Point shall be transmitted with the Related 2 Track Number field of the J3.0C5 message set to value 0, No Statement.",
+            "evidence_refs": [
+              "EC-AF-005"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "If the JU ceases reporting a ballistic missile track for which it does not currently have R² (Responsibility), it shall not transmit a J7.0 message with the Track Management Action field set to value 0, Drop Track Report.",
+            "evidence_refs": [
+              "EC-PC-012"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-005",
+          "EC-AF-010",
+          "EC-MF-004",
+          "EC-PC-012"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The corresponding Impact Point and/or Launch Point Ballistic Missile Surveillance Report has been transmitted with the Connect/Disconnect field set to value 1, Disconnect.",
+            "evidence_refs": [
+              "EC-PO-001",
+              "EC-G-001"
+            ]
+          },
+          {
+            "content": "The C2 JU ceases reporting the ballistic missile track for which it currently has R² (or the track specified in the Reference TN field).",
+            "evidence_refs": [
+              "EC-PO-005",
+              "EC-PO-007"
+            ]
+          },
+          {
+            "content": "The transmitted Impact Point and/or Launch Point report has the Related 2 Track Number field set to value 0 (No Statement).",
+            "evidence_refs": [
+              "EC-PO-002",
+              "EC-PO-008"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "4737e6f1676442b9b0c9f7633843bf56"
+}
