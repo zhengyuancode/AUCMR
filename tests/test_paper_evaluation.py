@@ -180,7 +180,7 @@ def _write_result(root: Path, method: str, use_case: str, actor: str, rejected=F
     return str(path), str(evidence)
 
 
-def test_shared_cohort_comes_from_full_aucmr_fast_fail(tmp_path):
+def test_shared_cohort_retains_full_aucmr_refusals(tmp_path):
     methods = ["AUCMR (CREST full)", "TextRAG-Elaborate"]
     result_map = {}
     for method in methods:
@@ -191,10 +191,12 @@ def test_shared_cohort_comes_from_full_aucmr_fast_fail(tmp_path):
             tmp_path, method, "rejected", "Actor", rejected=(method == methods[0])
         )
     selected, manifest = ExperimentRunner.select_paper_cohort(result_map, methods)
-    assert len(selected) == 2
-    assert {key[2] for key in selected} == {"valid"}
+    assert len(selected) == 4
+    assert {key[2] for key in selected} == {"valid", "rejected"}
     assert manifest["candidate_count"] == 2
-    assert manifest["valid_count"] == 1
+    assert manifest["valid_count"] == 2
+    assert manifest["aucmr_refusal_count"] == 1
+    assert manifest["refusals_included"] is True
 
 
 def test_cohort_rejects_missing_method_result(tmp_path):

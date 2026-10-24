@@ -1764,7 +1764,9 @@ def run_evaluation(config: dict, config_path: Path, stage: str) -> None:
         if active_dir.is_dir():
             results.update(runner.collect_crest_results(str(active_dir)))
     methods = selected_methods(config, None)
-    results, cohort = runner.select_paper_cohort(results, methods)
+    results, cohort = runner.select_paper_cohort(
+        results, methods, configured_identities=_configured_use_case_ids(config),
+    )
     (output_root / f"evaluation_cohort_{stage}.json").write_text(
         json.dumps(cohort, ensure_ascii=False, indent=2), encoding="utf-8",
     )

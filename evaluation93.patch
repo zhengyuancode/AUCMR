@@ -1,0 +1,226 @@
+--- a/run.py
++++ b/run.py
+@@ -1779,7 +1779,9 @@
+         if active_dir.is_dir():
+             results.update(runner.collect_crest_results(str(active_dir)))
+     methods = selected_methods(config, None)
+-    results, cohort = runner.select_paper_cohort(results, methods)
++    results, cohort = runner.select_paper_cohort(
++        results, methods, configured_identities=_configured_use_case_ids(config),
++    )
+     (output_root / f"evaluation_cohort_{stage}.json").write_text(
+         json.dumps(cohort, ensure_ascii=False, indent=2), encoding="utf-8",
+     )
+--- a/eval/run_experiments.py
++++ b/eval/run_experiments.py
+@@ -196,15 +196,22 @@
+     def select_paper_cohort(
+         result_map: dict,
+         expected_methods: list[str],
++        configured_identities: set[tuple[str, str, str]] | None = None,
+     ) -> tuple[dict, dict]:
+-        """Use AUCMR-full goal fast-fail flags to define a shared valid cohort."""
++        """Evaluate the fixed input cohort, retaining method-level refusals."""
+         full_method = "AUCMR (CREST full)"
+         full_results = {key[1:]: paths for key, paths in result_map.items() if key[0] == full_method}
+-        if not full_results:
++        if configured_identities is None and not full_results:
+             raise RuntimeError("Cannot define the paper cohort: AUCMR (CREST full) results are missing")
+-        valid = set()
++        identities_to_evaluate = (
++            set(full_results) if configured_identities is None else set(configured_identities)
++        )
++        if not identities_to_evaluate or not expected_methods:
++            raise RuntimeError("Evaluation requires non-empty use cases and methods")
+         rejected = []
+         for identity, (uc_path, _ev_path) in full_results.items():
++            if identity not in identities_to_evaluate:
++                continue
+             with open(uc_path, encoding="utf-8") as handle:
+                 data = json.load(handle)
+             flags = data.get("quality_flags", []) or []
+@@ -212,15 +219,11 @@
+                 rejected.append({
+                     "project": identity[0], "use_case": identity[1], "actor": identity[2],
+                 })
+-            else:
+-                valid.add(identity)
+-        if not valid:
+-            raise RuntimeError("AUCMR full rejected every candidate use case")
+ 
+         missing = []
+         for method in expected_methods:
+             identities = {key[1:] for key in result_map if key[0] == method}
+-            for identity in sorted(valid - identities):
++            for identity in sorted(identities_to_evaluate - identities):
+                 missing.append({
+                     "method": method, "project": identity[0],
+                     "use_case": identity[1], "actor": identity[2],
+@@ -230,15 +233,23 @@
+                 "Paper cohort is incomplete; missing method/use-case results: "
+                 + json.dumps(missing, ensure_ascii=False)
+             )
+-        selected = {key: paths for key, paths in result_map.items() if key[1:] in valid}
++        selected = {
++            key: paths for key, paths in result_map.items()
++            if key[0] in expected_methods and key[1:] in identities_to_evaluate
++        }
+         manifest = {
+-            "selection_rule": "AUCMR full results without unresolvable_use_case",
+-            "candidate_count": len(full_results),
+-            "valid_count": len(valid),
++            "selection_rule": "fixed input cohort including method refusals",
++            "candidate_count": len(identities_to_evaluate),
++            "evaluated_count": len(identities_to_evaluate),
++            # Legacy field names denote cohort membership, not generation success.
++            "valid_count": len(identities_to_evaluate),
+             "valid_use_cases": [
+                 {"project": item[0], "use_case": item[1], "actor": item[2]}
+-                for item in sorted(valid)
++                for item in sorted(identities_to_evaluate)
+             ],
++            "aucmr_refusal_count": len(rejected),
++            "refusals_included": True,
++            "excluded_use_cases": [],
+             "rejected_use_cases": sorted(rejected, key=lambda item: (item["project"], item["use_case"])),
+             "methods": expected_methods,
+         }
+--- a/tests/test_paper_evaluation.py
++++ b/tests/test_paper_evaluation.py
+@@ -180,7 +180,7 @@
+     return str(path), str(evidence)
+ 
+ 
+-def test_shared_cohort_comes_from_full_aucmr_fast_fail(tmp_path):
++def test_shared_cohort_retains_full_aucmr_refusals(tmp_path):
+     methods = ["AUCMR (CREST full)", "TextRAG-Elaborate"]
+     result_map = {}
+     for method in methods:
+@@ -191,10 +191,12 @@
+             tmp_path, method, "rejected", "Actor", rejected=(method == methods[0])
+         )
+     selected, manifest = ExperimentRunner.select_paper_cohort(result_map, methods)
+-    assert len(selected) == 2
+-    assert {key[2] for key in selected} == {"valid"}
++    assert len(selected) == 4
++    assert {key[2] for key in selected} == {"valid", "rejected"}
+     assert manifest["candidate_count"] == 2
+-    assert manifest["valid_count"] == 1
++    assert manifest["valid_count"] == 2
++    assert manifest["aucmr_refusal_count"] == 1
++    assert manifest["refusals_included"] is True
+ 
+ 
+ def test_cohort_rejects_missing_method_result(tmp_path):
+--- /dev/null
++++ b/tests/test_configured_evaluation_cohort.py
+@@ -0,0 +1,109 @@
++"""Offline checks of the actual selector and metrics; no API/model imports."""
++import ast
++import copy
++import importlib.util
++import json
++from pathlib import Path
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def selector():
++    tree = ast.parse((ROOT / 'eval/run_experiments.py').read_text(encoding='utf-8-sig'))
++    cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == 'ExperimentRunner')
++    node = copy.deepcopy(next(n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name == 'select_paper_cohort'))
++    node.decorator_list = []
++    namespace = {'json': json}
++    exec(compile(ast.Module(body=[node], type_ignores=[]), '<actual cohort selector>', 'exec'), namespace)
++    return namespace['select_paper_cohort']
++
++
++class ConfiguredCohortTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        self.select = selector()
++        self.methods = ['AUCMR (CREST full)', 'CREST w/o cross-slot', 'LVLM-Direct',
++                        'TextRAG-Elaborate', 'VDocRAG-Elaborate', 'ViDoRAG-Elaborate', 'ReAct-Elaborate']
++
++    def result(self, method, name, refused=False):
++        path = self.root / (str(len(list(self.root.iterdir()))) + '.json')
++        data = {'method': method, 'use_case_name': name, 'actor': 'User',
++                'slots': {'goal': {'claims': [], 'raw_text': ''}},
++                'quality_flags': [{'flag_type': 'unresolvable_use_case'}] if refused else []}
++        path.write_text(json.dumps(data), encoding='utf-8')
++        ev = path.with_suffix('.evidence.json')
++        ev.write_text('{"evidence_cards": []}', encoding='utf-8')
++        return (method, 'project', name, 'User'), (str(path), str(ev))
++
++    def test_all_93_cases_across_seven_methods_including_refusal(self):
++        results = dict(self.result(m, str(i), refused=(i == 0 and m in self.methods[:2]))
++                       for m in self.methods for i in range(93))
++        before = {p: Path(p).read_bytes() for pair in results.values() for p in pair}
++        selected, report = self.select(results, self.methods, {('project', str(i), 'User') for i in range(93)})
++        self.assertEqual(len(selected), 651)
++        self.assertEqual(report['evaluated_count'], 93)
++        self.assertEqual(report['aucmr_refusal_count'], 1)
++        self.assertTrue(report['refusals_included'])
++        self.assertEqual(report['excluded_use_cases'], [])
++        self.assertEqual(before, {p: Path(p).read_bytes() for p in before})
++
++    def test_all_refused_is_still_a_valid_evaluation_cohort(self):
++        selected, report = self.select(dict([self.result(self.methods[0], 'refused', True)]), self.methods[:1])
++        self.assertEqual(len(selected), 1)
++        self.assertEqual(report['valid_count'], 1)
++
++    def test_missing_result_for_refused_case_is_not_silently_dropped(self):
++        with self.assertRaisesRegex(RuntimeError, 'missing method/use-case'):
++            self.select(dict([self.result(self.methods[0], 'refused', True)]), self.methods[:2])
++
++    def test_configured_case_missing_from_all_methods_fails(self):
++        with self.assertRaisesRegex(RuntimeError, 'missing method/use-case'):
++            self.select(dict([self.result(self.methods[0], 'present')]), self.methods[:1],
++                        {('project', 'present', 'User'), ('project', 'absent', 'User')})
++
++    def test_unconfigured_cases_and_unselected_methods_are_excluded(self):
++        results = dict([self.result(self.methods[0], 'chosen'), self.result(self.methods[0], 'old'),
++                        self.result(self.methods[1], 'chosen')])
++        selected, report = self.select(results, self.methods[:1], {('project', 'chosen', 'User')})
++        self.assertEqual(list(selected), [(self.methods[0], 'project', 'chosen', 'User')])
++        self.assertEqual(report['candidate_count'], 1)
++
++    def test_empty_configured_cohort_does_not_fallback(self):
++        with self.assertRaises(RuntimeError):
++            self.select(dict([self.result(self.methods[0], 'old')]), self.methods[:1], set())
++
++    def test_formal_entrypoint_passes_configured_identities(self):
++        tree = ast.parse((ROOT / 'run.py').read_text(encoding='utf-8-sig'))
++        fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'run_evaluation')
++        call = next(n for n in ast.walk(fn) if isinstance(n, ast.Call)
++                    and isinstance(n.func, ast.Attribute) and n.func.attr == 'select_paper_cohort')
++        value = next(k.value for k in call.keywords if k.arg == 'configured_identities')
++        self.assertEqual(ast.unparse(value), '_configured_use_case_ids(config)')
++
++    def test_refusal_metrics_keep_seven_empty_slots_and_denominator(self):
++        spec = importlib.util.spec_from_file_location('_offline_metrics', ROOT / 'eval/compute_metrics.py')
++        mod = importlib.util.module_from_spec(spec)
++        sys.modules[spec.name] = mod
++        self.addCleanup(sys.modules.pop, spec.name, None)
++        spec.loader.exec_module(mod)
++        computer = mod.MetricsComputer(nli_judge=object())
++        _, paths = self.result(self.methods[0], 'refused', True)
++        with patch('socket.socket.connect', side_effect=AssertionError('Offline test attempted network')):
++            metrics = computer.compute_all(*paths, run_nli=False, run_l2=False)
++            aggregate = computer.compute_aggregate([metrics], self.methods[0])
++        self.assertEqual(metrics.empty_slot_count, 7)
++        self.assertEqual(metrics.total_claims, 0)
++        self.assertEqual(aggregate['n_ucs'], 1)
++        self.assertEqual(aggregate['l1_empty_slots'], 7)
++        self.assertEqual(aggregate['l2_slot_fill_rates']['main_flow'], 0.0)
++        self.assertEqual(metrics.quality_flags, [{'flag_type': 'unresolvable_use_case'}])
++
++
++if __name__ == '__main__':
++    unittest.main()

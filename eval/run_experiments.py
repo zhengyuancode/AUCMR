@@ -196,15 +196,22 @@ class ExperimentRunner:
     def select_paper_cohort(
         result_map: dict,
         expected_methods: list[str],
+        configured_identities: set[tuple[str, str, str]] | None = None,
     ) -> tuple[dict, dict]:
-        """Use AUCMR-full goal fast-fail flags to define a shared valid cohort."""
+        """Evaluate the fixed input cohort, retaining method-level refusals."""
         full_method = "AUCMR (CREST full)"
         full_results = {key[1:]: paths for key, paths in result_map.items() if key[0] == full_method}
-        if not full_results:
+        if configured_identities is None and not full_results:
             raise RuntimeError("Cannot define the paper cohort: AUCMR (CREST full) results are missing")
-        valid = set()
+        identities_to_evaluate = (
+            set(full_results) if configured_identities is None else set(configured_identities)
+        )
+        if not identities_to_evaluate or not expected_methods:
+            raise RuntimeError("Evaluation requires non-empty use cases and methods")
         rejected = []
         for identity, (uc_path, _ev_path) in full_results.items():
+            if identity not in identities_to_evaluate:
+                continue
             with open(uc_path, encoding="utf-8") as handle:
                 data = json.load(handle)
             flags = data.get("quality_flags", []) or []
@@ -212,15 +219,11 @@ class ExperimentRunner:
                 rejected.append({
                     "project": identity[0], "use_case": identity[1], "actor": identity[2],
                 })
-            else:
-                valid.add(identity)
-        if not valid:
-            raise RuntimeError("AUCMR full rejected every candidate use case")
 
         missing = []
         for method in expected_methods:
             identities = {key[1:] for key in result_map if key[0] == method}
-            for identity in sorted(valid - identities):
+            for identity in sorted(identities_to_evaluate - identities):
                 missing.append({
                     "method": method, "project": identity[0],
                     "use_case": identity[1], "actor": identity[2],
@@ -230,15 +233,23 @@ class ExperimentRunner:
                 "Paper cohort is incomplete; missing method/use-case results: "
                 + json.dumps(missing, ensure_ascii=False)
             )
-        selected = {key: paths for key, paths in result_map.items() if key[1:] in valid}
+        selected = {
+            key: paths for key, paths in result_map.items()
+            if key[0] in expected_methods and key[1:] in identities_to_evaluate
+        }
         manifest = {
-            "selection_rule": "AUCMR full results without unresolvable_use_case",
-            "candidate_count": len(full_results),
-            "valid_count": len(valid),
+            "selection_rule": "fixed input cohort including method refusals",
+            "candidate_count": len(identities_to_evaluate),
+            "evaluated_count": len(identities_to_evaluate),
+            # Legacy field names denote cohort membership, not generation success.
+            "valid_count": len(identities_to_evaluate),
             "valid_use_cases": [
                 {"project": item[0], "use_case": item[1], "actor": item[2]}
-                for item in sorted(valid)
+                for item in sorted(identities_to_evaluate)
             ],
+            "aucmr_refusal_count": len(rejected),
+            "refusals_included": True,
+            "excluded_use_cases": [],
             "rejected_use_cases": sorted(rejected, key=lambda item: (item["project"], item["use_case"])),
             "methods": expected_methods,
         }
