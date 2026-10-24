@@ -110,6 +110,7 @@ class UCMetrics:
     nli_parse_failures: list = field(default_factory=list)
     nli_evaluated: bool = False
     l2_evaluated: bool = False
+    evaluation_identity: dict = field(default_factory=dict)
 
 
 class NLIJudge:
@@ -245,16 +246,17 @@ Do NOT use world knowledge — only judge based on the provided evidence."""
             label = parsed.get("entailment")
             if label not in {"entailment", "contradiction", "neutral"}:
                 return None
-            raw_slot_fit = parsed.get("slot_fit", False)
-            if isinstance(raw_slot_fit, str):
-                slot_fit = raw_slot_fit.strip().lower() == "true"
-            else:
-                slot_fit = bool(raw_slot_fit) if isinstance(raw_slot_fit, bool) else False
+            slot_fit = parsed.get("slot_fit")
+            if type(slot_fit) is not bool or any(
+                not isinstance(parsed.get(key), str) or not parsed[key].strip()
+                for key in ("rationale", "slot_fit_rationale")
+            ):
+                return None
             return {
                 "entailment": label,
                 "slot_fit": slot_fit,
-                "rationale": str(parsed.get("rationale", "")),
-                "slot_fit_rationale": str(parsed.get("slot_fit_rationale", "")),
+                "rationale": parsed["rationale"].strip(),
+                "slot_fit_rationale": parsed["slot_fit_rationale"].strip(),
             }
         except Exception:
             return None
@@ -747,10 +749,19 @@ class MetricsComputer:
     def compute_all(
         self, uc_path: str, ev_path: str, run_nli: bool = True,
         run_l2: bool = False, l2_judge: Optional["L2Judge"] = None,
+        bound_method: Optional[str] = None,
     ) -> UCMetrics:
         """Compute all L1-L3 metrics for a single use case."""
         uc_data = self.load_use_case(uc_path)
         ev_data = self.load_evidence(ev_path)
+        if bound_method is not None:
+            from eval.legacy_contracts import canonical_method
+            method = canonical_method(bound_method)
+            for source in (uc_data, ev_data):
+                if source.get("method") is not None and canonical_method(source["method"]) != method:
+                    raise ValueError("Embedded method differs from bound evaluation method")
+            # Routing must use the same identity as aggregation; never alter input files.
+            uc_data["method"] = method
 
         metrics = UCMetrics(
             use_case_name=uc_data.get("use_case_name", "unknown"),
@@ -887,6 +898,8 @@ class MetricsComputer:
             "l2_all_8_rate": round(all_8_rate, 1),
             "l2_violations_per_uc": {k: round(v, 2) for k, v in avg_violations.items()},
             "l2_total_per_uc": round(total_per_uc, 2),
+            "l2_empty_slots": empty_slots,
+            "l2_esc_per_uc": round(empty_slots / n, 2),
             # Backward-compatible aliases for older analysis scripts.
             "l3_violations_per_uc": {k: round(v, 2) for k, v in avg_violations.items()},
             "l3_total_per_uc": round(total_per_uc, 2),

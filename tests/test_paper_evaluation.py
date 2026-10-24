@@ -111,7 +111,7 @@ def test_l1_requires_entailment_and_slot_fit():
     ]
 
 
-def test_l1_judge_ignores_source_images_and_stays_card_only(tmp_path, monkeypatch):
+def test_l1_judge_routes_only_supplied_images_to_vision_endpoint(tmp_path, monkeypatch):
     calls = []
 
     def fake_chat(endpoint, messages, image_paths=None):
@@ -129,14 +129,15 @@ def test_l1_judge_ignores_source_images_and_stays_card_only(tmp_path, monkeypatc
     image_result = judge.judge("claim", ["card caption"], [str(image)])
     assert calls == [
         ("deepseek-v4-pro", []),
-        ("deepseek-v4-pro", []),
+        ("qwen3.5-plus", [str(image)]),
     ]
     assert text_result["judge_model"] == "deepseek-v4-pro"
-    assert image_result["judge_model"] == "deepseek-v4-pro"
+    assert image_result["judge_model"] == "qwen3.5-plus"
 
 
 def _metric(total, cited, entailed, empty=0):
     metric = UCMetrics(use_case_name="UC", actor="Actor")
+    metric.nli_evaluated = True
     metric.total_claims = total
     metric.total_cited_claims = cited
     metric.total_entailed_claims = entailed
@@ -180,7 +181,7 @@ def _write_result(root: Path, method: str, use_case: str, actor: str, rejected=F
     return str(path), str(evidence)
 
 
-def test_shared_cohort_comes_from_full_aucmr_fast_fail(tmp_path):
+def test_shared_cohort_retains_full_aucmr_refusals(tmp_path):
     methods = ["AUCMR (CREST full)", "TextRAG-Elaborate"]
     result_map = {}
     for method in methods:
@@ -191,10 +192,12 @@ def test_shared_cohort_comes_from_full_aucmr_fast_fail(tmp_path):
             tmp_path, method, "rejected", "Actor", rejected=(method == methods[0])
         )
     selected, manifest = ExperimentRunner.select_paper_cohort(result_map, methods)
-    assert len(selected) == 2
-    assert {key[2] for key in selected} == {"valid"}
+    assert len(selected) == 4
+    assert {key[2] for key in selected} == {"valid", "rejected"}
     assert manifest["candidate_count"] == 2
-    assert manifest["valid_count"] == 1
+    assert manifest["valid_count"] == 2
+    assert manifest["aucmr_refusal_count"] == 1
+    assert manifest["refusals_included"] is True
 
 
 def test_cohort_rejects_missing_method_result(tmp_path):

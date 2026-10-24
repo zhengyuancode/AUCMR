@@ -8,13 +8,13 @@ from unittest.mock import patch
 def _write_pair(root: Path, method: str, project: str, case: str, actor: str) -> None:
     if method == "AUCMR (CREST full)":
         directory = root / "aucmr_full" / project
-        stem = case.replace(" ", "_")
+        stem = f"{actor}_{case}".replace(" ", "_")
     elif method == "CREST w/o cross-slot":
         directory = root / "crest_without_dra" / project
-        stem = case.replace(" ", "_")
+        stem = f"{actor}_{case}".replace(" ", "_")
     else:
         directory = root / "baselines" / project
-        stem = f"{case.replace(' ', '_')}_{method}"
+        stem = f"{actor}_{case.replace(' ', '_')}_{method}"
     directory.mkdir(parents=True, exist_ok=True)
     payload = {
         "method": method,
@@ -61,7 +61,7 @@ def test_partial_evaluation_freezes_same_anchor_cohort_for_every_method(tmp_path
 
     captured = {}
 
-    def fake_evaluate(_config, _runner, result_map, report_root):
+    def fake_evaluate(_config, _runner, result_map, report_root, stage):
         captured["keys"] = set(result_map)
         captured["root"] = report_root
         return report_root / "aggregated_metrics.json"

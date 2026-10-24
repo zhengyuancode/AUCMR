@@ -79,7 +79,7 @@ def run_evaluation(config_path: Path | None = None, *, run_dir: Path | None = No
               "runtime_cost_cny": sum(costs) if all(c is not None for c in costs) else None,
               "real_model_calls": sum(calls) if all(c is not None for c in calls) else None,
               "campaign_ledger": ledger.relative_to(REPO).as_posix(), "campaign_budget_cap_cny": cap,
-              "resume_policy": "All saved records, including failures, are retained; only unsaved artifacts continue.",
+              "resume_policy": "Saved paid responses and final records remain immutable. Pre-dispatch deferrals remain pending and resume without redrawing paid judgments.",
               "validation": "PASS"}
     save_new(report_path, report)
     return report

@@ -1,5 +1,6 @@
 """Persistent L2 batches and export. A transport is never used to score real inputs in mock mode."""
 import copy
+from eval.implementation import implementation_manifest
 import json
 from pathlib import Path
 from uuid import uuid4
@@ -151,6 +152,7 @@ def run_batch(config_path, *, repo=REPO, authorize_live=False, resume=None,
     if fixture and not ledger.is_relative_to(repo / "outputs/agent_l2_independent"):
         raise L2Error("Fixture requests need an isolated ledger under the L2 fixture output root")
     identity = {"config_hash": digest(config), "artifacts_hash": digest(artifacts),
+                "implementation": implementation_manifest("l2"),
                 "protocol_version": PROTOCOL_VERSION, "prompt_version": PROMPT_VERSION,
                 "prompt_hash": prompt_hash(), "campaign_ledger": str(ledger),
                 "budget_cap_cny": budget_cap_cny, "max_attempts": max_attempts,
@@ -174,7 +176,7 @@ def run_batch(config_path, *, repo=REPO, authorize_live=False, resume=None,
         if digest(read_json(run_dir / "artifacts.json")) != identity["artifacts_hash"]:
             raise L2Error("Saved artifacts were changed")
     # Lazy import keeps inventory/mock independent of transport and its budget infrastructure.
-    from eval.evaluation_runtime import EvaluationRuntime
+    from eval.evaluation_runtime import EvaluationRuntime, RuntimeBlocked, RuntimeDeferred
     try:
         runtime = EvaluationRuntime(config["model"], run_dir / "runtime", "L2", ledger,
                                     budget_cap_cny=budget_cap_cny,
@@ -215,9 +217,17 @@ def run_batch(config_path, *, repo=REPO, authorize_live=False, resume=None,
                                   if client.envelope else 0))
                 # Paid malformed responses and unknown-cost requests are never retried automatically.
                 error = client.error
+                if isinstance(error, RuntimeDeferred):
+                    # No request was dispatched. Keep this attempt open so scheduling
+                    # failures do not exhaust retries or become permanent score records.
+                    _sealed_write(run_dir / "events" / (uuid4().hex + ".json"), {
+                        "state": "DEFERRED_BEFORE_DISPATCH", "dispatched": False,
+                        "artifact_id": artifact["artifact_id"], "attempt": attempt,
+                        "error_type": type(error).__name__, "real_model_calls": 0})
+                    return _finish(run_dir, config, artifacts, runtime.is_live, "BLOCKED", reused)
                 record["retryable"] = bool(error is not None and getattr(error, "retryable", False))
                 record["retry_on_resume"] = bool(
-                    error is not None and type(error).__name__ in {"RuntimeBlocked", "Blocked"}
+                    isinstance(error, RuntimeBlocked)
                     and getattr(error, "receipt", None) is None)
                 if error is not None:
                     record["runtime_error_type"] = type(error).__name__
@@ -236,7 +246,7 @@ def run_batch(config_path, *, repo=REPO, authorize_live=False, resume=None,
                 record["new_real_model_calls"] = max(0, runtime.real_model_calls - client.calls_before)
                 record["real_model_calls"] = max(record["real_model_calls"], record["new_real_model_calls"])
                 _sealed_write(attempt_dir / "record.json", record)
-                if error is not None and type(error).__name__ in {"RuntimeBlocked", "Blocked"}:
+                if isinstance(error, RuntimeBlocked):
                     return _finish(run_dir, config, artifacts, runtime.is_live, "BLOCKED", reused)
                 if record["status"] != "TECHNICAL_FAILURE" or not record["retryable"]:
                     break
@@ -258,6 +268,8 @@ def export_run(source_run, *, repo=REPO):
         raise L2Error("Expected a saved real or explicit fixture runtime batch")
     if manifest.get("protocol_version") != PROTOCOL_VERSION or manifest.get("prompt_hash") != prompt_hash():
         raise L2Error("Protocol/prompt changed; do not silently export under new semantics")
+    if manifest.get("implementation") != implementation_manifest("l2"):
+        raise L2Error("Evaluation implementation changed; export requires the original frozen code")
     config = read_json(source / "config.snapshot.json")
     artifacts = read_json(source / "artifacts.json")
     if digest(config) != manifest["config_hash"] or digest(artifacts) != manifest["artifacts_hash"]:

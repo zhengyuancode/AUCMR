@@ -99,6 +99,59 @@ class RuntimeRunnerTests(unittest.TestCase):
         self.assertGreater(broken["runtime_cost_cny"], 0)
         self.assertFalse(broken["stop_run"])
 
+    def test_pre_dispatch_block_resumes_and_replays_paid_rounds(self):
+        from eval.evaluation_runtime import RuntimeDeferred
+        from eval.agent_evaluation.budget import Budget
+        from eval.agent_evaluation.common import Blocked
+        for blocked_call in (1, 2):
+            with self.subTest(blocked_call=blocked_call):
+                run, path, _, scenarios = self.fixtures()
+                transport = FixtureTransport(scenarios)
+                reserve = Budget.reserve
+                count = 0
+                def once(budget, *args, **kwargs):
+                    nonlocal count
+                    count += 1
+                    if count == blocked_call:
+                        raise Blocked("constructed provider concurrency")
+                    return reserve(budget, *args, **kwargs)
+                with patch.object(Budget, 'reserve', once), self.assertRaises(RuntimeDeferred):
+                    run_evaluation(path, run_dir=run, transport=transport)
+                self.assertEqual(len(transport.requests), blocked_call - 1)
+                self.assertFalse(list((run / 'records').glob('*.json')))
+                events = list((run / 'scheduling_events').glob('*.json'))
+                self.assertEqual(len(events), 1)
+                self.assertFalse(read_json(events[0])['dispatched'])
+                report = run_evaluation(resume=run, transport=transport)
+                self.assertEqual(report['records'], 22)
+                _, _, records = validate_run(run)
+                self.assertEqual(next(r for r in records if r['task_id']=='F-01')['pcs_mean'], 3)
+                # The resumed runtime reads its prior receipt, never sends it twice.
+                requests = [json.dumps(m, sort_keys=True) for m in transport.requests]
+                self.assertEqual(len(requests), len(set(requests)))
+
+    def test_refusal_with_content_still_scores_pcs(self):
+        run, path, config, scenarios = self.fixtures()
+        artifact_path = REPO / config['input_bindings'][0]['path']
+        data = read_json(artifact_path)
+        data['quality_flags'] = [{'flag_type':'unresolvable_use_case'}]
+        artifact_path.write_text(json.dumps(data), encoding='utf-8')
+        # This fixture's binding is made before freeze, never modify frozen inputs.
+        transport = FixtureTransport(scenarios)
+        run_evaluation(path, run_dir=run, transport=transport)
+        _, _, records = validate_run(run)
+        result = next(r for r in records if r['task_id']=='F-01' and r['explicit_refusal'])
+        self.assertEqual(result['pcs_mean'], 3)
+        self.assertIsNone(result['prc']['score'])
+        self.assertGreater(result['model_requests'], 0)
+
+    def test_resume_rejects_implementation_change(self):
+        run, path, _, scenarios = self.fixtures()
+        run_evaluation(path, run_dir=run, transport=FixtureTransport(scenarios))
+        with patch('eval.l4_agent.protocol.implementation_manifest', return_value={'changed':'code'}):
+            with self.assertRaises(L4Error):
+                run_evaluation(resume=run, transport=FixtureTransport(scenarios))
+
     def test_resume_keeps_completed_and_failed_records_without_redraw(self):
         run, path, _, scenarios = self.fixtures()
         run_evaluation(path, run_dir=run, transport=FixtureTransport(scenarios))

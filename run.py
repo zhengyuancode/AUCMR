@@ -41,8 +41,8 @@ LEGACY_EVALUATION_FILES = (
     "table_l1.tex",
     "table_l2_consistency.tex",
 )
-L1_EVALUATION_VERSION = "l1-contextual-source-grounding-v10-method-aware-text-or-cited-image-qwen37"
-L2_EVALUATION_VERSION = "l2-r1-r7-unified-qwen35-v3-deduplicated"
+L1_EVALUATION_VERSION = "l1-contextual-source-grounding-v11-strict-judgments-frozen-inputs"
+L2_EVALUATION_VERSION = "l2-r1-r7-v4-strict-locations-frozen-inputs"
 CREST_GENERATION_VERSION = "crest-monotonic-atomic-dra-v6-self-validated-collector"
 # Frozen paired v4 w/o-DRA cards are the only accepted source for the v5
 # re-authoring fast path.  Never seed from a full result: it may contain DRA
@@ -786,14 +786,26 @@ def _evaluation_stage_current(
         for path in required
     )
     version_current = manifest.get("version") == expected_version
+    from eval.implementation import implementation_manifest
+    from eval.legacy_contracts import sha
+    implementation_current = manifest.get("implementation") == implementation_manifest("legacy")
+    bindings = manifest.get("input_bindings")
+    try:
+        inputs_current = bool(bindings) and all(
+            sha(b["input_path"]) == b["input_hash"] and sha(b["evidence_path"]) == b["evidence_hash"]
+            for b in bindings)
+    except (OSError, KeyError, TypeError):
+        inputs_current = False
     state = {
         "version": manifest.get("version"),
         "expected_version": expected_version,
         "files": {path.name: path.is_file() for path in required},
         "files_current": files_current,
         "version_current": version_current,
+        "implementation_current": implementation_current,
+        "inputs_current": inputs_current,
     }
-    return files_current and version_current, state
+    return files_current and version_current and implementation_current and inputs_current, state
 
 
 def guide(config: dict, config_path: Path, json_output: bool = False) -> int:
@@ -1660,6 +1672,8 @@ def _write_evaluation_outputs(
 ) -> Path:
     """Evaluate exactly one stage and write versioned, non-overlapping reports."""
     from eval.run_experiments import ExperimentRunner, generate_latex_table_l1, generate_latex_table_l3
+    from eval.legacy_contracts import result_identity
+    from eval.implementation import implementation_manifest
 
     if stage not in {"l1", "l2"}:
         raise ValueError(f"Evaluation stage must be 'l1' or 'l2', got {stage!r}")
@@ -1674,6 +1688,11 @@ def _write_evaluation_outputs(
             if not key or key[0] != "LVLM-Direct"
         }
     evaluation = config.get("experiment", {}).get("evaluation", {})
+    bindings = [result_identity(key, paths, require_l1_audit=stage == "l1")
+                for key, paths in stage_results.items()]
+    implementation = implementation_manifest("legacy")
+    (report_root / f"evaluation_inputs_{stage}.json").write_text(
+        json.dumps({"bindings": bindings, "implementation": implementation}, ensure_ascii=False, indent=2), encoding="utf-8")
     workers = int(evaluation.get(f"{stage}_workers", 1))
     method_metrics = runner.compute_all_metrics(
         stage_results,
@@ -1685,8 +1704,7 @@ def _write_evaluation_outputs(
     stage_audit = {
         method: [
             {
-                "use_case": row["use_case"],
-                "actor": row["actor"],
+                **{k: v for k, v in row.items() if k not in {"l1", "l2"}},
                 stage: row[stage],
             }
             for row in rows
@@ -1714,16 +1732,19 @@ def _write_evaluation_outputs(
     report.write_text(json.dumps(aggregated, ensure_ascii=False, indent=2), encoding="utf-8")
     if stage == "l1":
         (report_root / "table_l1.tex").write_text(
-            generate_latex_table_l1(aggregated), encoding="utf-8",
+            generate_latex_table_l1(aggregated, expected_methods=list(dict.fromkeys(k[0] for k in stage_results))), encoding="utf-8",
         )
         version = L1_EVALUATION_VERSION
     else:
         (report_root / "table_l2_consistency.tex").write_text(
-            generate_latex_table_l3(aggregated), encoding="utf-8",
+            generate_latex_table_l3(aggregated, expected_methods=list(dict.fromkeys(k[0] for k in stage_results))), encoding="utf-8",
         )
         version = L2_EVALUATION_VERSION
     manifest = {
         "stage": stage,
+        "input_bindings": bindings,
+        "implementation": implementation,
+        "cost_ledger_scope": "Legacy L1 and rule L2 are not charged to the independent L2/L3/L4 campaign ledger",
         "version": version,
         "created_at": dt.datetime.now(dt.timezone.utc).astimezone().isoformat(),
         "run_nli": stage == "l1",
@@ -1764,7 +1785,14 @@ def run_evaluation(config: dict, config_path: Path, stage: str) -> None:
         if active_dir.is_dir():
             results.update(runner.collect_crest_results(str(active_dir)))
     methods = selected_methods(config, None)
-    results, cohort = runner.select_paper_cohort(results, methods)
+    from eval.legacy_contracts import cohort_inventory
+    inventory = cohort_inventory(results, methods, _configured_use_case_ids(config))
+    output_root.mkdir(parents=True, exist_ok=True)
+    (output_root / f"evaluation_input_inventory_{stage}.json").write_text(
+        json.dumps(inventory, ensure_ascii=False, indent=2), encoding="utf-8")
+    results, cohort = runner.select_paper_cohort(
+        results, methods, configured_identities=_configured_use_case_ids(config),
+    )
     (output_root / f"evaluation_cohort_{stage}.json").write_text(
         json.dumps(cohort, ensure_ascii=False, indent=2), encoding="utf-8",
     )

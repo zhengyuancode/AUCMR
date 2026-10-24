@@ -1,6 +1,8 @@
 """Role task execution with independent sessions, bounded tools/retries and immutable attempts."""
 from __future__ import annotations
 
+from eval.implementation import implementation_manifest
+
 import json
 from pathlib import Path
 
@@ -26,7 +28,8 @@ class Executor:
         if original_role:
             system += "\n" + prompt(original_role, kinds)
         envelope = {"prompt": system, "materials": materials, "model": binding, "scenario_version": version,
-                    "limits": self.config["judging"], "transport": self.transport.mode}
+                    "limits": self.config["judging"], "transport": self.transport.mode,
+                    "implementation": implementation_manifest("l3")}
         fingerprint = digest(envelope)
         cached_path = self.run_dir / "tasks" / f"{digest(task_id)}.json"
         if cached_path.exists():
@@ -79,6 +82,8 @@ class Executor:
                 if result.get("finish_reason") == "length":
                     status = "TRUNCATED"
                     raise EvaluationError("Truncated output")
+                if result.get("finish_reason") != "stop" or not isinstance(result.get("response_model"), str) or not result["response_model"].strip():
+                    raise EvaluationError("Incomplete response or missing returned model")
                 response = json.loads(response_body) if isinstance(response_body, str) else response_body
                 if not isinstance(response, dict) or set(response) not in ({"tool_calls"}, {"records"}):
                     raise EvaluationError("Expected tools or records envelope")

@@ -137,12 +137,15 @@ def evaluate_response(raw, artifact, accesses) -> dict:
         except (InvalidResponse, TypeError, KeyError) as exc:
             pcs[slot] = {**absent("INVALID_RESPONSE", "评分校验失败。"), "validation_errors": [str(exc)]}
             errors.append(slot + ":" + str(exc))
-    try:
-        prc = validate_prc(data.get("prc"), artifact, accesses)
-    except (InvalidResponse, TypeError, KeyError) as exc:
-        prc["status"] = "INVALID_RESPONSE"
-        prc["validation_errors"] = [str(exc)]
-        errors.append("prc:" + str(exc))
+    if artifact.get("explicit_refusal", False):
+        prc.update(status="NO_EVALUABLE_CONTENT", reason="显式拒答不计 PRC，已有正文仍按槽位评价。")
+    else:
+        try:
+            prc = validate_prc(data.get("prc"), artifact, accesses)
+        except (InvalidResponse, TypeError, KeyError) as exc:
+            prc["status"] = "INVALID_RESPONSE"
+            prc["validation_errors"] = [str(exc)]
+            errors.append("prc:" + str(exc))
     return {"pcs": pcs, "prc": prc, "parse_status": "INVALID_RESPONSE" if errors else "VALID", "validation_errors": errors}
 
 
@@ -155,7 +158,7 @@ def derive(record: dict) -> dict:
         status = "TECHNICAL_FAILURE"
     elif any(v["status"] == "UNRESOLVED" for v in record["pcs"].values()) or record["prc"]["status"] == "UNRESOLVED":
         status = "UNRESOLVED"
-    elif pcs_mean is not None and record["prc"]["score"] is not None:
+    elif pcs_mean is not None and (record["prc"]["score"] is not None or record.get("explicit_refusal", False)):
         status = "COMPLETED"
     else:
         status = "TECHNICAL_FAILURE"
@@ -216,5 +219,6 @@ def validate_record(record: dict, artifact: dict, manifest: dict, config: dict) 
         if score["status"] == "EMPTY_SLOT":
             require(artifact["state"] in {"PRESENT", "EMPTY_OUTPUT", "REFUSED"} and slot in artifact["empty_slots"] and score["score"] == 0, "INVALID_EMPTY_SLOT")
     p = record["prc"]
+    require(not record.get("explicit_refusal", False) or p["score"] is None, "REFUSAL_CANNOT_HAVE_PRC")
     require(p["score"] is None or (type(p["score"]) is int and 1 <= p["score"] <= 5 and p["status"] == "SCORED"), "INVALID_SAVED_PRC")
     require(all(record[k] == v for k, v in derive(record).items()), "AGGREGATE_MISMATCH")

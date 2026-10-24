@@ -1,6 +1,8 @@
 """Source-first L3 state machine. Semantic decisions only come from the transport."""
 from __future__ import annotations
 
+from eval.implementation import implementation_manifest
+
 from copy import deepcopy
 from pathlib import Path
 
@@ -269,12 +271,14 @@ class Orchestrator:
         if unknown:
             raise EvaluationError("Unregistered targets")
         from .common import PACKAGE, file_hash
+        implementation = implementation_manifest("l3")
         fingerprint = digest({"config": self.config, "manifest": self.manifest,
-                              "prompt": file_hash(PACKAGE / "prompts/PROMPTS.md")})
+                              "prompt": file_hash(PACKAGE / "prompts/PROMPTS.md"),
+                              "implementation": implementation})
         binding_path = self.root / "runtime_binding.json"
         if binding_path.exists() and read_json(binding_path)["hash"] != fingerprint:
             raise EvaluationError("Input/prompt/model configuration drift; start a new frozen run")
-        write_json(binding_path, {"hash": fingerprint})
+        write_json(binding_path, {"hash": fingerprint, "implementation": implementation})
         for tid in ordered(target_ids, "source-order"):
             if tid not in self.references:
                 self.references[tid] = self.source_stage(self.targets[tid])

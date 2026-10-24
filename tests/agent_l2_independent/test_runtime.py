@@ -113,6 +113,43 @@ class RuntimeWorkflowTests(unittest.TestCase):
         with contextlib.closing(sqlite3.connect(self.ledger)) as db:
             self.assertEqual(db.execute("SELECT count(*) FROM reservations").fetchone()[0], 2)
 
+    def test_implementation_drift_blocks_resume_and_export(self):
+        result = run_batch(self.bound, **self.run_args())
+        count = len(self.transport.calls)
+        with patch('eval.l2_independent.execution.implementation_manifest', return_value={'changed':'code'}):
+            with self.assertRaises(L2Error):
+                run_batch(self.bound, **self.run_args(resume=result['run_dir']))
+            with self.assertRaises(L2Error):
+                export_run(result['run_dir'], repo=self.repo)
+        self.assertEqual(len(self.transport.calls), count)
+
+    def test_deferred_request_resumes_without_exhausting_attempt_or_repaying(self):
+        from eval.evaluation_runtime import EvaluationRuntime, RuntimeDeferred
+        original = EvaluationRuntime.request
+        entered = 0
+
+        def defer_second(runtime, *args, **kwargs):
+            nonlocal entered
+            entered += 1
+            if entered == 2:
+                raise RuntimeDeferred("Constructed concurrent reservation")
+            return original(runtime, *args, **kwargs)
+
+        with patch.object(EvaluationRuntime, "request", new=defer_second):
+            result = run_batch(self.bound, **self.run_args(max_attempts=1))
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["saved_records"], 1)
+        self.assertEqual(len(self.transport.calls), 1)
+        events = [read_json(p)["value"] for p in Path(result["run_dir"]).glob("events/*.json")]
+        self.assertTrue(any(e["state"] == "DEFERRED_BEFORE_DISPATCH" and not e["dispatched"] for e in events))
+        resumed = run_batch(self.bound, **self.run_args(resume=result["run_dir"], max_attempts=1))
+        self.assertEqual(resumed["status"], "PASS")
+        self.assertEqual(resumed["reused_records"], 1)
+        self.assertEqual(len(self.transport.calls), 2)
+        self.assertEqual({p.parent.name for p in Path(result["run_dir"]).glob("attempts/*/*/record.json")}, {"0001"})
+        with contextlib.closing(sqlite3.connect(self.ledger)) as db:
+            self.assertEqual(db.execute("SELECT count(*) FROM reservations").fetchone()[0], 2)
+
     def test_server_binding_keeps_history_and_ignores_model_only_changes(self):
         config = read_json(self.bound)
         self.assertEqual(config["l3_alignment"], self.config["l3_alignment"])

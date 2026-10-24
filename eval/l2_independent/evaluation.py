@@ -1,6 +1,8 @@
 """Injectable clients, authorization gates, independent records and strict response validation."""
 from __future__ import annotations
 
+from eval.implementation import implementation_manifest
+
 import copy
 import json
 from typing import Protocol
@@ -60,7 +62,7 @@ def cache_identity(a, config):
         "data_origin": a["data_origin"], "assertions": a["assertions"],
         "protocol_version": config["protocol_version"], "prompt_version": config["prompt_version"],
         "prompt_hash": prompt_hash(), "model_config_hash": digest(config["model"]),
-        "adapter_version": ADAPTER_VERSION,
+        "adapter_version": ADAPTER_VERSION, "implementation": implementation_manifest("l2"),
     })
 
 

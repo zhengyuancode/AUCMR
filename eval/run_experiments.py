@@ -23,6 +23,8 @@ from typing import Any
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from eval.legacy_contracts import legacy_method, method_from_output_path, result_identity, sha, table_results
+
 from eval.compute_metrics import (
     COCKBURN_SLOTS,
     CONSISTENCY_RULES,
@@ -46,19 +48,17 @@ logger = logging.getLogger("experiments")
 # Paper table generation
 # ============================================================
 
-def generate_latex_table_l1(aggregate_results: dict[str, dict]) -> str:
+def generate_latex_table_l1(aggregate_results: dict[str, dict], expected_methods=None) -> str:
     """Generate LaTeX for L1 Evidence Grounding table."""
-    method_order = [
-        "LVLM-Direct", "TextRAG-Elaborate", "ViDoRAG-Elaborate",
-        "VDocRAG-Elaborate", "ReAct-Elaborate",
-        "CREST w/o cross-slot", "AUCMR (CREST full)"
-    ]
-
+    aggregate_results, method_order = table_results(aggregate_results, expected_methods)
     rows = []
     for method in method_order:
         if method == "LVLM-Direct":
             continue  # no stable page IDs; excluded from L1 citation evaluation
-        r = aggregate_results.get(method, {})
+        r = aggregate_results.get(method)
+        if not isinstance(r, dict) or not {"l1_n_all", "l1_n_cite", "l1_n_ent", "l1_citcov", "l1_nli_g", "l1_chg", "l1_empty_slots", "l1_esc_per_uc"} <= r.keys() or r.get("l1_valid") is False:
+            rows.append(method + " & " + " & ".join(["--"] * 7) + r" \\ % NOT_RUN")
+            continue
         bold = "\\textbf{" if method == "AUCMR (CREST full)" else ""
         bold_end = "}" if method == "AUCMR (CREST full)" else ""
         chg = r.get("l1_chg")
@@ -75,17 +75,16 @@ def generate_latex_table_l1(aggregate_results: dict[str, dict]) -> str:
     return "\n".join(rows)
 
 
-def generate_latex_table_l2(aggregate_results: dict[str, dict]) -> str:
+def generate_latex_table_l2(aggregate_results: dict[str, dict], expected_methods=None) -> str:
     """Generate LaTeX for L2 Structural Completeness table."""
-    method_order = [
-        "LVLM-Direct", "TextRAG-Elaborate", "ViDoRAG-Elaborate",
-        "VDocRAG-Elaborate", "ReAct-Elaborate",
-        "CREST w/o cross-slot", "AUCMR (CREST full)"
-    ]
+    aggregate_results, method_order = table_results(aggregate_results, expected_methods)
 
     rows = []
     for method in method_order:
-        r = aggregate_results.get(method, {})
+        r = aggregate_results.get(method)
+        if not isinstance(r, dict) or not {"l2_slot_fill_rates", "l2_all_8_rate"} <= r.keys():
+            rows.append(method + " & " + " & ".join(["--"] * 9) + r" \\ % NOT_RUN")
+            continue
         fill = r.get("l2_slot_fill_rates", {})
         all8 = r.get("l2_all_8_rate", 0.0)
 
@@ -102,19 +101,17 @@ def generate_latex_table_l2(aggregate_results: dict[str, dict]) -> str:
     return "\n".join(rows)
 
 
-def generate_latex_table_l3(aggregate_results: dict[str, dict]) -> str:
+def generate_latex_table_l3(aggregate_results: dict[str, dict], expected_methods=None) -> str:
     """Generate the paper's L2 R1-R7 internal-consistency rows."""
-    method_order = [
-        "LVLM-Direct", "TextRAG-Elaborate", "ViDoRAG-Elaborate",
-        "VDocRAG-Elaborate", "ReAct-Elaborate",
-        "CREST w/o cross-slot", "AUCMR (CREST full)"
-    ]
-
+    aggregate_results, method_order = table_results(aggregate_results, expected_methods)
     rule_order = ["R1", "R2", "R3", "R4", "R5", "R6", "R7"]
 
     rows = []
     for method in method_order:
-        r = aggregate_results.get(method, {})
+        r = aggregate_results.get(method)
+        if not isinstance(r, dict) or not {"l2_violations_per_uc", "l2_total_per_uc", "consistency_judged_ucs"} <= r.keys() or r.get("l2_valid") is False:
+            rows.append(method + " & " + " & ".join(["--"] * 10) + r" \\ % NOT_RUN")
+            continue
         violations = r.get("l2_violations_per_uc", {})
         total = r.get("l2_total_per_uc", 0.0)
 
@@ -122,6 +119,8 @@ def generate_latex_table_l3(aggregate_results: dict[str, dict]) -> str:
         for rule_id in rule_order:
             parts.append(f"{violations.get(rule_id, 0.0):.2f}")
         parts.append(f"{total:.2f}")
+        parts.append(str(r.get("consistency_judged_ucs", "--")))
+        parts.append(f"{r['l2_empty_slots']} / {r['l2_esc_per_uc']:.2f}" if "l2_empty_slots" in r else "--")
 
         if method == "AUCMR (CREST full)":
             rows.append("\\textbf{" + "} & \\textbf{".join(parts) + "} \\\\")
@@ -166,10 +165,11 @@ class ExperimentRunner:
 
     def collect_crest_results(
         self, results_dir: str
-    ) -> dict[tuple[str, str, str], tuple[str, str]]:
+    ) -> dict[tuple[str, str, str, str], tuple[str, str]]:
         """Collect CREST result JSON + evidence JSON pairs.
 
-        Returns: {(project, uc_name): (uc_json_path, evidence_json_path)}
+        Returns {(method, project, uc_name, actor): (main_path, evidence_path)}.
+        Directory and filename bind the method independently of the JSON body.
         """
         result_map = {}
         for root, dirs, files in os.walk(results_dir):
@@ -178,33 +178,35 @@ class ExperimentRunner:
                     uc_path = os.path.join(root, f)
                     ev_path = uc_path.replace(".json", "-evidence.json")
                     if os.path.exists(ev_path):
-                        try:
-                            with open(uc_path) as fp:
-                                data = json.load(fp)
-                            key = (
-                                data.get("method", "AUCMR (CREST full)"),
-                                os.path.basename(root),
-                                data.get("use_case_name", ""),
-                                data.get("actor", ""),
-                            )
-                            result_map[key] = (uc_path, ev_path)
-                        except Exception:
-                            pass
+                        with open(uc_path, encoding="utf-8-sig") as fp:
+                            data = json.load(fp)
+                        method = method_from_output_path(uc_path, data)
+                        key = (method, os.path.basename(root), data["use_case_name"], data["actor"])
+                        if key in result_map:
+                            raise ValueError("Duplicate evaluation result identity: " + str(key))
+                        result_map[key] = (uc_path, ev_path)
         return result_map
 
     @staticmethod
     def select_paper_cohort(
         result_map: dict,
         expected_methods: list[str],
+        configured_identities: set[tuple[str, str, str]] | None = None,
     ) -> tuple[dict, dict]:
-        """Use AUCMR-full goal fast-fail flags to define a shared valid cohort."""
+        """Evaluate the fixed input cohort, retaining method-level refusals."""
         full_method = "AUCMR (CREST full)"
         full_results = {key[1:]: paths for key, paths in result_map.items() if key[0] == full_method}
-        if not full_results:
+        if configured_identities is None and not full_results:
             raise RuntimeError("Cannot define the paper cohort: AUCMR (CREST full) results are missing")
-        valid = set()
+        identities_to_evaluate = (
+            set(full_results) if configured_identities is None else set(configured_identities)
+        )
+        if not identities_to_evaluate or not expected_methods:
+            raise RuntimeError("Evaluation requires non-empty use cases and methods")
         rejected = []
         for identity, (uc_path, _ev_path) in full_results.items():
+            if identity not in identities_to_evaluate:
+                continue
             with open(uc_path, encoding="utf-8") as handle:
                 data = json.load(handle)
             flags = data.get("quality_flags", []) or []
@@ -212,15 +214,11 @@ class ExperimentRunner:
                 rejected.append({
                     "project": identity[0], "use_case": identity[1], "actor": identity[2],
                 })
-            else:
-                valid.add(identity)
-        if not valid:
-            raise RuntimeError("AUCMR full rejected every candidate use case")
 
         missing = []
         for method in expected_methods:
             identities = {key[1:] for key in result_map if key[0] == method}
-            for identity in sorted(valid - identities):
+            for identity in sorted(identities_to_evaluate - identities):
                 missing.append({
                     "method": method, "project": identity[0],
                     "use_case": identity[1], "actor": identity[2],
@@ -230,15 +228,23 @@ class ExperimentRunner:
                 "Paper cohort is incomplete; missing method/use-case results: "
                 + json.dumps(missing, ensure_ascii=False)
             )
-        selected = {key: paths for key, paths in result_map.items() if key[1:] in valid}
+        selected = {
+            key: paths for key, paths in result_map.items()
+            if key[0] in expected_methods and key[1:] in identities_to_evaluate
+        }
         manifest = {
-            "selection_rule": "AUCMR full results without unresolvable_use_case",
-            "candidate_count": len(full_results),
-            "valid_count": len(valid),
+            "selection_rule": "fixed input cohort including method refusals",
+            "candidate_count": len(identities_to_evaluate),
+            "evaluated_count": len(identities_to_evaluate),
+            # Legacy field names denote cohort membership, not generation success.
+            "valid_count": len(identities_to_evaluate),
             "valid_use_cases": [
                 {"project": item[0], "use_case": item[1], "actor": item[2]}
-                for item in sorted(valid)
+                for item in sorted(identities_to_evaluate)
             ],
+            "aucmr_refusal_count": len(rejected),
+            "refusals_included": True,
+            "excluded_use_cases": [],
             "rejected_use_cases": sorted(rejected, key=lambda item: (item["project"], item["use_case"])),
             "methods": expected_methods,
         }
@@ -251,6 +257,7 @@ class ExperimentRunner:
                 {
                     "use_case": metric.use_case_name,
                     "actor": metric.actor,
+                    **metric.evaluation_identity,
                         "l1": {
                         "n_all": metric.total_claims,
                         "n_cite": metric.total_cited_claims,
@@ -271,22 +278,29 @@ class ExperimentRunner:
         run_nli: bool = False,
         run_l2: bool = False,
         max_workers: int = 1,
+        require_l1_audit: bool = False,
     ) -> dict[str, list[UCMetrics]]:
         """Compute L1-L3 metrics for all results, grouped by method."""
         method_metrics = defaultdict(list)
         indexed_items = list(enumerate(result_map.items()))
+        # Validate every identity and snapshot before the first judge call.
+        identities = {key: result_identity(key, paths, require_l1_audit=run_nli and require_l1_audit)
+                      for key, paths in result_map.items()}
         total = len(indexed_items)
         workers = max(1, min(int(max_workers), total or 1))
 
         def compute_one(indexed_item):
             i, (key, (uc_path, ev_path)) = indexed_item
             method_key, project, uc_name, actor = key
-            with open(uc_path, encoding="utf-8") as handle:
-                uc_data = json.load(handle)
-            method = uc_data.get("method", "AUCMR (CREST full)")
+            method = legacy_method(method_key)
             metrics = self.metrics_computer.compute_all(
-                uc_path, ev_path, run_nli=run_nli, run_l2=run_l2
+                uc_path, ev_path, run_nli=run_nli, run_l2=run_l2,
+                bound_method=identities[key]["method"],
             )
+            identity = identities[key]
+            if sha(uc_path) != identity["input_hash"] or sha(ev_path) != identity["evidence_hash"]:
+                raise RuntimeError("Evaluation inputs changed during judging")
+            metrics.evaluation_identity = identity
             return i, method, metrics, uc_name, project
 
         logger.info(

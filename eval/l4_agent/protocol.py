@@ -1,6 +1,8 @@
 """L4-only protocol, persistence, and offline safety primitives."""
 from __future__ import annotations
 
+from eval.implementation import implementation_manifest
+
 import json
 import os
 import socket
@@ -104,6 +106,7 @@ def require_run(path: Path) -> Path:
 
 def versions() -> dict:
     return {"protocol": PROTOCOL_VERSION, "prompt": PROMPT_VERSION,
+            "implementation_manifest": implementation_manifest("l4"),
             "rubric": RUBRIC_VERSION, "prompt_sha256": digest(PROMPT),
             "rubric_sha256": digest(RUBRIC),
             "implementation_sha256": digest({p.name: file_hash(p) for p in sorted(Path(__file__).parent.glob("*.py"))}),

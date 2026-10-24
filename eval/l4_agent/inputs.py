@@ -125,7 +125,7 @@ def adapt(binding: dict, task: dict, methods: list[str]) -> dict:
         artifact["state"] = "STRUCTURE_ERROR"
     elif exposed:
         artifact["state"] = "IDENTITY_EXPOSURE"
-    elif refusal:
+    elif refusal and len(artifact["empty_slots"]) == 7:
         artifact["state"] = "REFUSED"
     else:
         artifact["state"] = "EMPTY_OUTPUT" if len(artifact["empty_slots"]) == 7 else "PRESENT"

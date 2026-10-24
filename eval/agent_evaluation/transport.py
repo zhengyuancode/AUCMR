@@ -33,7 +33,7 @@ class MockTransport:
         answer = self.scripted(task, messages, attempt)
         if isinstance(answer, Exception):
             raise answer
-        return {"body": answer, "response_model": "MOCK_SCRIPTED_NOT_A_MODEL", "request_id": f"mock-{len(self.calls)}",
+        return {"body": answer, "finish_reason": "stop", "response_model": "MOCK_SCRIPTED_NOT_A_MODEL", "request_id": f"mock-{len(self.calls)}",
                 "usage": {"input_tokens": 0, "output_tokens": 0, "reasoning_tokens": 0}, "cost_cny": 0.0}
 
 
@@ -91,19 +91,46 @@ class LiveTransport:
         class NoRedirect(HTTPRedirectHandler):
             def redirect_request(self, *args, **kwargs):
                 raise Blocked("Unexpected model endpoint redirect")
-        with build_opener(ProxyHandler({}), NoRedirect()).open(request, timeout=120) as response:
-            data = json.load(response)
-        choice = data["choices"][0]
-        usage = data.get("usage", {})
-        rates = binding["billing"]
-        input_n, output_n = usage.get("prompt_tokens"), usage.get("completion_tokens")
-        reasoning = usage.get("completion_tokens_details", {}).get("reasoning_tokens")
-        cost = None
-        if input_n is not None and output_n is not None and rates.get("all_charges_in_token_usage"):
+        from urllib.error import HTTPError
+        from eval.evaluation_runtime import _redact
+        try:
+            with build_opener(ProxyHandler({}), NoRedirect()).open(request, timeout=120) as response:
+                raw_text = response.read().decode("utf-8", errors="replace")
+            try:
+                data = json.loads(raw_text)
+            except ValueError:
+                data = {"invalid_response_text": raw_text}
+        except HTTPError as exc:
+            data = {"http_status": exc.code, "error_response_text": exc.read().decode("utf-8", errors="replace")}
+        # Return the raw response even when normalization fails. TaskRecovery
+        # persists this receipt before settling usage or validating semantics.
+        return normalize_response(_redact(data, key), binding)
+
+
+def normalize_response(raw, binding):
+    data = raw if isinstance(raw, dict) else {}
+    choices = data.get("choices")
+    choice = choices[0] if isinstance(choices, list) and choices and isinstance(choices[0], dict) else {}
+    message = choice.get("message")
+    message = message if isinstance(message, dict) else {}
+    usage = data.get("usage")
+    usage = usage if isinstance(usage, dict) else {}
+    details = usage.get("completion_tokens_details")
+    details = details if isinstance(details, dict) else {}
+    def token(value):
+        return value if type(value) is int and value >= 0 else None
+    input_n, output_n = token(usage.get("prompt_tokens")), token(usage.get("completion_tokens"))
+    reasoning = token(details.get("reasoning_tokens"))
+    rates = binding["billing"]
+    cost = None
+    if input_n is not None and output_n is not None and rates.get("all_charges_in_token_usage"):
+        try:
             cost = (input_n * rates["input_cny_per_million"] + output_n * rates["output_cny_per_million"]) / 1e6
             if not rates.get("reasoning_in_output"):
                 cost = None if reasoning is None else cost + reasoning * rates["reasoning_cny_per_million"] / 1e6
-        return {"body": choice["message"]["content"], "finish_reason": choice.get("finish_reason"),
-                "response_model": data.get("model"), "request_id": data.get("id"),
-                "system_fingerprint": data.get("system_fingerprint"), "raw_usage": usage,
-                "usage": {"input_tokens": input_n, "output_tokens": output_n, "reasoning_tokens": reasoning}, "cost_cny": cost}
+        except (KeyError, TypeError, ValueError):
+            cost = None
+    return {"raw_response": raw, "body": message.get("content"), "finish_reason": choice.get("finish_reason"),
+            "response_model": data.get("model"), "request_id": data.get("id"),
+            "system_fingerprint": data.get("system_fingerprint"), "raw_usage": usage,
+            "usage": {"input_tokens": input_n, "output_tokens": output_n, "reasoning_tokens": reasoning}, "cost_cny": cost}

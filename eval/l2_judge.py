@@ -247,20 +247,14 @@ def _validate_issue(issue: Any) -> Optional[Violation]:
         return None
     rule_id = _VALID_RULE_BY_NAME[rule_name]
     slot = issue.get("offending_slot", "")
-    if not isinstance(slot, str):
-        slot = str(slot)
-    idx = issue.get("offending_claim_index", -1)
-    if isinstance(idx, bool):
-        idx = -1
-    try:
-        idx = int(idx)
-    except (TypeError, ValueError):
-        idx = -1
-    if idx < -1:
-        idx = -1
+    if not isinstance(slot, str) or not slot.strip():
+        return None
+    idx = issue.get("offending_claim_index")
+    if type(idx) is not int or idx < -1:
+        return None
     rationale = issue.get("rationale", "")
-    if not isinstance(rationale, str):
-        rationale = str(rationale)
+    if not isinstance(rationale, str) or not rationale.strip():
+        return None
     return Violation(
         rule_id=rule_id,
         rule_name=rule_name,
@@ -273,9 +267,9 @@ def _validate_issue(issue: Any) -> Optional[Violation]:
 def _location_is_valid(violation: Violation, slots: Dict[str, Any]) -> bool:
     if violation.offending_slot not in slots:
         return False
-    if violation.offending_claim_index == -1:
-        return True
     claims = (slots.get(violation.offending_slot) or {}).get("claims") or []
+    if violation.offending_claim_index == -1:
+        return bool(claims)
     return 0 <= violation.offending_claim_index < len(claims)
 
 
@@ -378,7 +372,7 @@ class L2Judge:
             invalid = []
             for it in parsed_v:
                 v = _validate_issue(it)
-                if v and _location_is_valid(v, slots):
+                if v and v.rule_id in {"R1", "R2", "R3"} and _location_is_valid(v, slots):
                     violations_by_rule[v.rule_id].append(v)
                 else:
                     invalid.append(it)
@@ -399,7 +393,7 @@ class L2Judge:
             invalid = []
             for it in parsed_l:
                 v = _validate_issue(it)
-                if v and _location_is_valid(v, slots):
+                if v and v.rule_id in {"R4", "R5", "R6", "R7"} and _location_is_valid(v, slots):
                     violations_by_rule[v.rule_id].append(v)
                 else:
                     invalid.append(it)

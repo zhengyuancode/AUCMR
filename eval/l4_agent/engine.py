@@ -4,13 +4,14 @@ from __future__ import annotations
 import json
 from copy import deepcopy
 from pathlib import Path
+from uuid import uuid4
 from typing import Protocol
 
 from .inputs import anonymous, assert_current, local_path
 from .protocol import L4Error, PROMPT, RUBRIC, SLOTS, digest, read_json, require_run, save_new
 from .records import absent, empty_score, evaluate_response, parse_response, seal, validate_record
 from .sources import SourceTools
-from eval.evaluation_runtime import RuntimeBlocked, RuntimeResponseError
+from eval.evaluation_runtime import RuntimeBlocked, RuntimeResponseError, RuntimeDeferred
 
 
 class JudgeClient(Protocol):
@@ -120,6 +121,15 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
                     raise L4Error("Invalid tool envelope")
                 results.append({"call": call, "result": tools.invoke(call["name"], call["arguments"])})
             history.append({"tool_calls": calls, "tool_results": results})
+        except RuntimeDeferred:
+            # No request was dispatched. Paid earlier rounds remain in the runtime
+            # cache and will be replayed on resume; do not seal a failed score.
+            save_new(run_dir / "scheduling_events" / (uuid4().hex + ".json"), {
+                "artifact_id": artifact["artifact_id"], "status": "DEFERRED_BEFORE_DISPATCH",
+                "request_round": record["model_requests"], "dispatched": False,
+                "prior_runtime_receipts": record["runtime_receipts"],
+            })
+            raise
         except Exception as exc:
             # The shared runtime has already persisted any response and accounting.
             _capture_receipt(record, client)

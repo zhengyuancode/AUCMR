@@ -37,6 +37,10 @@ class RuntimeBlocked(_RuntimeError):
     """Configuration, budget, or uncertain billing prevents another request."""
 
 
+class RuntimeDeferred(RuntimeBlocked):
+    """This request was not dispatched; resume may try the same frozen task."""
+
+
 class RuntimeResponseError(_RuntimeError):
     """A paid response was preserved but is not a complete JSON object."""
 
@@ -315,16 +319,16 @@ class EvaluationRuntime:
         secret = None
         if self.is_live:
             if not self.live_authorized:
-                raise RuntimeBlocked("LIVE_NOT_AUTHORIZED")
+                raise RuntimeDeferred("LIVE_NOT_AUTHORIZED")
             secret = os.environ.get(self.binding["api_key_env"])
             if not secret:
-                raise RuntimeBlocked("MODEL_KEY_NOT_SET")
+                raise RuntimeDeferred("MODEL_KEY_NOT_SET")
             if secret in canonical(payload):
                 raise RuntimeBlocked("Request content contains the model credential")
         try:
             self.budget.reserve(request_id, self.binding["provider"], self.binding["per_request_upper_bound"])
         except ValueError:
-            raise RuntimeBlocked("Campaign request blocked: budget, concurrency, existing request, or unknown charge") from None
+            raise RuntimeDeferred("Campaign request blocked: budget, concurrency, existing request, or unknown charge") from None
         record = {"request_id": request_id, "fingerprint": fingerprint, "layer": self.layer,
                   "run_id": self.run_dir.name, "task_id": task_id, "attempt": attempt,
                   "mode": "live" if self.is_live else "mock", "created_at": now(),

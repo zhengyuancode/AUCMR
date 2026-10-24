@@ -1,6 +1,8 @@
 """L3 command line. Offline commands never instantiate a live transport."""
 from __future__ import annotations
 
+from eval.implementation import implementation_manifest
+
 import argparse
 import math
 from pathlib import Path
@@ -94,7 +96,8 @@ def validate_run(run_dir: Path):
 
 def frozen_runtime_hash(config, manifest):
     return digest({"config": config, "manifest": manifest, "prompts": file_hash(PACKAGE / "prompts/PROMPTS.md"),
-                   "schema": file_hash(DESIGN / "records.schema.json"), "protocol": PROTOCOL_VERSION})
+                   "schema": file_hash(DESIGN / "records.schema.json"), "protocol": PROTOCOL_VERSION,
+                   "implementation": implementation_manifest("l3")})
 
 
 def live_run(args, config):
@@ -199,7 +202,8 @@ def main(argv=None):
             if state.get("reference_versions") != {k: v["scenario_version"] for k, v in references.items()}:
                 raise Blocked("Reference corrected after scoring; all affected methods require re-evaluation")
             runtime_hash = digest({"config": config, "manifest": manifest,
-                                   "prompt": file_hash(PACKAGE / "prompts/PROMPTS.md")})
+                                   "prompt": file_hash(PACKAGE / "prompts/PROMPTS.md"),
+                                   "implementation": implementation_manifest("l3")})
             if state.get("runtime_hash") != runtime_hash:
                 raise Blocked("Scoring binding changed; export refused")
             provenance = {"protocol_version": PROTOCOL_VERSION, "run_id": args.run_dir.name,

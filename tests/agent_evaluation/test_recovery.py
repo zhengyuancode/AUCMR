@@ -34,6 +34,28 @@ class RequestRecoveryTests(unittest.TestCase):
                 materials={}, source=source, validate=lambda *args: None)
         return source
 
+    def test_implementation_change_rejects_completed_task(self):
+        self.execute()
+        count = len(self.transport.calls)
+        with patch('eval.agent_evaluation.agents.executor.implementation_manifest', return_value={'changed':'code'}):
+            with self.assertRaises(EvaluationError):
+                self.execute()
+        self.assertEqual(len(self.transport.calls), count)
+
+    def test_incomplete_finish_or_missing_model_never_produces_records(self):
+        for number, change in enumerate(({'finish_reason':'content_filter'}, {'finish_reason':None}, {'response_model':None})):
+            original = self.transport.request
+            def malformed(*args, **kwargs):
+                result = original(*args, **kwargs)
+                result.update(change)
+                return result
+            root = self.root / ('invalid-' + str(number))
+            with patch.object(self.transport, 'request', side_effect=malformed):
+                with self.assertRaises(EvaluationError):
+                    self.execute(root=root)
+            self.assertFalse(list((root / 'records').glob('*.json')))
+            self.assertTrue(read_jsonl(root / 'request_trace.jsonl'))
+
     def test_resume_response_saved_before_settlement(self):
         with patch.object(self.budget, 'settle', side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
             self.execute()

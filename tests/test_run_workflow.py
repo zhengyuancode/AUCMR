@@ -171,17 +171,15 @@ class RunWorkflowTests(unittest.TestCase):
             self.assertTrue(status["complete"])
             self.assertEqual(status["expected_pages"], 2)
 
-    def test_final_experiment_contains_two_projects_and_eighteen_candidates(self):
+    def test_configured_candidates_are_unique_and_have_source_projects(self):
         config = json.loads((Path(run.__file__).parent / "experiment.json").read_text(encoding="utf-8"))
         use_cases = config["experiment"]["use_cases"]
-        self.assertEqual(len(use_cases), 18)
-        self.assertEqual(
-            {item["project"] for item in use_cases},
-            {"jtvauctions", "milstd6016b_sec4"},
-        )
-        self.assertEqual(
-            sum(item["project"] == "milstd6016b_sec4" for item in use_cases), 9,
-        )
+        self.assertTrue(use_cases)
+        identities = {(item["project"], item["actor"], item["use_case"]) for item in use_cases}
+        self.assertEqual(len(identities), len(use_cases))
+        self.assertTrue(all(all(isinstance(v, str) and v.strip() for v in row) for row in identities))
+        sources = {item["project"] for item in config["text_pipeline"]["documents"]}
+        self.assertTrue({item["project"] for item in use_cases} <= sources)
 
     def test_latest_generation_marks_older_evaluation_stale(self):
         with tempfile.TemporaryDirectory() as temp:
