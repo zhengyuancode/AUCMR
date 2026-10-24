@@ -1,0 +1,961 @@
+{
+  "paths": {
+    "output": "outputs/junxi_unified93_deepseek_flash_20261022",
+    "images": "data/images",
+    "pdfs": "data",
+    "mineru": "data/mineru",
+    "text_work": "data/text_pipeline",
+    "image_work": "data/image_pipeline_jobs",
+    "vendor_cache": "data/vendor_cache",
+    "embedder": "/home/dzy/.cache/huggingface/hub/models--jinaai--jina-embeddings-v4/snapshots/853c867b65b749f3c3c72a06868140d842e04f06",
+    "linucb": "models/linucb_model.pkl",
+    "pca": "models/pca_assets.pkl"
+  },
+  "services": {
+    "milvus": {
+      "uri": "http://127.0.0.1:19530",
+      "token": ""
+    },
+    "text_milvus": {
+      "collection_template": "{project}_text"
+    },
+    "minio": {
+      "endpoint": "127.0.0.1:9000",
+      "access_key_env": "minioadmin",
+      "secret_key_env": "minioadmin",
+      "bucket": "a-bucket",
+      "secure": false
+    }
+  },
+  "models": {
+    "llm": {
+      "base_url": "https://api.deepseek.com",
+      "model_name": "deepseek-flash",
+      "api_key_env": "AUCMR_JUNXI_DEEPSEEK_API_KEY",
+      "temperature": null,
+      "max_tokens": null
+    },
+    "lvlm": {
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "model_name": "qwen3.5-plus",
+      "api_key_env": "AUCMR_JUNXI_DASHSCOPE_API_KEY",
+      "temperature": null,
+      "max_tokens": null
+    },
+    "nli_judge": {
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "model_name": "qwen3.7-plus",
+      "api_key_env": "AUCMR_JUNXI_DASHSCOPE_API_KEY",
+      "temperature": 0.0,
+      "max_tokens": null
+    },
+    "nli_vision_judge": {
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "model_name": "qwen3.7-plus",
+      "api_key_env": "AUCMR_JUNXI_DASHSCOPE_API_KEY",
+      "temperature": 0.0,
+      "max_tokens": null
+    },
+    "l2_judge": {
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "model_name": "qwen3.7-plus",
+      "api_key_env": "AUCMR_JUNXI_DASHSCOPE_API_KEY",
+      "temperature": 0.0,
+      "max_tokens": null
+    }
+  },
+  "runtime": {
+    "embedder_device": "cuda",
+    "hf_endpoint": "https://hf-mirror.com",
+    "log_level": "INFO",
+    "fail_fast": true
+  },
+  "algorithm": {
+    "topk": 5,
+    "max_slot_rounds": 3,
+    "page_count_ratio": 0.3,
+    "answer_convergence_repeat": 1,
+    "queries_per_round": 2,
+    "overlap_rate_max": 0.65,
+    "query_retry_max": 2,
+    "min_novel_pages_per_round": 2,
+    "max_page_chain": 3,
+    "goal_min_evidence_cards": 1,
+    "goal_min_confidence": 0.3,
+    "goal_cohesion_max_span_ratio": 0.4,
+    "dra_max_rounds": 2,
+    "active_card_budget": {
+      "goal": 6,
+      "primary_actor": 4,
+      "preconditions": 12,
+      "trigger": 6,
+      "main_flow": 24,
+      "alternative_flow": 16,
+      "exception_flow": 16,
+      "postconditions": 12
+    },
+    "n_arms": 10,
+    "n_features": 14,
+    "beta": 0.5
+  },
+  "baselines": {
+    "lvlm_direct": {
+      "composite_count": 8,
+      "columns": 3,
+      "page_width": 640,
+      "jpeg_quality": 90,
+      "gutter": 4
+    },
+    "vdocrag": {
+      "base_model": "microsoft/Phi-3-vision-128k-instruct",
+      "retriever_lora": "NTT-hil-insight/VDocRetriever-Phi3-vision",
+      "device": "cuda:0",
+      "dtype": "bfloat16",
+      "attn_implementation": "eager",
+      "local_files_only": false,
+      "pooling": "eos",
+      "normalize": true,
+      "image_size": 1344,
+      "top_k": 5
+    },
+    "vidorag": {
+      "candidate_top_k": 5,
+      "max_rounds": 2
+    },
+    "react": {
+      "max_steps": 5,
+      "top_k": 5,
+      "overlap_threshold": 0.65
+    }
+  },
+  "text_pipeline": {
+    "language": "English",
+    "chunk_size": 800,
+    "chunk_overlap": 0,
+    "strict_images": true,
+    "embedding_dimension": 128,
+    "insert_batch_rows": 2000,
+    "coarse_candidates": 100,
+    "mineru": {
+      "command": "mineru",
+      "source": null,
+      "extra_args": [
+        "-b",
+        "pipeline"
+      ]
+    },
+    "documents": [
+      {
+        "project": "jtvauctions",
+        "file_name": "jtvauctions",
+        "pdf": "data/jtvauctions.pdf",
+        "page_images": "data/images/jtvauctions",
+        "parse_dir": "data/mineru/jtvauctions"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_name": "milstd6016b_sec4",
+        "pdf": "data/6016B-sec4-visual-excerpt.pdf",
+        "page_images": "data/images/milstd6016b_sec4",
+        "parse_dir": "data/mineru/milstd6016b_sec4"
+      },
+      {
+        "project": "qheadache",
+        "file_name": "qheadache",
+        "pdf": "data/qheadache.pdf",
+        "page_images": "data/images/qheadache",
+        "parse_dir": "data/mineru/qheadache"
+      },
+      {
+        "project": "microcare",
+        "file_name": "microcare",
+        "pdf": "data/microcare.pdf",
+        "page_images": "data/images/microcare",
+        "parse_dir": "data/mineru/microcare"
+      },
+      {
+        "project": "rlcs",
+        "file_name": "rlcs",
+        "pdf": "data/rlcs.pdf",
+        "page_images": "data/images/rlcs",
+        "parse_dir": "data/mineru/rlcs"
+      },
+      {
+        "project": "peazip",
+        "file_name": "peazip",
+        "pdf": "data/peazip.pdf",
+        "page_images": "data/images/peazip",
+        "parse_dir": "data/mineru/peazip"
+      }
+    ]
+  },
+  "image_pipeline": {
+    "embedding_batch_size": 1,
+    "commit_every_pages": 10,
+    "max_pixels": 602112
+  },
+  "experiment": {
+    "methods": [
+      "AUCMR (CREST full)",
+      "CREST w/o cross-slot",
+      "LVLM-Direct",
+      "TextRAG-Elaborate",
+      "VDocRAG-Elaborate",
+      "ViDoRAG-Elaborate",
+      "ReAct-Elaborate"
+    ],
+    "use_cases": [
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Customer",
+        "use_case": "Place Bid on Auction Item"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Customer",
+        "use_case": "Register Customer Account"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Customer",
+        "use_case": "Browse and Search Products"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Customer",
+        "use_case": "Complete Checkout and Payment"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Customer",
+        "use_case": "Manage Account Settings"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Customer",
+        "use_case": "Monitor Current and Past Auction Status"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Publish Air and Surface Surveillance Tracks"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Resolve Dual Designations via Track Correlation"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Manage Track Identity Classification"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Terminate and Purge Surveillance Tracks"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Transfer Reporting Responsibility"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Exchange IFF and SIF Transponder Data"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "Non-C2 JU",
+        "use_case": "Receive Situational Awareness Data"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "System Operator",
+        "use_case": "Initiate Emergency Point Reports"
+      },
+      {
+        "project": "qheadache",
+        "file_names": [
+          "qheadache"
+        ],
+        "actor": "Player",
+        "use_case": "Open a Saved Game"
+      },
+      {
+        "project": "qheadache",
+        "file_names": [
+          "qheadache"
+        ],
+        "actor": "Player",
+        "use_case": "Save the Current Game"
+      },
+      {
+        "project": "qheadache",
+        "file_names": [
+          "qheadache"
+        ],
+        "actor": "Player",
+        "use_case": "Undo the Last Block Movement"
+      },
+      {
+        "project": "qheadache",
+        "file_names": [
+          "qheadache"
+        ],
+        "actor": "Player",
+        "use_case": "Complete a Puzzle"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "VMU User",
+        "use_case": "Record Voucher Distribution"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "MSIU Field Office User",
+        "use_case": "Register a Claim Submission"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "MSIU Field Office User",
+        "use_case": "Enter and Validate a Treatment Claim"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "VMU User",
+        "use_case": "Record a Voucher Sales Return"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "MSIU Field Office User",
+        "use_case": "Record Client Feedback"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Operator",
+        "use_case": "Acquire System Command Control"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Operator",
+        "use_case": "Open a Reversible-Lane Entrance"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Operator",
+        "use_case": "Acknowledge a Device Alarm"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "System Administrator",
+        "use_case": "Configure Staff Access Permissions"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Management",
+        "use_case": "Generate a Failure Summary Report"
+      },
+      {
+        "project": "peazip",
+        "file_names": [
+          "peazip"
+        ],
+        "actor": "User",
+        "use_case": "Create a Compressed Archive"
+      },
+      {
+        "project": "peazip",
+        "file_names": [
+          "peazip"
+        ],
+        "actor": "User",
+        "use_case": "Add Files to an Existing Archive"
+      },
+      {
+        "project": "peazip",
+        "file_names": [
+          "peazip"
+        ],
+        "actor": "User",
+        "use_case": "Extract an Archive"
+      },
+      {
+        "project": "peazip",
+        "file_names": [
+          "peazip"
+        ],
+        "actor": "User",
+        "use_case": "Generate a Password and Keyfile"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Business Owner",
+        "use_case": "Analyze Auction Business Performance"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Business Owner",
+        "use_case": "Analyze Customer Purchasing Activity"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Auctioneer",
+        "use_case": "Analyze Inventory Availability and Aging"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Auctioneer",
+        "use_case": "Configure Global Auction Rules"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Auctioneer",
+        "use_case": "Edit or Remove Existing Auctions"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Customer Service Representative",
+        "use_case": "Investigate Customer Auction Inquiries"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Auctioneer",
+        "use_case": "Maintain Auction Event Profiles"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Auctioneer",
+        "use_case": "Manage Auction Administration User Access"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Customer",
+        "use_case": "Recover Forgotten Account Access"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Customer",
+        "use_case": "Respond to a Second-Chance Purchase Offer"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Customer Service Representative",
+        "use_case": "Restore Bidding Privileges After Nonpayment"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Auctioneer",
+        "use_case": "Review SKU Auction Performance"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Auctioneer",
+        "use_case": "Schedule New Auction Events"
+      },
+      {
+        "project": "jtvauctions",
+        "file_names": [
+          "jtvauctions"
+        ],
+        "actor": "Customer Service Representative",
+        "use_case": "Suspend or Deactivate Customer Accounts"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Associate Related Surveillance Tracks and Points"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Clear Exercise Surveillance Data on an Exercise Status Order"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Coordinate Surveillance Transmit Filters"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Decorrelate Diverging Air or Surface Tracks"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Initiate and Clear Surveillance Track Alerts"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Publish Ballistic Missile Surveillance Reports"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Publish Electronic Warfare Surveillance Products"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Publish Subsurface Surveillance and Acoustic Contact Reports"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Request Cross-Link Track Identifiers"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Request Surveillance Data Updates"
+      },
+      {
+        "project": "milstd6016b_sec4",
+        "file_names": [
+          "milstd6016b_sec4"
+        ],
+        "actor": "C2 JU",
+        "use_case": "Share a Geographic Pointer with Other Units"
+      },
+      {
+        "project": "qheadache",
+        "file_names": [
+          "qheadache"
+        ],
+        "actor": "Player",
+        "use_case": "Erase All Recorded Player Statistics"
+      },
+      {
+        "project": "qheadache",
+        "file_names": [
+          "qheadache"
+        ],
+        "actor": "Player",
+        "use_case": "Exit the Game with Unsaved Progress Handling"
+      },
+      {
+        "project": "qheadache",
+        "file_names": [
+          "qheadache"
+        ],
+        "actor": "Player",
+        "use_case": "Redo the Last Undone Block Movement"
+      },
+      {
+        "project": "qheadache",
+        "file_names": [
+          "qheadache"
+        ],
+        "actor": "Player",
+        "use_case": "View Recorded Player Statistics"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "System Administrator",
+        "use_case": "Configure User Group Permissions"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "System Administrator",
+        "use_case": "Create a User Account"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "VMU User",
+        "use_case": "Create and Print a Voucher Batch"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "MSIU Field Office User",
+        "use_case": "Generate Provider Reimbursement Reports"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "MSIU Field Office User",
+        "use_case": "Generate Treatment Quality and Trend Reports"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "VMU User",
+        "use_case": "Maintain Distributor Records"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "VMU User",
+        "use_case": "Maintain Voucher Service Provider Records"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "MSIU Field Office User",
+        "use_case": "Register a VSP Staff Member"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "VMU User",
+        "use_case": "Register an MSIU Salesperson"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "VMU User",
+        "use_case": "Review a Distributor Sales History"
+      },
+      {
+        "project": "microcare",
+        "file_names": [
+          "microcare"
+        ],
+        "actor": "VMU User",
+        "use_case": "Review a Provider Claim Status"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Operator",
+        "use_case": "Change the System Operating Mode"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Operator",
+        "use_case": "Close a Reversible-Lane Entrance"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "System Administrator",
+        "use_case": "Configure Operational Schedules"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Field Maintenance Staff",
+        "use_case": "Diagnose a Failed Device"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Operator",
+        "use_case": "Display and Export System Information Logs"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Control Unit",
+        "use_case": "Initialize a Newly Online Control Unit"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Operator",
+        "use_case": "Maintain a Problem Work Order"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Operator",
+        "use_case": "Monitor Facility and Device Status"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Operator",
+        "use_case": "Record an Operator Daily Diary"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Management",
+        "use_case": "Retrieve Historical Reports"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "External Traffic System",
+        "use_case": "Retrieve Published RLCS Status"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "System Administrator",
+        "use_case": "Revise Device Command Safety Rules"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "System Administrator",
+        "use_case": "Update the Facility Map and Displayed Devices"
+      },
+      {
+        "project": "rlcs",
+        "file_names": [
+          "rlcs"
+        ],
+        "actor": "Operator",
+        "use_case": "Verify Control Unit Integrity"
+      },
+      {
+        "project": "peazip",
+        "file_names": [
+          "peazip"
+        ],
+        "actor": "User",
+        "use_case": "Browse and Search Files and Archives"
+      },
+      {
+        "project": "peazip",
+        "file_names": [
+          "peazip"
+        ],
+        "actor": "User",
+        "use_case": "Check Files for Duplicates and Corruption"
+      },
+      {
+        "project": "peazip",
+        "file_names": [
+          "peazip"
+        ],
+        "actor": "User",
+        "use_case": "Compare Two Files Byte by Byte"
+      },
+      {
+        "project": "peazip",
+        "file_names": [
+          "peazip"
+        ],
+        "actor": "User",
+        "use_case": "Configure Application Preferences"
+      },
+      {
+        "project": "peazip",
+        "file_names": [
+          "peazip"
+        ],
+        "actor": "User",
+        "use_case": "Copy Uncompressed Files to Another Location"
+      },
+      {
+        "project": "peazip",
+        "file_names": [
+          "peazip"
+        ],
+        "actor": "User",
+        "use_case": "Inspect File and Archive Information"
+      },
+      {
+        "project": "peazip",
+        "file_names": [
+          "peazip"
+        ],
+        "actor": "User",
+        "use_case": "Securely Delete Files and Folders"
+      }
+    ],
+    "evaluation": {
+      "run_nli": true,
+      "run_l2_judge": true,
+      "l1_workers": 84,
+      "l2_workers": 98
+    },
+    "generation_workers": 3
+  }
+}

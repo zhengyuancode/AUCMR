@@ -1,0 +1,590 @@
+{
+  "use_case_name": "Maintain a Problem Work Order",
+  "actor": "Operator",
+  "method": "VDocRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To create, update, or track the status of a Problem Work Order associated with one or more personnel and linked to a specific problem type and status.",
+          "evidence_refs": [
+            "P36",
+            "P51"
+          ]
+        }
+      ],
+      "raw_text": "To create, update, or track the status of a Problem Work Order associated with one or more personnel and linked to a specific problem type and status.",
+      "evidence_card_ids": [
+        "P36",
+        "P51"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Operator",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Operator",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Operator must be logged onto the RLCS system.",
+          "evidence_refs": [
+            "P11"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The Operator must have a valid Personnel ID, Name, and associated Personnel Status (e.g., active & logged on).",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Operator must possess a Personnel Security Level that authorizes them to access or modify Problem Work Order data.",
+          "evidence_refs": [
+            "P51"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "A defined set of Problem Work Order Types and Problem Work Order Statuses must exist in the database to classify the work order.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P11",
+        "P36",
+        "P51"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "An Operator initiates the creation or update of a Problem Work Order to document, assign, or track maintenance issues within the RLCS system.",
+          "evidence_refs": [
+            "P36",
+            "P51"
+          ]
+        }
+      ],
+      "raw_text": "An Operator initiates the creation or update of a Problem Work Order to document, assign, or track maintenance issues within the RLCS system.",
+      "evidence_card_ids": [
+        "P36",
+        "P51"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Operator accesses the Problem Work Order entity within the RLCS application software.",
+          "evidence_refs": [
+            "P36",
+            "P49"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The system retrieves existing Problem Work Order Types and Problem Work Order Statuses to allow classification of the order.",
+          "evidence_refs": [
+            "P36",
+            "P51"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Operator enters or updates attributes for the Problem Work Order, including Date, Time, Description, and links it to a specific Problem Work Order Type and Status.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The Operator associates one or more Personnel records with the Problem Work Order via the Problem Work Order Personnel relationship.",
+          "evidence_refs": [
+            "P36",
+            "P51"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The RLCS application software validates that the Operator has the necessary security permissions to modify the record.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The system saves the Problem Work Order data, updating the database tables to reflect the new or modified entry.",
+          "evidence_refs": [
+            "P29",
+            "P36"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P36",
+        "P49",
+        "P51",
+        "P29"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If the Operator attempts to access or modify a Problem Work Order without a valid Personnel Security Level that authorizes such actions, the system denies access.",
+          "evidence_refs": [
+            "P29",
+            "P50"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If the Operator selects an invalid or non-existent Problem Work Order Type or Status during creation/update, the system prompts for correction using existing defined types and statuses from the database.",
+          "evidence_refs": [
+            "P36",
+            "P51"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the Operator attempts to associate Personnel with a Problem Work Order but no valid Personnel ID exists or the personnel status is inactive, the system prevents association and notifies the Operator.",
+          "evidence_refs": [
+            "P36",
+            "P50",
+            "P51"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the system fails to save the Problem Work Order due to database constraints or encryption requirements (e.g., password/device rule data), the transaction is rolled back and an error is logged.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P29",
+        "P50",
+        "P36",
+        "P51"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the Operator attempts to create or update a Problem Work Order without being associated with a valid Personnel Security Level, the system shall deny the operation as each Personnel must have one Personnel Security Level to authorize access.",
+          "evidence_refs": [
+            "P50"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the Operator selects a Problem Work Order Type that does not exist in the database, the system shall reject the entry because each Problem Work Order must reference one existing Problem Work Order Type.",
+          "evidence_refs": [
+            "P50"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the Operator attempts to assign a status to the Problem Work Order that is not defined in the Problem Work Order Status entity, the system shall prevent the save operation as each Problem Work Order must have one valid Problem Work Order Status.",
+          "evidence_refs": [
+            "P50"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the Operator attempts to associate Personnel who do not have a valid Personnel ID or whose Personnel Status is 'inactive', the system shall block the association because each Problem Work Order Personnel record must associate valid Personnel.",
+          "evidence_refs": [
+            "P50",
+            "P51"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If the database connection fails or the RLCS application software cannot update the database tables to support system operations, the transaction shall be aborted and an error reported.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P50",
+        "P51",
+        "P29"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The Problem Work Order record is created or updated in the database with valid Date, Time, Operator, Description, and linked to one Problem Work Order Type and one Problem Work Order Status.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "One or more Personnel records are associated with the Problem Work Order via the Problem Work Order Personnel entity, ensuring each association links a valid Personnel ID to the work order.",
+          "evidence_refs": [
+            "P36",
+            "P50",
+            "P51"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Operator’s Personnel Security Level authorizes the modification, as each Personnel must have one Personnel Security Level that may be authorized for system functions including work order management.",
+          "evidence_refs": [
+            "P36",
+            "P50",
+            "P51"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The Problem Work Order Status reflects the current state (e.g., open, in progress, closed) as defined by the Problem Work Order Status entity, which may describe one or more Problem Work Orders.",
+          "evidence_refs": [
+            "P36",
+            "P51"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "All changes are persisted in the RLCS database, which stores historical transaction data to generate reports of system operations, including problem work order activity.",
+          "evidence_refs": [
+            "P36",
+            "P29"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P36",
+        "P50",
+        "P51",
+        "P29"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "To create, update, or track the status of a Problem Work Order associated with one or more personnel and linked to a specific problem type and status.",
+            "evidence_refs": [
+              "P36",
+              "P51"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P51",
+          "P49",
+          "P50",
+          "P29"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The Operator must be logged onto the RLCS system.",
+            "evidence_refs": [
+              "P11"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Operator must have a valid Personnel ID, Name, and associated Personnel Status (e.g., active & logged on).",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Operator must possess a Personnel Security Level that authorizes them to access or modify Problem Work Order data.",
+            "evidence_refs": [
+              "P51"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "A defined set of Problem Work Order Types and Problem Work Order Statuses must exist in the database to classify the work order.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P51",
+          "P49",
+          "P11",
+          "P50"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "An Operator initiates the creation or update of a Problem Work Order to document, assign, or track maintenance issues within the RLCS system.",
+            "evidence_refs": [
+              "P36",
+              "P51"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P51",
+          "P49",
+          "P50",
+          "P29"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The Operator accesses the Problem Work Order entity within the RLCS application software.",
+            "evidence_refs": [
+              "P36",
+              "P49"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system retrieves existing Problem Work Order Types and Problem Work Order Statuses to allow classification of the order.",
+            "evidence_refs": [
+              "P36",
+              "P51"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Operator enters or updates attributes for the Problem Work Order, including Date, Time, Description, and links it to a specific Problem Work Order Type and Status.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The Operator associates one or more Personnel records with the Problem Work Order via the Problem Work Order Personnel relationship.",
+            "evidence_refs": [
+              "P36",
+              "P51"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The RLCS application software validates that the Operator has the necessary security permissions to modify the record.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The system saves the Problem Work Order data, updating the database tables to reflect the new or modified entry.",
+            "evidence_refs": [
+              "P29",
+              "P36"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P49",
+          "P36",
+          "P51",
+          "P50",
+          "P29"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If the Operator attempts to access or modify a Problem Work Order without a valid Personnel Security Level that authorizes such actions, the system denies access.",
+            "evidence_refs": [
+              "P29",
+              "P50"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If the Operator selects an invalid or non-existent Problem Work Order Type or Status during creation/update, the system prompts for correction using existing defined types and statuses from the database.",
+            "evidence_refs": [
+              "P36",
+              "P51"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the Operator attempts to associate Personnel with a Problem Work Order but no valid Personnel ID exists or the personnel status is inactive, the system prevents association and notifies the Operator.",
+            "evidence_refs": [
+              "P36",
+              "P50",
+              "P51"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the system fails to save the Problem Work Order due to database constraints or encryption requirements (e.g., password/device rule data), the transaction is rolled back and an error is logged.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P49",
+          "P51",
+          "P50",
+          "P29"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the Operator attempts to create or update a Problem Work Order without being associated with a valid Personnel Security Level, the system shall deny the operation as each Personnel must have one Personnel Security Level to authorize access.",
+            "evidence_refs": [
+              "P50"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the Operator selects a Problem Work Order Type that does not exist in the database, the system shall reject the entry because each Problem Work Order must reference one existing Problem Work Order Type.",
+            "evidence_refs": [
+              "P50"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the Operator attempts to assign a status to the Problem Work Order that is not defined in the Problem Work Order Status entity, the system shall prevent the save operation as each Problem Work Order must have one valid Problem Work Order Status.",
+            "evidence_refs": [
+              "P50"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the Operator attempts to associate Personnel who do not have a valid Personnel ID or whose Personnel Status is 'inactive', the system shall block the association because each Problem Work Order Personnel record must associate valid Personnel.",
+            "evidence_refs": [
+              "P50",
+              "P51"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If the database connection fails or the RLCS application software cannot update the database tables to support system operations, the transaction shall be aborted and an error reported.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P49",
+          "P51",
+          "P29",
+          "P50"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The Problem Work Order record is created or updated in the database with valid Date, Time, Operator, Description, and linked to one Problem Work Order Type and one Problem Work Order Status.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "One or more Personnel records are associated with the Problem Work Order via the Problem Work Order Personnel entity, ensuring each association links a valid Personnel ID to the work order.",
+            "evidence_refs": [
+              "P36",
+              "P50",
+              "P51"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Operator’s Personnel Security Level authorizes the modification, as each Personnel must have one Personnel Security Level that may be authorized for system functions including work order management.",
+            "evidence_refs": [
+              "P36",
+              "P50",
+              "P51"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The Problem Work Order Status reflects the current state (e.g., open, in progress, closed) as defined by the Problem Work Order Status entity, which may describe one or more Problem Work Orders.",
+            "evidence_refs": [
+              "P36",
+              "P51"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "All changes are persisted in the RLCS database, which stores historical transaction data to generate reports of system operations, including problem work order activity.",
+            "evidence_refs": [
+              "P36",
+              "P29"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P51",
+          "P49",
+          "P29",
+          "P50"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 47.7
+}

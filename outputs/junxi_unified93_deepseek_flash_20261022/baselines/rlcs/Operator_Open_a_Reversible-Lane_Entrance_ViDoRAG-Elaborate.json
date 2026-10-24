@@ -1,0 +1,560 @@
+{
+  "use_case_name": "Open a Reversible-Lane Entrance",
+  "actor": "Operator",
+  "method": "ViDoRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To open the reversible-lane entrance for southbound or northbound traffic by executing a sequence of device operations (closing gates, opening pop-ups, draw lights, and CMS signs) to transition from a closed initial state to an open goal state.",
+          "evidence_refs": [
+            "P63"
+          ]
+        }
+      ],
+      "raw_text": "To open the reversible-lane entrance for southbound or northbound traffic by executing a sequence of device operations (closing gates, opening pop-ups, draw lights, and CMS signs) to transition from a closed initial state to an open goal state.",
+      "evidence_card_ids": [
+        "P63"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Operator",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Operator",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Operator is logged in and authenticated to the system.",
+          "evidence_refs": [
+            "P4"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The system is in a normal operational mode with no active faults or halts that would prevent sequence execution.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The reversible lanes are currently closed in the direction of travel being opened.",
+          "evidence_refs": [
+            "P59",
+            "P60"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "No entrance device in the opposite direction of travel is open, as this would constitute a fundamental risk and system failure condition.",
+          "evidence_refs": [
+            "P12"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "All entrance devices (gates, pop-ups, CMS) intended for the opening sequence are in a known state ('open' or 'closed') and not reporting 'unknown'.",
+          "evidence_refs": [
+            "P59",
+            "P60"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "System configuration data used for safety screening is no more than 3 seconds old.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P4",
+        "P60",
+        "P59",
+        "P12"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Operator issues a command to open the reversible-lane entrance for a specific direction of travel.",
+          "evidence_refs": [
+            "P60"
+          ]
+        }
+      ],
+      "raw_text": "The Operator issues a command to open the reversible-lane entrance for a specific direction of travel.",
+      "evidence_card_ids": [
+        "P60"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The system changes CMS messages from a 'Closed' message to an 'Open' message, beginning with the furthest downstream sign (sign closest to the reversible lane) and proceeding upstream (away from the reversible lanes) as message change confirmations are received from each sign.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The system opens Entrance Longitudinal Pop-ups downstream (entrance ramp nose at the freeway) to upstream (edge of shoulder).",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The system opens Entrance Transverse Pop-ups in the direction from the reversible lanes toward the freeway.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system opens Wrong Way Longitudinal Pop-ups beginning at the entrance ramp nose at the reversible lanes and proceeding toward the edge of shoulder.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The system opens Wrong Way Transverse Pop-ups in the direction from the freeway toward the reversible lanes.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P59"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If a device fails to report completion of the current sequence step within the response time window allotted for the step, the sequence shall be halted.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the status for a closure device, which was previously closed at the current entrance, changes to 'unknown' or 'open', the sequence shall be halted.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "A 'halted' opening or closing sequence shall cause the system to enter a 'hold' state for a system specified time.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the offending device status can be corrected within the specified time period, the operator shall be able to enter a 'resume' command in order for the system to attempt to complete the original opening/closing sequence.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P60"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At any point in an opening sequence, the sequence shall be halted if a device fails to report completion of the current sequence step within the response time window allotted for the step.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "At any point in an opening sequence, the sequence shall be halted if the status of a closure device for the opposite direction of travel changes to 'unknown' or 'open'.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "At any point in an opening sequence, the sequence shall be halted if the status of a closure device, which was previously opened at the current entrance, changes to 'unknown' or 'closed'.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P59"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The reversible-lane entrance is open for the specified direction of travel, with all required devices (CMS signs, pop-ups) in their correct 'open' state configuration.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "All CMS messages have been successfully changed from 'Closed' to 'Open', beginning with the furthest downstream sign and proceeding upstream, with confirmations received from each sign.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Entrance Longitudinal Pop-ups are opened from downstream (entrance ramp nose at freeway) to upstream (edge of shoulder).",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Entrance Transverse Pop-ups are opened in the direction from the reversible lanes toward the freeway.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Wrong Way Longitudinal Pop-ups are opened beginning at the entrance ramp nose at the reversible lanes and proceeding toward the edge of shoulder.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Wrong Way Transverse Pop-ups are opened in the direction from the freeway toward the reversible lanes.",
+          "evidence_refs": [
+            "P59"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "No device status reports 'unknown' or an incorrect state for any device involved in the opening sequence.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "The system remains in a stable operational state, not in 'hold' or 'halted' mode, unless a failure occurred during execution.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 7
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P59",
+        "P60"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "To open the reversible-lane entrance for southbound or northbound traffic by executing a sequence of device operations (closing gates, opening pop-ups, draw lights, and CMS signs) to transition from a closed initial state to an open goal state.",
+            "evidence_refs": [
+              "P63"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P63"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The Operator is logged in and authenticated to the system.",
+            "evidence_refs": [
+              "P4"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system is in a normal operational mode with no active faults or halts that would prevent sequence execution.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The reversible lanes are currently closed in the direction of travel being opened.",
+            "evidence_refs": [
+              "P59",
+              "P60"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "No entrance device in the opposite direction of travel is open, as this would constitute a fundamental risk and system failure condition.",
+            "evidence_refs": [
+              "P12"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "All entrance devices (gates, pop-ups, CMS) intended for the opening sequence are in a known state ('open' or 'closed') and not reporting 'unknown'.",
+            "evidence_refs": [
+              "P59",
+              "P60"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "System configuration data used for safety screening is no more than 3 seconds old.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P12",
+          "P59",
+          "P60",
+          "P5",
+          "P4"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The Operator issues a command to open the reversible-lane entrance for a specific direction of travel.",
+            "evidence_refs": [
+              "P60"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P4",
+          "P42",
+          "P60",
+          "P59"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The system changes CMS messages from a 'Closed' message to an 'Open' message, beginning with the furthest downstream sign (sign closest to the reversible lane) and proceeding upstream (away from the reversible lanes) as message change confirmations are received from each sign.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system opens Entrance Longitudinal Pop-ups downstream (entrance ramp nose at the freeway) to upstream (edge of shoulder).",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system opens Entrance Transverse Pop-ups in the direction from the reversible lanes toward the freeway.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system opens Wrong Way Longitudinal Pop-ups beginning at the entrance ramp nose at the reversible lanes and proceeding toward the edge of shoulder.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The system opens Wrong Way Transverse Pop-ups in the direction from the freeway toward the reversible lanes.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P59"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If a device fails to report completion of the current sequence step within the response time window allotted for the step, the sequence shall be halted.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the status for a closure device, which was previously closed at the current entrance, changes to 'unknown' or 'open', the sequence shall be halted.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "A 'halted' opening or closing sequence shall cause the system to enter a 'hold' state for a system specified time.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the offending device status can be corrected within the specified time period, the operator shall be able to enter a 'resume' command in order for the system to attempt to complete the original opening/closing sequence.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P60",
+          "P4"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "At any point in an opening sequence, the sequence shall be halted if a device fails to report completion of the current sequence step within the response time window allotted for the step.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "At any point in an opening sequence, the sequence shall be halted if the status of a closure device for the opposite direction of travel changes to 'unknown' or 'open'.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "At any point in an opening sequence, the sequence shall be halted if the status of a closure device, which was previously opened at the current entrance, changes to 'unknown' or 'closed'.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P4",
+          "P59"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The reversible-lane entrance is open for the specified direction of travel, with all required devices (CMS signs, pop-ups) in their correct 'open' state configuration.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "All CMS messages have been successfully changed from 'Closed' to 'Open', beginning with the furthest downstream sign and proceeding upstream, with confirmations received from each sign.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Entrance Longitudinal Pop-ups are opened from downstream (entrance ramp nose at freeway) to upstream (edge of shoulder).",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Entrance Transverse Pop-ups are opened in the direction from the reversible lanes toward the freeway.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Wrong Way Longitudinal Pop-ups are opened beginning at the entrance ramp nose at the reversible lanes and proceeding toward the edge of shoulder.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Wrong Way Transverse Pop-ups are opened in the direction from the freeway toward the reversible lanes.",
+            "evidence_refs": [
+              "P59"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "No device status reports 'unknown' or an incorrect state for any device involved in the opening sequence.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "The system remains in a stable operational state, not in 'hold' or 'halted' mode, unless a failure occurred during execution.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P4",
+          "P60",
+          "P12",
+          "P59",
+          "P42"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 182.7
+}

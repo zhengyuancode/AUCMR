@@ -1,0 +1,683 @@
+{
+  "use_case_name": "Complete a Puzzle",
+  "actor": "Player",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Player completes a puzzle by moving blocks so that the great square reaches the bottom of the board.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-001",
+            "EC-G-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-001",
+        "EC-G-002"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Player completes a puzzle by moving blocks so that the great square reaches the bottom of the board.",
+        "canonical_success_scenario": "The Player moves blocks so that the great square is moved to the bottom of the board, finishing the game.",
+        "start_boundary": "The Player is working on an incomplete puzzle.",
+        "success_boundary": "The great square is at the bottom of the board, and the puzzle/game is finished.",
+        "in_scope_actions": [
+          "Move blocks within the game environment.",
+          "Move the great square to the bottom of the board."
+        ],
+        "excluded_adjacent_actions": [
+          "Starting a new puzzle",
+          "Configuring or selecting puzzle options",
+          "Post-completion actions after the puzzle/game is finished"
+        ],
+        "variant_dimensions": [],
+        "evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal",
+          "goal-success-condition",
+          "high-level objective",
+          "goal definition",
+          "success condition"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Player",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Player"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The system provides an 800x600 screen resolution.",
+          "evidence_refs": [
+            "EC-PC-001"
+          ]
+        },
+        {
+          "content": "The Player is working on an incomplete puzzle.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-001",
+        "EC-PC-000"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Player selects a block by left-clicking down on it.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Player selects a block by left-clicking down on it.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The game state becomes 'Block deplacement' upon selection.",
+          "evidence_refs": [
+            "EC-MF-001"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "As the Player moves the mouse, the selected block follows the mouse movement without overlapping other blocks or exiting the game zone.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The Player moves blocks within the game environment.",
+          "evidence_refs": [
+            "EC-G-001",
+            "EC-G-002"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The game ends when the great square is moved at the bottom of the board.",
+          "evidence_refs": [
+            "EC-MF-003",
+            "EC-TR-000"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-MF-001",
+        "EC-MF-002",
+        "EC-G-001",
+        "EC-G-002",
+        "EC-MF-003",
+        "EC-TR-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-select-block",
+          "MF-block-deplacement-state",
+          "MF-selected-block-movement",
+          "MF-move-blocks-to-bottom",
+          "MF-game-end",
+          "block_selection",
+          "movement_mechanism",
+          "success_condition"
+        ],
+        "missing_aspects": [
+          "Evidence EC-G-002 defines the goal condition (moving the great square to the bottom) rather than describing the action of moving it as part of the general flow. The specific action in this step should be restricted to what EC-G-001 supports."
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 4: the Player can cancel a movement via menu selection (Undo Action), which restores the block positions to where they were before the last movement.",
+          "evidence_refs": [
+            "EC-AF-000"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 4: if the previous action was an Undo Action, the Player can redo a canceled movement via menu selection (Redo Action).",
+          "evidence_refs": [
+            "EC-AF-001"
+          ],
+          "step_number": 2
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-000",
+        "EC-AF-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-undo-movement",
+          "AF-redo-canceled-movement",
+          "AF-menu-selection",
+          "undo_movement",
+          "redo_movement",
+          "alternative_flow_divergence_point",
+          "exit-with-save-option",
+          "exit-without-saving-option"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "The selected block cannot move near other blocks at least 0.05x from the others blocks.",
+          "evidence_refs": [
+            "EC-EF-001"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from main_flow Step 4: if the Player requests Undo Action when there was no previous movement, the Undo action is unavailable.",
+          "evidence_refs": [
+            "EC-EF-002"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from main_flow Step 4: if the Player requests Redo Action when the previous action was not an Undo action, the Redo action is unavailable.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-001",
+        "EC-EF-002",
+        "EC-EF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-block-movement-min-distance",
+          "EF-undo-unavailable-no-previous-movement",
+          "EF-redo-unavailable-previous-not-undo",
+          "EF-prevented-movement",
+          "EF-action-unavailable",
+          "movement_collision_constraint",
+          "undo_unavailable_condition",
+          "redo_unavailable_condition",
+          "file_write_failure_exception",
+          "permission_error_handling",
+          "disk_full_error_handling",
+          "statistics_management_exceptions",
+          "exception_condition_unsaved_game",
+          "exception_response_dialog_prompt",
+          "exception_recovery_save_and_exit",
+          "exception_recovery_exit_without_saving"
+        ],
+        "missing_aspects": [
+          "Documented exit or continuation after a block movement is prevented by the 0.05x separation constraint.",
+          "Documented exit or continuation after Undo is unavailable because there was no previous movement.",
+          "Documented exit or continuation after Redo is unavailable because the previous action was not an Undo action.",
+          "exception_trigger_condition",
+          "system_response_to_exception",
+          "recovery_behavior",
+          "Evidence does not explicitly state that the movement is 'prevented' or describe the system response (exception) when this constraint is violated."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The great square is at the bottom of the board.",
+          "evidence_refs": [
+            "EC-G-002",
+            "EC-MF-003",
+            "EC-TR-000"
+          ]
+        },
+        {
+          "content": "The game is finished.",
+          "evidence_refs": [
+            "EC-G-002",
+            "EC-MF-003"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002",
+        "EC-MF-003",
+        "EC-TR-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-great-square-at-bottom",
+          "PC-game-finished"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "preconditions",
+        "trigger"
+      ],
+      "inconsistency_hints": [
+        "The goal's start boundary requires that the Player is working on an incomplete puzzle before moving blocks, but the preconditions only assert an 800x600 screen resolution. The active-incomplete-puzzle aspect is listed as covered but has no corresponding precondition claim, so the trigger's context is unsupported.",
+        "The trigger says only 'The Player moves blocks,' while Main Flow step 1 begins with selecting a block by left-clicking down. This makes the trigger a later/generic action rather than the initiating selection event, so step 1 does not clearly continue from the trigger."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 23,
+    "cross_page_cards": 0,
+    "modalities": {
+      "text": 23
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 454.308,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 114.786,
+    "llm_seconds": 334.23,
+    "llm_calls": 28.0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 22.0,
+    "judge_calls": 0,
+    "llm_retry_calls": 0,
+    "cards_collected": 23,
+    "cards_referenced": 14,
+    "dra_elapsed_seconds": 106.089,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 0.0,
+    "dra_llm_seconds": 106.08,
+    "dra_llm_calls": 8,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_calls": 0,
+    "dra_judge_calls": 0,
+    "dra_llm_retry_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Player completes a puzzle by moving blocks so that the great square reaches the bottom of the board.",
+            "evidence_refs": [
+              "EC-G-000",
+              "EC-G-001",
+              "EC-G-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The system provides an 800x600 screen resolution.",
+            "evidence_refs": [
+              "EC-PC-001"
+            ]
+          },
+          {
+            "content": "The Player is working on an incomplete puzzle.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-TR-000"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Player selects a block by left-clicking down on it.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-TR-000"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Player selects a block by left-clicking down on it.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The game state becomes 'Block deplacement' upon selection.",
+            "evidence_refs": [
+              "EC-MF-001"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "As the Player moves the mouse, the selected block follows the mouse movement without overlapping other blocks or exiting the game zone.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The Player moves blocks within the game environment.",
+            "evidence_refs": [
+              "EC-G-001",
+              "EC-G-002"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The game ends when the great square is moved at the bottom of the board.",
+            "evidence_refs": [
+              "EC-MF-003",
+              "EC-TR-000"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-TR-000"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 4: the Player can cancel a movement via menu selection (Undo Action), which restores the block positions to where they were before the last movement.",
+            "evidence_refs": [
+              "EC-AF-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 4: if the previous action was an Undo Action, the Player can redo a canceled movement via menu selection (Redo Action).",
+            "evidence_refs": [
+              "EC-AF-001"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-TR-000"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The selected block cannot move near other blocks at least 0.05x from the others blocks.",
+            "evidence_refs": [
+              "EC-EF-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from main_flow Step 4: if the Player requests Undo Action when there was no previous movement, the Undo action is unavailable.",
+            "evidence_refs": [
+              "EC-EF-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from main_flow Step 4: if the Player requests Redo Action when the previous action was not an Undo action, the Redo action is unavailable.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-TR-000"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The great square is at the bottom of the board.",
+            "evidence_refs": [
+              "EC-G-002",
+              "EC-MF-003",
+              "EC-TR-000"
+            ]
+          },
+          {
+            "content": "The game is finished.",
+            "evidence_refs": [
+              "EC-G-002",
+              "EC-MF-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-002",
+          "EC-MF-003",
+          "EC-TR-000"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "9993a4b109f54f2c88fd66e07ecc036f"
+}

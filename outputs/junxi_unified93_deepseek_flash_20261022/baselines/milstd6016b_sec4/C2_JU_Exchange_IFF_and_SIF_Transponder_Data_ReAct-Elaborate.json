@@ -1,0 +1,637 @@
+{
+  "use_case_name": "Exchange IFF and SIF Transponder Data",
+  "actor": "C2 JU",
+  "method": "ReAct-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "Enable C2 JUs to exchange IFF and SIF transponder data through standardized messages to maintain current and accurate track identification information across the network.",
+          "evidence_refs": [
+            "P46",
+            "P47",
+            "P123"
+          ]
+        }
+      ],
+      "raw_text": "Enable C2 JUs to exchange IFF and SIF transponder data through standardized messages to maintain current and accurate track identification information across the network.",
+      "evidence_card_ids": [
+        "P46",
+        "P47",
+        "P123"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "IFF/SIF data (Modes I, II, and III Codes) are available for transmission.",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The C2 JU has a previously reported track for which the emergency point was initiated (if reporting on an emergency point).",
+          "evidence_refs": [
+            "P20"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "For Land (Ground) tracks, if the J3.5C3 word is implemented, the Strength field must be computed from the Strength, Total Number of Vehicles field.",
+          "evidence_refs": [
+            "P44"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Current IFF/SIF data are defined as valid code responses that are no more than 40 seconds old since entry into the database by automatic or manual inputs.",
+          "evidence_refs": [
+            "P122"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P20",
+        "P44",
+        "P122"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The exchange of IFF and SIF transponder data is initiated by the periodic transmission of surveillance data, a change in locally held IFF/SIF data, an operator action requesting an update, or the receipt of a 'No Data' status report from another unit.",
+          "evidence_refs": [
+            "P46",
+            "P123",
+            "P44"
+          ]
+        }
+      ],
+      "raw_text": "The exchange of IFF and SIF transponder data is initiated by the periodic transmission of surveillance data, a change in locally held IFF/SIF data, an operator action requesting an update, or the receipt of a 'No Data' status report from another unit.",
+      "evidence_card_ids": [
+        "P46",
+        "P123",
+        "P44"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU with R² responsibility periodically transmits IFF/SIF surveillance data for its tracks using J3.XC1 messages, or when assuming R² or when data changes.",
+          "evidence_refs": [
+            "P46",
+            "P47"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Other C2 JUs without R² monitor the surveillance data and report differences only if they hold different IFF/SIF data, using the J7.5 (ACT = 1) Difference Report message.",
+          "evidence_refs": [
+            "P46",
+            "P47"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "When a C2 JU detects a change in locally held IFF/SIF code values (from No Data to Valid Data or between Valid Data values), it reports the change via J7.5 (ACT = 1) according to the Difference Resolution Matrix.",
+          "evidence_refs": [
+            "P46",
+            "P47"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If a C2 JU receives a 'No Data' status report or wishes to request an update, it may initiate a J7.5 (ACT = 2) IFF/SIF Update Request message.",
+          "evidence_refs": [
+            "P46",
+            "P123"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Upon receiving a J7.5 (ACT = 2) update request, the R² unit responds by transmitting a J3.XC1 message with its local IFF/SIF data regardless of No Data status.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Non-R² units receiving a J7.5 (ACT = 2) request from an R² unit respond with a J7.5 (ACT = 1) message if they hold valid nonzero local data for the requested mode(s).",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P46",
+        "P47",
+        "P123"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If a C2 JU receives a J3.XC1 message with 'No Data' status but holds valid nonzero local IFF/SIF data, it may respond by transmitting a J7.5 (ACT=1) Difference Report message according to the IFF/SIF Difference Resolution Matrix.",
+          "evidence_refs": [
+            "P123",
+            "P121",
+            "P46"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "An operator may manually initiate a J7.5 (ACT=2) IFF/SIF Update Request message to solicit current data from other units; upon receipt, R² units respond with J3.XC1 regardless of their No Data status.",
+          "evidence_refs": [
+            "P123",
+            "P46"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Non-R² units receiving a J7.5 (ACT=2) request from an R² unit will respond with J7.5 (ACT=1) only if they hold valid nonzero local data for the requested mode(s); otherwise, they do not respond.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Non-R² units receiving a J7.5 (ACT=2) request from another non-R² unit shall not respond to the request.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "When resolving differences via Table 4.7-5, actions such as Accept (A), Conflict (C), Transmit Local (T1), or Alert Operator (AC) are taken depending on whether data is current, non-current, or conflicting between local and remote sources.",
+          "evidence_refs": [
+            "P121"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P123",
+        "P121",
+        "P46"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a track with Valid Data subsequently fails to respond to interrogations, it shall not be changed to No Data status unless a Clear action (J7.5 ACT=0) is explicitly taken.",
+          "evidence_refs": [
+            "P47"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "When an operator receives an IFF/SIF data conflict alert, available manual resolution actions include: updating local data manually, initiating J7.5 (ACT=0) Clear message, initiating J7.5 (ACT=1) Difference Report, changing local data to agree with remote (except Mode II), decorrelating local data to assign a new track number, or clearing the operator alert.",
+          "evidence_refs": [
+            "P122"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Non-R² units receiving a J7.5 (ACT=2) Update Request from another non-R² unit shall not respond to the request, exiting the update flow without transmission.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If requested IFF/SIF data has already been transmitted by another JU in response to an R² unit's J7.5 (ACT=2) request, remaining JUs need not respond with their local data, exiting the response flow early.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P47",
+        "P122",
+        "P123"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "IFF/SIF surveillance data for Air and Surface tracks is reported by the JU with R² responsibility using J3.2C1 and J3.3C1 words, ensuring the most current data available in the interface is transmitted.",
+          "evidence_refs": [
+            "P47"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Validity of IFF/SIF codes for established tracks is determined as either 'Valid Data' or 'No Data' based on specific criteria: 'No Data' if no valid code is held, or 'Valid Data' if codes are received from own sensors on successive interrogations (two or more for Modes I, II, III; one for Mode IV) or manually entered/accepted via the Difference Resolution Matrix.",
+          "evidence_refs": [
+            "P47"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Changes in IFF/SIF code values from 'No Data' to 'Valid Data' or between 'Valid Data' values are reported as occurring, while changes from 'Valid Data' to 'No Data' resulting from a clearing function (J7.5 ACT = 0) do not cause a change report transmission.",
+          "evidence_refs": [
+            "P47"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Tracks with Valid Data that subsequently fail to respond to interrogations are not changed to 'No Data' status unless a Clear action is explicitly taken.",
+          "evidence_refs": [
+            "P47"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Data updating occurs spontaneously when an R² unit reports 'No Data' status (value 0) in a J3.XC1 message, prompting receiving units with valid nonzero data to respond per the IFF/SIF Difference Resolution Matrix.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Upon receipt of a J7.5 (ACT = 2) IFF/SIF Update Request message, R² units respond by initiating a J3.XC1 message regardless of their No Data status.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "Non-R² units receiving a J7.5 (ACT = 2) message from an R² unit respond by initiating a J7.5 (ACT = 1) message only if they hold valid local nonzero data for the requested mode(s); if the data was already transmitted by another JU, remaining JUs need not respond.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "Non-R² units receiving a J7.5 (ACT = 2) message from other non-R² units do not respond to the request.",
+          "evidence_refs": [
+            "P123"
+          ],
+          "step_number": 8
+        },
+        {
+          "content": "The exchange of IFF/SIF modes and codes encompasses five functional areas: Surveillance Data Reporting, Unique Mode II Code Protection, Clearing IFF/SIF Data, Difference Resolution, and Update Request, utilizing J2.XC1, J3.XC1, and J7.5 messages as summarized in Table 4.4-6.",
+          "evidence_refs": [
+            "P44",
+            "P45",
+            "P46"
+          ],
+          "step_number": 9
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P47",
+        "P123",
+        "P44",
+        "P45",
+        "P46"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "Enable C2 JUs to exchange IFF and SIF transponder data through standardized messages to maintain current and accurate track identification information across the network.",
+            "evidence_refs": [
+              "P46",
+              "P47",
+              "P123"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P46",
+          "P123",
+          "P47",
+          "P122",
+          "P20"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "IFF/SIF data (Modes I, II, and III Codes) are available for transmission.",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU has a previously reported track for which the emergency point was initiated (if reporting on an emergency point).",
+            "evidence_refs": [
+              "P20"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "For Land (Ground) tracks, if the J3.5C3 word is implemented, the Strength field must be computed from the Strength, Total Number of Vehicles field.",
+            "evidence_refs": [
+              "P44"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Current IFF/SIF data are defined as valid code responses that are no more than 40 seconds old since entry into the database by automatic or manual inputs.",
+            "evidence_refs": [
+              "P122"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P46",
+          "P20",
+          "P44",
+          "P122",
+          "P121"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The exchange of IFF and SIF transponder data is initiated by the periodic transmission of surveillance data, a change in locally held IFF/SIF data, an operator action requesting an update, or the receipt of a 'No Data' status report from another unit.",
+            "evidence_refs": [
+              "P46",
+              "P123",
+              "P44"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P46",
+          "P123",
+          "P44",
+          "P20",
+          "P122"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU with R² responsibility periodically transmits IFF/SIF surveillance data for its tracks using J3.XC1 messages, or when assuming R² or when data changes.",
+            "evidence_refs": [
+              "P46",
+              "P47"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Other C2 JUs without R² monitor the surveillance data and report differences only if they hold different IFF/SIF data, using the J7.5 (ACT = 1) Difference Report message.",
+            "evidence_refs": [
+              "P46",
+              "P47"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "When a C2 JU detects a change in locally held IFF/SIF code values (from No Data to Valid Data or between Valid Data values), it reports the change via J7.5 (ACT = 1) according to the Difference Resolution Matrix.",
+            "evidence_refs": [
+              "P46",
+              "P47"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If a C2 JU receives a 'No Data' status report or wishes to request an update, it may initiate a J7.5 (ACT = 2) IFF/SIF Update Request message.",
+            "evidence_refs": [
+              "P46",
+              "P123"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Upon receiving a J7.5 (ACT = 2) update request, the R² unit responds by transmitting a J3.XC1 message with its local IFF/SIF data regardless of No Data status.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Non-R² units receiving a J7.5 (ACT = 2) request from an R² unit respond with a J7.5 (ACT = 1) message if they hold valid nonzero local data for the requested mode(s).",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P46",
+          "P44",
+          "P47",
+          "P123",
+          "P20"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If a C2 JU receives a J3.XC1 message with 'No Data' status but holds valid nonzero local IFF/SIF data, it may respond by transmitting a J7.5 (ACT=1) Difference Report message according to the IFF/SIF Difference Resolution Matrix.",
+            "evidence_refs": [
+              "P123",
+              "P121",
+              "P46"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "An operator may manually initiate a J7.5 (ACT=2) IFF/SIF Update Request message to solicit current data from other units; upon receipt, R² units respond with J3.XC1 regardless of their No Data status.",
+            "evidence_refs": [
+              "P123",
+              "P46"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Non-R² units receiving a J7.5 (ACT=2) request from an R² unit will respond with J7.5 (ACT=1) only if they hold valid nonzero local data for the requested mode(s); otherwise, they do not respond.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Non-R² units receiving a J7.5 (ACT=2) request from another non-R² unit shall not respond to the request.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "When resolving differences via Table 4.7-5, actions such as Accept (A), Conflict (C), Transmit Local (T1), or Alert Operator (AC) are taken depending on whether data is current, non-current, or conflicting between local and remote sources.",
+            "evidence_refs": [
+              "P121"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P123",
+          "P121",
+          "P46",
+          "P45",
+          "P120"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If a track with Valid Data subsequently fails to respond to interrogations, it shall not be changed to No Data status unless a Clear action (J7.5 ACT=0) is explicitly taken.",
+            "evidence_refs": [
+              "P47"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "When an operator receives an IFF/SIF data conflict alert, available manual resolution actions include: updating local data manually, initiating J7.5 (ACT=0) Clear message, initiating J7.5 (ACT=1) Difference Report, changing local data to agree with remote (except Mode II), decorrelating local data to assign a new track number, or clearing the operator alert.",
+            "evidence_refs": [
+              "P122"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Non-R² units receiving a J7.5 (ACT=2) Update Request from another non-R² unit shall not respond to the request, exiting the update flow without transmission.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If requested IFF/SIF data has already been transmitted by another JU in response to an R² unit's J7.5 (ACT=2) request, remaining JUs need not respond with their local data, exiting the response flow early.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P46",
+          "P47",
+          "P123",
+          "P122"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "IFF/SIF surveillance data for Air and Surface tracks is reported by the JU with R² responsibility using J3.2C1 and J3.3C1 words, ensuring the most current data available in the interface is transmitted.",
+            "evidence_refs": [
+              "P47"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Validity of IFF/SIF codes for established tracks is determined as either 'Valid Data' or 'No Data' based on specific criteria: 'No Data' if no valid code is held, or 'Valid Data' if codes are received from own sensors on successive interrogations (two or more for Modes I, II, III; one for Mode IV) or manually entered/accepted via the Difference Resolution Matrix.",
+            "evidence_refs": [
+              "P47"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Changes in IFF/SIF code values from 'No Data' to 'Valid Data' or between 'Valid Data' values are reported as occurring, while changes from 'Valid Data' to 'No Data' resulting from a clearing function (J7.5 ACT = 0) do not cause a change report transmission.",
+            "evidence_refs": [
+              "P47"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Tracks with Valid Data that subsequently fail to respond to interrogations are not changed to 'No Data' status unless a Clear action is explicitly taken.",
+            "evidence_refs": [
+              "P47"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Data updating occurs spontaneously when an R² unit reports 'No Data' status (value 0) in a J3.XC1 message, prompting receiving units with valid nonzero data to respond per the IFF/SIF Difference Resolution Matrix.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Upon receipt of a J7.5 (ACT = 2) IFF/SIF Update Request message, R² units respond by initiating a J3.XC1 message regardless of their No Data status.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Non-R² units receiving a J7.5 (ACT = 2) message from an R² unit respond by initiating a J7.5 (ACT = 1) message only if they hold valid local nonzero data for the requested mode(s); if the data was already transmitted by another JU, remaining JUs need not respond.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "Non-R² units receiving a J7.5 (ACT = 2) message from other non-R² units do not respond to the request.",
+            "evidence_refs": [
+              "P123"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "The exchange of IFF/SIF modes and codes encompasses five functional areas: Surveillance Data Reporting, Unique Mode II Code Protection, Clearing IFF/SIF Data, Difference Resolution, and Update Request, utilizing J2.XC1, J3.XC1, and J7.5 messages as summarized in Table 4.4-6.",
+            "evidence_refs": [
+              "P44",
+              "P45",
+              "P46"
+            ],
+            "step_number": 9
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P123",
+          "P45",
+          "P47",
+          "P46"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 100.2
+}

@@ -133,13 +133,16 @@ def _parse_json_with_repair(raw: str) -> Optional[Any]:
         return None
 
 
-def _unwrap_slot_payload(parsed: Any) -> Any:
-    """Unwrap common model response envelopes without weakening citations."""
+def _unwrap_slot_payload(parsed: Any, slot_name: Optional[str] = None) -> Any:
+    """Unwrap common envelopes or the requested slot without weakening citations."""
     if not isinstance(parsed, dict):
         return parsed
     if any(key in parsed for key in ("raw_text", "claims", "content", "evidence_refs")):
         return parsed
-    for key in ("answer", "result", "output"):
+    envelope_keys = ("answer", "result", "output")
+    if slot_name:
+        envelope_keys += (slot_name,)
+    for key in envelope_keys:
         nested = parsed.get(key)
         if isinstance(nested, dict):
             return nested
@@ -153,7 +156,7 @@ def _build_pre_constraint_draft(slot_name: str, parsed: Any) -> Dict[str, Any]:
     so CitCov can observe uncited or invalidly cited candidate claims instead of
     measuring the post-filter survivor set.
     """
-    parsed = _unwrap_slot_payload(parsed)
+    parsed = _unwrap_slot_payload(parsed, slot_name)
     claims: List[Dict[str, Any]] = []
     if not isinstance(parsed, dict):
         return {"slot": slot_name, "claims": claims}
@@ -187,7 +190,7 @@ def _build_pre_constraint_draft(slot_name: str, parsed: Any) -> Dict[str, Any]:
 
 def _normalize_slot_response(slot_name: str, parsed: Any) -> Dict[str, Any]:
     """把 LLM 返回的 dict 规范化成 SlotContent-like dict。"""
-    parsed = _unwrap_slot_payload(parsed)
+    parsed = _unwrap_slot_payload(parsed, slot_name)
     if not isinstance(parsed, dict):
         return {"slot": slot_name, "claims": [], "raw_text": ""}
     pre_constraint_draft = _build_pre_constraint_draft(slot_name, parsed)
@@ -262,9 +265,17 @@ def _normalize_slot_response(slot_name: str, parsed: Any) -> Dict[str, Any]:
 
 def _normalize_uncited_slot_response(slot_name: str, parsed: Any) -> Dict[str, Any]:
     """Normalize LVLM-Direct output, for which page citations are not exposed."""
-    parsed = _unwrap_slot_payload(parsed)
+    parsed = _unwrap_slot_payload(parsed, slot_name)
     if not isinstance(parsed, dict):
         return {"slot": slot_name, "claims": [], "raw_text": ""}
+    # LVLM-Direct also returns {slot: text} or {slot: [claim, ...]}.
+    # Preserve existing flat/common-envelope precedence and leave cited methods alone.
+    if not any(key in parsed for key in ("raw_text", "claims", "content", "evidence_refs")):
+        payload = parsed.get(slot_name)
+        if slot_name in ("goal", "trigger", "primary_actor") and isinstance(payload, str):
+            parsed = {"raw_text": payload}
+        elif slot_name in ("preconditions", "main_flow", "alternative_flow", "exception_flow", "postconditions") and isinstance(payload, list):
+            parsed = {"claims": payload}
     if slot_name in ("goal", "trigger", "primary_actor"):
         raw_text = str(parsed.get("raw_text", "")).strip()
         if not raw_text:

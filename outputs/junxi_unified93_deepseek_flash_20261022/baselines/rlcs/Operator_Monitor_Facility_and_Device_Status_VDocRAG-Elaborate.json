@@ -1,0 +1,499 @@
+{
+  "use_case_name": "Monitor Facility and Device Status",
+  "actor": "Operator",
+  "method": "VDocRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To allow the Operator to perform status checks on all devices and system operations during normal operational modes.",
+          "evidence_refs": [
+            "P63"
+          ]
+        }
+      ],
+      "raw_text": "To allow the Operator to perform status checks on all devices and system operations during normal operational modes.",
+      "evidence_card_ids": [
+        "P63"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Operator",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Operator",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Operator must have a valid Personnel ID, Name, Initials for login, password, and password date as defined in the Personnel entity.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The Operator must be assigned a Personnel Security Level that includes access to System Functions and Device entities, as security is restricted by Command Level, Device, Mode, Workstation, and System Functions.",
+          "evidence_refs": [
+            "P29",
+            "P36"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The RLCS database must be operational and storing current Device Status information (e.g., ok, alarm) for all monitored devices.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Each Device must have an associated Location, Device Category, and Device Status ID to enable status monitoring.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The Operator’s workstation must be linked to their Personnel record via the Personnel Workstations entity.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P36",
+        "P29",
+        "P50"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Operator initiates a status check on devices and system operations via the GUI, which triggers the 'Monitor Devices' process (3.2.2.1) to collect Device Sensor Status data from RLCS Field Devices.",
+          "evidence_refs": [
+            "P46"
+          ]
+        }
+      ],
+      "raw_text": "The Operator initiates a status check on devices and system operations via the GUI, which triggers the 'Monitor Devices' process (3.2.2.1) to collect Device Sensor Status data from RLCS Field Devices.",
+      "evidence_card_ids": [
+        "P46"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Operator initiates a status check via the GUI, triggering the 'Monitor Devices' process (3.2.2.1) to collect Device Sensor Status data from RLCS Field Devices.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The system retrieves current Device Status information (e.g., ok, alarm) for each monitored device from the RLCS database, where each Device has one Device Status and one Location.",
+          "evidence_refs": [
+            "P50",
+            "P36"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The system displays the Device Sensor Status to the Operator through the GUI, allowing real-time monitoring of facility and device conditions.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If any device reports an alarm condition, the system references the associated Device Alarm Criteria and Alarm Type to determine severity (critical or warning) and presents this information to the Operator.",
+          "evidence_refs": [
+            "P50",
+            "P36"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The system logs the status check event in the Device Command Log entity, recording the Date, Time, Device Status ID, and Operator ID for audit purposes.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P46",
+        "P50",
+        "P36"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [],
+      "raw_text": ""
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a device command fails during monitoring, the system tracks the number of failed device commands (3.2.2.5) and may retry the command using stored Command Data for retry.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If an alarm condition is detected, the system references Device Alarm Criteria and Alarm Type to determine severity; if no valid criteria exist for the device’s status, the alarm cannot be properly classified or escalated.",
+          "evidence_refs": [
+            "P36",
+            "P47"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the Operator’s Personnel Security Level does not permit access to the requested Device or System Function, the system denies the status check request per security restrictions defined in section 3.2.4.3.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the RLCS database is unavailable or corrupted, the system cannot retrieve current Device Status information, preventing real-time monitoring and logging of status checks.",
+          "evidence_refs": [
+            "P36",
+            "P29"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If a Device lacks required attributes such as Location ID, Device Category ID, or Device Status ID, the system cannot fully render or interpret its status for the Operator.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P46",
+        "P36",
+        "P47",
+        "P29"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The Operator has successfully viewed the current Device Status (e.g., ok, alarm) for all monitored devices.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A record of the status check event has been created in the Device Command Log entity, including Date, Time, Device Status ID, and Operator ID.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If an alarm condition was detected, it has been classified according to its associated Alarm Type (critical or warning) via the Device Alarm Criteria entity.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system state remains consistent with the RLCS database, which continues to store historical transaction data for reporting system operations.",
+          "evidence_refs": [
+            "P36",
+            "P29"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P36",
+        "P50",
+        "P29"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No content produced for slot 'alternative_flow' by VDocRAG-Elaborate."
+    }
+  ],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "To allow the Operator to perform status checks on all devices and system operations during normal operational modes.",
+            "evidence_refs": [
+              "P63"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P63",
+          "P50",
+          "P29"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The Operator must have a valid Personnel ID, Name, Initials for login, password, and password date as defined in the Personnel entity.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Operator must be assigned a Personnel Security Level that includes access to System Functions and Device entities, as security is restricted by Command Level, Device, Mode, Workstation, and System Functions.",
+            "evidence_refs": [
+              "P29",
+              "P36"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The RLCS database must be operational and storing current Device Status information (e.g., ok, alarm) for all monitored devices.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Each Device must have an associated Location, Device Category, and Device Status ID to enable status monitoring.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The Operator’s workstation must be linked to their Personnel record via the Personnel Workstations entity.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P50",
+          "P29",
+          "P48"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The Operator initiates a status check on devices and system operations via the GUI, which triggers the 'Monitor Devices' process (3.2.2.1) to collect Device Sensor Status data from RLCS Field Devices.",
+            "evidence_refs": [
+              "P46"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P50",
+          "P46",
+          "P48"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The Operator initiates a status check via the GUI, triggering the 'Monitor Devices' process (3.2.2.1) to collect Device Sensor Status data from RLCS Field Devices.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system retrieves current Device Status information (e.g., ok, alarm) for each monitored device from the RLCS database, where each Device has one Device Status and one Location.",
+            "evidence_refs": [
+              "P50",
+              "P36"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system displays the Device Sensor Status to the Operator through the GUI, allowing real-time monitoring of facility and device conditions.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If any device reports an alarm condition, the system references the associated Device Alarm Criteria and Alarm Type to determine severity (critical or warning) and presents this information to the Operator.",
+            "evidence_refs": [
+              "P50",
+              "P36"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The system logs the status check event in the Device Command Log entity, recording the Date, Time, Device Status ID, and Operator ID for audit purposes.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P47",
+          "P36",
+          "P46",
+          "P48",
+          "P50"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "P47",
+          "P36",
+          "P46",
+          "P48",
+          "P50"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If a device command fails during monitoring, the system tracks the number of failed device commands (3.2.2.5) and may retry the command using stored Command Data for retry.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If an alarm condition is detected, the system references Device Alarm Criteria and Alarm Type to determine severity; if no valid criteria exist for the device’s status, the alarm cannot be properly classified or escalated.",
+            "evidence_refs": [
+              "P36",
+              "P47"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the Operator’s Personnel Security Level does not permit access to the requested Device or System Function, the system denies the status check request per security restrictions defined in section 3.2.4.3.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the RLCS database is unavailable or corrupted, the system cannot retrieve current Device Status information, preventing real-time monitoring and logging of status checks.",
+            "evidence_refs": [
+              "P36",
+              "P29"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If a Device lacks required attributes such as Location ID, Device Category ID, or Device Status ID, the system cannot fully render or interpret its status for the Operator.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P46",
+          "P29",
+          "P48"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The Operator has successfully viewed the current Device Status (e.g., ok, alarm) for all monitored devices.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A record of the status check event has been created in the Device Command Log entity, including Date, Time, Device Status ID, and Operator ID.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If an alarm condition was detected, it has been classified according to its associated Alarm Type (critical or warning) via the Device Alarm Criteria entity.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system state remains consistent with the RLCS database, which continues to store historical transaction data for reporting system operations.",
+            "evidence_refs": [
+              "P36",
+              "P29"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P29",
+          "P50",
+          "P48"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 50.6
+}

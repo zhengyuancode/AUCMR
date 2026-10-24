@@ -1,0 +1,111 @@
+1: from PIL import Image
+2: import os
+3: import json
+4: import sys
+5: 
+6: # Keep the released implementation inside its vendored package namespace so its
+7: # generic ``utils``/``agent`` package names do not shadow AUCMR modules.
+8: from .agent.agent_prompt import seeker_prompt,inspector_prompt,answer_prompt
+9: from .agent.map_dict import arrangement_map_dict,page_map_dict_normal,page_map_dict
+10: 
+11: from .utils.parse_tool import extract_json
+12: from .utils.image_preprosser import concat_images_with_bbox
+13: 
+14: class Seeker:
+15:     def __init__(self, vlm):
+16:         self.vlm = vlm
+17:         self.seeker_multi_image = False
+18: 
+19:         if self.seeker_multi_image:
+20:             self.page_map = page_map_dict_normal
+21:         else:
+22:             self.page_map = page_map_dict
+23:     def run(self, query=None, images_path=None, feedback=None):
+24: 
+25:         if query is not None and images_path is not None:
+26:             self.buffer_images = images_path
+27:             self.query = query
+28:             prompt = seeker_prompt.replace('{question}', self.query).replace('{page_map}', self.page_map[len(self.buffer_images)])
+29:         
+30:         elif feedback is not None:
+31:             additional_information = self.query + '\n\n## Additional Information\n' + feedback
+32:             prompt = seeker_prompt.replace('{question}', additional_information).replace('{page_map}', self.page_map[len(self.buffer_images)])        
+33: 
+34:         if self.seeker_multi_image:
+35:             input_images = self.buffer_images
+36:         else:
+37:             input_images = [concat_images_with_bbox(self.buffer_images, arrangement=arrangement_map_dict[len(self.buffer_images)], scale=1, line_width=40)]
+38: 
+39:         times = 0
+40:         while True:
+41:             if times > 2:
+42:                 # return None, None, None
+43:                 raise Exception('seeker time out')
+44:             times += 1
+45:             select_response = self.vlm.generate(query=prompt, image=input_images)
+46:             print(select_response)
+47:             try:
+48:                 select_response_json = extract_json(select_response)
+49:                 reason = select_response_json.get('reason', None)
+50:                 summary = select_response_json.get('summary', None)
+51:                 select_page_num = select_response_json.get('choice', None)
+52:                 if reason is None or summary is None or any([page >= len(self.buffer_images) for page in select_page_num]):
+53:                     raise Exception(f'select json format error: length: {len(self.buffer_images)}')
+54: 
+55:                 selected_images = [self.buffer_images[page] for page in select_page_num]
+56:                 self.buffer_images = [image for image in self.buffer_images if image not in selected_images]
+57: 
+58:             except Exception as e:
+59:                 print(e)
+60:                 print(select_response)
+61:                 print('seeker')
+62:                 continue
+63:             break
+64:         
+65:         return selected_images, summary, reason
+66: 
+67: class Inspector:
+68:     def __init__(self, vlm):
+69:         self.vlm = vlm
+70:         self.inspector_multi_image = False
+71: 
+72:         if self.inspector_multi_image:
+73:             self.page_map = page_map_dict_normal
+74:         else:
+75:             self.page_map = page_map_dict
+76: 
+77:         self.buffer_images = []
+78: 
+79:     def run(self, query, images_path):
+80:         # answer or not, (images, candidate)/feedback
+81:         if len(self.buffer_images) == 0 and len(images_path) == 0:
+82:             return None, None, None
+83:         elif len(images_path) == 0:
+84:             return 'synthesizer', None, self.buffer_images
+85:         elif len(images_path) != 0:
+86:             self.buffer_images.extend(images_path)
+87: 
+88:         if self.inspector_multi_image:
+89:             input_images = self.buffer_images
+90:         else:
+91:             input_images = [concat_images_with_bbox(self.buffer_images, arrangement=arrangement_map_dict[len(self.buffer_images)], scale=1, line_width=40)]
+92: 
+93:         prompt = inspector_prompt.replace('{question}',query).replace('{page_map}',self.page_map[len(self.buffer_images)])
+94: 
+95:         times = 0
+96:         while True:
+97:             if times >2:
+98:                 raise Exception('Inspector time out')
+99:                 # return None, None, None
+100:             times +=1
+101: 
+102:             response = self.vlm.generate(query=prompt,image=input_images)
+103:             print(response)
+104:             try:
+105:                 response_json = extract_json(response)
+106:                 # thought
+107:                 reason = response_json.get('reason',None)
+108:                 # if feedback
+109:                 info = response_json.get('information',None)
+110:                 choice = response_json.get('choice',None)
+

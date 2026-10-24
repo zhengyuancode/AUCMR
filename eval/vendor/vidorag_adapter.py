@@ -47,6 +47,7 @@ class EndpointVLM:
             "model": LVLM_ENDPOINT.model_name,
             "messages": [{"role": "user", "content": content}],
             "stream": False,
+            "extra_body": {"enable_thinking": False},
         }
         if LVLM_ENDPOINT.temperature is not None:
             kwargs["temperature"] = LVLM_ENDPOINT.temperature

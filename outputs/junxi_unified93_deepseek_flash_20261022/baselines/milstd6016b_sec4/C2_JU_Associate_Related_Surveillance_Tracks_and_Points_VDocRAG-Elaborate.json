@@ -1,0 +1,424 @@
+{
+  "use_case_name": "Associate Related Surveillance Tracks and Points",
+  "actor": "C2 JU",
+  "method": "VDocRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To integrate received J2 PPLI reports into the surveillance database as part of the surveillance picture when a correlation is not found.",
+          "evidence_refs": [
+            "P8"
+          ]
+        }
+      ],
+      "raw_text": "To integrate received J2 PPLI reports into the surveillance database as part of the surveillance picture when a correlation is not found.",
+      "evidence_card_ids": [
+        "P8"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "A C2 JU has received a J2 PPLI report.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A correlation is not found for the received J2 PPLI report.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 2
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P8"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "A correlation is not found for a received J2 PPLI report.",
+          "evidence_refs": [
+            "P8"
+          ]
+        }
+      ],
+      "raw_text": "A correlation is not found for a received J2 PPLI report.",
+      "evidence_card_ids": [
+        "P8"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU receives a J2 PPLI report for which no correlation was found.",
+          "evidence_refs": [
+            "P5"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The C2 JU processes the track identity, including checking the Exercise Indicator and Identity Amplifying Descriptor fields to determine if the track is an exercise track (e.g., FAKER or JOKER).",
+          "evidence_refs": [
+            "P5"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The C2 JU extracts positional data (latitude, longitude, altitude/elevation/depth) and velocity data (course, speed) from the report.",
+          "evidence_refs": [
+            "P5",
+            "P60"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the track is a subsurface surveillance track, the C2 JU reports geodetic latitude, longitude, and depth (if available) in the J3.4 message.",
+          "evidence_refs": [
+            "P60"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The C2 JU assigns a Track Quality (TQ) value based on the Target Position Quality (TPQ) using Table 4.4-7, ensuring TQ is not artificially increased between sensor inputs.",
+          "evidence_refs": [
+            "P49"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The C2 JU may apply Environment/Category, Identity, or Geographic filters to manage the integration of the new track into the surveillance picture.",
+          "evidence_refs": [
+            "P127"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "The C2 JU uses Information Management messages (e.g., J7.0 Track Management message) to effect management actions such as reporting differences in Environment/Category and/or ID for the newly associated track.",
+          "evidence_refs": [
+            "P89"
+          ],
+          "step_number": 7
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P5",
+        "P60",
+        "P49",
+        "P127",
+        "P89"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [],
+      "raw_text": ""
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the C2 JU attempts to report a TQ value with an associated positional accuracy better than that of its own unit's current geodetic position quality, it shall not report that TQ value.",
+          "evidence_refs": [
+            "P49"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the C2 JU is capable of assuming reporting responsibility and has just achieved or returned to Active status (or from TDS Failure), it shall not transmit tracks until sufficient checks are performed; if this condition applies, a J7.0 (ACT = 0) message shall not be transmitted.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 2
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P49",
+        "P54"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The received J2 PPLI report has been integrated into the C2 JU's surveillance database as part of the surveillance picture.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the track identity was determined to be an exercise track (e.g., FAKER or JOKER), it has been reported as such in accordance with the Identity Filter rules.",
+          "evidence_refs": [
+            "P127"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "A Track Quality (TQ) value has been assigned to the track based on the Target Position Quality (TPQ) using Table 4.4-7, without artificial increase between sensor inputs.",
+          "evidence_refs": [
+            "P49"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Information Management messages (such as J7.0) have been utilized to effect management actions regarding the new track, including reporting differences in Environment/Category or ID.",
+          "evidence_refs": [
+            "P89"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P8",
+        "P127",
+        "P49",
+        "P89"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No content produced for slot 'alternative_flow' by VDocRAG-Elaborate."
+    }
+  ],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "To integrate received J2 PPLI reports into the surveillance database as part of the surveillance picture when a correlation is not found.",
+            "evidence_refs": [
+              "P8"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P49",
+          "P5",
+          "P89",
+          "P60",
+          "P8"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "A C2 JU has received a J2 PPLI report.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A correlation is not found for the received J2 PPLI report.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P5",
+          "P49",
+          "P8",
+          "P89",
+          "P127"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "A correlation is not found for a received J2 PPLI report.",
+            "evidence_refs": [
+              "P8"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P5",
+          "P49",
+          "P127",
+          "P101",
+          "P8"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU receives a J2 PPLI report for which no correlation was found.",
+            "evidence_refs": [
+              "P5"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU processes the track identity, including checking the Exercise Indicator and Identity Amplifying Descriptor fields to determine if the track is an exercise track (e.g., FAKER or JOKER).",
+            "evidence_refs": [
+              "P5"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The C2 JU extracts positional data (latitude, longitude, altitude/elevation/depth) and velocity data (course, speed) from the report.",
+            "evidence_refs": [
+              "P5",
+              "P60"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the track is a subsurface surveillance track, the C2 JU reports geodetic latitude, longitude, and depth (if available) in the J3.4 message.",
+            "evidence_refs": [
+              "P60"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The C2 JU assigns a Track Quality (TQ) value based on the Target Position Quality (TPQ) using Table 4.4-7, ensuring TQ is not artificially increased between sensor inputs.",
+            "evidence_refs": [
+              "P49"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The C2 JU may apply Environment/Category, Identity, or Geographic filters to manage the integration of the new track into the surveillance picture.",
+            "evidence_refs": [
+              "P127"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "The C2 JU uses Information Management messages (e.g., J7.0 Track Management message) to effect management actions such as reporting differences in Environment/Category and/or ID for the newly associated track.",
+            "evidence_refs": [
+              "P89"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P5",
+          "P49",
+          "P60",
+          "P127",
+          "P89"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "P49",
+          "P127",
+          "P5",
+          "P60",
+          "P24"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the C2 JU attempts to report a TQ value with an associated positional accuracy better than that of its own unit's current geodetic position quality, it shall not report that TQ value.",
+            "evidence_refs": [
+              "P49"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the C2 JU is capable of assuming reporting responsibility and has just achieved or returned to Active status (or from TDS Failure), it shall not transmit tracks until sufficient checks are performed; if this condition applies, a J7.0 (ACT = 0) message shall not be transmitted.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P5",
+          "P24",
+          "P89",
+          "P54",
+          "P49"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The received J2 PPLI report has been integrated into the C2 JU's surveillance database as part of the surveillance picture.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the track identity was determined to be an exercise track (e.g., FAKER or JOKER), it has been reported as such in accordance with the Identity Filter rules.",
+            "evidence_refs": [
+              "P127"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "A Track Quality (TQ) value has been assigned to the track based on the Target Position Quality (TPQ) using Table 4.4-7, without artificial increase between sensor inputs.",
+            "evidence_refs": [
+              "P49"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Information Management messages (such as J7.0) have been utilized to effect management actions regarding the new track, including reporting differences in Environment/Category or ID.",
+            "evidence_refs": [
+              "P89"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P49",
+          "P8",
+          "P127",
+          "P54",
+          "P89"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 48.0
+}

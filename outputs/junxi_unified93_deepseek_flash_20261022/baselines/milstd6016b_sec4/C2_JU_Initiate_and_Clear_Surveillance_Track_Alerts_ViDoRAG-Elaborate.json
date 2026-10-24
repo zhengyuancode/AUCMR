@@ -1,0 +1,518 @@
+{
+  "use_case_name": "Initiate and Clear Surveillance Track Alerts",
+  "actor": "C2 JU",
+  "method": "ViDoRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To ensure accurate, non-redundant, geospatially valid track representation via correlation/resolution of surveillance tracks by initiating action to resolve dual designations and clearing alerts when conditions are met.",
+          "evidence_refs": [
+            "P113",
+            "P7"
+          ]
+        }
+      ],
+      "raw_text": "To ensure accurate, non-redundant, geospatially valid track representation via correlation/resolution of surveillance tracks by initiating action to resolve dual designations and clearing alerts when conditions are met.",
+      "evidence_card_ids": [
+        "P113",
+        "P7"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The system must be capable of receiving and processing J3 messages containing Force Tell and Emergency Indicators.",
+          "evidence_refs": [
+            "P10"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Track alerts (Force Tell and Emergency) must have been previously set via J3 messages to indicate force tell and/or emergency conditions.",
+          "evidence_refs": [
+            "P10"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The C2 JU must have the capability to manage its database to avoid saturation by force tell and emergency alerts, particularly if it has limited track capacity (e.g., F-15).",
+          "evidence_refs": [
+            "P10"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The indicators for track alerts must be set or cleared in accordance with the specifications in paragraph 4.7.1.4 (referenced but not provided in context).",
+          "evidence_refs": [
+            "P10"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P10"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "A C2 JU shall assume R² of an IU (including C² and nonC² JUs and forwarded PUs and RUs) in accordance with the reporting rules for a real-time track if the C² JU has correlated local sensor data, when: a. A J2 PPLI message is not received for 40 to 60 seconds, or b. A J2 PPLI message, other than J2.0, is received with the NPS Indicator set to Inactive or Conditional Radio Silence, or c. A J7.0 (ACT = 0) Drop Track message is received from the FJU for a PU, RU, or other IU, or d. The Geodetic Position Quality in the J2 PPLI message is set to value 0.",
+          "evidence_refs": [
+            "P8"
+          ]
+        }
+      ],
+      "raw_text": "A C2 JU shall assume R² of an IU (including C² and nonC² JUs and forwarded PUs and RUs) in accordance with the reporting rules for a real-time track if the C² JU has correlated local sensor data, when: a. A J2 PPLI message is not received for 40 to 60 seconds, or b. A J2 PPLI message, other than J2.0, is received with the NPS Indicator set to Inactive or Conditional Radio Silence, or c. A J7.0 (ACT = 0) Drop Track message is received from the FJU for a PU, RU, or other IU, or d. The Geodetic Position Quality in the J2 PPLI message is set to value 0.",
+      "evidence_card_ids": [
+        "P8"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "When a C² JU recognizes that two tracks which are being reported to the interface are eligible for correlation, that JU shall initiate action, either automatically or manually, to resolve the dual designation.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The recognizing JU shall transmit the J7.2 Correlation message requesting all other C² IUs to perform a correlation of the two tracks.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The message identifies the TN to be retained and the TN to be dropped.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The receiving IUs shall accept the requested correlation unless certain prespecified conditions exist which require or allow the receiving IU to reject the requested correlation or respond with a reverse correlation request.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If a correlation is found with a track for which the C² JU has R², the J7.2 Correlation message shall be transmitted with the Response Value (RV) field set to value 1 (Reverse Correlation Not Acceptable), and with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The C² JU shall cease reporting the track and transmit a J7.0 (ACT = 0) Drop Track message on the surveillance TN.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P113",
+        "P7"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If the receiving IU has any constraint which would prohibit accepting a reverse correlation, it shall set the Response Value (RV) field to value 0 in its J7.2 message to indicate that a reverse correlation would be acceptable.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the receiving IU indicates in its J7.2 message that a reverse correlation request should be rejected (RV = 2), the originating JU shall reject the original correlation request.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "When the RV field is set to value 3 in the J7.2 message, it indicates the correlation was manually initiated and shall be accepted unless certain conditions apply which require rejection.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are different, the J7.2 (RV = 1) Correlation message shall be transmitted, with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are the same, the JU receiving the J2 shall accept the PPLI information into its surveillance database and shall disregard the J3 surveillance data on the specified track except when Geodetic Position Quality in the PPLI message is set to value 0, in which case the surveillance track is accepted and the PPLI message shall be discarded.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P113",
+        "P7"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the receiving IU has any constraint which would prohibit accepting a reverse correlation, it shall set the Response Value (RV) field to value 0 in its J7.2 message to indicate that a reverse correlation would be acceptable.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "If the receiving IU indicates in its J7.2 message that a reverse correlation request should be rejected (RV = 2), the originating JU shall reject the original correlation request.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "When the RV field is set to value 3 in the J7.2 message, it indicates the correlation was manually initiated and shall be accepted unless certain conditions apply which require rejection.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are different, the J7.2 (RV = 1) Correlation message shall be transmitted, with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are the same, the JU receiving the J2 shall accept the PPLI information into its surveillance database and shall disregard the J3 surveillance data on the specified track except when Geodetic Position Quality in the PPLI message is set to value 0, in which case the surveillance track is accepted and the PPLI message shall be discarded.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P113",
+        "P7"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The C² JU has accepted and reported the change in force tell status in its J2 message.",
+          "evidence_refs": [
+            "P102"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Other receiving JUs have set or cleared the alert indicator in their databases upon receipt of the J7.0 (ACT = 4) message.",
+          "evidence_refs": [
+            "P102"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Optionally, other JUs may have cleared the alert indicator upon reception of a J2 message with FT IND set to value 0.",
+          "evidence_refs": [
+            "P102"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P102"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "To ensure accurate, non-redundant, geospatially valid track representation via correlation/resolution of surveillance tracks by initiating action to resolve dual designations and clearing alerts when conditions are met.",
+            "evidence_refs": [
+              "P113",
+              "P7"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P8",
+          "P113",
+          "P7",
+          "P49",
+          "P87"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The system must be capable of receiving and processing J3 messages containing Force Tell and Emergency Indicators.",
+            "evidence_refs": [
+              "P10"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Track alerts (Force Tell and Emergency) must have been previously set via J3 messages to indicate force tell and/or emergency conditions.",
+            "evidence_refs": [
+              "P10"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The C2 JU must have the capability to manage its database to avoid saturation by force tell and emergency alerts, particularly if it has limited track capacity (e.g., F-15).",
+            "evidence_refs": [
+              "P10"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The indicators for track alerts must be set or cleared in accordance with the specifications in paragraph 4.7.1.4 (referenced but not provided in context).",
+            "evidence_refs": [
+              "P10"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P10",
+          "P113"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "A C2 JU shall assume R² of an IU (including C² and nonC² JUs and forwarded PUs and RUs) in accordance with the reporting rules for a real-time track if the C² JU has correlated local sensor data, when: a. A J2 PPLI message is not received for 40 to 60 seconds, or b. A J2 PPLI message, other than J2.0, is received with the NPS Indicator set to Inactive or Conditional Radio Silence, or c. A J7.0 (ACT = 0) Drop Track message is received from the FJU for a PU, RU, or other IU, or d. The Geodetic Position Quality in the J2 PPLI message is set to value 0.",
+            "evidence_refs": [
+              "P8"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P8",
+          "P7"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "When a C² JU recognizes that two tracks which are being reported to the interface are eligible for correlation, that JU shall initiate action, either automatically or manually, to resolve the dual designation.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The recognizing JU shall transmit the J7.2 Correlation message requesting all other C² IUs to perform a correlation of the two tracks.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The message identifies the TN to be retained and the TN to be dropped.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The receiving IUs shall accept the requested correlation unless certain prespecified conditions exist which require or allow the receiving IU to reject the requested correlation or respond with a reverse correlation request.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If a correlation is found with a track for which the C² JU has R², the J7.2 Correlation message shall be transmitted with the Response Value (RV) field set to value 1 (Reverse Correlation Not Acceptable), and with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The C² JU shall cease reporting the track and transmit a J7.0 (ACT = 0) Drop Track message on the surveillance TN.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P7"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If the receiving IU has any constraint which would prohibit accepting a reverse correlation, it shall set the Response Value (RV) field to value 0 in its J7.2 message to indicate that a reverse correlation would be acceptable.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the receiving IU indicates in its J7.2 message that a reverse correlation request should be rejected (RV = 2), the originating JU shall reject the original correlation request.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "When the RV field is set to value 3 in the J7.2 message, it indicates the correlation was manually initiated and shall be accepted unless certain conditions apply which require rejection.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are different, the J7.2 (RV = 1) Correlation message shall be transmitted, with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are the same, the JU receiving the J2 shall accept the PPLI information into its surveillance database and shall disregard the J3 surveillance data on the specified track except when Geodetic Position Quality in the PPLI message is set to value 0, in which case the surveillance track is accepted and the PPLI message shall be discarded.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P8",
+          "P113",
+          "P7",
+          "P49",
+          "P87"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the receiving IU has any constraint which would prohibit accepting a reverse correlation, it shall set the Response Value (RV) field to value 0 in its J7.2 message to indicate that a reverse correlation would be acceptable.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "If the receiving IU indicates in its J7.2 message that a reverse correlation request should be rejected (RV = 2), the originating JU shall reject the original correlation request.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "When the RV field is set to value 3 in the J7.2 message, it indicates the correlation was manually initiated and shall be accepted unless certain conditions apply which require rejection.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are different, the J7.2 (RV = 1) Correlation message shall be transmitted, with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are the same, the JU receiving the J2 shall accept the PPLI information into its surveillance database and shall disregard the J3 surveillance data on the specified track except when Geodetic Position Quality in the PPLI message is set to value 0, in which case the surveillance track is accepted and the PPLI message shall be discarded.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P8",
+          "P113",
+          "P7",
+          "P10",
+          "P87"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The C² JU has accepted and reported the change in force tell status in its J2 message.",
+            "evidence_refs": [
+              "P102"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Other receiving JUs have set or cleared the alert indicator in their databases upon receipt of the J7.0 (ACT = 4) message.",
+            "evidence_refs": [
+              "P102"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Optionally, other JUs may have cleared the alert indicator upon reception of a J2 message with FT IND set to value 0.",
+            "evidence_refs": [
+              "P102"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P102"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 202.0
+}

@@ -1,0 +1,533 @@
+{
+  "use_case_name": "Terminate and Purge Surveillance Tracks",
+  "actor": "C2 JU",
+  "method": "VDocRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To terminate and purge surveillance tracks, including dropping remote tracks via J7.0 messages or automatically purging them after a specified time interval when no longer updated.",
+          "evidence_refs": [
+            "P88",
+            "P54",
+            "P10"
+          ]
+        }
+      ],
+      "raw_text": "To terminate and purge surveillance tracks, including dropping remote tracks via J7.0 messages or automatically purging them after a specified time interval when no longer updated.",
+      "evidence_card_ids": [
+        "P88",
+        "P54",
+        "P10"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has the capability to automatically initiate tracks for release to the interface without operator action.",
+          "evidence_refs": [
+            "P24"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The C2 JU has the capability to deactivate the automatic track initiation capability.",
+          "evidence_refs": [
+            "P24"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "For subsurface surveillance tracks, the system has established a time interval parameter for purging tracks after irregular reporting of nonreal-time tracks.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the C2 JU is returning to Active status from Inactive status or TDS Failure, sufficient reporting responsibility checks, correlation, and data registration have been performed.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P24",
+        "P54"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C2 JU needs to terminate a track by sending a J7.0 (ACT = 0) message, or automatically purges remote tracks after a specified time interval has elapsed since the track's last report.",
+          "evidence_refs": [
+            "P10",
+            "P54"
+          ]
+        }
+      ],
+      "raw_text": "The C2 JU needs to terminate a track by sending a J7.0 (ACT = 0) message, or automatically purges remote tracks after a specified time interval has elapsed since the track's last report.",
+      "evidence_card_ids": [
+        "P10",
+        "P54"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU terminates a track by sending a J7.0 message with the Track Management Action field set to value 0 (Drop Track Report).",
+          "evidence_refs": [
+            "P88"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "For locally held remote tracks, NonC² JUs process the J7.0 Drop Track Report message.",
+          "evidence_refs": [
+            "P88"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Alternatively, the C2 JU may automatically purge locally held remote tracks after a specified time interval when these tracks are no longer being updated.",
+          "evidence_refs": [
+            "P88",
+            "P54"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If purging is due to irregular reporting of nonreal-time tracks, the system does not transmit a J7.0 (ACT = 0) message.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P88",
+        "P54"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If the C2 JU is returning to Active status from Inactive status or TDS Failure, it shall not transmit air, surface, or land tracks until sufficient reporting responsibility checks, correlation, and data registration are performed.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The minimum wait before reporting air and surface tracks after achieving Active status is 12 seconds.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The minimum wait before reporting land tracks after achieving Active status is 48 seconds.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "System design should allow for longer wait times as well as an override in cases where operational necessity requires a shorter wait time or none at all.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P54"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If a C2 JU transmits a J7.0 (ACT = 2) message, the JU shall reject any received data on that track that differ for a 30-second lock-out period, except for ID data from the controlling unit of the track and for processing an Exercise Status Order.",
+          "evidence_refs": [
+            "P99"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "After reception of the J7.0 (ACT = 2) message, if different data is received from the same source that originated the previous J7.0 (ACT = 2) message prior to the completion of the 30-second lockout period, the JU shall accept the different data.",
+          "evidence_refs": [
+            "P99"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "After reception of the J7.0 (ACT = 2) message, if different ID data is received from the controlling unit prior to the completion of the 30-second lockout period, the JU shall accept the different ID data.",
+          "evidence_refs": [
+            "P99"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "JUs shall not transmit a J7.0 (ACT = 2) message containing an ID of Pending.",
+          "evidence_refs": [
+            "P99"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Units receiving a J7.0 (ACT = 2) Change Data Order message containing an ID of Pending shall not accept that order.",
+          "evidence_refs": [
+            "P99"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Receiving JUs which do not implement the changed Environment/Category and have R² on the track must cease reporting the track and transmit a J7.0 (ACT = 0) message.",
+          "evidence_refs": [
+            "P99"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "If it is desired to change the simulation status of a track due to operator error, the track shall be dropped using the J7.0 (ACT = 0) message, and a new track shall be reported.",
+          "evidence_refs": [
+            "P10"
+          ],
+          "step_number": 7
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P99",
+        "P10"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The track is terminated and dropped using the J7.0 (ACT = 0) message.",
+          "evidence_refs": [
+            "P10"
+          ]
+        },
+        {
+          "content": "For a purged remote track/point, the JU does not transmit a J7.0 (ACT = 0) message.",
+          "evidence_refs": [
+            "P10"
+          ]
+        },
+        {
+          "content": "Under the condition of irregular reporting of nonreal-time tracks, a J7.0 (ACT = 0) message is not transmitted.",
+          "evidence_refs": [
+            "P54"
+          ]
+        },
+        {
+          "content": "Locally held remote tracks are automatically purged after a specified time interval when these tracks are no longer being updated.",
+          "evidence_refs": [
+            "P88"
+          ]
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P10",
+        "P54",
+        "P88"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "To terminate and purge surveillance tracks, including dropping remote tracks via J7.0 messages or automatically purging them after a specified time interval when no longer updated.",
+            "evidence_refs": [
+              "P88",
+              "P54",
+              "P10"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P88",
+          "P54",
+          "P24",
+          "P60",
+          "P10"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The C2 JU has the capability to automatically initiate tracks for release to the interface without operator action.",
+            "evidence_refs": [
+              "P24"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU has the capability to deactivate the automatic track initiation capability.",
+            "evidence_refs": [
+              "P24"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "For subsurface surveillance tracks, the system has established a time interval parameter for purging tracks after irregular reporting of nonreal-time tracks.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the C2 JU is returning to Active status from Inactive status or TDS Failure, sufficient reporting responsibility checks, correlation, and data registration have been performed.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P24",
+          "P54",
+          "P10",
+          "P60",
+          "P88"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The C2 JU needs to terminate a track by sending a J7.0 (ACT = 0) message, or automatically purges remote tracks after a specified time interval has elapsed since the track's last report.",
+            "evidence_refs": [
+              "P10",
+              "P54"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P10",
+          "P54",
+          "P24",
+          "P88",
+          "P101"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU terminates a track by sending a J7.0 message with the Track Management Action field set to value 0 (Drop Track Report).",
+            "evidence_refs": [
+              "P88"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "For locally held remote tracks, NonC² JUs process the J7.0 Drop Track Report message.",
+            "evidence_refs": [
+              "P88"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Alternatively, the C2 JU may automatically purge locally held remote tracks after a specified time interval when these tracks are no longer being updated.",
+            "evidence_refs": [
+              "P88",
+              "P54"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If purging is due to irregular reporting of nonreal-time tracks, the system does not transmit a J7.0 (ACT = 0) message.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P60",
+          "P24",
+          "P88",
+          "P54",
+          "P127"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If the C2 JU is returning to Active status from Inactive status or TDS Failure, it shall not transmit air, surface, or land tracks until sufficient reporting responsibility checks, correlation, and data registration are performed.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The minimum wait before reporting air and surface tracks after achieving Active status is 12 seconds.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The minimum wait before reporting land tracks after achieving Active status is 48 seconds.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "System design should allow for longer wait times as well as an override in cases where operational necessity requires a shorter wait time or none at all.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P10",
+          "P24",
+          "P54",
+          "P88",
+          "P127"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If a C2 JU transmits a J7.0 (ACT = 2) message, the JU shall reject any received data on that track that differ for a 30-second lock-out period, except for ID data from the controlling unit of the track and for processing an Exercise Status Order.",
+            "evidence_refs": [
+              "P99"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "After reception of the J7.0 (ACT = 2) message, if different data is received from the same source that originated the previous J7.0 (ACT = 2) message prior to the completion of the 30-second lockout period, the JU shall accept the different data.",
+            "evidence_refs": [
+              "P99"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "After reception of the J7.0 (ACT = 2) message, if different ID data is received from the controlling unit prior to the completion of the 30-second lockout period, the JU shall accept the different ID data.",
+            "evidence_refs": [
+              "P99"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "JUs shall not transmit a J7.0 (ACT = 2) message containing an ID of Pending.",
+            "evidence_refs": [
+              "P99"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Units receiving a J7.0 (ACT = 2) Change Data Order message containing an ID of Pending shall not accept that order.",
+            "evidence_refs": [
+              "P99"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Receiving JUs which do not implement the changed Environment/Category and have R² on the track must cease reporting the track and transmit a J7.0 (ACT = 0) message.",
+            "evidence_refs": [
+              "P99"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "If it is desired to change the simulation status of a track due to operator error, the track shall be dropped using the J7.0 (ACT = 0) message, and a new track shall be reported.",
+            "evidence_refs": [
+              "P10"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P24",
+          "P10",
+          "P54",
+          "P88",
+          "P99"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The track is terminated and dropped using the J7.0 (ACT = 0) message.",
+            "evidence_refs": [
+              "P10"
+            ]
+          },
+          {
+            "content": "For a purged remote track/point, the JU does not transmit a J7.0 (ACT = 0) message.",
+            "evidence_refs": [
+              "P10"
+            ]
+          },
+          {
+            "content": "Under the condition of irregular reporting of nonreal-time tracks, a J7.0 (ACT = 0) message is not transmitted.",
+            "evidence_refs": [
+              "P54"
+            ]
+          },
+          {
+            "content": "Locally held remote tracks are automatically purged after a specified time interval when these tracks are no longer being updated.",
+            "evidence_refs": [
+              "P88"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P54",
+          "P24",
+          "P10",
+          "P88",
+          "P60"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 53.8
+}

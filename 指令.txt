@@ -1,0 +1,29 @@
+1.Run
+python -u -B run.py generate --config experiment.json --methods "AUCMR (CREST full)" --use-cases "Open a Saved Game" --generation-workers 1 --resume
+
+1.1 Resume
+cd /home/dzy/code/TOSEM2026/AUCMR && conda activate aucmr && source ~/.config/aucmr/personal-keys.sh && (set -o pipefail; env -u HTTP_PROXY -u HTTPS_PROXY -u ALL_PROXY -u http_proxy -u https_proxy -u all_proxy python -u -B run.py generate --config experiment.junxi.additions.json --methods 'AUCMR (CREST full)' --generation-workers 3 --resume 2>&1 | tee aucmr-expansion-workers3-$(date +%Y%m%d-%H%M%S).log)
+
+
+2.query 18 D-UCs
+python -B -c 'import json; from pathlib import Path; import run; p=Path("experiment.junxi.json").resolve(); c=json.loads(p.read_text(encoding="utf-8-sig")); c["experiment"]["use_cases"]=[x for x in c["experiment"]["use_cases"] if x["project"] in ["qheadache","microcare","rlcs","peazip"]]; r=run._result_counts(c,p.parent/Path(c["paths"]["output"]))["AUCMR (CREST full)"]; print(json.dumps(r,ensure_ascii=False,indent=2))'\
+
+
+
+3.git-pull
+cd /home/dzy/code/TOSEM2026/AUCMR
+
+git -c submodule.recurse=false switch junxi-dev
+
+git -c submodule.recurse=false pull --ff-only --no-recurse-submodules origin junxi-dev
+
+
+4.Check Progress
+python -B -c 'import json; from pathlib import Path; import run; p=Path("experiment.junxi.additions.json").resolve(); c=json.loads(p.read_text(encoding="utf-8-sig")); r=run._result_counts(c,p.parent/Path(c["paths"]["output"]))["AUCMR (CREST full)"]; print(json.dumps({"已完成":r["complete"],"总数":r["expected"],"剩余":len(r["missing"])},ensure_ascii=False,indent=2))'
+
+5.llama-server
+5.1 start:
+sudo systemctl start llama-qwen3.6.service
+
+5.2 end:
+sudo systemctl stop llama-qwen3.6.service && rocm-smi --showpids

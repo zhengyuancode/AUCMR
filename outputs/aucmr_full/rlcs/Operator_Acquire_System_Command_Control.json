@@ -1,0 +1,1221 @@
+{
+  "use_case_name": "Acquire System Command Control",
+  "actor": "Operator",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Operator aims to acquire command control of the system during normal mode.",
+          "evidence_refs": [
+            "EC-G-004",
+            "EC-G-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-004",
+        "EC-G-000"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Operator aims to acquire command control of the system during normal mode.",
+        "canonical_success_scenario": "During normal mode, the Operator acquires command control of the system.",
+        "start_boundary": "The Operator is authorized to have command control of the system during normal mode.",
+        "success_boundary": "The Operator has command control of the system.",
+        "in_scope_actions": [
+          "Acquire command control of the system during normal mode."
+        ],
+        "excluded_adjacent_actions": [
+          "Resume an opening or closing sequence after a halt.",
+          "Dial in from a backup computer to open or close reversible lanes during system failure.",
+          "Perform scheduled operations during normal mode.",
+          "Use the GUI logon screen as an upstream entry step."
+        ],
+        "variant_dimensions": [
+          "Normal operational mode"
+        ],
+        "evidence_refs": [
+          "EC-G-004",
+          "EC-G-000"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal",
+          "entry context",
+          "High-level objective phrase",
+          "high-level objective for normal operations"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Operator",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Operator"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The system is in normal mode.",
+          "evidence_refs": [
+            "EC-PC-001",
+            "EC-G-000"
+          ]
+        },
+        {
+          "content": "The Operator is authorized to have command control of the system during normal mode.",
+          "evidence_refs": [
+            "EC-PC-001",
+            "EC-G-000"
+          ]
+        },
+        {
+          "content": "The Operator is logged on to the system as the only Operator logged on.",
+          "evidence_refs": [
+            "EC-PC-004",
+            "EC-PC-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-001",
+        "EC-G-000",
+        "EC-PC-004",
+        "EC-PC-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-normal-mode",
+          "PC-authorization",
+          "PC-single-operator-logon",
+          "concurrency constraint",
+          "entry context",
+          "system operational status",
+          "security authorization precondition",
+          "operator login status"
+        ],
+        "missing_aspects": [
+          "preconditions"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Operator, already logged on, requests command control from a specified workstation and has authorization.",
+          "evidence_refs": [
+            "EC-PO-010",
+            "EC-MF-003",
+            "EC-PC-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-010",
+        "EC-MF-003",
+        "EC-PC-004"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "From a specified workstation, the Operator requests command control.",
+          "evidence_refs": [
+            "EC-MF-002",
+            "EC-MF-003"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The system activates command control for the Operator if the Operator has authorization.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Operator acquires command control of the system during normal mode.",
+          "evidence_refs": [
+            "EC-MF-000"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If another user was previously logged in with command control and the new Operator takes command control, the other user is notified.",
+          "evidence_refs": [
+            "EC-PO-003"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-002",
+        "EC-MF-003",
+        "EC-MF-000",
+        "EC-PO-003"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from main flow Step 2: if command control is enabled by another user and the logging-in Operator has higher security, the system requests the Operator to accept or deny command control; if the Operator accepts, the Operator takes command control and the previous user is notified.",
+          "evidence_refs": [
+            "EC-AF-010"
+          ],
+          "step_number": 1
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-010"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-higher-security-command-control-takeover",
+          "AF-accept-deny-command-control",
+          "AF-acceptance-results-in-taking-command-control",
+          "AF-previous-user-notified",
+          "AF-diverges-from-step-2",
+          "alternative_flow - legal variant paths diverging from main flow",
+          "Explicit confirmation that acceptance of the request results in taking command control (linking EC-AF-000's 'accept' to EC-AF-001's 'takes command control')",
+          "alternative_flow - system presents impact scope before change execution",
+          "alternative_flow - operator receives contextual feedback on affected devices/workstations",
+          "alternative_flow - validation-based rejection with user feedback",
+          "alternative_flow - safety interlock enforcement as legal divergence",
+          "alternative_flow - divergence triggers (device timeout)",
+          "alternative_flow - divergence triggers (unauthorized status changes)",
+          "alternative_flow - divergence triggers (opposite direction status)",
+          "alternative_flow - successful recovery path (resume capability)",
+          "alternative_flow - recovery constraints (configurable time period)",
+          "alternative_flow - Device Override capability",
+          "alternative_flow - Operational Override capability"
+        ],
+        "missing_aspects": [
+          "alternative_flow - legal variant paths diverging from main flow"
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If command control is enabled by another user and the logging-in Operator has higher security, the system requests the Operator to accept or deny command control.",
+          "evidence_refs": [
+            "EC-EF-020"
+          ],
+          "step_number": 2
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-020"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-command-control-enabled-by-another-user",
+          "EF-higher-security-operator",
+          "EF-accept-deny-prompt",
+          "EF-diverges-from-step-2",
+          "authorization constraints",
+          "user role restrictions",
+          "Exception trigger: Higher security operator encounters active command control session",
+          "System response: Request to accept or deny command control",
+          "exception_flow - validation failure notification",
+          "exception_flow - conflict detection",
+          "validation-based rejection with user feedback",
+          "safety interlock enforcement as legal divergence",
+          "divergence triggers (opposite direction status)",
+          "divergence triggers (device timeout)",
+          "terminal exception outcome (device failure)",
+          "exception_flow - device timeout triggers halt",
+          "exception_flow - unauthorized status change triggers halt (opened->unknown/closed)",
+          "exception_flow - unauthorized status change triggers halt (closed->unknown/open)",
+          "exception_flow - opposite-direction device status change triggers halt during opening",
+          "exception_flow - resume capability after halt with configurable time constraint",
+          "exception_trigger_condition",
+          "system_response_to_exception",
+          "recovery_alert_mechanism"
+        ],
+        "missing_aspects": [
+          "Outcome/exit after the Operator accepts or denies command control",
+          "explicit error handling logic",
+          "system response to denial",
+          "Outcome when Operator denies command control (e.g., whether use case terminates or continues)",
+          "Explicit recovery behavior if denial occurs"
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The Operator has command control of the system during normal mode.",
+          "evidence_refs": [
+            "EC-PO-000"
+          ]
+        },
+        {
+          "content": "The system is ready to accept operator commands.",
+          "evidence_refs": [
+            "EC-PO-018"
+          ]
+        },
+        {
+          "content": "The system is ready to accept and process operator commands from specified workstations after command control is acquired.",
+          "evidence_refs": [
+            "EC-PO-013",
+            "EC-PO-011",
+            "EC-PO-018"
+          ]
+        },
+        {
+          "content": "If another user previously had command control, that user is notified that the new Operator has taken command control.",
+          "evidence_refs": [
+            "EC-PO-003"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-PO-018",
+        "EC-PO-013",
+        "EC-PO-011",
+        "EC-PO-003"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[trigger_preconditions_coverage] The main flow requires the Operator to request command control from a specified workstation, but Preconditions does not assert that the Operator is at an authorized/specified workstation before initiating the request. (atomic grounding: candidate remains incomplete (Evidence does not establish that the Operator is at the workstation, that the workstation is authorized for command control acquisition, or that acquisition is an explicit condition.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] The exception flow branch only states that the system asks the Operator to accept or deny command control; it does not document any outcome after acceptance or denial, so the branch lacks a clear return, termination/handoff, or terminal failure/prevention state. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] The exception flow branch stops at the system requesting the Operator to accept or deny command control. It does not state what happens after acceptance or denial, and provides no return to main flow, termination/handoff, or explicit terminal failure/prevention state for this branch. (still no supporting evidence after retrieval)",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "preconditions",
+      "detail": "[mainflow_postconditions_reachability] Precondition claim 3 states the Operator is the only Operator logged on, but main flow step 4 and postcondition 4 require handling another user who previously had command control and must be notified. This precondition makes that takeover/notification postcondition unreachable under the stated starting conditions.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] The exception flow's only claim ends with the system requesting the Operator to accept or deny command control. It does not specify the outcome after acceptance or denial, so neither branch has a clear exit: return to main flow, terminate/hand off, or an explicit failure/prevention state.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "postconditions",
+        "trigger",
+        "main_flow"
+      ],
+      "inconsistency_hints": [
+        "The main flow only activates command control and records that the Operator acquires it; it does not establish that the system can execute stored operational control command sequences based on mode and schedule, which is an excluded adjacent scheduled-operations outcome.",
+        "Trigger says the Operator requests command control 'via the logon screen', but Preconditions state the Operator is already logged on. This makes the trigger start from an upstream logon step that the preconditions explicitly contradict (and the goal scope excludes as an entry step), so the trigger is not aligned with the precondition state.",
+        "Postcondition 4 states that if another user previously had command control, that user is notified when the new Operator takes control. The Main Flow has no step that notifies or otherwise handles a previous controller, so this postcondition is not reached by the described flow."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 146,
+    "cross_page_cards": 0,
+    "modalities": {
+      "table": 25,
+      "text": 115,
+      "diagram": 6
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1329.084,
+    "lvlm_retry_calls": 0,
+    "lvlm_seconds": 566.574,
+    "llm_seconds": 747.776,
+    "llm_calls": 52.0,
+    "judge_seconds": 0.0,
+    "lvlm_calls": 108.0,
+    "judge_calls": 0,
+    "llm_retry_calls": 0,
+    "cards_collected": 127,
+    "cards_referenced": 15,
+    "dra_elapsed_seconds": 372.539,
+    "dra_lvlm_retry_calls": 0,
+    "dra_lvlm_seconds": 73.851,
+    "dra_llm_seconds": 297.469,
+    "dra_llm_calls": 18,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_calls": 10,
+    "dra_judge_calls": 0,
+    "dra_llm_retry_calls": 0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Operator aims to acquire command control of the system during normal mode.",
+            "evidence_refs": [
+              "EC-G-004",
+              "EC-G-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The system is in normal mode.",
+            "evidence_refs": [
+              "EC-PC-001",
+              "EC-G-000"
+            ]
+          },
+          {
+            "content": "The Operator is authorized to have command control of the system during normal mode.",
+            "evidence_refs": [
+              "EC-PC-001",
+              "EC-G-000"
+            ]
+          },
+          {
+            "content": "The Operator is logged on to the system as the only Operator logged on.",
+            "evidence_refs": [
+              "EC-PC-004",
+              "EC-PC-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Operator, already logged on, requests command control from a specified workstation and has authorization.",
+            "evidence_refs": [
+              "EC-PO-010",
+              "EC-MF-003",
+              "EC-PC-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016",
+          "EC-TR-017",
+          "EC-TR-018",
+          "EC-TR-019",
+          "EC-TR-020"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "From a specified workstation, the Operator requests command control.",
+            "evidence_refs": [
+              "EC-MF-002",
+              "EC-MF-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system activates command control for the Operator if the Operator has authorization.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Operator acquires command control of the system during normal mode.",
+            "evidence_refs": [
+              "EC-MF-000"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If another user was previously logged in with command control and the new Operator takes command control, the other user is notified.",
+            "evidence_refs": [
+              "EC-PO-003"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016",
+          "EC-TR-017",
+          "EC-TR-018",
+          "EC-TR-019",
+          "EC-TR-020"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from main flow Step 2: if command control is enabled by another user and the logging-in Operator has higher security, the system requests the Operator to accept or deny command control; if the Operator accepts, the Operator takes command control and the previous user is notified.",
+            "evidence_refs": [
+              "EC-AF-010"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016",
+          "EC-TR-017",
+          "EC-TR-018",
+          "EC-TR-019",
+          "EC-TR-020"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "If command control is enabled by another user and the logging-in Operator has higher security, the system requests the Operator to accept or deny command control.",
+            "evidence_refs": [
+              "EC-EF-020"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016",
+          "EC-TR-017",
+          "EC-TR-018",
+          "EC-TR-019",
+          "EC-TR-020"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Operator has command control of the system during normal mode.",
+            "evidence_refs": [
+              "EC-PO-000"
+            ]
+          },
+          {
+            "content": "The system is ready to accept operator commands.",
+            "evidence_refs": [
+              "EC-PO-018"
+            ]
+          },
+          {
+            "content": "The system is ready to accept and process operator commands from specified workstations after command control is acquired.",
+            "evidence_refs": [
+              "EC-PO-013",
+              "EC-PO-011",
+              "EC-PO-018"
+            ]
+          },
+          {
+            "content": "If another user previously had command control, that user is notified that the new Operator has taken command control.",
+            "evidence_refs": [
+              "EC-PO-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016",
+          "EC-TR-017",
+          "EC-TR-018",
+          "EC-TR-019",
+          "EC-TR-020"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "5dd9577c84ab4fb1bea90a6543702fc1"
+}
