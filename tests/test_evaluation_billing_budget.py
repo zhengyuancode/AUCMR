@@ -29,7 +29,7 @@ def binding():
             "per_request_upper_bound": {"input": .2, "output": .1, "reasoning": 0, "images": 0, "other": 0},
             "request_limits": {"verified": True, "evidence": "CONSTRUCTED_OFFLINE_FIXTURE",
                 "max_input_tokens": 65536, "context_tokens": 128000, "text_tokens_per_utf8_byte": 1,
-                "message_overhead_tokens": 8, "request_overhead_tokens": 8, "max_request_bytes": 1000000,
+                "message_overhead_tokens": 8, "content_part_overhead_tokens": 4, "request_overhead_tokens": 8, "max_request_bytes": 1000000,
                 "image_tokens_by_detail": {"auto": 100, "high": 100, "low": 100},
                 "max_image_bytes": 100000, "max_image_base64_bytes": 140000,
                 "max_image_pixels": 10000000, "max_images": 24}}
@@ -172,7 +172,7 @@ class RequestTests(unittest.TestCase):
         report = check_request(b, m)
         self.assertEqual(report['image_count'], 3)
         self.assertEqual(report['image_token_upper_bound'], 300)
-        self.assertEqual(report['chat_overhead_token_upper_bound'], 32)
+        self.assertEqual(report['chat_overhead_token_upper_bound'], 56)
         self.assertEqual(report['text_utf8_bytes'], 2 * len('读取来源 page'.encode()) + 7)
 
     def test_input_context_and_protocol_cap(self):
@@ -213,6 +213,13 @@ class RequestTests(unittest.TestCase):
         m[0]['extra_content'] = 'not counted'
         with self.assertRaises(ValueError):
             check_request(binding(), m)
+        for extra in ({'tools': [{'description': 'unaccounted prompt'}]},
+                      {'response_format': {'type': 'json_schema', 'json_schema': {'description': 'unaccounted'}}}):
+            with self.subTest(extra=extra):
+                b = binding()
+                b['parameters'].update(extra)
+                with self.assertRaises(ValueError):
+                    check_request(b, messages())
 
     def test_reservation_must_cover_full_request_and_output(self):
         for field in ('input', 'output'):

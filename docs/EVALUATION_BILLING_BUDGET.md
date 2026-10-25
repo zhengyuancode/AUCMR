@@ -51,7 +51,8 @@ Bindings for those must remain incomplete until those dimensions are implemented
 
 `request_limits` requires `verified`, `evidence`, `max_input_tokens`,
 `context_tokens`, `max_request_bytes`, `text_tokens_per_utf8_byte`,
-`message_overhead_tokens`, and `request_overhead_tokens`. The multiplier is at
+`message_overhead_tokens`, `content_part_overhead_tokens`, and
+`request_overhead_tokens`. The multiplier is at
 least one. UTF-8 bytes plus documented expansion/overhead are a conservative
 bound, not the provider tokenizer's measured output. Unknown tokenizer or chat
 framing bounds cannot be certified by simply setting `verified` to true.
@@ -63,6 +64,9 @@ budget checking accepts inline PNG and checks its dimensions. No evidence is
 resized, compressed, deleted or truncated by this repair. Repeated images and
 all prior tool/assistant turns count on every request. Separate reasoning
 billing also requires `max_reasoning_tokens` backed by an enforced model limit.
+Native tool definitions, JSON-schema response formats and other uncounted
+prompt-bearing parameters are rejected. Current evaluators use text-described
+tools; these remain fully counted within message content.
 
 The complete serialized JSON must fit the byte cap. Bounded input plus output
 must fit context. The five reservation components must cover the applicable

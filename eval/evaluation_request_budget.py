@@ -24,7 +24,7 @@ def validate_limits(binding):
     if not isinstance(limits, dict) or limits.get("verified") is not True or not limits.get("evidence"):
         raise ValueError("REQUEST_LIMITS_NOT_VERIFIED")
     for key in ("max_input_tokens", "context_tokens", "max_request_bytes",
-                "message_overhead_tokens", "request_overhead_tokens"):
+                "message_overhead_tokens", "content_part_overhead_tokens", "request_overhead_tokens"):
         positive(limits.get(key), key)
     if amount(limits.get("text_tokens_per_utf8_byte")) < 1:
         raise ValueError("TEXT_TOKEN_BOUND_MUST_BE_AT_LEAST_ONE_PER_BYTE")
@@ -35,14 +35,20 @@ def check_request(binding, messages, *, input_limit=None):
     tiers = validate_billing(binding)
     limits = validate_limits(binding)
     parameters = binding["parameters"]
-    if not isinstance(parameters, dict) or set(parameters) & {"model", "messages", "stream", "api_key", "base_url", "headers"}:
+    # Tool definitions, JSON schemas or provider-specific prompt fields also
+    # consume input tokens. Do not admit them without a corresponding estimator.
+    allowed = {"max_tokens", "max_completion_tokens", "temperature", "top_p", "seed",
+               "presence_penalty", "frequency_penalty", "enable_thinking", "thinking", "response_format"}
+    if not isinstance(parameters, dict) or set(parameters) - allowed:
         raise ValueError("INVALID_MODEL_PARAMETERS")
+    if 'response_format' in parameters and parameters['response_format'] != {'type': 'json_object'}:
+        raise ValueError("UNCOUNTED_RESPONSE_SCHEMA")
     if "max_tokens" in parameters and "max_completion_tokens" in parameters:
         raise ValueError("AMBIGUOUS_OUTPUT_LIMIT")
     output = positive(parameters.get("max_completion_tokens", parameters.get("max_tokens")), "output")
     if not isinstance(messages, list) or not messages:
         raise ValueError("NONEMPTY_MESSAGES_REQUIRED")
-    text_bytes, images, image_tokens = 0, 0, 0
+    text_bytes, images, image_tokens, part_count = 0, 0, 0, 0
     for message in messages:
         if not isinstance(message, dict) or set(message) != {"role", "content"} or message["role"] not in {"system", "user", "assistant", "tool"}:
             raise ValueError("UNSUPPORTED_MESSAGE_FIELDS")
@@ -50,6 +56,7 @@ def check_request(binding, messages, *, input_limit=None):
         parts = [{"type": "text", "text": content}] if isinstance(content, str) else content
         if not isinstance(parts, list) or not parts:
             raise ValueError("INVALID_CONTENT")
+        part_count += len(parts)
         for part in parts:
             if not isinstance(part, dict):
                 raise ValueError("INVALID_CONTENT_PART")
@@ -86,7 +93,8 @@ def check_request(binding, messages, *, input_limit=None):
     if images and images > positive(limits.get("max_images"), "max_images"):
         raise ValueError("IMAGE_COUNT_LIMIT_EXCEEDED")
     text_tokens = math.ceil(text_bytes * amount(limits["text_tokens_per_utf8_byte"]))
-    overhead = len(messages) * limits["message_overhead_tokens"] + limits["request_overhead_tokens"]
+    overhead = (len(messages) * limits["message_overhead_tokens"] +
+                part_count * limits["content_part_overhead_tokens"] + limits["request_overhead_tokens"])
     total = text_tokens + overhead + image_tokens
     cap = limits["max_input_tokens"]
     if input_limit is not None:
