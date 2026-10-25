@@ -8,6 +8,8 @@ from contextlib import contextmanager
 from urllib.parse import urlparse
 
 from .common import Blocked, EvaluationError, canonical, digest
+from ..evaluation_billing import normalize_usage, validate_billing
+from ..evaluation_request_budget import check_request, validate_limits, usage_bound_error
 
 
 @contextmanager
@@ -56,6 +58,11 @@ def binding_blockers(config: dict) -> list[str]:
             errors.append(f"{name}:OUTPUT_BOUND_NOT_VERIFIED")
         if set(b["per_request_upper_bound"]) != {"input", "output", "reasoning", "images", "other"}:
             errors.append(f"{name}:INCOMPLETE_RESERVATION_BOUND")
+        try:
+            validate_billing(b)
+            validate_limits(b)
+        except ValueError as exc:
+            errors.append(f"{name}:{exc}")
         if not os.environ.get(b["api_key_env"]):
             errors.append(f"{name}:KEY_NOT_SET")
     if config["models"]["A"].get("api_model_id") == config["models"]["B"].get("api_model_id"):
@@ -83,6 +90,7 @@ class LiveTransport:
         if set(parameters) & {"model", "messages", "stream", "api_key", "base_url"}:
             raise Blocked("Binding parameters cannot override task or credentials")
         body = {"model": binding["api_model_id"], "messages": messages, "stream": False, **parameters}
+        request_budget = check_request(binding, messages)
         key = os.environ[binding["api_key_env"]]
         request = Request(base + "/chat/completions", data=canonical(body).encode(), headers={
             "Authorization": "Bearer " + key, "Content-Type": "application/json"})
@@ -104,7 +112,10 @@ class LiveTransport:
             data = {"http_status": exc.code, "error_response_text": exc.read().decode("utf-8", errors="replace")}
         # Return the raw response even when normalization fails. TaskRecovery
         # persists this receipt before settling usage or validating semantics.
-        return normalize_response(_redact(data, key), binding)
+        result = normalize_response(_redact(data, key), binding)
+        result["request_budget"] = request_budget
+        result["request_budget_violation"] = usage_bound_error(result, request_budget)
+        return result
 
 
 def normalize_response(raw, binding):
@@ -113,24 +124,6 @@ def normalize_response(raw, binding):
     choice = choices[0] if isinstance(choices, list) and choices and isinstance(choices[0], dict) else {}
     message = choice.get("message")
     message = message if isinstance(message, dict) else {}
-    usage = data.get("usage")
-    usage = usage if isinstance(usage, dict) else {}
-    details = usage.get("completion_tokens_details")
-    details = details if isinstance(details, dict) else {}
-    def token(value):
-        return value if type(value) is int and value >= 0 else None
-    input_n, output_n = token(usage.get("prompt_tokens")), token(usage.get("completion_tokens"))
-    reasoning = token(details.get("reasoning_tokens"))
-    rates = binding["billing"]
-    cost = None
-    if input_n is not None and output_n is not None and rates.get("all_charges_in_token_usage"):
-        try:
-            cost = (input_n * rates["input_cny_per_million"] + output_n * rates["output_cny_per_million"]) / 1e6
-            if not rates.get("reasoning_in_output"):
-                cost = None if reasoning is None else cost + reasoning * rates["reasoning_cny_per_million"] / 1e6
-        except (KeyError, TypeError, ValueError):
-            cost = None
     return {"raw_response": raw, "body": message.get("content"), "finish_reason": choice.get("finish_reason"),
             "response_model": data.get("model"), "request_id": data.get("id"),
-            "system_fingerprint": data.get("system_fingerprint"), "raw_usage": usage,
-            "usage": {"input_tokens": input_n, "output_tokens": output_n, "reasoning_tokens": reasoning}, "cost_cny": cost}
+            "system_fingerprint": data.get("system_fingerprint"), **normalize_usage(data, binding)}

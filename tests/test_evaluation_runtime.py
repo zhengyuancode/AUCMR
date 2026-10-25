@@ -88,7 +88,11 @@ class RuntimeTests(unittest.TestCase):
         with patch.dict("os.environ", {"AUCMR_RUNTIME_TEST_KEY": "CONSTRUCTED_NOT_A_REAL_SECRET"}):
             with patch("eval.evaluation_runtime.build_opener") as opener:
                 opener.return_value.open.return_value = io.BytesIO(json.dumps(raw).encode())
-                runtime = self.runtime(layer="L4", live=True)
+                from tests.test_evaluation_billing_budget import binding as bounded_binding, tier
+                config = bounded_binding()
+                config['api_model_id'] = 'fixture-model'
+                config['billing']['tariff']['tiers'] = [tier(0, None, 1, 1, 1)]
+                runtime = self.runtime(layer="L4", live=True, config=config)
                 result = runtime.request(messages, task_id="page-1")
                 sent = opener.return_value.open.call_args.args[0]
                 payload = json.loads(sent.data)

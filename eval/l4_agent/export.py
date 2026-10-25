@@ -59,7 +59,7 @@ def export_records(records: list[dict], config: dict, directory: Path) -> dict:
     save_new(directory / "summary.json", summary)
     artifact_rows, slot_rows = [], []
     for r in records:
-        artifact_rows.append({k: r[k] for k in ("artifact_id", "task_id", "project_id", "comparison_group", "method", "data_class", "research_status", "run_id", "artifact_state", "processing_status", "pcs_mean", "pcs", "prc", "parse_status", "input_sha256", "manifest_sha256", "sources", "versions", "judge_id", "model_config_id", "runtime_cost_cny", "real_model_calls", "runtime_receipts")})
+        artifact_rows.append({k: r[k] for k in ("artifact_id", "task_id", "project_id", "comparison_group", "method", "data_class", "research_status", "run_id", "artifact_state", "processing_status", "pcs_mean", "pcs", "prc", "parse_status", "input_sha256", "manifest_sha256", "sources", "versions", "judge_id", "model_config_id", "runtime_cost_cny", "runtime_cost_basis", "real_model_calls", "runtime_receipts")})
         for slot in SLOTS:
             slot_rows.append({"artifact_id": r["artifact_id"], "task_id": r["task_id"], "method": r["method"],
                               "data_class": r["data_class"], "research_status": r["research_status"], "slot": slot, **r["pcs"][slot]})

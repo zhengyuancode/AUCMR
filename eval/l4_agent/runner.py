@@ -77,6 +77,7 @@ def run_evaluation(config_path: Path | None = None, *, run_dir: Path | None = No
               "research_status": "NOT_RESEARCH_DATA" if mock else "UNVALIDATED_AGENT_ESTIMATE",
               "records": len(records), "technical_failures": sum(r["processing_status"] == "TECHNICAL_FAILURE" for r in records),
               "runtime_cost_cny": sum(costs) if all(c is not None for c in costs) else None,
+              "runtime_cost_basis": "USAGE_LIST_PRICE_OR_CONSERVATIVE_UPPER_ESTIMATE_NOT_INVOICE",
               "real_model_calls": sum(calls) if all(c is not None for c in calls) else None,
               "campaign_ledger": ledger.relative_to(REPO).as_posix(), "campaign_budget_cap_cny": cap,
               "resume_policy": "Saved paid responses and final records remain immutable. Pre-dispatch deferrals remain pending and resume without redrawing paid judgments.",

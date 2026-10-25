@@ -25,7 +25,7 @@ def cost_plan(run_dir: Path, use_pilot=False) -> dict:
         "price_status": "NOT_BOUND", "projection_status": "BLOCKED", "blockers": [
             "Verified provider bindings and all billing dimensions required", "Frozen source scenes not established",
             "Pilot family-level ledger and conservative upper-quantile projection required"],
-        "cap_is_not_cost_estimate": True, "real_model_calls": 0}
+        "cap_is_not_cost_estimate": True, "cost_basis": "USAGE_LIST_PRICE_OR_CONSERVATIVE_UPPER_ESTIMATE_NOT_INVOICE", "real_model_calls": 0}
     if use_pilot:
         from .common import read_jsonl
         from .transport import binding_blockers

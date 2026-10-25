@@ -18,6 +18,8 @@ from urllib.error import HTTPError
 from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
+from .evaluation_billing import normalize_usage, validate_billing
+from .evaluation_request_budget import check_request, usage_bound_error
 from .agent_evaluation.budget import Budget, units
 from .agent_evaluation.common import canonical, digest, now, read_json, write_json
 
@@ -154,8 +156,14 @@ class EvaluationRuntime:
         if not isinstance(billing, dict) or any(billing.get(k) is not True for k in
                 ("complete", "verified_upper_bound", "all_charges_in_token_usage")):
             raise RuntimeBlocked("Complete verified token billing is required")
-        for key in ("input_cny_per_million", "output_cny_per_million"):
-            _amount(billing.get(key))
+        if "tariff" in billing:
+            try:
+                validate_billing(binding)
+            except ValueError as exc:
+                raise RuntimeBlocked(str(exc)) from None
+        else:
+            for key in ("input_cny_per_million", "output_cny_per_million"):
+                _amount(billing.get(key))
         if type(billing.get("reasoning_in_output")) is not bool:
             raise RuntimeBlocked("Declare reasoning token billing")
         if not billing["reasoning_in_output"]:
@@ -212,20 +220,7 @@ class EvaluationRuntime:
 
     def _normalize(self, raw, request_id):
         raw = raw if isinstance(raw, dict) else {}
-        usage = raw.get("usage", {})
-        usage = usage if isinstance(usage, dict) else {}
-        input_n = _token_count(usage.get("prompt_tokens"))
-        output_n = _token_count(usage.get("completion_tokens"))
-        details = usage.get("completion_tokens_details", {})
-        reasoning = _token_count(details.get("reasoning_tokens")) if isinstance(details, dict) else None
-        rates = self.binding["billing"]
-        cost = None
-        if input_n is not None and output_n is not None:
-            amount = input_n * _amount(rates["input_cny_per_million"]) + output_n * _amount(rates["output_cny_per_million"])
-            if rates["reasoning_in_output"]:
-                cost = float(amount / 1_000_000)
-            elif reasoning is not None:
-                cost = float((amount + reasoning * _amount(rates["reasoning_cny_per_million"])) / 1_000_000)
+        billing_result = normalize_usage(raw, self.binding)
         choices = raw.get("choices")
         choice = choices[0] if isinstance(choices, list) and len(choices) == 1 and isinstance(choices[0], dict) else {}
         message = choice.get("message", {})
@@ -233,19 +228,20 @@ class EvaluationRuntime:
         return {"body": message.get("content"), "finish_reason": choice.get("finish_reason"),
                 "response_model": raw.get("model"), "request_id": request_id,
                 "provider_request_id": raw.get("id"), "system_fingerprint": raw.get("system_fingerprint"),
-                "usage": {"input_tokens": input_n, "output_tokens": output_n, "reasoning_tokens": reasoning},
-                "raw_usage": usage, "cost_cny": cost, "offline": not self.is_live,
+                **billing_result, "offline": not self.is_live,
                 "real_model_calls": 1 if self.is_live else 0}
 
     def _complete(self, path, record, *, cached):
         result = self._normalize(record.get("raw_response"), record["request_id"])
-        result.update(evidence_path=str(path), cached=cached)
+        result.update(evidence_path=str(path), cached=cached, request_budget=record.get("request_budget"))
+        result["request_budget_violation"] = usage_bound_error(result, record.get("request_budget"))
         row = self._reservation(record["request_id"])
         if row is None:
             raise RuntimeBlocked("Cached response is missing its campaign reservation", receipt=result, evidence_path=path)
         if row[2] == "RESERVED":
             try:
-                self.budget.settle(record["request_id"], result["cost_cny"])
+                self.budget.settle(record["request_id"], result["cost_cny"],
+                                   force_unknown=bool(result["request_budget_violation"]))
             except ValueError:
                 record["state"] = "BILLING_UNKNOWN"
                 self._save(path, record)
@@ -297,6 +293,12 @@ class EvaluationRuntime:
         if not isinstance(task_id, str) or not task_id.strip() or type(attempt) is not int or attempt < 1:
             raise RuntimeBlocked("A task ID and positive attempt number are required")
         payload = self._payload(messages)
+        request_budget = None
+        if self.is_live or "request_limits" in self.binding:
+            try:
+                request_budget = check_request(self.binding, payload["messages"])
+            except ValueError as exc:
+                raise RuntimeDeferred(str(exc)) from None
         fingerprint = digest({"binding": self.binding, "payload": payload, "live": self.is_live})
         request_id = "-".join((self.layer, digest(str(self.run_dir))[:16], digest(task_id)[:16], fingerprint[:32]))
         path = self.cache_dir / (request_id + ".json")
@@ -332,7 +334,7 @@ class EvaluationRuntime:
         record = {"request_id": request_id, "fingerprint": fingerprint, "layer": self.layer,
                   "run_id": self.run_dir.name, "task_id": task_id, "attempt": attempt,
                   "mode": "live" if self.is_live else "mock", "created_at": now(),
-                  "state": "PENDING", "payload": payload, "binding_sha256": digest(self.binding)}
+                  "state": "PENDING", "payload": payload, "request_budget": request_budget, "binding_sha256": digest(self.binding)}
         self._save(path, record)
         try:
             if self.is_live:

@@ -175,7 +175,7 @@ def derive(record: dict) -> dict:
     else:
         runtime_cost, real_calls = None, None
     return {"pcs_mean": pcs_mean, "processing_status": status,
-            "runtime_cost_cny": runtime_cost, "real_model_calls": real_calls}
+            "runtime_cost_cny": runtime_cost, "runtime_cost_basis": "USAGE_LIST_PRICE_OR_CONSERVATIVE_UPPER_ESTIMATE_NOT_INVOICE", "real_model_calls": real_calls}
 
 
 def seal(record: dict) -> dict:

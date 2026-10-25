@@ -239,7 +239,7 @@ def run_batch(config_path, *, repo=REPO, authorize_live=False, resume=None,
                         record["real_model_calls"] = metadata.get("real_model_calls", 0)
                 receipt = client.envelope or (getattr(error, "receipt", None) if error else None)
                 if isinstance(receipt, dict):
-                    for field in ("usage", "cost_cny", "response_model", "finish_reason"):
+                    for field in ("usage", "cost_cny", "cost_basis", "list_price_cost_cny", "invoice_cost_cny", "billing_sha256", "response_model", "finish_reason"):
                         record[field] = receipt.get(field)
                     record["runtime_request_id"] = receipt.get("request_id")
                     record["cached_response"] = bool(receipt.get("cached", False))

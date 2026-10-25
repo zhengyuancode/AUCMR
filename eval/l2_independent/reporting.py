@@ -16,7 +16,7 @@ ARTIFACT_COLUMNS = (
     "omitted_slots", "validation_errors", "model_config_id", "protocol_version", "prompt_version",
     "cache_key", "conflicts", "unresolved", "attempt", "error_code",
     "real_model_calls", "new_real_model_calls", "runtime_request_id",
-    "response_model", "finish_reason", "usage", "cost_cny", "cached_response",
+    "response_model", "finish_reason", "usage", "cost_cny", "cost_basis", "list_price_cost_cny", "invoice_cost_cny", "billing_sha256", "cached_response",
 )
 
 

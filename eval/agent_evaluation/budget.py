@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import sqlite3
 from contextlib import contextmanager
-from decimal import Decimal, ROUND_CEILING
+from decimal import Decimal, ROUND_CEILING, InvalidOperation
 from pathlib import Path
 
 from .common import Blocked, EvaluationError, canonical, now
@@ -58,14 +58,21 @@ class Budget:
             except sqlite3.IntegrityError as exc:
                 raise Blocked("Request already reserved/charged; reconcile before retry") from exc
 
-    def settle(self, request_id: str, actual: float | None) -> None:
+    def settle(self, request_id: str, actual: float | None, *, force_unknown=False) -> None:
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             row = db.execute("SELECT reserved,state FROM reservations WHERE id=?", (request_id,)).fetchone()
             if not row or row[1] != "RESERVED":
                 raise EvaluationError("Reservation missing or already settled")
-            cost = units(actual) if actual is not None else None
-            state = "SETTLED" if cost is not None and 0 <= cost <= row[0] else "UNKNOWN"
+            try:
+                cost = units(actual) if actual is not None and not isinstance(actual, bool) else None
+                if cost is not None and not 0 <= cost <= 2**63 - 1:
+                    cost = None
+            except (ValueError, TypeError, OverflowError, InvalidOperation):
+                # Malformed/oversized charges are uncertain, not zero. Commit
+                # UNKNOWN before raising so other requests cannot continue.
+                cost = None
+            state = "SETTLED" if not force_unknown and cost is not None and 0 <= cost <= row[0] else "UNKNOWN"
             db.execute("UPDATE reservations SET actual=?,state=? WHERE id=?", (cost, state, request_id))
         if state == "UNKNOWN":
             raise Blocked("Billing missing or exceeded verified bound; preserve reservation and stop")

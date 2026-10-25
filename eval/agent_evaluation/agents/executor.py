@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from eval.implementation import implementation_manifest
+from eval.evaluation_request_budget import check_request
 
 import json
 from pathlib import Path
@@ -63,15 +64,18 @@ class Executor:
         retries, request_count = 0, 0
         while request_count < limit["max_requests_per_task"]:
             request_count += 1
-            # Conservative UTF-8 byte bound (not a provider token estimate); fail instead of truncate.
-            text_bytes = sum(len(canonical(m["content"]).encode()) if isinstance(m["content"], str) else
-                sum(len(part.get("text", "").encode()) for part in m["content"]) for m in messages)
-            image_count = sum(sum(p.get("type") == "image_url" for p in m["content"]) for m in messages if isinstance(m["content"], list))
-            image_bound = binding.get("capabilities", {}).get("image_token_upper_bound", 0 if self.transport.mode == "mock" else None)
-            if image_count and image_bound is None:
-                raise Blocked("Image input bound is not verified")
-            if text_bytes + image_count * (image_bound or 0) > limit["max_input_tokens_per_request"]:
-                raise Blocked("Complete context exceeds configured bound; no silent truncation")
+            request_budget = None
+            if self.transport.mode != "mock":
+                try:
+                    request_budget = check_request(binding, messages, input_limit=limit["max_input_tokens_per_request"])
+                except ValueError as exc:
+                    raise Blocked(str(exc)) from None
+            else:
+                # Scripted offline fixtures have no model tokens or image charges.
+                text_bytes = sum(len(canonical(m["content"]).encode()) if isinstance(m["content"], str) else
+                    sum(len(p.get("text", "").encode()) for p in m["content"]) for m in messages)
+                if text_bytes > limit["max_input_tokens_per_request"]:
+                    raise Blocked("Complete mock context exceeds configured bound")
             request_id = digest(["L3", str(self.run_dir.resolve()), task_id, fingerprint, request_count])
             upper = {k: 0 for k in ("input", "output", "reasoning", "images", "other")} if self.transport.mode == "mock" else binding.get("per_request_upper_bound")
             result, error, status, start = recovery.request(request_id, binding, messages, task, request_count, upper)
@@ -111,7 +115,7 @@ class Executor:
                           role=role, view="SYSTEM", input_hash=fingerprint, version=version)
             append_unique(self.run_dir / "call_ledger.jsonl", call)
             append_unique(self.run_dir / "request_trace.jsonl", {"request_record_id": call["record_id"], "session_id": session,
-                "started": start, "finished": now(), "response": result, "error": error, "messages_hash": digest(messages)}, key="request_record_id")
+                "started": start, "finished": now(), "response": result, "error": error, "request_budget": request_budget, "messages_hash": digest(messages)}, key="request_record_id")
             if status == "UNKNOWN":
                 raise Blocked("Unknown charge; request persisted, manual reconciliation required")
             if status != "OK":

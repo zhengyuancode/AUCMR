@@ -48,7 +48,8 @@ class TaskRecovery:
             result = saved["result"]
             cost = result.get("cost_cny") if result else (0 if self.transport.mode == "mock" else None)
             try:
-                self.budget.settle(request_id, cost)
+                self.budget.settle(request_id, cost,
+                                   force_unknown=bool(result and result.get("request_budget_violation")))
             except Blocked:
                 saved["status"] = "UNKNOWN"
         elif row[0] != "SETTLED":

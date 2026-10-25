@@ -78,10 +78,10 @@ def test_l3_raw_http_error_shape_is_persisted_before_settlement(tmp_path,monkeyp
     from eval.agent_evaluation.transport import LiveTransport
     from eval.agent_evaluation.agents.recovery import TaskRecovery
     from eval.agent_evaluation.budget import Budget
-    binding={'base_url':'https://example.invalid/v1','api_key_env':'CONSTRUCTED_KEY',
-             'api_model_id':'fixture','parameters':{},'provider':'fixture',
-             'billing':{'all_charges_in_token_usage':True,'reasoning_in_output':True,
-                        'input_cny_per_million':1,'output_cny_per_million':1}}
+    from tests.test_evaluation_billing_budget import binding as bounded_binding, tier
+    binding = bounded_binding()
+    binding['api_key_env'] = 'CONSTRUCTED_KEY'
+    binding['billing']['tariff']['tiers'] = [tier(0, None, 1, 1, 1)]
     raw={'model':'fixture','choices':[], 'usage':{'prompt_tokens':100,'completion_tokens':50},
          'echo':'constructed-secret'}
     class Opener:
@@ -91,7 +91,7 @@ def test_l3_raw_http_error_shape_is_persisted_before_settlement(tmp_path,monkeyp
     transport=LiveTransport.__new__(LiveTransport)
     budget=Budget(tmp_path/'budget.sqlite')
     recovery=TaskRecovery(tmp_path,'fixture','fingerprint',budget,transport)
-    result,_,_,_=recovery.request('request',binding,[],{'task_id':'fixture'},1,
+    result,_,_,_=recovery.request('request',binding,[{'role':'user','content':'x'*200}],{'task_id':'fixture'},1,
         {'input':.001,'output':.001,'reasoning':0,'images':0,'other':0})
     saved=json.loads(next((tmp_path/'task_progress').rglob('request-1.json')).read_text(encoding='utf-8'))
     assert saved['result']['raw_response']['choices']==[]
