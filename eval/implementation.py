@@ -6,7 +6,7 @@ from pathlib import Path
 def implementation_manifest(layer: str) -> dict[str, str]:
     root = Path(__file__).resolve().parents[1]
     packages = {"l2": "l2_independent", "l3": "agent_evaluation", "l4": "l4_agent"}
-    common = {"eval/implementation.py", "eval/evaluation_runtime.py",
+    common = {"eval/implementation.py", "eval/evaluation_runtime.py", "eval/serialized_slots.py",
               "eval/agent_evaluation/__init__.py", "eval/agent_evaluation/common.py",
               "eval/agent_evaluation/budget.py", "eval/agent_evaluation/source_access.py"}
     if layer == "legacy":

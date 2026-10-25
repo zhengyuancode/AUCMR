@@ -100,7 +100,7 @@ class OfflineAcceptance(unittest.TestCase):
         refusal = {"slots": {"goal": {}}, "quality_flags": [{"flag_type": "unresolvable_use_case"}]}
         self.assertEqual(self.make_artifact(refusal)["state"], "ABSTAINED")
         self.assertTrue(self.make_artifact(refusal)["omitted_slots"])
-        self.assertEqual(self.make_artifact(refusal, method="LVLM-Direct")["state"], "STRUCTURE_ERROR")
+        self.assertEqual(self.make_artifact(refusal, method="LVLM-Direct")["state"], "ABSTAINED")
         refusal["slots"]["goal"] = {"claims": [{"content": "Nonempty"}]}
         a = self.make_artifact(refusal)
         self.assertEqual(len(a["claims"]), 1)

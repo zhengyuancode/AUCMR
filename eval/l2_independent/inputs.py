@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+from eval.serialized_slots import omitted_claims_are_empty
 
 from .common import (L2Error, SLOTS, PROTOCOL_VERSION, PROMPT_VERSION,
                      canonical, confined, digest, read_json, reject_secrets)
@@ -106,7 +107,6 @@ def adapt_bytes(raw, target, method, batch_id, *, data_origin="REAL", path=None)
     a["explicit_refusal"] = isinstance(flags, list) and any(
         isinstance(f, dict) and f.get("flag_type") == "unresolvable_use_case" for f in flags)
     omitted = []
-    missing_claims = []
     any_raw = False
     for slot in SLOTS:
         if slot not in slots:
@@ -116,13 +116,18 @@ def adapt_bytes(raw, target, method, batch_id, *, data_origin="REAL", path=None)
         if not isinstance(item, dict):
             issues.append(slot + ":SLOT_NOT_OBJECT")
             continue
+        if "slot" in item and item["slot"] != slot:
+            issues.append(slot + ":SLOT_NAME_MISMATCH")
         raw_text = item.get("raw_text")
         if raw_text is not None and not isinstance(raw_text, str):
             issues.append(slot + ":RAW_TEXT_NOT_STRING")
         if isinstance(raw_text, str) and raw_text.strip():
             any_raw = True
         if "claims" not in item:
-            missing_claims.append(slot)
+            if omitted_claims_are_empty(item, slot, refusal=a["explicit_refusal"]):
+                a["empty_slots"].append(slot)
+            else:
+                issues.append(slot + ":MISSING_CLAIMS")
             continue
         claims = item["claims"]
         if not isinstance(claims, list):
@@ -147,10 +152,9 @@ def adapt_bytes(raw, target, method, batch_id, *, data_origin="REAL", path=None)
             a["assertions"].append(assertion)
     a["omitted_slots"] = omitted
     # Early refusal serialization can contain only an empty goal and omit all other slots.
-    clean_early_refusal = a["explicit_refusal"] and not a["assertions"] and not any_raw and not issues
+    clean_early_refusal = a["explicit_refusal"] and "goal" in slots and not a["assertions"] and not any_raw and not issues
     if not clean_early_refusal:
         issues.extend(s + ":MISSING_SLOT" for s in omitted)
-        issues.extend(s + ":MISSING_CLAIMS" for s in missing_claims)
     if issues:
         a["input_status"] = "STRUCTURE_ERROR"
     elif clean_early_refusal:

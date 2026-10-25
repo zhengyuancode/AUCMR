@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from eval.serialized_slots import omitted_claims_are_empty
 
 from .common import SLOTS, VALID, EvaluationError, digest, file_hash, read_json
 
@@ -36,7 +37,7 @@ def adapt(path: Path, target: dict, method: str) -> dict:
     flags = data.get("quality_flags", [])
     refusal = isinstance(flags, list) and any(isinstance(f, dict) and
         f.get("flag_type") == "unresolvable_use_case" for f in flags)
-    early_eligible = method in {"AUCMR", "CREST w/o cross-slot check"} and refusal
+    early_eligible = refusal and "goal" in slots
     existing_empty = True
     early_errors = []
     for slot in SLOTS:
@@ -49,6 +50,8 @@ def adapt(path: Path, target: dict, method: str) -> dict:
             result["issues"].append(f"{slot}:INVALID_SLOT")
             existing_empty = False
             continue
+        if "slot" in item and item["slot"] != slot:
+            result["issues"].append(f"{slot}:SLOT_NAME_MISMATCH")
         raw = item.get("raw_text", "")
         if raw is not None and not isinstance(raw, str):
             result["issues"].append(f"{slot}:INVALID_RAW_TEXT")
@@ -56,7 +59,10 @@ def adapt(path: Path, target: dict, method: str) -> dict:
         if raw:
             existing_empty = False
         if "claims" not in item:
-            early_errors.append(f"{slot}:RAW_WITHOUT_CLAIMS" if raw else f"{slot}:MISSING_CLAIMS")
+            if omitted_claims_are_empty(item, slot, refusal=refusal):
+                result["empty_slots"].append(slot)
+            else:
+                result["issues"].append(f"{slot}:RAW_WITHOUT_CLAIMS" if raw else f"{slot}:MISSING_CLAIMS")
             continue
         claims = item["claims"]
         if not isinstance(claims, list):

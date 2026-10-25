@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from pathlib import Path
+from eval.serialized_slots import omitted_claims_are_empty
 
 from .protocol import (L4Error, REPO, SLOTS, PROTOCOL_VERSION, digest, file_hash,
                        read_json, save_new, versions)
@@ -90,9 +91,22 @@ def adapt(binding: dict, task: dict, methods: list[str]) -> dict:
     flags = data.get("quality_flags", [])
     refusal = data.get("refusal") is True or data.get("status") == "REFUSED" or (
         isinstance(flags, list) and any(isinstance(f, dict) and f.get("flag_type") == "unresolvable_use_case" for f in flags))
+    omitted = []
     for slot in SLOTS:
+        if slot not in data["slots"]:
+            omitted.append(slot)
+            continue
         item = data["slots"].get(slot)
-        if not isinstance(item, dict) or not isinstance(item.get("claims"), list):
+        if not isinstance(item, dict):
+            artifact["issues"].append(slot + ":INVALID_OR_MISSING_SLOT")
+            continue
+        if "slot" in item and item["slot"] != slot:
+            artifact["issues"].append(slot + ":SLOT_NAME_MISMATCH")
+        if omitted_claims_are_empty(item, slot, refusal=refusal):
+            artifact["slots"][slot] = {"claims": []}
+            artifact["empty_slots"].append(slot)
+            continue
+        if not isinstance(item.get("claims"), list):
             artifact["issues"].append(slot + ":INVALID_OR_MISSING_SLOT")
             continue
         clean = {"claims": []}
@@ -114,6 +128,17 @@ def adapt(binding: dict, task: dict, methods: list[str]) -> dict:
             else:
                 artifact["empty_slots"].append(slot)
         artifact["slots"][slot] = clean
+    # The producer may stop after an empty goal with an explicit refusal flag.
+    # Retain physical omissions separately; the scoring view contains no content.
+    artifact["omitted_slots"] = omitted
+    early_refusal = (refusal and "goal" in data["slots"] and not artifact["issues"]
+                     and len(artifact["empty_slots"]) + len(omitted) == len(SLOTS))
+    if early_refusal:
+        for slot in omitted:
+            artifact["slots"][slot] = {"claims": []}
+        artifact["empty_slots"] = list(SLOTS)
+    else:
+        artifact["issues"].extend(slot + ":INVALID_OR_MISSING_SLOT" for slot in omitted)
     # Preserve text rather than redact it if identity is embedded in content.
     texts = [task["name"], task["actor"]]
     texts += [c["content"] for s in artifact["slots"].values() for c in s["claims"]]
