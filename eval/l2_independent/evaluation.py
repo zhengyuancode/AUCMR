@@ -1,7 +1,10 @@
 """Injectable clients, authorization gates, independent records and strict response validation."""
 from __future__ import annotations
 
+from eval.evaluation_cost_policy import interface_ready
+
 from eval.implementation import implementation_manifest
+from eval.evaluation_response_format import normalize_json_envelope
 
 import copy
 import json
@@ -45,7 +48,7 @@ def require_live_authorization(config, explicit_authorization=False):
     if config.get("live_authorized") is not True or explicit_authorization is not True:
         raise L2Error("Live use requires both configuration and explicit per-run authorization")
     model = config.get("model", {})
-    if model.get("binding_status") != "BOUND":
+    if not interface_ready(model):
         raise L2Error("The independent L2 model is not bound")
     for key in ("provider", "model_id", "model_revision", "base_url", "api_key_env"):
         if not isinstance(model.get(key), str) or not model[key].strip():
@@ -95,6 +98,7 @@ def _issue(item, kind, valid_ids):
 
 def parse_response(raw, artifact):
     result = {"conflicts": [], "unresolved": [], "validation_errors": [], "duplicates_removed": 0}
+    raw, result["response_format"] = normalize_json_envelope(raw)
     try:
         body = json.loads(raw)
     except (ValueError, TypeError):

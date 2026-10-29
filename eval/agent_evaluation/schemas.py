@@ -40,7 +40,10 @@ def record(kind: str, payload: dict | None, *, run_id: str, target_id: str | Non
 
 def exact_ids(requested: list[str], returned: list[str]) -> None:
     if len(returned) != len(set(returned)) or len(requested) != len(set(requested)) or set(requested) != set(returned):
-        raise EvaluationError("Missing, duplicated or unauthorized response IDs")
+        raise EvaluationError("Missing, duplicated or unauthorized response IDs: " +
+            str({"missing": sorted(set(requested)-set(returned)),
+                 "unexpected": sorted(set(returned)-set(requested)),
+                 "duplicated": sorted({x for x in returned if returned.count(x)>1})}))
 
 
 def check_locators(locators: list[dict], sources: list[dict], access: list[dict] | None = None) -> None:

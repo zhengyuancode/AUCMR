@@ -1,111 +1,201 @@
-1: from PIL import Image
-2: import os
-3: import json
-4: import sys
-5: 
-6: # Keep the released implementation inside its vendored package namespace so its
-7: # generic ``utils``/``agent`` package names do not shadow AUCMR modules.
-8: from .agent.agent_prompt import seeker_prompt,inspector_prompt,answer_prompt
-9: from .agent.map_dict import arrangement_map_dict,page_map_dict_normal,page_map_dict
-10: 
-11: from .utils.parse_tool import extract_json
-12: from .utils.image_preprosser import concat_images_with_bbox
-13: 
-14: class Seeker:
-15:     def __init__(self, vlm):
-16:         self.vlm = vlm
-17:         self.seeker_multi_image = False
-18: 
-19:         if self.seeker_multi_image:
-20:             self.page_map = page_map_dict_normal
-21:         else:
-22:             self.page_map = page_map_dict
-23:     def run(self, query=None, images_path=None, feedback=None):
-24: 
-25:         if query is not None and images_path is not None:
-26:             self.buffer_images = images_path
-27:             self.query = query
-28:             prompt = seeker_prompt.replace('{question}', self.query).replace('{page_map}', self.page_map[len(self.buffer_images)])
-29:         
-30:         elif feedback is not None:
-31:             additional_information = self.query + '\n\n## Additional Information\n' + feedback
-32:             prompt = seeker_prompt.replace('{question}', additional_information).replace('{page_map}', self.page_map[len(self.buffer_images)])        
-33: 
-34:         if self.seeker_multi_image:
-35:             input_images = self.buffer_images
-36:         else:
-37:             input_images = [concat_images_with_bbox(self.buffer_images, arrangement=arrangement_map_dict[len(self.buffer_images)], scale=1, line_width=40)]
-38: 
-39:         times = 0
-40:         while True:
-41:             if times > 2:
-42:                 # return None, None, None
-43:                 raise Exception('seeker time out')
-44:             times += 1
-45:             select_response = self.vlm.generate(query=prompt, image=input_images)
-46:             print(select_response)
-47:             try:
-48:                 select_response_json = extract_json(select_response)
-49:                 reason = select_response_json.get('reason', None)
-50:                 summary = select_response_json.get('summary', None)
-51:                 select_page_num = select_response_json.get('choice', None)
-52:                 if reason is None or summary is None or any([page >= len(self.buffer_images) for page in select_page_num]):
-53:                     raise Exception(f'select json format error: length: {len(self.buffer_images)}')
-54: 
-55:                 selected_images = [self.buffer_images[page] for page in select_page_num]
-56:                 self.buffer_images = [image for image in self.buffer_images if image not in selected_images]
-57: 
-58:             except Exception as e:
-59:                 print(e)
-60:                 print(select_response)
-61:                 print('seeker')
-62:                 continue
-63:             break
-64:         
-65:         return selected_images, summary, reason
-66: 
-67: class Inspector:
-68:     def __init__(self, vlm):
-69:         self.vlm = vlm
-70:         self.inspector_multi_image = False
-71: 
-72:         if self.inspector_multi_image:
-73:             self.page_map = page_map_dict_normal
-74:         else:
-75:             self.page_map = page_map_dict
-76: 
-77:         self.buffer_images = []
-78: 
-79:     def run(self, query, images_path):
-80:         # answer or not, (images, candidate)/feedback
-81:         if len(self.buffer_images) == 0 and len(images_path) == 0:
-82:             return None, None, None
-83:         elif len(images_path) == 0:
-84:             return 'synthesizer', None, self.buffer_images
-85:         elif len(images_path) != 0:
-86:             self.buffer_images.extend(images_path)
-87: 
-88:         if self.inspector_multi_image:
-89:             input_images = self.buffer_images
-90:         else:
-91:             input_images = [concat_images_with_bbox(self.buffer_images, arrangement=arrangement_map_dict[len(self.buffer_images)], scale=1, line_width=40)]
-92: 
-93:         prompt = inspector_prompt.replace('{question}',query).replace('{page_map}',self.page_map[len(self.buffer_images)])
-94: 
-95:         times = 0
-96:         while True:
-97:             if times >2:
-98:                 raise Exception('Inspector time out')
-99:                 # return None, None, None
-100:             times +=1
-101: 
-102:             response = self.vlm.generate(query=prompt,image=input_images)
-103:             print(response)
-104:             try:
-105:                 response_json = extract_json(response)
-106:                 # thought
-107:                 reason = response_json.get('reason',None)
-108:                 # if feedback
-109:                 info = response_json.get('information',None)
-110:                 choice = response_json.get('choice',None)
+(aucmr) ➜  AUCMR git:(temp) ✗ cd /home/dzy/code/TOSEM2026/AUCMR && conda activate aucmr && git rev-parse HEAD && git --no-optional-locks status --short && git diff --stat -- eval config scripts tests
+8c90996ef95069c1b4c304f08c294f285673d1f2
+ ? eval/vendor/ReAct
+ m eval/vendor/VDocRAG
+ m eval/vendor/ViDoRAG
+ M outputs/aucmr_full/jtvauctions/Customer_Browse_and_Search_Products.json
+ M outputs/aucmr_full/jtvauctions/Customer_Complete_Checkout_and_Payment.json
+ M outputs/aucmr_full/jtvauctions/Customer_List_Personal_Jewelry_for_Auction.json
+ M outputs/aucmr_full/jtvauctions/Customer_Manage_Account_Settings.json
+ M outputs/aucmr_full/jtvauctions/Customer_Monitor_Current_and_Past_Auction_Status.json
+ M outputs/aucmr_full/jtvauctions/Customer_Place_Bid_on_Auction_Item.json
+ M outputs/aucmr_full/jtvauctions/Customer_Register_Customer_Account.json
+ M outputs/aucmr_full/jtvauctions/Customer_Retract_a_Confirmed_Bid.json
+ M outputs/aucmr_full/jtvauctions/Customer_Transfer_a_Winning_Order_to_Another_Customer.json
+ M outputs/aucmr_full/milstd6016b_sec4/C2_JU_Define_Reference_Points_and_Geometric_Areas.json
+ M outputs/aucmr_full/milstd6016b_sec4/C2_JU_Exchange_IFF_and_SIF_Transponder_Data.json
+ M outputs/aucmr_full/milstd6016b_sec4/C2_JU_Manage_Track_Identity_Classification.json
+ M outputs/aucmr_full/milstd6016b_sec4/C2_JU_Publish_Air_and_Surface_Surveillance_Tracks.json
+ M outputs/aucmr_full/milstd6016b_sec4/C2_JU_Resolve_Dual_Designations_via_Track_Correlation.json
+ M outputs/aucmr_full/milstd6016b_sec4/C2_JU_Terminate_and_Purge_Surveillance_Tracks.json
+ M outputs/aucmr_full/milstd6016b_sec4/C2_JU_Transfer_Reporting_Responsibility.json
+ M outputs/aucmr_full/milstd6016b_sec4/Non-C2_JU_Receive_Situational_Awareness_Data.json
+ M outputs/aucmr_full/milstd6016b_sec4/System_Operator_Initiate_Emergency_Point_Reports.json
+ M outputs/baselines/jtvauctions/Customer_Browse_and_Search_Products_LVLM-Direct.json
+ M outputs/baselines/jtvauctions/Customer_Browse_and_Search_Products_ReAct-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Browse_and_Search_Products_TextRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Browse_and_Search_Products_VDocRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Browse_and_Search_Products_ViDoRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Complete_Checkout_and_Payment_LVLM-Direct.json
+ M outputs/baselines/jtvauctions/Customer_Complete_Checkout_and_Payment_ReAct-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Complete_Checkout_and_Payment_TextRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Complete_Checkout_and_Payment_VDocRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Complete_Checkout_and_Payment_ViDoRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_List_Personal_Jewelry_for_Auction_LVLM-Direct.json
+ M outputs/baselines/jtvauctions/Customer_List_Personal_Jewelry_for_Auction_ReAct-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_List_Personal_Jewelry_for_Auction_TextRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_List_Personal_Jewelry_for_Auction_VDocRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_List_Personal_Jewelry_for_Auction_ViDoRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Manage_Account_Settings_LVLM-Direct.json
+ M outputs/baselines/jtvauctions/Customer_Manage_Account_Settings_ReAct-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Manage_Account_Settings_TextRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Manage_Account_Settings_VDocRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Manage_Account_Settings_ViDoRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Monitor_Current_and_Past_Auction_Status_LVLM-Direct.json
+ M outputs/baselines/jtvauctions/Customer_Monitor_Current_and_Past_Auction_Status_ReAct-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Monitor_Current_and_Past_Auction_Status_TextRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Monitor_Current_and_Past_Auction_Status_VDocRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Monitor_Current_and_Past_Auction_Status_ViDoRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Place_Bid_on_Auction_Item_LVLM-Direct.json
+ M outputs/baselines/jtvauctions/Customer_Place_Bid_on_Auction_Item_ReAct-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Place_Bid_on_Auction_Item_TextRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Place_Bid_on_Auction_Item_VDocRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Place_Bid_on_Auction_Item_ViDoRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Register_Customer_Account_LVLM-Direct.json
+ M outputs/baselines/jtvauctions/Customer_Register_Customer_Account_ReAct-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Register_Customer_Account_TextRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Register_Customer_Account_VDocRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Register_Customer_Account_ViDoRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Retract_a_Confirmed_Bid_LVLM-Direct.json
+ M outputs/baselines/jtvauctions/Customer_Retract_a_Confirmed_Bid_ReAct-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Retract_a_Confirmed_Bid_TextRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Retract_a_Confirmed_Bid_VDocRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Retract_a_Confirmed_Bid_ViDoRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Transfer_a_Winning_Order_to_Another_Customer_LVLM-Direct.json
+ M outputs/baselines/jtvauctions/Customer_Transfer_a_Winning_Order_to_Another_Customer_ReAct-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Transfer_a_Winning_Order_to_Another_Customer_TextRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Transfer_a_Winning_Order_to_Another_Customer_VDocRAG-Elaborate.json
+ M outputs/baselines/jtvauctions/Customer_Transfer_a_Winning_Order_to_Another_Customer_ViDoRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Define_Reference_Points_and_Geometric_Areas_LVLM-Direct.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Define_Reference_Points_and_Geometric_Areas_ReAct-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Define_Reference_Points_and_Geometric_Areas_TextRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Define_Reference_Points_and_Geometric_Areas_VDocRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Define_Reference_Points_and_Geometric_Areas_ViDoRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Exchange_IFF_and_SIF_Transponder_Data_LVLM-Direct.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Exchange_IFF_and_SIF_Transponder_Data_ReAct-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Exchange_IFF_and_SIF_Transponder_Data_TextRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Exchange_IFF_and_SIF_Transponder_Data_VDocRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Exchange_IFF_and_SIF_Transponder_Data_ViDoRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Manage_Track_Identity_Classification_LVLM-Direct.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Manage_Track_Identity_Classification_ReAct-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Manage_Track_Identity_Classification_TextRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Manage_Track_Identity_Classification_VDocRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Manage_Track_Identity_Classification_ViDoRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Publish_Air_and_Surface_Surveillance_Tracks_LVLM-Direct.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Publish_Air_and_Surface_Surveillance_Tracks_ReAct-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Publish_Air_and_Surface_Surveillance_Tracks_TextRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Publish_Air_and_Surface_Surveillance_Tracks_VDocRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Publish_Air_and_Surface_Surveillance_Tracks_ViDoRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Resolve_Dual_Designations_via_Track_Correlation_LVLM-Direct.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Resolve_Dual_Designations_via_Track_Correlation_ReAct-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Resolve_Dual_Designations_via_Track_Correlation_TextRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Resolve_Dual_Designations_via_Track_Correlation_VDocRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Resolve_Dual_Designations_via_Track_Correlation_ViDoRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Terminate_and_Purge_Surveillance_Tracks_LVLM-Direct.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Terminate_and_Purge_Surveillance_Tracks_ReAct-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Terminate_and_Purge_Surveillance_Tracks_TextRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Terminate_and_Purge_Surveillance_Tracks_VDocRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Terminate_and_Purge_Surveillance_Tracks_ViDoRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Transfer_Reporting_Responsibility_LVLM-Direct.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Transfer_Reporting_Responsibility_ReAct-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Transfer_Reporting_Responsibility_TextRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Transfer_Reporting_Responsibility_VDocRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/C2_JU_Transfer_Reporting_Responsibility_ViDoRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/Non-C2_JU_Receive_Situational_Awareness_Data_LVLM-Direct.json
+ M outputs/baselines/milstd6016b_sec4/Non-C2_JU_Receive_Situational_Awareness_Data_ReAct-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/Non-C2_JU_Receive_Situational_Awareness_Data_TextRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/Non-C2_JU_Receive_Situational_Awareness_Data_VDocRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/Non-C2_JU_Receive_Situational_Awareness_Data_ViDoRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/System_Operator_Initiate_Emergency_Point_Reports_LVLM-Direct.json
+ M outputs/baselines/milstd6016b_sec4/System_Operator_Initiate_Emergency_Point_Reports_ReAct-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/System_Operator_Initiate_Emergency_Point_Reports_TextRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/System_Operator_Initiate_Emergency_Point_Reports_VDocRAG-Elaborate.json
+ M outputs/baselines/milstd6016b_sec4/System_Operator_Initiate_Emergency_Point_Reports_ViDoRAG-Elaborate.json
+ M outputs/crest_without_dra/jtvauctions/Customer_Browse_and_Search_Products.json
+ M outputs/crest_without_dra/jtvauctions/Customer_Complete_Checkout_and_Payment.json
+ M outputs/crest_without_dra/jtvauctions/Customer_List_Personal_Jewelry_for_Auction.json
+ M outputs/crest_without_dra/jtvauctions/Customer_Manage_Account_Settings.json
+ M outputs/crest_without_dra/jtvauctions/Customer_Monitor_Current_and_Past_Auction_Status.json
+ M outputs/crest_without_dra/jtvauctions/Customer_Place_Bid_on_Auction_Item.json
+ M outputs/crest_without_dra/jtvauctions/Customer_Register_Customer_Account.json
+ M outputs/crest_without_dra/jtvauctions/Customer_Retract_a_Confirmed_Bid.json
+ M outputs/crest_without_dra/jtvauctions/Customer_Transfer_a_Winning_Order_to_Another_Customer.json
+ M outputs/crest_without_dra/milstd6016b_sec4/C2_JU_Define_Reference_Points_and_Geometric_Areas.json
+ M outputs/crest_without_dra/milstd6016b_sec4/C2_JU_Exchange_IFF_and_SIF_Transponder_Data.json
+ M outputs/crest_without_dra/milstd6016b_sec4/C2_JU_Manage_Track_Identity_Classification.json
+ M outputs/crest_without_dra/milstd6016b_sec4/C2_JU_Publish_Air_and_Surface_Surveillance_Tracks.json
+ M outputs/crest_without_dra/milstd6016b_sec4/C2_JU_Resolve_Dual_Designations_via_Track_Correlation.json
+ M outputs/crest_without_dra/milstd6016b_sec4/C2_JU_Terminate_and_Purge_Surveillance_Tracks.json
+ M outputs/crest_without_dra/milstd6016b_sec4/C2_JU_Transfer_Reporting_Responsibility.json
+ M outputs/crest_without_dra/milstd6016b_sec4/Non-C2_JU_Receive_Situational_Awareness_Data.json
+ M outputs/crest_without_dra/milstd6016b_sec4/System_Operator_Initiate_Emergency_Point_Reports.json
+ M test.txt
+?? config/evaluation_batches/
+?? config/evaluation_models.glm_doubao_qwen.json
+?? outputs/agent_evaluation/
+?? outputs/agent_l2_independent/
+?? outputs/agent_l4/
+?? outputs/evaluation_preparation/
+
+[1]  + 2499689 suspended  git diff --stat -- eval config scripts tests
+(aucmr) ➜  AUCMR git:(temp) ✗ >....                                             
+; rows=[]; guard=deny_network(); guard.__enter__(); exec("for name,key,cached in cases:\n b=copy.deepcopy(profile[\"l3\"][key])\n b[\"billing\"][\"all_charges_in_token_usage\"]=True\n b[\"billing\"][\"reasoning_in_output\"]=True\n raw={\"id\":\"SYNTHETIC_OFFLINE\",\"model\":b[\"api_model_id\"],\"choices\":[{\"message\":{\"content\":\"{}\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":10000,\"completion_tokens\":1000,\"prompt_tokens_details\":{\"cached_tokens\":cached},\"completion_tokens_details\":{\"reasoning_tokens\":0}}}\n pr=b[\"pricing_reference\"]\n rates=pr[\"tiers\"][0] if \"tiers\" in pr else pr\n cached_rate=rates.get(\"cache_hit\",rates.get(\"implicit_cache_input\"))\n expected=((Decimal(10000-cached)*Decimal(str(rates[\"input\"])))+(Decimal(cached)*Decimal(str(cached_rate)))+Decimal(1000)*Decimal(str(rates[\"output\"])))/Decimal(1000000)\n l3=normalize_response(raw,b)[\"cost_cny\"]\n shared=EvaluationRuntime._normalize(SimpleNamespace(binding=b,is_live=False),raw,\"SYNTHETIC_OFFLINE\")[\"cost_cny\"]\n rows.append({\"case\":name,\"input_tokens\":10000,\"cached_input_tokens\":cached,\"output_tokens\":1000,\"L3_current_cost\":l3,\"L2_L4_current_cost\":shared,\"configured_tariff_expected\":str(expected),\"L3_matches_tariff\":Decimal(str(l3))==expected,\"L2_L4_matches_tariff\":Decimal(str(shared))==expected})"); guard.__exit__(None,None,None); assert p.read_bytes()==original; print(json.dumps({"mode":"SYNTHETIC_ARITHMETIC_ONLY","source_profile_sha256":hashlib.sha256(original).hexdigest(),"cases":rows,"profile_unchanged":True,"provider_usage_schema":"NOT_VERIFIED_BY_SYNTHETIC_CASES","invoice_status":"NOT_AN_ACCOUNT_BILL","runtime_constructed":False,"ledger_created":False,"real_model_calls":0,"files_written":0},ensure_ascii=False,indent=2))'
+{
+  "mode": "SYNTHETIC_ARITHMETIC_ONLY",
+  "source_profile_sha256": "3ef8d31b2db559240a615e503d58134a642296df5034f01a1711f813287557fe",
+  "cases": [
+    {
+      "case": "GLM_LOW_TIER_NO_CACHE",
+      "input_tokens": 10000,
+      "cached_input_tokens": 0,
+      "output_tokens": 1000,
+      "L3_current_cost": 0.026,
+      "L2_L4_current_cost": 0.026,
+      "configured_tariff_expected": "0.013",
+      "L3_matches_tariff": false,
+      "L2_L4_matches_tariff": false
+    },
+    {
+      "case": "GLM_LOW_TIER_WITH_CACHE",
+      "input_tokens": 10000,
+      "cached_input_tokens": 8000,
+      "output_tokens": 1000,
+      "L3_current_cost": 0.026,
+      "L2_L4_current_cost": 0.026,
+      "configured_tariff_expected": "0.0066",
+      "L3_matches_tariff": false,
+      "L2_L4_matches_tariff": false
+    },
+    {
+      "case": "DOUBAO_WITH_CACHE",
+      "input_tokens": 10000,
+      "cached_input_tokens": 8000,
+      "output_tokens": 1000,
+      "L3_current_cost": 0.09,
+      "L2_L4_current_cost": 0.09,
+      "configured_tariff_expected": "0.0516",
+      "L3_matches_tariff": false,
+      "L2_L4_matches_tariff": false
+    },
+    {
+      "case": "QWEN_WITH_CACHE",
+      "input_tokens": 10000,
+      "cached_input_tokens": 8000,
+      "output_tokens": 1000,
+      "L3_current_cost": 0.156,
+      "L2_L4_current_cost": 0.156,
+      "configured_tariff_expected": "0.072",
+      "L3_matches_tariff": false,
+      "L2_L4_matches_tariff": false
+    }
+  ],
+  "profile_unchanged": true,
+  "provider_usage_schema": "NOT_VERIFIED_BY_SYNTHETIC_CASES",
+  "invoice_status": "NOT_AN_ACCOUNT_BILL",
+  "runtime_constructed": false,
+  "ledger_created": false,
+  "real_model_calls": 0,
+  "files_written": 0
+}
+(aucmr) ➜  AUCMR git:(temp) ✗ 
 

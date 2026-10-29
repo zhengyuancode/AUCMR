@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from urllib.parse import urlparse
 
 from .common import Blocked, EvaluationError, canonical, digest
+from ..evaluation_cost_policy import provider_managed, interface_ready
 from ..evaluation_billing import normalize_usage, validate_billing
 from ..evaluation_request_budget import check_request, validate_limits, usage_bound_error
 
@@ -41,10 +42,22 @@ class MockTransport:
 
 def binding_blockers(config: dict) -> list[str]:
     errors = []
+    if any(provider_managed(b) != (config.get("cost_control") == "PROVIDER_MANAGED") for b in config["models"].values()):
+        errors.append("INCONSISTENT_COST_CONTROL")
     if not config["budgets"].get("live_authorized"):
         errors.append("LIVE_NOT_AUTHORIZED")
     for name in ("A", "B", "C"):
         b = config["models"][name]
+        if provider_managed(b):
+            if not interface_ready(b):
+                errors.append(f"{name}:INTERFACE_NOT_VERIFIED")
+            if not os.environ.get(b.get("api_key_env", "")):
+                errors.append(f"{name}:KEY_NOT_SET")
+            try:
+                check_request(b, [{"role": "user", "content": "CONFIG_CHECK"}])
+            except (ValueError, KeyError, TypeError) as exc:
+                errors.append(f"{name}:{exc}")
+            continue
         required = ("base_url", "api_key_env", "parameters", "capabilities", "billing", "per_request_upper_bound", "binding_evidence")
         if b.get("binding_status") != "BOUND" or any(k not in b for k in required):
             errors.append(f"{name}:NOT_BOUND")

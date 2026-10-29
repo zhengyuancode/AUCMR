@@ -26,8 +26,9 @@ class Orchestrator:
         else:
             from .common import REPO, confined
             ledger = confined(REPO, config["campaign_ledger"])
-        self.budget = Budget(ledger, config["budgets"]["campaign_hard_cap"],
-                             config["judging"]["max_concurrency"], config["judging"]["max_provider_concurrency"])
+        self.budget = Budget(ledger, config["budgets"].get("campaign_hard_cap") or 500,
+                             config["judging"]["max_concurrency"], config["judging"]["max_provider_concurrency"],
+                             provider_managed=config.get("cost_control") == "PROVIDER_MANAGED")
         self.executor = Executor(run_dir, config, transport, self.budget)
         self.references = read_json(run_dir / "scenario_freeze.json") if (run_dir / "scenario_freeze.json").exists() else {}
         for reference in self.references.values():

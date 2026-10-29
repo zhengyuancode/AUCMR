@@ -42,6 +42,55 @@ class RequestRecoveryTests(unittest.TestCase):
                 self.execute()
         self.assertEqual(len(self.transport.calls), count)
 
+    def test_retry_receives_failed_response_and_specific_parser_error(self):
+        malformed = '{"records":[}'
+        def scripted(task, messages, attempt):
+            if attempt == 1:
+                self.assertIn('系统提示词是评价规则，不是来源正文', messages[-1]['content'])
+                return malformed
+            self.assertEqual(messages[-2], {'role': 'assistant', 'content': malformed})
+            self.assertIn('JSONDecodeError', messages[-1]['content'])
+            self.assertIn('未读取来源时应先请求工具', messages[-1]['content'])
+            return {'records': []}
+        self.transport.scripted = scripted
+        self.execute()
+        self.assertEqual(len(self.transport.calls), 2)
+        trace = read_jsonl(self.root / 'request_trace.jsonl')
+        self.assertEqual(trace[0]['response']['body'], malformed)
+        self.assertIn('JSONDecodeError', trace[0]['error'])
+        self.execute()
+        self.assertEqual(len(self.transport.calls), 2)
+
+    def test_schema_error_feedback_keeps_location_without_schema_dump(self):
+        from jsonschema import Draft202012Validator
+        self.transport.scripted = lambda task, messages, attempt: {'records': [{'bad': 1}]} if attempt == 1 else {'records': []}
+        source = SourceAccess(self.manifest['sources'], 'C01', 'CONTENT_A', self.root / 'access.jsonl')
+        def validate(rows, access):
+            Draft202012Validator({'type': 'array', 'items': {'type': 'object', 'additionalProperties': False}}).validate(rows)
+        with deny_network():
+            Executor(self.root, self.config, self.transport, self.budget).execute(
+                task_id='schema-error', role='CONTENT_A', view='A_FIRST', kinds=['content'],
+                materials={}, source=source, validate=validate)
+        error = read_jsonl(self.root / 'request_trace.jsonl')[0]['error']
+        self.assertIn('"path":[0]', error)
+        self.assertIn('bad', error)
+        self.assertNotIn('Failed validating', error)
+
+    def test_extra_brace_is_diagnosed_but_not_silently_accepted(self):
+        raw = '{"records":[{"kind":"scope","payload":{}}},{"kind":"scene_proposal","payload":{}}]}'
+        def scripted(task, messages, attempt):
+            if attempt == 1:
+                return raw
+            self.assertIn('单个多余', messages[-1]['content'])
+            self.assertEqual(messages[-2]['content'], raw)
+            return {'records': []}
+        self.transport.scripted = scripted
+        self.execute()
+        trace = read_jsonl(self.root / 'request_trace.jsonl')
+        self.assertIn('JSONDecodeError', trace[0]['error'])
+        self.assertEqual(trace[0]['response']['body'], raw)
+        self.assertEqual(len(self.transport.calls), 2)
+
     def test_incomplete_finish_or_missing_model_never_produces_records(self):
         for number, change in enumerate(({'finish_reason':'content_filter'}, {'finish_reason':None}, {'response_model':None})):
             original = self.transport.request

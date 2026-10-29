@@ -196,6 +196,7 @@ Do NOT use world knowledge — only judge based on the provided evidence."""
             endpoint:  ModelEndpoint，默认 NLI_JUDGE_ENDPOINT（GPT-5.4）
         """
         self._model_fn = model_fn
+        self._recorder = None
         self._max_attempts = max(1, int(max_attempts))
         # A shared judge instance is used by concurrent per-UC evaluation.
         # Identical claim/evidence inputs must receive one identical judgment
@@ -312,6 +313,15 @@ Cockburn slot. Output JSON."""
 
         last_error: Optional[Exception] = None
         try:
+            if self._recorder is not None:
+                dispatch = (lambda: self._model_fn(prompt)) if self._model_fn is not None else (
+                    lambda: self._default_nli_call(prompt, image_paths=image_paths))
+                parsed, replayed = self._recorder.judge(prompt, image_paths, dispatch, self._parse_response)
+                parsed.update(judge_model="injected-test-judge" if self._model_fn is not None else (
+                    self._vision_endpoint.model_name if image_paths else self._endpoint.model_name),
+                    judge_attempts=1, judge_cache_hit=replayed)
+                shared_future.set_result(dict(parsed))
+                return parsed
             for attempt in range(1, self._max_attempts + 1):
                 try:
                     if self._model_fn is not None:
@@ -596,6 +606,8 @@ class MetricsComputer:
                     slot_name=slot_name,
                 )
             except Exception as exc:
+                if getattr(self.nli_judge, "_recorder", None) is not None:
+                    raise  # Keep paid checkpoints; do not proceed after a failed request.
                 failure = {
                     "slot": slot_name,
                     "claim": claim.get("content", ""),

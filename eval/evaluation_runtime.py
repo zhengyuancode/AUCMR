@@ -18,8 +18,10 @@ from urllib.error import HTTPError
 from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
+from .evaluation_cost_policy import provider_managed, interface_ready
 from .evaluation_billing import normalize_usage, validate_billing
 from .evaluation_request_budget import check_request, usage_bound_error
+from .evaluation_response_format import normalize_json_envelope
 from .agent_evaluation.budget import Budget, units
 from .agent_evaluation.common import canonical, digest, now, read_json, write_json
 
@@ -98,7 +100,10 @@ class _NoRedirect(HTTPRedirectHandler):
 class EvaluationRuntime:
     def __init__(self, binding: dict, run_dir: Path, layer: str,
                  campaign_ledger: Path, budget_cap_cny: float = 500,
-                 live_authorized: bool = False, transport=None):
+                 live_authorized: bool = False, transport=None, http_timeout_seconds: int = 120):
+        if type(http_timeout_seconds) is not int or not 1 <= http_timeout_seconds <= 600:
+            raise RuntimeBlocked("HTTP timeout must be an integer between 1 and 600 seconds")
+        self.http_timeout_seconds = http_timeout_seconds
         if not isinstance(binding, dict) or not re.fullmatch(r"[A-Za-z0-9_-]{1,32}", layer):
             raise RuntimeBlocked("Invalid binding or layer")
         _no_secrets(binding)
@@ -117,7 +122,7 @@ class EvaluationRuntime:
         self.real_model_calls = 0
         self.cache_dir = self.run_dir / "runtime_requests"
         try:
-            self.budget = Budget(Path(campaign_ledger), cap=budget_cap_cny)
+            self.budget = Budget(Path(campaign_ledger), cap=budget_cap_cny, provider_managed=provider_managed(binding))
             with self.budget.connect() as db:
                 mode = "live" if self.is_live else "mock"
                 previous = db.execute("SELECT value FROM meta WHERE key='runtime_transport_mode'").fetchone()
@@ -133,7 +138,7 @@ class EvaluationRuntime:
 
     def _payload(self, messages):
         binding = self.binding
-        if binding.get("binding_status") != "BOUND":
+        if not interface_ready(binding):
             raise RuntimeBlocked("MODEL_NOT_BOUND")
         model = binding.get("api_model_id") or binding.get("model_id")
         if any(not isinstance(v, str) or not v.strip() for v in
@@ -152,27 +157,28 @@ class EvaluationRuntime:
         output_limit = parameters.get("max_completion_tokens", parameters.get("max_tokens"))
         if type(output_limit) is not int or output_limit <= 0:
             raise RuntimeBlocked("Bind a positive output token limit")
-        billing = binding.get("billing", {})
-        if not isinstance(billing, dict) or any(billing.get(k) is not True for k in
-                ("complete", "verified_upper_bound", "all_charges_in_token_usage")):
-            raise RuntimeBlocked("Complete verified token billing is required")
-        if "tariff" in billing:
-            try:
-                validate_billing(binding)
-            except ValueError as exc:
-                raise RuntimeBlocked(str(exc)) from None
-        else:
-            for key in ("input_cny_per_million", "output_cny_per_million"):
-                _amount(billing.get(key))
-        if type(billing.get("reasoning_in_output")) is not bool:
-            raise RuntimeBlocked("Declare reasoning token billing")
-        if not billing["reasoning_in_output"]:
-            _amount(billing.get("reasoning_cny_per_million"))
-        bound = binding.get("per_request_upper_bound")
-        if not isinstance(bound, dict) or set(bound) != _COMPONENTS:
-            raise RuntimeBlocked("Complete input/output/reasoning/images/other upper bound required")
-        for value in bound.values():
-            _amount(value)
+        if not provider_managed(binding):
+            billing = binding.get("billing", {})
+            if not isinstance(billing, dict) or any(billing.get(k) is not True for k in
+                    ("complete", "verified_upper_bound", "all_charges_in_token_usage")):
+                raise RuntimeBlocked("Complete verified token billing is required")
+            if "tariff" in billing:
+                try:
+                    validate_billing(binding)
+                except ValueError as exc:
+                    raise RuntimeBlocked(str(exc)) from None
+            else:
+                for key in ("input_cny_per_million", "output_cny_per_million"):
+                    _amount(billing.get(key))
+            if type(billing.get("reasoning_in_output")) is not bool:
+                raise RuntimeBlocked("Declare reasoning token billing")
+            if not billing["reasoning_in_output"]:
+                _amount(billing.get("reasoning_cny_per_million"))
+            bound = binding.get("per_request_upper_bound")
+            if not isinstance(bound, dict) or set(bound) != _COMPONENTS:
+                raise RuntimeBlocked("Complete input/output/reasoning/images/other upper bound required")
+            for value in bound.values():
+                _amount(value)
         if not isinstance(messages, list) or not messages:
             raise RuntimeBlocked("A nonempty messages array is required")
         has_images = False
@@ -225,13 +231,19 @@ class EvaluationRuntime:
         choice = choices[0] if isinstance(choices, list) and len(choices) == 1 and isinstance(choices[0], dict) else {}
         message = choice.get("message", {})
         message = message if isinstance(message, dict) else {}
-        return {"body": message.get("content"), "finish_reason": choice.get("finish_reason"),
+        body, formatting = normalize_json_envelope(message.get("content"))
+        return {"body": message.get("content"), "normalized_body": body, "response_format": formatting,
+                "finish_reason": choice.get("finish_reason"),
                 "response_model": raw.get("model"), "request_id": request_id,
                 "provider_request_id": raw.get("id"), "system_fingerprint": raw.get("system_fingerprint"),
                 **billing_result, "offline": not self.is_live,
                 "real_model_calls": 1 if self.is_live else 0}
 
     def _complete(self, path, record, *, cached):
+        # A new parsing policy must not rewrite a historical paid rejection.
+        if record.get("state") == "REJECTED_RESPONSE":
+            raise RuntimeResponseError(record.get("error") or "REJECTED_RESPONSE",
+                                       receipt=record.get("result"), evidence_path=path)
         result = self._normalize(record.get("raw_response"), record["request_id"])
         result.update(evidence_path=str(path), cached=cached, request_budget=record.get("request_budget"))
         result["request_budget_violation"] = usage_bound_error(result, record.get("request_budget"))
@@ -246,13 +258,17 @@ class EvaluationRuntime:
                 record["state"] = "BILLING_UNKNOWN"
                 self._save(path, record)
                 raise RuntimeBlocked("UNKNOWN_BILLING: preserve the response and reconcile before continuing", receipt=result, evidence_path=path) from None
+        elif row[2] == "UNPRICED" and provider_managed(self.binding):
+            pass
         elif row[2] != "SETTLED":
             raise RuntimeBlocked("UNKNOWN_BILLING: campaign reservation is unresolved", receipt=result, evidence_path=path)
         elif result["cost_cny"] is None or row[1] != units(result["cost_cny"]):
             raise RuntimeBlocked("Cached response billing disagrees with the campaign ledger", receipt=result, evidence_path=path)
         error = None
-        body = result["body"]
-        if result["finish_reason"] != "stop":
+        body = result["normalized_body"]
+        if result["request_budget_violation"]:
+            error = result["request_budget_violation"]
+        elif result["finish_reason"] != "stop":
             error = "INCOMPLETE_FINISH_REASON"
         elif not isinstance(result["response_model"], str) or not result["response_model"]:
             error = "MISSING_RESPONSE_MODEL"
@@ -280,7 +296,7 @@ class EvaluationRuntime:
         request = Request(endpoint, data=canonical(payload).encode("utf-8"), headers={
             "Authorization": "Bearer " + secret, "Content-Type": "application/json"})
         try:
-            with build_opener(ProxyHandler({}), _NoRedirect()).open(request, timeout=120) as response:
+            with build_opener(ProxyHandler({}), _NoRedirect()).open(request, timeout=self.http_timeout_seconds) as response:
                 text = response.read().decode("utf-8", errors="replace")
         except HTTPError as exc:
             return {"http_status": exc.code, "error_response_text": exc.read().decode("utf-8", errors="replace")}
@@ -328,7 +344,7 @@ class EvaluationRuntime:
             if secret in canonical(payload):
                 raise RuntimeBlocked("Request content contains the model credential")
         try:
-            self.budget.reserve(request_id, self.binding["provider"], self.binding["per_request_upper_bound"])
+            self.budget.reserve(request_id, self.binding["provider"], self.binding.get("per_request_upper_bound"))
         except ValueError:
             raise RuntimeDeferred("Campaign request blocked: budget, concurrency, existing request, or unknown charge") from None
         record = {"request_id": request_id, "fingerprint": fingerprint, "layer": self.layer,

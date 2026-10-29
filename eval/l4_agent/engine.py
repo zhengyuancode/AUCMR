@@ -1,6 +1,8 @@
 """One judge, injectable client, explicit authorization before any client call."""
 from __future__ import annotations
 
+from eval.evaluation_cost_policy import interface_ready
+
 import json
 from copy import deepcopy
 from pathlib import Path
@@ -27,7 +29,7 @@ def authorize(config: dict, *, mock: bool, explicit_live: bool = False) -> None:
     model = config["model"]
     if config.get("live_authorized") is not True or explicit_live is not True:
         raise L4Error("LIVE_NOT_AUTHORIZED: stopped before client request")
-    if model.get("binding_status") != "BOUND" or not all(model.get(k) for k in ("provider", "model_id", "config_id")):
+    if not interface_ready(model) or not all(model.get(k) for k in ("provider", "model_id", "config_id")):
         raise L4Error("MODEL_NOT_BOUND: stopped before client request")
     if config["judge"]["version"] == "NOT_BOUND":
         raise L4Error("JUDGE_VERSION_NOT_BOUND")
@@ -75,7 +77,39 @@ def _capture_receipt(record, client):
     record["runtime_receipts"].append({"model_request": number, **deepcopy(receipt)})
 
 
+def bootstrap_sources(tools, task, sources):
+    """Read a small deterministic starting context through the audited tools.
+
+    Uses only target metadata, never method identity or expected scores. Further
+    retrieval remains the judge's responsibility under the same tool limits.
+    """
+    history = []
+    def invoke(name, arguments):
+        call = {"name": name, "arguments": arguments}
+        result = tools.invoke(name, arguments)
+        history.append({"origin": "RUNTIME_SOURCE_BOOTSTRAP", "tool_calls": [call],
+                        "tool_results": [{"call": call, "result": result}]})
+        return result
+    words = task["name"].split()
+    queries = list(dict.fromkeys([task["name"], " ".join(words[:2]), " ".join(words[-2:])]))
+    for source in sources:
+        sid = source["source_id"]
+        for query in queries:
+            found = invoke("source_search", {"source_id": sid, "query": query[:500]})
+            hits = found.get("hits", [])
+            if hits:
+                for hit in hits[:min(2, tools.policy["pages_max"])]:
+                    invoke("source_page", {"source_id": sid, "pdf_page": hit["pdf_page"], "image": False})
+                break
+        else:
+            invoke("source_index", {"source_id": sid})
+    return history
+
+
 def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
+    if config.get('request_organization') == 'L4_SIMULATED_EXPERT_3.0.6':
+        from .expert import judge
+        return judge(artifact, task, sources, config, manifest, run_dir, client)
     record = initial_record(artifact, config, manifest, run_dir.name)
     if artifact["state"] != "PRESENT":
         return seal(record)
@@ -86,6 +120,9 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
                 record["pcs"][s] = absent("SOURCE_UNREADABLE", "来源缺失、变更或不可读取，不能据此记 0。")
         record["prc"]["status"] = "SOURCE_UNREADABLE"
         return seal(record)
+    if config.get("request_organization") == "L4_SLOT_EVIDENCE_2.2.9":
+        from .staged import judge_staged
+        return judge_staged(artifact, task, sources, config, manifest, run_dir, client)
     request = request_for(artifact, task, sources, config["source_policy"])
     try:
         tools = SourceTools(sources, artifact["project_id"], config["source_policy"],
@@ -94,7 +131,34 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
         record["parse_status"] = "SOURCE_UNREADABLE"
         record["validation_errors"] = ["SOURCE_ACCESS_INITIALIZATION_FAILED"]
         return seal(record)
-    history = []
+    history = bootstrap_sources(tools, task, sources) if config.get("source_bootstrap") is True else []
+    validation_retries = 0
+    max_validation_retries = config.get("validation_feedback_max", int(config.get("validation_feedback_once") is True))
+    if type(max_validation_retries) is not int or not 0 <= max_validation_retries <= 3:
+        raise L4Error("Validation feedback must be bounded to 0..3 corrections")
+    seed_path = config.get("validation_seed_records", {}).get(artifact["artifact_id"])
+    if seed_path:
+        prior = read_json(local_path(seed_path))
+        signature = prior.get("record_sha256")
+        if (signature != digest({k: v for k, v in prior.items() if k != "record_sha256"}) or
+                prior.get("artifact_id") != artifact["artifact_id"] or
+                prior.get("input_sha256") != artifact["input_sha256"] or
+                prior.get("model_config_sha256") != digest(config["model"]) or
+                prior.get("source_access") != tools.entries or not prior.get("request_transcript")):
+            raise L4Error("Validation seed identity/source/model mismatch")
+        checked = evaluate_response(prior["raw_response"], artifact, tools.entries)
+        if checked["parse_status"] != "INVALID_RESPONSE":
+            raise L4Error("Only a preserved contract-invalid result can seed correction; scores cannot be redrawn")
+        last = prior["request_transcript"][-1]
+        if last["request"] != request:
+            raise L4Error("Validation seed request changed")
+        history = deepcopy(last["history"]) + [{"validation_feedback": {
+            "errors": checked["validation_errors"], "rejected_response": prior["raw_response"]}}]
+        validation_retries = sum("validation_feedback" in h for h in history)
+        if validation_retries > max_validation_retries:
+            raise L4Error("Cumulative validation correction limit exhausted")
+        record["validation_seed"] = {"path": seed_path, "record_sha256": signature,
+                                     "prior_responses_replayed_without_calls": prior["model_requests"]}
     for _ in range(config["source_policy"]["request_rounds"]):
         try:
             record["model_requests"] += 1
@@ -110,6 +174,12 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
                 parsed = {}
             if "tool_calls" not in parsed:
                 record.update(evaluate_response(raw, artifact, tools.entries))
+                if (record["parse_status"] == "INVALID_RESPONSE" and
+                        validation_retries < max_validation_retries):
+                    validation_retries += 1
+                    history.append({"validation_feedback": {
+                        "errors": deepcopy(record["validation_errors"]), "rejected_response": raw}})
+                    continue
                 break
             calls = parsed["tool_calls"]
             if set(parsed) != {"tool_calls"} or not isinstance(calls, list) or not 1 <= len(calls) <= config["source_policy"]["tools_per_round"]:
@@ -144,6 +214,16 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
             break
     else:
         record["parse_status"] = "REQUEST_LIMIT"
+    # A later failed correction/tool round invalidates partial scores from an
+    # earlier response. Preserve the transcript, but never seal stale scores
+    # under a no-response failure status.
+    if record["parse_status"] not in {"VALID", "INVALID_RESPONSE", "PARSE_FAILED"}:
+        status = record["parse_status"]
+        record["pcs"] = {s: empty_score() if s in artifact["empty_slots"] else
+                         absent(status, "最后一次请求未取得有效判断。") for s in SLOTS}
+        record["prc"] = {"score": None, "status": status,
+                         "reason": "最后一次请求未取得有效判断。", "modifications": [],
+                         "unresolved": [], "validation_errors": []}
     record["source_access"] = tools.entries
     if tools.integrity_failure:
         record["parse_status"] = "SOURCE_CHANGED"
@@ -189,12 +269,16 @@ def evaluate_run(run_dir: Path, client: JudgeClient | None = None, *, mock=False
                 raise L4Error("Saved record belongs to another run")
             validate_record(record, artifact, manifest, config)
             records.append(record)
+            if config.get("stop_on_technical_failure") is True and record["processing_status"] == "TECHNICAL_FAILURE":
+                raise L4Error("TECHNICAL_FAILURE preserved; inspect saved record " + artifact["artifact_id"])
             continue
         sources = [s for s in manifest["sources"] if s["project_id"] == artifact["project_id"]]
         record = _judge_one(artifact, targets[artifact["task_id"]], sources, config, manifest, run_dir, client)
         validate_record(record, artifact, manifest, config)
         save_new(record_path, record)
         records.append(record)
+        if config.get("stop_on_technical_failure") is True and record["processing_status"] == "TECHNICAL_FAILURE":
+            raise L4Error("TECHNICAL_FAILURE preserved; inspect saved record " + artifact["artifact_id"])
         if record.get("stop_run"):
             raise L4Error("RUNTIME_BLOCKED: saved failed artifact " + artifact["artifact_id"] + "; campaign stopped")
     assert_current(run_dir)

@@ -29,6 +29,8 @@ def validate_config(config: dict) -> None:
             for value in obj:
                 no_secrets(value)
     no_secrets(config)
+    if config.get("request_organization") not in (None, "L4_SLOT_EVIDENCE_2.2.9", "L4_SIMULATED_EXPERT_3.0.6"):
+        raise L4Error("Unknown request organization")
     if config.get("data_class") not in {"MOCK_ONLY", "REAL_INPUT_STRUCTURE_ONLY", "REAL_AGENT_EVALUATION"}:
         raise L4Error("Invalid data_class")
     if config.get("protocol_version") != PROTOCOL_VERSION:
@@ -45,6 +47,10 @@ def validate_config(config: dict) -> None:
         raise L4Error("Method IDs must be nonempty strings")
     if len(targets) != len(config["targets"]) or len(methods) != len(set(methods)):
         raise L4Error("Duplicate targets or methods")
+    if config.get('request_organization') == 'L4_SIMULATED_EXPERT_3.0.6':
+        contexts = config.get('source_contexts', {})
+        if set(contexts) != set(targets) or any(set(v) != {'path','sha256'} for v in contexts.values()):
+            raise L4Error('One frozen source context per task required; no per-method overrides')
     for t in targets.values():
         if not all(isinstance(t.get(k), str) and t[k].strip() for k in ("task_id", "project_id", "comparison_group", "name", "actor")):
             raise L4Error("Invalid task input")
@@ -180,6 +186,10 @@ def collect(config: dict) -> dict:
     for binding, artifact in zip(config["input_bindings"], artifacts):
         if "sha256" in binding and artifact["input_sha256"] != binding["sha256"]:
             raise L4Error("Frozen batch output changed or disappeared; prepare a new batch")
+    if config.get('request_organization') == 'L4_SIMULATED_EXPERT_3.0.6':
+        from .expert_sources import load
+        for task in config['targets']:
+            load(config, task, sources)
     manifest = {"batch_id": config["batch_id"], "data_class": config["data_class"],
                 "research_status": "NOT_RESEARCH_DATA" if config["data_class"] == "MOCK_ONLY" else "STRUCTURE_ONLY_NOT_SCORED",
                 "config_sha256": digest(config), "versions": versions(),

@@ -52,6 +52,8 @@ class TaskRecovery:
                                    force_unknown=bool(result and result.get("request_budget_violation")))
             except Blocked:
                 saved["status"] = "UNKNOWN"
+        elif row[0] == "UNPRICED" and self.budget.provider_managed:
+            pass
         elif row[0] != "SETTLED":
             saved["status"] = "UNKNOWN"
         return saved["result"], saved["error"], saved["status"], saved["started"]

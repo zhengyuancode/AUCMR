@@ -36,6 +36,24 @@ def audit(draft):
     findings = {}
     for name, binding in bindings.items():
         problems = []
+        from eval.evaluation_cost_policy import provider_managed, interface_ready
+        if provider_managed(binding):
+            env = binding.get('api_key_env')
+            key_present = bool(env and os.environ.get(env))
+            if not interface_ready(binding):
+                problems.append('INTERFACE_NOT_VERIFIED')
+            if not key_present:
+                problems.append('KEY_NOT_SET')
+            try:
+                smoke = check_request(binding, [{'role':'user','content':'OFFLINE_STRUCTURE_CHECK_ONLY'}])
+            except (ValueError, TypeError, KeyError) as exc:
+                smoke = None
+                problems.append(str(exc))
+            findings[name] = {'model':binding.get('api_model_id', binding.get('model_id')),
+                              'key_env':env,'key_present':key_present,'missing_conditions':problems,
+                              'cost_control':'PROVIDER_MANAGED','verified_token_bound':False,
+                              'constructed_text_request_check':smoke}
+            continue
         if binding.get('binding_status') != 'BOUND':
             problems.append('MODEL_NOT_BOUND')
         env = binding.get('api_key_env')

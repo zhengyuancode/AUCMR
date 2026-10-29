@@ -4,6 +4,8 @@ from __future__ import annotations
 import json
 from copy import deepcopy
 from .protocol import SLOTS, L4Error, digest
+from eval.evaluation_response_format import normalize_json_envelope
+from .contract import PCS_FIELDS, CHECK_FIELDS, PRC_FIELDS, MODIFICATION_FIELDS, FINDINGS, KINDS
 
 
 class InvalidResponse(ValueError):
@@ -29,7 +31,11 @@ def validate_refs(refs: list, accesses: list[dict], *, required=True) -> None:
         require(ref.get("source_id") == args.get("source_id") and type(ref.get("pdf_page")) is int and
                 ref["pdf_page"] == args.get("pdf_page"), "SOURCE_LOCATION_MISMATCH")
         if ref.get("kind") == "TEXT":
-            require(not args.get("image", False) and text(ref.get("quote")) and ref["quote"] in result.get("text", ""), "QUOTE_NOT_ON_ACCESSED_PAGE")
+            # PDF line wrapping is layout, not a different quotation. Preserve
+            # words, punctuation, case and order; never use fuzzy matching.
+            require(not args.get("image", False) and text(ref.get("quote")) and
+                    " ".join(ref["quote"].split()) in " ".join(result.get("text", "").split()),
+                    "QUOTE_NOT_ON_ACCESSED_PAGE")
         elif ref.get("kind") == "IMAGE":
             require(args.get("image") is True and bool(result.get("image_base64")) and text(ref.get("description")), "IMAGE_NOT_ACCESSED")
         else:
@@ -46,6 +52,7 @@ def no_duplicate_pairs(pairs):
 
 
 def parse_response(raw: str) -> dict:
+    raw, _ = normalize_json_envelope(raw)
     try:
         data = json.loads(raw, object_pairs_hook=no_duplicate_pairs,
                           parse_constant=lambda s: (_ for _ in ()).throw(InvalidResponse("NONFINITE_NUMBER")))
@@ -66,18 +73,18 @@ def absent(status: str, reason: str) -> dict:
 
 def validate_pcs(value, slot: str, artifact: dict, accesses: list) -> dict:
     require(isinstance(value, dict), "MISSING_SLOT_RESPONSE")
-    require(set(value) == {"score", "status", "reason", "checks", "unresolved"}, "INVALID_PCS_FIELDS")
+    require(set(value) == PCS_FIELDS, "INVALID_PCS_FIELDS")
     require(text(value["reason"]), "MISSING_SPECIFIC_REASON")
     require(isinstance(value["unresolved"], list) and all(text(x) for x in value["unresolved"]), "INVALID_UNRESOLVED")
     require(isinstance(value["checks"], list), "INVALID_CHECKS")
     expected = {c["claim_id"] for c in artifact["slots"][slot]["claims"]}
     found = []
     for check in value["checks"]:
-        require(isinstance(check, dict) and set(check) == {"claim_id", "finding", "rationale", "source_refs"}, "INVALID_CHECK_FIELDS")
+        require(isinstance(check, dict) and set(check) == CHECK_FIELDS, "INVALID_CHECK_FIELDS")
         require(check["claim_id"] in expected, "INVALID_ASSERTION_ID")
         found.append(check["claim_id"])
         require(text(check["rationale"]), "MISSING_ASSERTION_REASON")
-        require(check["finding"] in {"SUPPORTED", "CONTRADICTED", "WRONG_SLOT", "UNRESOLVED"}, "INVALID_FINDING")
+        require(check["finding"] in FINDINGS, "INVALID_FINDING")
         validate_refs(check["source_refs"], accesses, required=check["finding"] != "UNRESOLVED")
     require(set(found) == expected and len(found) == len(expected), "MISSING_OR_DUPLICATE_ASSERTION_CHECK")
     score = value["score"]
@@ -92,7 +99,7 @@ def validate_pcs(value, slot: str, artifact: dict, accesses: list) -> dict:
 
 
 def validate_prc(value, artifact: dict, accesses: list) -> dict:
-    require(isinstance(value, dict) and set(value) == {"score", "status", "reason", "modifications", "unresolved"}, "MISSING_OR_INVALID_PRC")
+    require(isinstance(value, dict) and set(value) == PRC_FIELDS, "MISSING_OR_INVALID_PRC")
     require(text(value["reason"]) and isinstance(value["unresolved"], list) and all(text(x) for x in value["unresolved"]), "INVALID_PRC_REASON")
     if value["status"] == "UNRESOLVED":
         require(value["score"] is None and value["unresolved"], "UNRESOLVED_PRC_MUST_BE_NULL")
@@ -102,9 +109,9 @@ def validate_prc(value, artifact: dict, accesses: list) -> dict:
     require(isinstance(value["modifications"], list) and value["modifications"], "CONCRETE_MODIFICATIONS_REQUIRED")
     claims = {c["claim_id"] for s in artifact["slots"].values() for c in s["claims"]}
     for change in value["modifications"]:
-        require(isinstance(change, dict) and set(change) == {"kind", "location", "need", "source_refs"}, "INVALID_MODIFICATION_FIELDS")
+        require(isinstance(change, dict) and set(change) == MODIFICATION_FIELDS, "INVALID_MODIFICATION_FIELDS")
         require(change["location"] in claims | set(SLOTS) | {"ARTIFACT"} and text(change["need"]), "INVALID_OUTPUT_LOCATION")
-        require(change["kind"] in {"FACTUAL", "ORGANIZATION", "NONE"}, "INVALID_MODIFICATION_KIND")
+        require(change["kind"] in KINDS, "INVALID_MODIFICATION_KIND")
         if change["kind"] == "FACTUAL":
             require(change["location"] in claims, "FACTUAL_ERROR_NEEDS_ASSERTION_ID")
         validate_refs(change["source_refs"], accesses, required=change["kind"] == "FACTUAL")
@@ -185,6 +192,12 @@ def seal(record: dict) -> dict:
 
 
 def validate_record(record: dict, artifact: dict, manifest: dict, config: dict) -> None:
+    if config.get('request_organization') == 'L4_SIMULATED_EXPERT_3.0.6':
+        from .expert import validate_record as validate_expert_record
+        return validate_expert_record(record, artifact, manifest, config)
+    if record.get("request_organization"):
+        from .staged import validate_components
+        validate_components(record, artifact)
     payload = {k: v for k, v in record.items() if k != "record_sha256"}
     require(record.get("record_sha256") == digest(payload), "RECORD_HASH_MISMATCH")
     require(record.get("manifest_sha256") == manifest["manifest_sha256"] and record.get("versions") == manifest["versions"], "STALE_RECORD")

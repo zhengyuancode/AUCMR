@@ -1,0 +1,424 @@
+diff --git a/eval/evaluation_runtime.py b/eval/evaluation_runtime.py
+index 04430ef..b0206cc 100644
+--- a/eval/evaluation_runtime.py
++++ b/eval/evaluation_runtime.py
+@@ -18,8 +18,10 @@ from urllib.error import HTTPError
+ from urllib.parse import urlparse
+ from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
+ 
++from .evaluation_cost_policy import provider_managed, interface_ready
+ from .evaluation_billing import normalize_usage, validate_billing
+ from .evaluation_request_budget import check_request, usage_bound_error
++from .evaluation_response_format import normalize_json_envelope
+ from .agent_evaluation.budget import Budget, units
+ from .agent_evaluation.common import canonical, digest, now, read_json, write_json
+ 
+@@ -98,7 +100,10 @@ class _NoRedirect(HTTPRedirectHandler):
+ class EvaluationRuntime:
+     def __init__(self, binding: dict, run_dir: Path, layer: str,
+                  campaign_ledger: Path, budget_cap_cny: float = 500,
+-                 live_authorized: bool = False, transport=None):
++                 live_authorized: bool = False, transport=None, http_timeout_seconds: int = 120):
++        if type(http_timeout_seconds) is not int or not 1 <= http_timeout_seconds <= 600:
++            raise RuntimeBlocked("HTTP timeout must be an integer between 1 and 600 seconds")
++        self.http_timeout_seconds = http_timeout_seconds
+         if not isinstance(binding, dict) or not re.fullmatch(r"[A-Za-z0-9_-]{1,32}", layer):
+             raise RuntimeBlocked("Invalid binding or layer")
+         _no_secrets(binding)
+@@ -117,7 +122,7 @@ class EvaluationRuntime:
+         self.real_model_calls = 0
+         self.cache_dir = self.run_dir / "runtime_requests"
+         try:
+-            self.budget = Budget(Path(campaign_ledger), cap=budget_cap_cny)
++            self.budget = Budget(Path(campaign_ledger), cap=budget_cap_cny, provider_managed=provider_managed(binding))
+             with self.budget.connect() as db:
+                 mode = "live" if self.is_live else "mock"
+                 previous = db.execute("SELECT value FROM meta WHERE key='runtime_transport_mode'").fetchone()
+@@ -133,7 +138,7 @@ class EvaluationRuntime:
+ 
+     def _payload(self, messages):
+         binding = self.binding
+-        if binding.get("binding_status") != "BOUND":
++        if not interface_ready(binding):
+             raise RuntimeBlocked("MODEL_NOT_BOUND")
+         model = binding.get("api_model_id") or binding.get("model_id")
+         if any(not isinstance(v, str) or not v.strip() for v in
+@@ -152,27 +157,28 @@ class EvaluationRuntime:
+         output_limit = parameters.get("max_completion_tokens", parameters.get("max_tokens"))
+         if type(output_limit) is not int or output_limit <= 0:
+             raise RuntimeBlocked("Bind a positive output token limit")
+-        billing = binding.get("billing", {})
+-        if not isinstance(billing, dict) or any(billing.get(k) is not True for k in
+-                ("complete", "verified_upper_bound", "all_charges_in_token_usage")):
+-            raise RuntimeBlocked("Complete verified token billing is required")
+-        if "tariff" in billing:
+-            try:
+-                validate_billing(binding)
+-            except ValueError as exc:
+-                raise RuntimeBlocked(str(exc)) from None
+-        else:
+-            for key in ("input_cny_per_million", "output_cny_per_million"):
+-                _amount(billing.get(key))
+-        if type(billing.get("reasoning_in_output")) is not bool:
+-            raise RuntimeBlocked("Declare reasoning token billing")
+-        if not billing["reasoning_in_output"]:
+-            _amount(billing.get("reasoning_cny_per_million"))
+-        bound = binding.get("per_request_upper_bound")
+-        if not isinstance(bound, dict) or set(bound) != _COMPONENTS:
+-            raise RuntimeBlocked("Complete input/output/reasoning/images/other upper bound required")
+-        for value in bound.values():
+-            _amount(value)
++        if not provider_managed(binding):
++            billing = binding.get("billing", {})
++            if not isinstance(billing, dict) or any(billing.get(k) is not True for k in
++                    ("complete", "verified_upper_bound", "all_charges_in_token_usage")):
++                raise RuntimeBlocked("Complete verified token billing is required")
++            if "tariff" in billing:
++                try:
++                    validate_billing(binding)
++                except ValueError as exc:
++                    raise RuntimeBlocked(str(exc)) from None
++            else:
++                for key in ("input_cny_per_million", "output_cny_per_million"):
++                    _amount(billing.get(key))
++            if type(billing.get("reasoning_in_output")) is not bool:
++                raise RuntimeBlocked("Declare reasoning token billing")
++            if not billing["reasoning_in_output"]:
++                _amount(billing.get("reasoning_cny_per_million"))
++            bound = binding.get("per_request_upper_bound")
++            if not isinstance(bound, dict) or set(bound) != _COMPONENTS:
++                raise RuntimeBlocked("Complete input/output/reasoning/images/other upper bound required")
++            for value in bound.values():
++                _amount(value)
+         if not isinstance(messages, list) or not messages:
+             raise RuntimeBlocked("A nonempty messages array is required")
+         has_images = False
+@@ -225,13 +231,19 @@ class EvaluationRuntime:
+         choice = choices[0] if isinstance(choices, list) and len(choices) == 1 and isinstance(choices[0], dict) else {}
+         message = choice.get("message", {})
+         message = message if isinstance(message, dict) else {}
+-        return {"body": message.get("content"), "finish_reason": choice.get("finish_reason"),
++        body, formatting = normalize_json_envelope(message.get("content"))
++        return {"body": message.get("content"), "normalized_body": body, "response_format": formatting,
++                "finish_reason": choice.get("finish_reason"),
+                 "response_model": raw.get("model"), "request_id": request_id,
+                 "provider_request_id": raw.get("id"), "system_fingerprint": raw.get("system_fingerprint"),
+                 **billing_result, "offline": not self.is_live,
+                 "real_model_calls": 1 if self.is_live else 0}
+ 
+     def _complete(self, path, record, *, cached):
++        # A new parsing policy must not rewrite a historical paid rejection.
++        if record.get("state") == "REJECTED_RESPONSE":
++            raise RuntimeResponseError(record.get("error") or "REJECTED_RESPONSE",
++                                       receipt=record.get("result"), evidence_path=path)
+         result = self._normalize(record.get("raw_response"), record["request_id"])
+         result.update(evidence_path=str(path), cached=cached, request_budget=record.get("request_budget"))
+         result["request_budget_violation"] = usage_bound_error(result, record.get("request_budget"))
+@@ -246,13 +258,17 @@ class EvaluationRuntime:
+                 record["state"] = "BILLING_UNKNOWN"
+                 self._save(path, record)
+                 raise RuntimeBlocked("UNKNOWN_BILLING: preserve the response and reconcile before continuing", receipt=result, evidence_path=path) from None
++        elif row[2] == "UNPRICED" and provider_managed(self.binding):
++            pass
+         elif row[2] != "SETTLED":
+             raise RuntimeBlocked("UNKNOWN_BILLING: campaign reservation is unresolved", receipt=result, evidence_path=path)
+         elif result["cost_cny"] is None or row[1] != units(result["cost_cny"]):
+             raise RuntimeBlocked("Cached response billing disagrees with the campaign ledger", receipt=result, evidence_path=path)
+         error = None
+-        body = result["body"]
+-        if result["finish_reason"] != "stop":
++        body = result["normalized_body"]
++        if result["request_budget_violation"]:
++            error = result["request_budget_violation"]
++        elif result["finish_reason"] != "stop":
+             error = "INCOMPLETE_FINISH_REASON"
+         elif not isinstance(result["response_model"], str) or not result["response_model"]:
+             error = "MISSING_RESPONSE_MODEL"
+@@ -280,7 +296,7 @@ class EvaluationRuntime:
+         request = Request(endpoint, data=canonical(payload).encode("utf-8"), headers={
+             "Authorization": "Bearer " + secret, "Content-Type": "application/json"})
+         try:
+-            with build_opener(ProxyHandler({}), _NoRedirect()).open(request, timeout=120) as response:
++            with build_opener(ProxyHandler({}), _NoRedirect()).open(request, timeout=self.http_timeout_seconds) as response:
+                 text = response.read().decode("utf-8", errors="replace")
+         except HTTPError as exc:
+             return {"http_status": exc.code, "error_response_text": exc.read().decode("utf-8", errors="replace")}
+@@ -328,7 +344,7 @@ class EvaluationRuntime:
+             if secret in canonical(payload):
+                 raise RuntimeBlocked("Request content contains the model credential")
+         try:
+-            self.budget.reserve(request_id, self.binding["provider"], self.binding["per_request_upper_bound"])
++            self.budget.reserve(request_id, self.binding["provider"], self.binding.get("per_request_upper_bound"))
+         except ValueError:
+             raise RuntimeDeferred("Campaign request blocked: budget, concurrency, existing request, or unknown charge") from None
+         record = {"request_id": request_id, "fingerprint": fingerprint, "layer": self.layer,
+diff --git a/eval/l4_agent/client.py b/eval/l4_agent/client.py
+index 14a8b15..c198a59 100644
+--- a/eval/l4_agent/client.py
++++ b/eval/l4_agent/client.py
+@@ -16,8 +16,17 @@ def model_messages(request: dict, history: list[dict]) -> list[dict]:
+             {k: v for k, v in request.items() if k != "system"}, ensure_ascii=False)},
+     ]
+     for turn in history:
+-        messages.append({"role": "assistant", "content": json.dumps(
+-            {"tool_calls": turn["tool_calls"]}, ensure_ascii=False)})
++        if "validation_feedback" in turn:
++            feedback = turn["validation_feedback"]
++            messages.append({"role": "assistant", "content": feedback["rejected_response"]})
++            messages.append({"role": "user", "content": json.dumps({
++                "validation_errors": feedback["errors"],
++                "instruction": "Correct these contract violations using the existing sources and rubric. Do not invent source quotes or use general practice as evidence. Each non-UNRESOLVED claim needs an actual accessed source reference. Copy a contiguous exact quote from the returned page text, preserving line breaks; a short exact excerpt is preferable to an altered full paragraph. If evidence is insufficient, use UNRESOLVED with null score and a nonempty list of reason strings, or request more source tools. Keep valid empty slots at PCS=0. PRC below 5 requires a concrete required edit; NONE cannot justify a lower score. Return the complete result, retaining every original claim ID. Do not change scores merely to improve them."}, ensure_ascii=False)})
++            continue
++        runtime_read = turn.get("origin") == "RUNTIME_SOURCE_BOOTSTRAP"
++        messages.append({"role": "user" if runtime_read else "assistant", "content": json.dumps(
++            {"tool_calls": turn["tool_calls"], **({"origin": "RUNTIME_SOURCE_BOOTSTRAP",
++              "instruction": "These are actual local source reads, not model-generated citations. Use their returned access_id; read more pages if insufficient. Never invent access IDs."} if runtime_read else {})}, ensure_ascii=False)})
+         results, images = [], []
+         for item in turn["tool_results"]:
+             result = deepcopy(item["result"])
+diff --git a/eval/l4_agent/engine.py b/eval/l4_agent/engine.py
+index b49de94..b700c27 100644
+--- a/eval/l4_agent/engine.py
++++ b/eval/l4_agent/engine.py
+@@ -1,6 +1,8 @@
+ """One judge, injectable client, explicit authorization before any client call."""
+ from __future__ import annotations
+ 
++from eval.evaluation_cost_policy import interface_ready
++
+ import json
+ from copy import deepcopy
+ from pathlib import Path
+@@ -27,7 +29,7 @@ def authorize(config: dict, *, mock: bool, explicit_live: bool = False) -> None:
+     model = config["model"]
+     if config.get("live_authorized") is not True or explicit_live is not True:
+         raise L4Error("LIVE_NOT_AUTHORIZED: stopped before client request")
+-    if model.get("binding_status") != "BOUND" or not all(model.get(k) for k in ("provider", "model_id", "config_id")):
++    if not interface_ready(model) or not all(model.get(k) for k in ("provider", "model_id", "config_id")):
+         raise L4Error("MODEL_NOT_BOUND: stopped before client request")
+     if config["judge"]["version"] == "NOT_BOUND":
+         raise L4Error("JUDGE_VERSION_NOT_BOUND")
+@@ -75,6 +77,35 @@ def _capture_receipt(record, client):
+     record["runtime_receipts"].append({"model_request": number, **deepcopy(receipt)})
+ 
+ 
++def bootstrap_sources(tools, task, sources):
++    """Read a small deterministic starting context through the audited tools.
++
++    Uses only target metadata, never method identity or expected scores. Further
++    retrieval remains the judge's responsibility under the same tool limits.
++    """
++    history = []
++    def invoke(name, arguments):
++        call = {"name": name, "arguments": arguments}
++        result = tools.invoke(name, arguments)
++        history.append({"origin": "RUNTIME_SOURCE_BOOTSTRAP", "tool_calls": [call],
++                        "tool_results": [{"call": call, "result": result}]})
++        return result
++    words = task["name"].split()
++    queries = list(dict.fromkeys([task["name"], " ".join(words[:2]), " ".join(words[-2:])]))
++    for source in sources:
++        sid = source["source_id"]
++        for query in queries:
++            found = invoke("source_search", {"source_id": sid, "query": query[:500]})
++            hits = found.get("hits", [])
++            if hits:
++                for hit in hits[:min(2, tools.policy["pages_max"])]:
++                    invoke("source_page", {"source_id": sid, "pdf_page": hit["pdf_page"], "image": False})
++                break
++        else:
++            invoke("source_index", {"source_id": sid})
++    return history
++
++
+ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
+     record = initial_record(artifact, config, manifest, run_dir.name)
+     if artifact["state"] != "PRESENT":
+@@ -94,7 +125,34 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
+         record["parse_status"] = "SOURCE_UNREADABLE"
+         record["validation_errors"] = ["SOURCE_ACCESS_INITIALIZATION_FAILED"]
+         return seal(record)
+-    history = []
++    history = bootstrap_sources(tools, task, sources) if config.get("source_bootstrap") is True else []
++    validation_retries = 0
++    max_validation_retries = config.get("validation_feedback_max", int(config.get("validation_feedback_once") is True))
++    if type(max_validation_retries) is not int or not 0 <= max_validation_retries <= 3:
++        raise L4Error("Validation feedback must be bounded to 0..3 corrections")
++    seed_path = config.get("validation_seed_records", {}).get(artifact["artifact_id"])
++    if seed_path:
++        prior = read_json(local_path(seed_path))
++        signature = prior.get("record_sha256")
++        if (signature != digest({k: v for k, v in prior.items() if k != "record_sha256"}) or
++                prior.get("artifact_id") != artifact["artifact_id"] or
++                prior.get("input_sha256") != artifact["input_sha256"] or
++                prior.get("model_config_sha256") != digest(config["model"]) or
++                prior.get("source_access") != tools.entries or not prior.get("request_transcript")):
++            raise L4Error("Validation seed identity/source/model mismatch")
++        checked = evaluate_response(prior["raw_response"], artifact, tools.entries)
++        if checked["parse_status"] != "INVALID_RESPONSE":
++            raise L4Error("Only a preserved contract-invalid result can seed correction; scores cannot be redrawn")
++        last = prior["request_transcript"][-1]
++        if last["request"] != request:
++            raise L4Error("Validation seed request changed")
++        history = deepcopy(last["history"]) + [{"validation_feedback": {
++            "errors": checked["validation_errors"], "rejected_response": prior["raw_response"]}}]
++        validation_retries = sum("validation_feedback" in h for h in history)
++        if validation_retries > max_validation_retries:
++            raise L4Error("Cumulative validation correction limit exhausted")
++        record["validation_seed"] = {"path": seed_path, "record_sha256": signature,
++                                     "prior_responses_replayed_without_calls": prior["model_requests"]}
+     for _ in range(config["source_policy"]["request_rounds"]):
+         try:
+             record["model_requests"] += 1
+@@ -110,6 +168,12 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
+                 parsed = {}
+             if "tool_calls" not in parsed:
+                 record.update(evaluate_response(raw, artifact, tools.entries))
++                if (record["parse_status"] == "INVALID_RESPONSE" and
++                        validation_retries < max_validation_retries):
++                    validation_retries += 1
++                    history.append({"validation_feedback": {
++                        "errors": deepcopy(record["validation_errors"]), "rejected_response": raw}})
++                    continue
+                 break
+             calls = parsed["tool_calls"]
+             if set(parsed) != {"tool_calls"} or not isinstance(calls, list) or not 1 <= len(calls) <= config["source_policy"]["tools_per_round"]:
+@@ -144,6 +208,16 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
+             break
+     else:
+         record["parse_status"] = "REQUEST_LIMIT"
++    # A later failed correction/tool round invalidates partial scores from an
++    # earlier response. Preserve the transcript, but never seal stale scores
++    # under a no-response failure status.
++    if record["parse_status"] not in {"VALID", "INVALID_RESPONSE", "PARSE_FAILED"}:
++        status = record["parse_status"]
++        record["pcs"] = {s: empty_score() if s in artifact["empty_slots"] else
++                         absent(status, "最后一次请求未取得有效判断。") for s in SLOTS}
++        record["prc"] = {"score": None, "status": status,
++                         "reason": "最后一次请求未取得有效判断。", "modifications": [],
++                         "unresolved": [], "validation_errors": []}
+     record["source_access"] = tools.entries
+     if tools.integrity_failure:
+         record["parse_status"] = "SOURCE_CHANGED"
+@@ -189,12 +263,16 @@ def evaluate_run(run_dir: Path, client: JudgeClient | None = None, *, mock=False
+                 raise L4Error("Saved record belongs to another run")
+             validate_record(record, artifact, manifest, config)
+             records.append(record)
++            if config.get("stop_on_technical_failure") is True and record["processing_status"] == "TECHNICAL_FAILURE":
++                raise L4Error("TECHNICAL_FAILURE preserved; inspect saved record " + artifact["artifact_id"])
+             continue
+         sources = [s for s in manifest["sources"] if s["project_id"] == artifact["project_id"]]
+         record = _judge_one(artifact, targets[artifact["task_id"]], sources, config, manifest, run_dir, client)
+         validate_record(record, artifact, manifest, config)
+         save_new(record_path, record)
+         records.append(record)
++        if config.get("stop_on_technical_failure") is True and record["processing_status"] == "TECHNICAL_FAILURE":
++            raise L4Error("TECHNICAL_FAILURE preserved; inspect saved record " + artifact["artifact_id"])
+         if record.get("stop_run"):
+             raise L4Error("RUNTIME_BLOCKED: saved failed artifact " + artifact["artifact_id"] + "; campaign stopped")
+     assert_current(run_dir)
+diff --git a/eval/l4_agent/protocol.py b/eval/l4_agent/protocol.py
+index 4e4d234..40051e7 100644
+--- a/eval/l4_agent/protocol.py
++++ b/eval/l4_agent/protocol.py
+@@ -48,7 +48,7 @@ Keep every assertion, its order, and step number unchanged. Never regenerate.
+ Use source_index, source_search, source_page (image false/true). Tool arguments
+ use registered source_id and one-based PDF page numbers, never paths or URLs.
+ Return either {"tool_calls":[{"name":...,"arguments":{...}}]} or a final object:
+-{"pcs": {slot: {"score": integer_or_null, "status": "SCORED"|"UNRESOLVED",
++{"pcs": {slot: {"score": integer_or_null, "status": "SCORED"|"UNRESOLVED"|"EMPTY_SLOT",
+ "reason": specific_reason, "checks": [{"claim_id":..., "finding":
+ "SUPPORTED"|"CONTRADICTED"|"WRONG_SLOT"|"UNRESOLVED", "rationale":...,
+ "source_refs": [{"source_id":...,"pdf_page":1,"access_id":...,
+@@ -64,9 +64,17 @@ error needs its assertion and original source location. Organization/slot
+ issues need a precise output location. Each nonempty scored slot needs source
+ verification, not a generic 'correct'. Valid empty slots have fixed PCS=0,
+ EMPTY_SLOT; do not invent checks. Missing or unjudgeable scores are null.
++If any assertion in a slot is UNRESOLVED, that slot has score=null,
++status=UNRESOLVED and a nonempty unresolved array of reason strings, not objects.
++General practice and plausible behavior are not source evidence. Missing support
++is UNRESOLVED, not a factual error or a reason to require deletion.
+ PRC is independently judged anticipated usability, not calculated from PCS.
+ Give concrete edits/blockers; for 5 describe inspected locations and why no
+ blocking edit was identified. Do not estimate time/cost or claim human approval.
++For a FACTUAL modification, location must be one exact existing claim_id;
++never use a range, a list of IDs, a slot name, or ARTIFACT. ORGANIZATION may
++use a claim_id, slot name or ARTIFACT. PRC below 5 needs a concrete required edit,
++not only a NONE entry. When required evidence is unresolved, use null PRC.
+ No usable content or explicit refusal has null PRC (NO_EVALUABLE_CONTENT).
+ Do not return markdown, extra scores, other judges' opinions, or weighted totals.
+ """
+diff --git a/eval/l4_agent/records.py b/eval/l4_agent/records.py
+index 7f66420..338c412 100644
+--- a/eval/l4_agent/records.py
++++ b/eval/l4_agent/records.py
+@@ -4,6 +4,7 @@ from __future__ import annotations
+ import json
+ from copy import deepcopy
+ from .protocol import SLOTS, L4Error, digest
++from eval.evaluation_response_format import normalize_json_envelope
+ 
+ 
+ class InvalidResponse(ValueError):
+@@ -29,7 +30,11 @@ def validate_refs(refs: list, accesses: list[dict], *, required=True) -> None:
+         require(ref.get("source_id") == args.get("source_id") and type(ref.get("pdf_page")) is int and
+                 ref["pdf_page"] == args.get("pdf_page"), "SOURCE_LOCATION_MISMATCH")
+         if ref.get("kind") == "TEXT":
+-            require(not args.get("image", False) and text(ref.get("quote")) and ref["quote"] in result.get("text", ""), "QUOTE_NOT_ON_ACCESSED_PAGE")
++            # PDF line wrapping is layout, not a different quotation. Preserve
++            # words, punctuation, case and order; never use fuzzy matching.
++            require(not args.get("image", False) and text(ref.get("quote")) and
++                    " ".join(ref["quote"].split()) in " ".join(result.get("text", "").split()),
++                    "QUOTE_NOT_ON_ACCESSED_PAGE")
+         elif ref.get("kind") == "IMAGE":
+             require(args.get("image") is True and bool(result.get("image_base64")) and text(ref.get("description")), "IMAGE_NOT_ACCESSED")
+         else:
+@@ -46,6 +51,7 @@ def no_duplicate_pairs(pairs):
+ 
+ 
+ def parse_response(raw: str) -> dict:
++    raw, _ = normalize_json_envelope(raw)
+     try:
+         data = json.loads(raw, object_pairs_hook=no_duplicate_pairs,
+                           parse_constant=lambda s: (_ for _ in ()).throw(InvalidResponse("NONFINITE_NUMBER")))
+diff --git a/eval/l4_agent/runner.py b/eval/l4_agent/runner.py
+index 1471eca..2a4dce4 100644
+--- a/eval/l4_agent/runner.py
++++ b/eval/l4_agent/runner.py
+@@ -5,6 +5,7 @@ from copy import deepcopy
+ from pathlib import Path
+ from uuid import uuid4
+ 
++from eval.evaluation_cost_policy import provider_managed
+ from eval.evaluation_runtime import EvaluationRuntime
+ from .client import RuntimeJudgeClient
+ from .engine import authorize, evaluate_run, validate_run
+@@ -42,6 +43,8 @@ def run_evaluation(config_path: Path | None = None, *, run_dir: Path | None = No
+     if mock and config["data_class"] != "MOCK_ONLY":
+         raise L4Error("Mock transport cannot score a real input batch")
+     cap = config["runtime"].get("budget_cap_cny")
++    if provider_managed(config["model"]):
++        cap = 500  # Compatibility metadata only; runtime disables local enforcement.
+     if type(cap) not in {int, float} or not 0 < cap <= 500:
+         raise L4Error("Campaign budget must be positive and at most CNY 500")
+     if resume is None:
+@@ -57,7 +60,8 @@ def run_evaluation(config_path: Path | None = None, *, run_dir: Path | None = No
+         raise L4Error("Mock transport requires a separate ledger inside this run's fixtures")
+     runtime = EvaluationRuntime(config["model"], run, "L4", ledger,
+                                 budget_cap_cny=cap, live_authorized=explicit_live,
+-                                transport=transport)
++                                transport=transport,
++                                http_timeout_seconds=config["runtime"].get("http_timeout_seconds", 120))
+     if mock and runtime.is_live:
+         raise L4Error("A mock input batch cannot use a live runtime")
+     client = RuntimeJudgeClient(runtime)
+@@ -79,7 +83,8 @@ def run_evaluation(config_path: Path | None = None, *, run_dir: Path | None = No
+               "runtime_cost_cny": sum(costs) if all(c is not None for c in costs) else None,
+               "runtime_cost_basis": "USAGE_LIST_PRICE_OR_CONSERVATIVE_UPPER_ESTIMATE_NOT_INVOICE",
+               "real_model_calls": sum(calls) if all(c is not None for c in calls) else None,
+-              "campaign_ledger": ledger.relative_to(REPO).as_posix(), "campaign_budget_cap_cny": cap,
++              "campaign_ledger": ledger.relative_to(REPO).as_posix(), "campaign_budget_cap_cny": None if provider_managed(config["model"]) else cap,
++              "cost_control": "PROVIDER_MANAGED" if provider_managed(config["model"]) else "LOCAL_CAP",
+               "resume_policy": "Saved paid responses and final records remain immutable. Pre-dispatch deferrals remain pending and resume without redrawing paid judgments.",
+               "validation": "PASS"}
+     save_new(report_path, report)

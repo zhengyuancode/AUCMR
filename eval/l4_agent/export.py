@@ -38,7 +38,10 @@ def summarize(records: list[dict], config: dict) -> dict:
                                                     "prc": r["prc"]["score"],
                                                     "in_common_pcs": r["task_id"] in common["pcs"],
                                                     "in_common_prc": r["task_id"] in common["prc"]} for r in subset]})
-    return {"data_class": config["data_class"], "research_status": "NOT_RESEARCH_DATA" if config["data_class"] == "MOCK_ONLY" else "UNVALIDATED_AGENT_ESTIMATE",
+    return {"data_class": config["data_class"], "research_status": "NOT_RESEARCH_DATA" if config["data_class"] == "MOCK_ONLY" else ("MODEL_SIMULATED_EXPERT_NOT_HUMAN_EXPERIMENT" if config.get('request_organization') == 'L4_SIMULATED_EXPERT_3.0.6' else "UNVALIDATED_AGENT_ESTIMATE"),
+            "rater_type": "MODEL_SIMULATED_EXPERT" if config.get('request_organization') == 'L4_SIMULATED_EXPERT_3.0.6' else "AGENT_JUDGE",
+            "request_organization": config.get("request_organization", "WHOLE_ARTIFACT_V1"),
+            "technically_valid": sum(r["parse_status"] in {"VALID", "RULE_ONLY"} for r in records),
             "comparison_rule": "Use metric-specific common task IDs per document and predeclared comparison group. Available means are descriptive, not fair rankings.",
             "counts_note": "Declared refusal, unresolved and technical failure can overlap; each retains its evidence. Empty PCS=0 is included when all seven valid; empty/refusal PRC is excluded.",
             "planned": len(config["input_bindings"]), "groups": groups}

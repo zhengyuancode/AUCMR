@@ -32,6 +32,9 @@ def validate_limits(binding):
 
 
 def check_request(binding, messages, *, input_limit=None):
+    from .evaluation_cost_policy import provider_managed, check_provider_request
+    if provider_managed(binding):
+        return check_provider_request(binding, messages)
     tiers = validate_billing(binding)
     limits = validate_limits(binding)
     parameters = binding["parameters"]
@@ -133,6 +136,9 @@ def usage_bound_error(result, request_budget):
     """A provider counter contradicting a verified bound invalidates further dispatch."""
     if request_budget is None:
         return None
+    if request_budget.get("basis") == "PROVIDER_MANAGED_NO_TOKEN_BOUND":
+        actual = result.get("usage", {}).get("output_tokens")
+        return "OUTPUT_LIMIT_EXCEEDED" if count(actual) is not None and actual > request_budget["output_token_limit"] else None
     usage = result.get("usage", {})
     for actual_key, cap_key in (("input_tokens", "input_token_upper_bound"),
                                 ("output_tokens", "output_token_limit")):

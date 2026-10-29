@@ -1,0 +1,393 @@
+diff --git a/eval/l4_agent/client.py b/eval/l4_agent/client.py
+index 14a8b15..8c73553 100644
+--- a/eval/l4_agent/client.py
++++ b/eval/l4_agent/client.py
+@@ -16,8 +16,23 @@ def model_messages(request: dict, history: list[dict]) -> list[dict]:
+             {k: v for k, v in request.items() if k != "system"}, ensure_ascii=False)},
+     ]
+     for turn in history:
+-        messages.append({"role": "assistant", "content": json.dumps(
+-            {"tool_calls": turn["tool_calls"]}, ensure_ascii=False)})
++        if "validation_feedback" in turn:
++            feedback = turn["validation_feedback"]
++            if request.get("stage_id"):
++                messages.append({"role": "assistant", "content": feedback["rejected_response"]})
++                messages.append({"role": "user", "content": json.dumps({
++                    "validation_errors": feedback["errors"], "stage_id": request["stage_id"],
++                    "instruction": "Return the complete requested stage using output_schema and required_claim_ids. Correct only reported violations; do not improve scores or invent evidence. Preserve all required claims. Do not supply empty slots or other stages."}, ensure_ascii=False)})
++                continue
++            messages.append({"role": "assistant", "content": feedback["rejected_response"]})
++            messages.append({"role": "user", "content": json.dumps({
++                "validation_errors": feedback["errors"],
++                "instruction": "Correct these contract violations using the existing sources and rubric. Do not invent source quotes or use general practice as evidence. Each non-UNRESOLVED claim needs an actual accessed source reference. Copy a contiguous exact quote from the returned page text, preserving line breaks; a short exact excerpt is preferable to an altered full paragraph. If evidence is insufficient, use UNRESOLVED with null score and a nonempty list of reason strings, or request more source tools. Keep valid empty slots at PCS=0. PRC below 5 requires a concrete required edit; NONE cannot justify a lower score. Return the complete result, retaining every original claim ID. Do not change scores merely to improve them."}, ensure_ascii=False)})
++            continue
++        runtime_read = turn.get("origin") == "RUNTIME_SOURCE_BOOTSTRAP"
++        messages.append({"role": "user" if runtime_read else "assistant", "content": json.dumps(
++            {"tool_calls": turn["tool_calls"], **({"origin": "RUNTIME_SOURCE_BOOTSTRAP",
++              "instruction": "These are actual local source reads, not model-generated citations. Use their returned access_id; read more pages if insufficient. Never invent access IDs."} if runtime_read else {})}, ensure_ascii=False)})
+         results, images = [], []
+         for item in turn["tool_results"]:
+             result = deepcopy(item["result"])
+@@ -54,6 +69,8 @@ class RuntimeJudgeClient:
+     def respond(self, request: dict, history: list[dict]) -> str:
+         self.last_receipt = None
+         task_id = request["artifact"]["artifact_id"] + ":round:" + str(len(history) + 1)
++        if request.get("stage_id"):
++            task_id += ":stage:" + request["stage_id"]
+         try:
+             receipt = self.runtime.request(model_messages(request, history), task_id=task_id, attempt=1)
+         except (RuntimeBlocked, RuntimeResponseError) as exc:
+diff --git a/eval/l4_agent/engine.py b/eval/l4_agent/engine.py
+index b49de94..690558b 100644
+--- a/eval/l4_agent/engine.py
++++ b/eval/l4_agent/engine.py
+@@ -1,6 +1,8 @@
+ """One judge, injectable client, explicit authorization before any client call."""
+ from __future__ import annotations
+ 
++from eval.evaluation_cost_policy import interface_ready
++
+ import json
+ from copy import deepcopy
+ from pathlib import Path
+@@ -27,7 +29,7 @@ def authorize(config: dict, *, mock: bool, explicit_live: bool = False) -> None:
+     model = config["model"]
+     if config.get("live_authorized") is not True or explicit_live is not True:
+         raise L4Error("LIVE_NOT_AUTHORIZED: stopped before client request")
+-    if model.get("binding_status") != "BOUND" or not all(model.get(k) for k in ("provider", "model_id", "config_id")):
++    if not interface_ready(model) or not all(model.get(k) for k in ("provider", "model_id", "config_id")):
+         raise L4Error("MODEL_NOT_BOUND: stopped before client request")
+     if config["judge"]["version"] == "NOT_BOUND":
+         raise L4Error("JUDGE_VERSION_NOT_BOUND")
+@@ -75,6 +77,35 @@ def _capture_receipt(record, client):
+     record["runtime_receipts"].append({"model_request": number, **deepcopy(receipt)})
+ 
+ 
++def bootstrap_sources(tools, task, sources):
++    """Read a small deterministic starting context through the audited tools.
++
++    Uses only target metadata, never method identity or expected scores. Further
++    retrieval remains the judge's responsibility under the same tool limits.
++    """
++    history = []
++    def invoke(name, arguments):
++        call = {"name": name, "arguments": arguments}
++        result = tools.invoke(name, arguments)
++        history.append({"origin": "RUNTIME_SOURCE_BOOTSTRAP", "tool_calls": [call],
++                        "tool_results": [{"call": call, "result": result}]})
++        return result
++    words = task["name"].split()
++    queries = list(dict.fromkeys([task["name"], " ".join(words[:2]), " ".join(words[-2:])]))
++    for source in sources:
++        sid = source["source_id"]
++        for query in queries:
++            found = invoke("source_search", {"source_id": sid, "query": query[:500]})
++            hits = found.get("hits", [])
++            if hits:
++                for hit in hits[:min(2, tools.policy["pages_max"])]:
++                    invoke("source_page", {"source_id": sid, "pdf_page": hit["pdf_page"], "image": False})
++                break
++        else:
++            invoke("source_index", {"source_id": sid})
++    return history
++
++
+ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
+     record = initial_record(artifact, config, manifest, run_dir.name)
+     if artifact["state"] != "PRESENT":
+@@ -86,6 +117,9 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
+                 record["pcs"][s] = absent("SOURCE_UNREADABLE", "来源缺失、变更或不可读取，不能据此记 0。")
+         record["prc"]["status"] = "SOURCE_UNREADABLE"
+         return seal(record)
++    if config.get("request_organization") == "L4_SLOT_EVIDENCE_2.0.0":
++        from .staged import judge_staged
++        return judge_staged(artifact, task, sources, config, manifest, run_dir, client)
+     request = request_for(artifact, task, sources, config["source_policy"])
+     try:
+         tools = SourceTools(sources, artifact["project_id"], config["source_policy"],
+@@ -94,7 +128,34 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
+         record["parse_status"] = "SOURCE_UNREADABLE"
+         record["validation_errors"] = ["SOURCE_ACCESS_INITIALIZATION_FAILED"]
+         return seal(record)
+-    history = []
++    history = bootstrap_sources(tools, task, sources) if config.get("source_bootstrap") is True else []
++    validation_retries = 0
++    max_validation_retries = config.get("validation_feedback_max", int(config.get("validation_feedback_once") is True))
++    if type(max_validation_retries) is not int or not 0 <= max_validation_retries <= 3:
++        raise L4Error("Validation feedback must be bounded to 0..3 corrections")
++    seed_path = config.get("validation_seed_records", {}).get(artifact["artifact_id"])
++    if seed_path:
++        prior = read_json(local_path(seed_path))
++        signature = prior.get("record_sha256")
++        if (signature != digest({k: v for k, v in prior.items() if k != "record_sha256"}) or
++                prior.get("artifact_id") != artifact["artifact_id"] or
++                prior.get("input_sha256") != artifact["input_sha256"] or
++                prior.get("model_config_sha256") != digest(config["model"]) or
++                prior.get("source_access") != tools.entries or not prior.get("request_transcript")):
++            raise L4Error("Validation seed identity/source/model mismatch")
++        checked = evaluate_response(prior["raw_response"], artifact, tools.entries)
++        if checked["parse_status"] != "INVALID_RESPONSE":
++            raise L4Error("Only a preserved contract-invalid result can seed correction; scores cannot be redrawn")
++        last = prior["request_transcript"][-1]
++        if last["request"] != request:
++            raise L4Error("Validation seed request changed")
++        history = deepcopy(last["history"]) + [{"validation_feedback": {
++            "errors": checked["validation_errors"], "rejected_response": prior["raw_response"]}}]
++        validation_retries = sum("validation_feedback" in h for h in history)
++        if validation_retries > max_validation_retries:
++            raise L4Error("Cumulative validation correction limit exhausted")
++        record["validation_seed"] = {"path": seed_path, "record_sha256": signature,
++                                     "prior_responses_replayed_without_calls": prior["model_requests"]}
+     for _ in range(config["source_policy"]["request_rounds"]):
+         try:
+             record["model_requests"] += 1
+@@ -110,6 +171,12 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
+                 parsed = {}
+             if "tool_calls" not in parsed:
+                 record.update(evaluate_response(raw, artifact, tools.entries))
++                if (record["parse_status"] == "INVALID_RESPONSE" and
++                        validation_retries < max_validation_retries):
++                    validation_retries += 1
++                    history.append({"validation_feedback": {
++                        "errors": deepcopy(record["validation_errors"]), "rejected_response": raw}})
++                    continue
+                 break
+             calls = parsed["tool_calls"]
+             if set(parsed) != {"tool_calls"} or not isinstance(calls, list) or not 1 <= len(calls) <= config["source_policy"]["tools_per_round"]:
+@@ -144,6 +211,16 @@ def _judge_one(artifact, task, sources, config, manifest, run_dir, client):
+             break
+     else:
+         record["parse_status"] = "REQUEST_LIMIT"
++    # A later failed correction/tool round invalidates partial scores from an
++    # earlier response. Preserve the transcript, but never seal stale scores
++    # under a no-response failure status.
++    if record["parse_status"] not in {"VALID", "INVALID_RESPONSE", "PARSE_FAILED"}:
++        status = record["parse_status"]
++        record["pcs"] = {s: empty_score() if s in artifact["empty_slots"] else
++                         absent(status, "最后一次请求未取得有效判断。") for s in SLOTS}
++        record["prc"] = {"score": None, "status": status,
++                         "reason": "最后一次请求未取得有效判断。", "modifications": [],
++                         "unresolved": [], "validation_errors": []}
+     record["source_access"] = tools.entries
+     if tools.integrity_failure:
+         record["parse_status"] = "SOURCE_CHANGED"
+@@ -189,12 +266,16 @@ def evaluate_run(run_dir: Path, client: JudgeClient | None = None, *, mock=False
+                 raise L4Error("Saved record belongs to another run")
+             validate_record(record, artifact, manifest, config)
+             records.append(record)
++            if config.get("stop_on_technical_failure") is True and record["processing_status"] == "TECHNICAL_FAILURE":
++                raise L4Error("TECHNICAL_FAILURE preserved; inspect saved record " + artifact["artifact_id"])
+             continue
+         sources = [s for s in manifest["sources"] if s["project_id"] == artifact["project_id"]]
+         record = _judge_one(artifact, targets[artifact["task_id"]], sources, config, manifest, run_dir, client)
+         validate_record(record, artifact, manifest, config)
+         save_new(record_path, record)
+         records.append(record)
++        if config.get("stop_on_technical_failure") is True and record["processing_status"] == "TECHNICAL_FAILURE":
++            raise L4Error("TECHNICAL_FAILURE preserved; inspect saved record " + artifact["artifact_id"])
+         if record.get("stop_run"):
+             raise L4Error("RUNTIME_BLOCKED: saved failed artifact " + artifact["artifact_id"] + "; campaign stopped")
+     assert_current(run_dir)
+diff --git a/eval/l4_agent/export.py b/eval/l4_agent/export.py
+index 3d072db..75a7454 100644
+--- a/eval/l4_agent/export.py
++++ b/eval/l4_agent/export.py
+@@ -39,6 +39,8 @@ def summarize(records: list[dict], config: dict) -> dict:
+                                                     "in_common_pcs": r["task_id"] in common["pcs"],
+                                                     "in_common_prc": r["task_id"] in common["prc"]} for r in subset]})
+     return {"data_class": config["data_class"], "research_status": "NOT_RESEARCH_DATA" if config["data_class"] == "MOCK_ONLY" else "UNVALIDATED_AGENT_ESTIMATE",
++            "request_organization": config.get("request_organization", "WHOLE_ARTIFACT_V1"),
++            "technically_valid": sum(r["parse_status"] in {"VALID", "RULE_ONLY"} for r in records),
+             "comparison_rule": "Use metric-specific common task IDs per document and predeclared comparison group. Available means are descriptive, not fair rankings.",
+             "counts_note": "Declared refusal, unresolved and technical failure can overlap; each retains its evidence. Empty PCS=0 is included when all seven valid; empty/refusal PRC is excluded.",
+             "planned": len(config["input_bindings"]), "groups": groups}
+diff --git a/eval/l4_agent/inputs.py b/eval/l4_agent/inputs.py
+index 0a58358..54a1916 100644
+--- a/eval/l4_agent/inputs.py
++++ b/eval/l4_agent/inputs.py
+@@ -29,6 +29,8 @@ def validate_config(config: dict) -> None:
+             for value in obj:
+                 no_secrets(value)
+     no_secrets(config)
++    if config.get("request_organization") not in (None, "L4_SLOT_EVIDENCE_2.0.0"):
++        raise L4Error("Unknown request organization")
+     if config.get("data_class") not in {"MOCK_ONLY", "REAL_INPUT_STRUCTURE_ONLY", "REAL_AGENT_EVALUATION"}:
+         raise L4Error("Invalid data_class")
+     if config.get("protocol_version") != PROTOCOL_VERSION:
+diff --git a/eval/l4_agent/protocol.py b/eval/l4_agent/protocol.py
+index 4e4d234..12dc695 100644
+--- a/eval/l4_agent/protocol.py
++++ b/eval/l4_agent/protocol.py
+@@ -48,7 +48,7 @@ Keep every assertion, its order, and step number unchanged. Never regenerate.
+ Use source_index, source_search, source_page (image false/true). Tool arguments
+ use registered source_id and one-based PDF page numbers, never paths or URLs.
+ Return either {"tool_calls":[{"name":...,"arguments":{...}}]} or a final object:
+-{"pcs": {slot: {"score": integer_or_null, "status": "SCORED"|"UNRESOLVED",
++{"pcs": {slot: {"score": integer_or_null, "status": "SCORED"|"UNRESOLVED"|"EMPTY_SLOT",
+ "reason": specific_reason, "checks": [{"claim_id":..., "finding":
+ "SUPPORTED"|"CONTRADICTED"|"WRONG_SLOT"|"UNRESOLVED", "rationale":...,
+ "source_refs": [{"source_id":...,"pdf_page":1,"access_id":...,
+@@ -64,9 +64,17 @@ error needs its assertion and original source location. Organization/slot
+ issues need a precise output location. Each nonempty scored slot needs source
+ verification, not a generic 'correct'. Valid empty slots have fixed PCS=0,
+ EMPTY_SLOT; do not invent checks. Missing or unjudgeable scores are null.
++If any assertion in a slot is UNRESOLVED, that slot has score=null,
++status=UNRESOLVED and a nonempty unresolved array of reason strings, not objects.
++General practice and plausible behavior are not source evidence. Missing support
++is UNRESOLVED, not a factual error or a reason to require deletion.
+ PRC is independently judged anticipated usability, not calculated from PCS.
+ Give concrete edits/blockers; for 5 describe inspected locations and why no
+ blocking edit was identified. Do not estimate time/cost or claim human approval.
++For a FACTUAL modification, location must be one exact existing claim_id;
++never use a range, a list of IDs, a slot name, or ARTIFACT. ORGANIZATION may
++use a claim_id, slot name or ARTIFACT. PRC below 5 needs a concrete required edit,
++not only a NONE entry. When required evidence is unresolved, use null PRC.
+ No usable content or explicit refusal has null PRC (NO_EVALUABLE_CONTENT).
+ Do not return markdown, extra scores, other judges' opinions, or weighted totals.
+ """
+@@ -105,7 +113,9 @@ def require_run(path: Path) -> Path:
+ 
+ 
+ def versions() -> dict:
++    from .contract import CONTRACT_VERSION, INSTRUCTIONS
+     return {"protocol": PROTOCOL_VERSION, "prompt": PROMPT_VERSION,
++            "slot_organization": CONTRACT_VERSION, "slot_prompt_sha256": digest(INSTRUCTIONS),
+             "implementation_manifest": implementation_manifest("l4"),
+             "rubric": RUBRIC_VERSION, "prompt_sha256": digest(PROMPT),
+             "rubric_sha256": digest(RUBRIC),
+diff --git a/eval/l4_agent/records.py b/eval/l4_agent/records.py
+index 7f66420..2a7fa68 100644
+--- a/eval/l4_agent/records.py
++++ b/eval/l4_agent/records.py
+@@ -4,6 +4,8 @@ from __future__ import annotations
+ import json
+ from copy import deepcopy
+ from .protocol import SLOTS, L4Error, digest
++from eval.evaluation_response_format import normalize_json_envelope
++from .contract import PCS_FIELDS, CHECK_FIELDS, PRC_FIELDS, MODIFICATION_FIELDS, FINDINGS, KINDS
+ 
+ 
+ class InvalidResponse(ValueError):
+@@ -29,7 +31,11 @@ def validate_refs(refs: list, accesses: list[dict], *, required=True) -> None:
+         require(ref.get("source_id") == args.get("source_id") and type(ref.get("pdf_page")) is int and
+                 ref["pdf_page"] == args.get("pdf_page"), "SOURCE_LOCATION_MISMATCH")
+         if ref.get("kind") == "TEXT":
+-            require(not args.get("image", False) and text(ref.get("quote")) and ref["quote"] in result.get("text", ""), "QUOTE_NOT_ON_ACCESSED_PAGE")
++            # PDF line wrapping is layout, not a different quotation. Preserve
++            # words, punctuation, case and order; never use fuzzy matching.
++            require(not args.get("image", False) and text(ref.get("quote")) and
++                    " ".join(ref["quote"].split()) in " ".join(result.get("text", "").split()),
++                    "QUOTE_NOT_ON_ACCESSED_PAGE")
+         elif ref.get("kind") == "IMAGE":
+             require(args.get("image") is True and bool(result.get("image_base64")) and text(ref.get("description")), "IMAGE_NOT_ACCESSED")
+         else:
+@@ -46,6 +52,7 @@ def no_duplicate_pairs(pairs):
+ 
+ 
+ def parse_response(raw: str) -> dict:
++    raw, _ = normalize_json_envelope(raw)
+     try:
+         data = json.loads(raw, object_pairs_hook=no_duplicate_pairs,
+                           parse_constant=lambda s: (_ for _ in ()).throw(InvalidResponse("NONFINITE_NUMBER")))
+@@ -66,18 +73,18 @@ def absent(status: str, reason: str) -> dict:
+ 
+ def validate_pcs(value, slot: str, artifact: dict, accesses: list) -> dict:
+     require(isinstance(value, dict), "MISSING_SLOT_RESPONSE")
+-    require(set(value) == {"score", "status", "reason", "checks", "unresolved"}, "INVALID_PCS_FIELDS")
++    require(set(value) == PCS_FIELDS, "INVALID_PCS_FIELDS")
+     require(text(value["reason"]), "MISSING_SPECIFIC_REASON")
+     require(isinstance(value["unresolved"], list) and all(text(x) for x in value["unresolved"]), "INVALID_UNRESOLVED")
+     require(isinstance(value["checks"], list), "INVALID_CHECKS")
+     expected = {c["claim_id"] for c in artifact["slots"][slot]["claims"]}
+     found = []
+     for check in value["checks"]:
+-        require(isinstance(check, dict) and set(check) == {"claim_id", "finding", "rationale", "source_refs"}, "INVALID_CHECK_FIELDS")
++        require(isinstance(check, dict) and set(check) == CHECK_FIELDS, "INVALID_CHECK_FIELDS")
+         require(check["claim_id"] in expected, "INVALID_ASSERTION_ID")
+         found.append(check["claim_id"])
+         require(text(check["rationale"]), "MISSING_ASSERTION_REASON")
+-        require(check["finding"] in {"SUPPORTED", "CONTRADICTED", "WRONG_SLOT", "UNRESOLVED"}, "INVALID_FINDING")
++        require(check["finding"] in FINDINGS, "INVALID_FINDING")
+         validate_refs(check["source_refs"], accesses, required=check["finding"] != "UNRESOLVED")
+     require(set(found) == expected and len(found) == len(expected), "MISSING_OR_DUPLICATE_ASSERTION_CHECK")
+     score = value["score"]
+@@ -92,7 +99,7 @@ def validate_pcs(value, slot: str, artifact: dict, accesses: list) -> dict:
+ 
+ 
+ def validate_prc(value, artifact: dict, accesses: list) -> dict:
+-    require(isinstance(value, dict) and set(value) == {"score", "status", "reason", "modifications", "unresolved"}, "MISSING_OR_INVALID_PRC")
++    require(isinstance(value, dict) and set(value) == PRC_FIELDS, "MISSING_OR_INVALID_PRC")
+     require(text(value["reason"]) and isinstance(value["unresolved"], list) and all(text(x) for x in value["unresolved"]), "INVALID_PRC_REASON")
+     if value["status"] == "UNRESOLVED":
+         require(value["score"] is None and value["unresolved"], "UNRESOLVED_PRC_MUST_BE_NULL")
+@@ -102,9 +109,9 @@ def validate_prc(value, artifact: dict, accesses: list) -> dict:
+     require(isinstance(value["modifications"], list) and value["modifications"], "CONCRETE_MODIFICATIONS_REQUIRED")
+     claims = {c["claim_id"] for s in artifact["slots"].values() for c in s["claims"]}
+     for change in value["modifications"]:
+-        require(isinstance(change, dict) and set(change) == {"kind", "location", "need", "source_refs"}, "INVALID_MODIFICATION_FIELDS")
++        require(isinstance(change, dict) and set(change) == MODIFICATION_FIELDS, "INVALID_MODIFICATION_FIELDS")
+         require(change["location"] in claims | set(SLOTS) | {"ARTIFACT"} and text(change["need"]), "INVALID_OUTPUT_LOCATION")
+-        require(change["kind"] in {"FACTUAL", "ORGANIZATION", "NONE"}, "INVALID_MODIFICATION_KIND")
++        require(change["kind"] in KINDS, "INVALID_MODIFICATION_KIND")
+         if change["kind"] == "FACTUAL":
+             require(change["location"] in claims, "FACTUAL_ERROR_NEEDS_ASSERTION_ID")
+         validate_refs(change["source_refs"], accesses, required=change["kind"] == "FACTUAL")
+@@ -185,6 +192,9 @@ def seal(record: dict) -> dict:
+ 
+ 
+ def validate_record(record: dict, artifact: dict, manifest: dict, config: dict) -> None:
++    if record.get("request_organization"):
++        from .staged import validate_components
++        validate_components(record, artifact)
+     payload = {k: v for k, v in record.items() if k != "record_sha256"}
+     require(record.get("record_sha256") == digest(payload), "RECORD_HASH_MISMATCH")
+     require(record.get("manifest_sha256") == manifest["manifest_sha256"] and record.get("versions") == manifest["versions"], "STALE_RECORD")
+diff --git a/eval/l4_agent/runner.py b/eval/l4_agent/runner.py
+index 1471eca..c9b3cc2 100644
+--- a/eval/l4_agent/runner.py
++++ b/eval/l4_agent/runner.py
+@@ -5,6 +5,7 @@ from copy import deepcopy
+ from pathlib import Path
+ from uuid import uuid4
+ 
++from eval.evaluation_cost_policy import provider_managed
+ from eval.evaluation_runtime import EvaluationRuntime
+ from .client import RuntimeJudgeClient
+ from .engine import authorize, evaluate_run, validate_run
+@@ -42,6 +43,8 @@ def run_evaluation(config_path: Path | None = None, *, run_dir: Path | None = No
+     if mock and config["data_class"] != "MOCK_ONLY":
+         raise L4Error("Mock transport cannot score a real input batch")
+     cap = config["runtime"].get("budget_cap_cny")
++    if provider_managed(config["model"]):
++        cap = 500  # Compatibility metadata only; runtime disables local enforcement.
+     if type(cap) not in {int, float} or not 0 < cap <= 500:
+         raise L4Error("Campaign budget must be positive and at most CNY 500")
+     if resume is None:
+@@ -57,7 +60,8 @@ def run_evaluation(config_path: Path | None = None, *, run_dir: Path | None = No
+         raise L4Error("Mock transport requires a separate ledger inside this run's fixtures")
+     runtime = EvaluationRuntime(config["model"], run, "L4", ledger,
+                                 budget_cap_cny=cap, live_authorized=explicit_live,
+-                                transport=transport)
++                                transport=transport,
++                                http_timeout_seconds=config["runtime"].get("http_timeout_seconds", 120))
+     if mock and runtime.is_live:
+         raise L4Error("A mock input batch cannot use a live runtime")
+     client = RuntimeJudgeClient(runtime)
+@@ -76,10 +80,15 @@ def run_evaluation(config_path: Path | None = None, *, run_dir: Path | None = No
+     report = {"run_dir": str(run), "export_dir": str(destination), "data_class": config["data_class"],
+               "research_status": "NOT_RESEARCH_DATA" if mock else "UNVALIDATED_AGENT_ESTIMATE",
+               "records": len(records), "technical_failures": sum(r["processing_status"] == "TECHNICAL_FAILURE" for r in records),
++              "technically_valid": sum(r["parse_status"] in {"VALID", "RULE_ONLY"} for r in records),
++              "semantic_unresolved": sum(r["processing_status"] == "UNRESOLVED" for r in records),
++              "request_organization": config.get("request_organization", "WHOLE_ARTIFACT_V1"),
+               "runtime_cost_cny": sum(costs) if all(c is not None for c in costs) else None,
+               "runtime_cost_basis": "USAGE_LIST_PRICE_OR_CONSERVATIVE_UPPER_ESTIMATE_NOT_INVOICE",
+-              "real_model_calls": sum(calls) if all(c is not None for c in calls) else None,
+-              "campaign_ledger": ledger.relative_to(REPO).as_posix(), "campaign_budget_cap_cny": cap,
++              "real_model_calls": (0 if mock else len(list(runtime.cache_dir.glob("*.json")))) if config.get("request_organization") else (sum(calls) if all(c is not None for c in calls) else None),
++              "real_model_calls_this_invocation": runtime.real_model_calls,
++              "campaign_ledger": ledger.relative_to(REPO).as_posix(), "campaign_budget_cap_cny": None if provider_managed(config["model"]) else cap,
++              "cost_control": "PROVIDER_MANAGED" if provider_managed(config["model"]) else "LOCAL_CAP",
+               "resume_policy": "Saved paid responses and final records remain immutable. Pre-dispatch deferrals remain pending and resume without redrawing paid judgments.",
+               "validation": "PASS"}
+     save_new(report_path, report)

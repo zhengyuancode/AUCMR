@@ -72,6 +72,9 @@ def validate_billing(binding):
 
 
 def normalize_usage(raw, binding):
+    from .evaluation_cost_policy import provider_managed, recorded_usage
+    if provider_managed(binding):
+        return recorded_usage(raw, binding)
     raw = raw if isinstance(raw, dict) else {}
     usage = raw.get("usage")
     usage = usage if isinstance(usage, dict) else {}

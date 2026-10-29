@@ -1699,6 +1699,7 @@ def _write_evaluation_outputs(
         run_nli=stage == "l1",
         run_l2=stage == "l2",
         max_workers=max(1, workers),
+        l1_record_dir=report_root / "l1_checkpoints" if stage == "l1" else None,
     )
     complete_audit = runner.evaluation_audit(method_metrics)
     stage_audit = {
@@ -1765,6 +1766,9 @@ def _write_evaluation_outputs(
             }
         ),
     }
+    if stage == "l1":
+        from eval.l1_recording import file_hash
+        manifest["l1_recording_implementation"] = file_hash(ROOT / "eval/l1_recording.py")
     (report_root / f"evaluation_manifest_{stage}.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8",
     )

@@ -49,7 +49,13 @@ def fixture_manifest(directory: Path, ids=None, methods=None) -> tuple[dict, dic
     targets, artifacts = [], []
     for fid in ids:
         spec = specs[fid]
-        target = {"target_id": fid, "name": "Constructed fixture " + fid, "actor": "Fixture User",
+        # Task metadata must describe the source domain, not the test harness.
+        # Neither expected labels nor judged assertions determine these names.
+        name, actor = {"C04": ("Save bid receipt", "Customer"),
+                       "B07": ("Process track update according to Table 1", "Not specified in source"),
+                       "B08": ("Publish track after identity confirmation", "Not specified in source")}.get(
+                           fid, ("Place bid", "Customer"))
+        target = {"target_id": fid, "name": name, "actor": actor,
                   "project_id": fid, "planned_group": "MAIN"}
         targets.append(target)
         for mi, method in enumerate(methods):
@@ -81,7 +87,7 @@ class FixtureScript:
         if fid not in self.specs:
             raise ValueError("Mock only accepts registered constructed fixture IDs")
         spec = self.specs[fid]
-        if len(messages) == 2:
+        if attempt == 1:
             return {"tool_calls": [{"name": "source_page", "arguments": {"source_id": self.sources[fid]["source_id"],
                 "pdf_page": p, "image": bool(spec.get("image_only_table"))}} for p in range(1, self.sources[fid]["pages"]+1)]}
         role = task["role"]

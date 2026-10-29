@@ -155,7 +155,7 @@ def run_batch(config_path, *, repo=REPO, authorize_live=False, resume=None,
                 "implementation": implementation_manifest("l2"),
                 "protocol_version": PROTOCOL_VERSION, "prompt_version": PROMPT_VERSION,
                 "prompt_hash": prompt_hash(), "campaign_ledger": str(ledger),
-                "budget_cap_cny": budget_cap_cny, "max_attempts": max_attempts,
+                "budget_cap_cny": None if config["model"].get("cost_control") == "PROVIDER_MANAGED" else budget_cap_cny, "max_attempts": max_attempts,
                 "evaluation_mode": "MOCK_ONLY" if fixture else "LIVE"}
     if resume is None:
         run_dir = new_run("run", repo / "outputs/agent_l2_independent")

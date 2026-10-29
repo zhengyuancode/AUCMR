@@ -32,6 +32,16 @@ def run_model_fixtures(run_dir: Path, config: dict) -> dict:
             runner.references[tid] = runner.source_stage(target)
             write_json(root/"scenario_freeze.json", runner.references)
         source_checks.append({"fixture": tid, "core_established": runner.references[tid]["core_status"] == "ESTABLISHED"})
+        if not source_checks[-1]["core_established"]:
+            # The final predicate already requires every source check to pass.
+            # Preserve that failure immediately rather than pay for doomed work.
+            report = {"data_type": "CONSTRUCTED_MODEL_CALIBRATION_NOT_RESEARCH_DATA", "status": "FAIL",
+                      "source_checks": source_checks, "results": [], "per_model": {},
+                      "reason": "SOURCE_CORE_UNESTABLISHED", "stopped_at": tid,
+                      "runtime_hash": frozen_runtime_hash(config, real_manifest)}
+            write_json(root/"model_fixture_report.json", report)
+            write_json(run_dir/"model_fixture_acceptance.json", report)
+            return report
     results = []
     for a in manifest["artifacts"]:
         tid = a["target_id"]

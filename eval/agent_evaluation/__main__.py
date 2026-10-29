@@ -26,6 +26,11 @@ def cost_plan(run_dir: Path, use_pilot=False) -> dict:
             "Verified provider bindings and all billing dimensions required", "Frozen source scenes not established",
             "Pilot family-level ledger and conservative upper-quantile projection required"],
         "cap_is_not_cost_estimate": True, "cost_basis": "USAGE_LIST_PRICE_OR_CONSERVATIVE_UPPER_ESTIMATE_NOT_INVOICE", "real_model_calls": 0}
+    if config.get("cost_control") == "PROVIDER_MANAGED":
+        result.update(campaign_cap_cny=None, projection_status="INFORMATIONAL_ONLY",
+                      price_status="ESTIMATES_ONLY", blockers=[], cost_control="PROVIDER_MANAGED")
+        write_json(run_dir / "cost_plan.json", result)
+        return result
     if use_pilot:
         from .common import read_jsonl
         from .transport import binding_blockers
@@ -119,11 +124,12 @@ def live_run(args, config):
         gate = args.run_dir / "pilot_acceptance.json"
         if not gate.exists() or read_json(gate).get("status") != "PASS":
             raise Blocked("Pilot acceptance and budget projection required")
-        projection = read_json(args.run_dir / "cost_plan.json")
-        if projection.get("projection_status") != "VERIFIED_WITHIN_REMAINING_CAMPAIGN_CAP":
-            raise Blocked("Formal remaining workload cost not verified")
-        if projection.get("projection_runtime_hash") != frozen_runtime_hash(config, manifest):
-            raise Blocked("Cost projection binding drift")
+        if config.get("cost_control") != "PROVIDER_MANAGED":
+            projection = read_json(args.run_dir / "cost_plan.json")
+            if projection.get("projection_status") != "VERIFIED_WITHIN_REMAINING_CAMPAIGN_CAP":
+                raise Blocked("Formal remaining workload cost not verified")
+            if projection.get("projection_runtime_hash") != frozen_runtime_hash(config, manifest):
+                raise Blocked("Cost projection binding drift")
     ids = config["pilot_targets"] if args.phase == "pilot" else [t["target_id"] for t in manifest["cohort"]["targets"] if t["planned_group"] == "MAIN"]
     runner = Orchestrator(args.run_dir, config, manifest, transport)
     if args.phase == "formal":

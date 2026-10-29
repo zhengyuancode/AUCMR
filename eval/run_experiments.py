@@ -279,6 +279,7 @@ class ExperimentRunner:
         run_l2: bool = False,
         max_workers: int = 1,
         require_l1_audit: bool = False,
+        l1_record_dir=None,
     ) -> dict[str, list[UCMetrics]]:
         """Compute L1-L3 metrics for all results, grouped by method."""
         method_metrics = defaultdict(list)
@@ -286,6 +287,14 @@ class ExperimentRunner:
         # Validate every identity and snapshot before the first judge call.
         identities = {key: result_identity(key, paths, require_l1_audit=run_nli and require_l1_audit)
                       for key, paths in result_map.items()}
+        recording = None
+        self.metrics_computer.nli_judge._recorder = None
+        if l1_record_dir is not None:
+            if not run_nli or run_l2:
+                raise ValueError("L1 checkpoints only support an L1-only run")
+            from eval.l1_recording import make_recording
+            recording = make_recording(l1_record_dir, self.metrics_computer.nli_judge, identities.values())
+            self.metrics_computer.nli_judge._recorder = recording
         total = len(indexed_items)
         workers = max(1, min(int(max_workers), total or 1))
 
@@ -293,14 +302,19 @@ class ExperimentRunner:
             i, (key, (uc_path, ev_path)) = indexed_item
             method_key, project, uc_name, actor = key
             method = legacy_method(method_key)
-            metrics = self.metrics_computer.compute_all(
-                uc_path, ev_path, run_nli=run_nli, run_l2=run_l2,
-                bound_method=identities[key]["method"],
-            )
+            metrics = recording.load_metrics(identities[key]) if recording else None
+            reused = metrics is not None
+            if not reused:
+                metrics = self.metrics_computer.compute_all(
+                    uc_path, ev_path, run_nli=run_nli, run_l2=run_l2,
+                    bound_method=identities[key]["method"],
+                )
             identity = identities[key]
             if sha(uc_path) != identity["input_hash"] or sha(ev_path) != identity["evidence_hash"]:
                 raise RuntimeError("Evaluation inputs changed during judging")
             metrics.evaluation_identity = identity
+            if recording and not reused:
+                recording.save_metrics(identity, metrics)
             return i, method, metrics, uc_name, project
 
         logger.info(
@@ -316,6 +330,8 @@ class ExperimentRunner:
                     completed.append(compute_one(item))
                     logger.info("[%d/%d] Metrics complete", len(completed), total)
                 except Exception as e:
+                    if recording:
+                        raise
                     _, (_key, (uc_path, _ev_path)) = item
                     logger.error(f"Failed to compute metrics for {uc_path}: {e}")
                     failures.append({"use_case_path": uc_path, "error": str(e)})

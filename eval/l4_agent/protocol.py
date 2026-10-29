@@ -20,15 +20,15 @@ OUTPUT_ROOT = REPO / "outputs" / "agent_l4"
 SLOTS = ("goal", "preconditions", "trigger", "main_flow", "alternative_flow",
          "exception_flow", "postconditions")
 PROMPT_VERSION = "L4_PROMPT_1.0.0"
-RUBRIC_VERSION = "L4_PCS_PRC_1.0.0"
+RUBRIC_VERSION = "L4_PCS_PRC_PAPER_ZH_2.0.0"
 RUBRIC = {
-    "PCS": {"0": "槽位内容基本错误或与槽位要求基本无关。",
-            "1": "主要内容存在明显错误，仅少量内容正确。",
-            "2": "总体正确，但仍有少量错误或不准确。",
-            "3": "在已核验材料范围内，未发现明显内容错误。"},
-    "PRC": {"1": "预计需要基本重写。", "2": "预计需要大幅修改。",
-            "3": "预计经过一定修改后可用。", "4": "预计只需少量修改。",
-            "5": "在当前检查范围内，未发现明显妨碍后续使用的问题。"}}
+    "PCS": {"0": "槽位内容错误或与该槽位要求基本无关。",
+            "1": "主要内容存在明显错误，仅有少量内容正确。",
+            "2": "总体正确，但仍存在少量错误或不准确之处。",
+            "3": "内容正确且不存在明显事实性错误。"},
+    "PRC": {"1": "难以直接使用，需要基本重写。", "2": "可用性较低，需要大幅修改。",
+            "3": "基本可用，但仍需要一定程度的人工修改。", "4": "可用性较高，仅需要少量人工修改。",
+            "5": "能够直接支撑后续设计活动，或仅需要极少量修订。"}}
 PROMPT = """You are a single Agent judge of one anonymous final use-case artifact.
 Use PCS (0..3) for each of the seven generated slots and PRC (1..5) for the
 whole artifact. The name and actor are task inputs, never scored slots.
@@ -48,7 +48,7 @@ Keep every assertion, its order, and step number unchanged. Never regenerate.
 Use source_index, source_search, source_page (image false/true). Tool arguments
 use registered source_id and one-based PDF page numbers, never paths or URLs.
 Return either {"tool_calls":[{"name":...,"arguments":{...}}]} or a final object:
-{"pcs": {slot: {"score": integer_or_null, "status": "SCORED"|"UNRESOLVED",
+{"pcs": {slot: {"score": integer_or_null, "status": "SCORED"|"UNRESOLVED"|"EMPTY_SLOT",
 "reason": specific_reason, "checks": [{"claim_id":..., "finding":
 "SUPPORTED"|"CONTRADICTED"|"WRONG_SLOT"|"UNRESOLVED", "rationale":...,
 "source_refs": [{"source_id":...,"pdf_page":1,"access_id":...,
@@ -64,9 +64,17 @@ error needs its assertion and original source location. Organization/slot
 issues need a precise output location. Each nonempty scored slot needs source
 verification, not a generic 'correct'. Valid empty slots have fixed PCS=0,
 EMPTY_SLOT; do not invent checks. Missing or unjudgeable scores are null.
+If any assertion in a slot is UNRESOLVED, that slot has score=null,
+status=UNRESOLVED and a nonempty unresolved array of reason strings, not objects.
+General practice and plausible behavior are not source evidence. Missing support
+is UNRESOLVED, not a factual error or a reason to require deletion.
 PRC is independently judged anticipated usability, not calculated from PCS.
 Give concrete edits/blockers; for 5 describe inspected locations and why no
 blocking edit was identified. Do not estimate time/cost or claim human approval.
+For a FACTUAL modification, location must be one exact existing claim_id;
+never use a range, a list of IDs, a slot name, or ARTIFACT. ORGANIZATION may
+use a claim_id, slot name or ARTIFACT. PRC below 5 needs a concrete required edit,
+not only a NONE entry. When required evidence is unresolved, use null PRC.
 No usable content or explicit refusal has null PRC (NO_EVALUABLE_CONTENT).
 Do not return markdown, extra scores, other judges' opinions, or weighted totals.
 """
@@ -105,7 +113,11 @@ def require_run(path: Path) -> Path:
 
 
 def versions() -> dict:
+    from .contract import CONTRACT_VERSION, INSTRUCTIONS
+    from .expert_contract import EXPERT_VERSION, EXPERT_INSTRUCTIONS
     return {"protocol": PROTOCOL_VERSION, "prompt": PROMPT_VERSION,
+            "expert_organization": EXPERT_VERSION, "expert_prompt_sha256": digest(EXPERT_INSTRUCTIONS),
+            "slot_organization": CONTRACT_VERSION, "slot_prompt_sha256": digest(INSTRUCTIONS),
             "implementation_manifest": implementation_manifest("l4"),
             "rubric": RUBRIC_VERSION, "prompt_sha256": digest(PROMPT),
             "rubric_sha256": digest(RUBRIC),
