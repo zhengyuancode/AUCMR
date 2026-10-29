@@ -111,20 +111,22 @@ class BatchTests(unittest.TestCase):
 
     def test_l2_l4_share_the_same_frozen_outputs(self):
         from eval.l2_independent.inputs import collect as collect_l2
-        from eval.l4_agent.inputs import collect as collect_l4
-        from eval.l4_agent.protocol import L4Error
+        from eval.l4_agent.inputs import content
+        from eval.l4_agent.protocol import L4Error, file_hash
         self.inputs()
         self.build()
         l2 = read_json(self.repo / "config/batch/l2.json")
         l4 = read_json(self.repo / "config/batch/l4.json")
-        with deny_network(), patch("eval.l4_agent.inputs.REPO", self.repo):
-            first = collect_l4(l4)
+        with deny_network(), patch("eval.l4_agent.protocol.REPO", self.repo):
+            targets = {t['task_id']:t for t in l4['targets']}
+            first = [content(b,targets[b['task_id']]) for b in l4['input_bindings']]
             second = collect_l2(l2, self.repo)
-            self.assertEqual([a["input_sha256"] for a in first["artifacts"]], [a["input_hash"] for a in second])
+            self.assertEqual([b['sha256'] for b in l4['input_bindings']], [a["input_hash"] for a in second])
+            self.assertTrue(all(a['no_content'] for a in first))
             path = self.repo / l4["input_bindings"][0]["path"]
             path.write_bytes(path.read_bytes() + b"\n")
-            with self.assertRaisesRegex(L4Error, "Frozen batch output changed"):
-                collect_l4(l4)
+            with self.assertRaisesRegex(L4Error, "FROZEN_INPUT_CHANGED"):
+                content(l4['input_bindings'][0],targets[l4['input_bindings'][0]['task_id']])
 
     def test_task_changes_create_new_batch_and_never_overwrite(self):
         self.inputs()

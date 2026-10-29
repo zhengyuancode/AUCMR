@@ -8,10 +8,9 @@ import pytest
 from eval.agent_evaluation.adapters import adapt as adapt_l3, anonymous as anonymous_l3
 from eval.l2_independent.common import SLOTS
 from eval.l2_independent.inputs import adapt_bytes, anonymous as anonymous_l2
-from eval.l4_agent.inputs import adapt as adapt_l4
-from eval.l4_agent.engine import _judge_one
-from eval.l4_agent.records import validate_record
-from eval.l4_agent.export import export_records
+from eval.l4_agent.inputs import content as read_l4
+from eval.l4_agent.protocol import file_hash
+from eval.l4_agent.contract import validate_ratings
 from eval.implementation import implementation_manifest
 from eval.serialized_slots import omitted_claims_are_empty
 
@@ -30,8 +29,13 @@ def adapt_all(data, tmp_path, method="Example"):
               "name": "Save record", "actor": "User", "primary_actor": "User"}
     l2 = adapt_bytes(raw, target, method, "fixture", data_origin="FIXTURE")
     l3 = adapt_l3(path, target, method)
-    with patch("eval.l4_agent.inputs.REPO", tmp_path):
-        l4 = adapt_l4({"path": str(path), "method": method}, target, [method])
+    with patch("eval.l4_agent.protocol.REPO", tmp_path):
+        try:
+            l4 = read_l4({"path": str(path), "method": method, "sha256":file_hash(path)}, target)
+            l4['state'] = ('REFUSED' if l4['explicit_refusal'] else 'EMPTY_OUTPUT') if l4['no_content'] else 'PRESENT'
+            l4['omitted_slots'] = [s for s in SLOTS if s not in data['slots']]
+        except ValueError:
+            l4 = {'state':'STRUCTURE_ERROR'}
     assert path.read_bytes() == raw
     return l2, l3, l4
 
@@ -93,27 +97,10 @@ def test_early_refusal_is_rule_scored_without_model(tmp_path, method):
     assert states((a, b, c)) == ("EXPLICIT_REFUSAL", "ABSTAINED", "REFUSED")
     assert all(row["omitted_slots"] == list(SLOTS[1:]) for row in (a, b, c))
     assert c["empty_slots"] == list(SLOTS)
-    config = {"data_class": "MOCK_ONLY", "judge": {"judge_id": "fixture", "version": "1"},
-              "model": {"config_id": "NOT_BOUND"}, "methods": [method],
-              "targets": [{"task_id": "T1", "project_id": "fixture", "comparison_group": "MAIN"}],
-              "input_bindings": [{"task_id": "T1", "method": method}]}
-    manifest = {"manifest_sha256": "fixture", "sources": [], "versions": {}}
-    # No client exists: a refusal must finish without attempting any judge call.
-    record = _judge_one(c, {}, [], config, manifest, tmp_path, None)
-    validate_record(record, c, manifest, config)
-    assert all(v["score"] == 0 for v in record["pcs"].values())
-    assert record["prc"]["score"] is None
-    assert record["prc"]["status"] == "NO_EVALUABLE_CONTENT"
-    assert record["model_requests"] == 0
-    assert record["processing_status"] == "REFUSED"
-    summary = export_records([record], config, tmp_path / "exports")
-    group = summary["groups"][0]
-    assert group["counts"]["refusal"] == 1
-    assert group["counts"]["technical_failure"] == 0
-    assert group["available_pcs"]["denominator"] == 1
-    assert group["available_pcs"]["mean"] == 0
-    assert group["available_prc"]["denominator"] == 0
-    assert group["available_prc"]["mean"] is None
+    # The panel excludes empty alternatives from model-assigned ratings.
+    # Deterministic zero-PCS / null-PRC and zero calls are covered in agent_l4.
+    assert c['no_content'] is True
+    assert validate_ratings({'ratings':{}},{'A':c}) == {}
 
 
 @pytest.mark.parametrize("refusal", [False, True])
