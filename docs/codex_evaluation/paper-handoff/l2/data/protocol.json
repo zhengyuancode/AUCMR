@@ -1,0 +1,126 @@
+{
+  "version": "L2_R1_R7_RECEIPTS_V5_ALL_ACTIVE_RULES",
+  "model_id": "glm-4.6v",
+  "provider": "ZHIPU_OFFICIAL",
+  "base_url": "https://open.bigmodel.cn/api/paas/v4",
+  "api_key_environment_variable_name": "AUCMR_EVAL_ZHIPU_API_KEY",
+  "parameters": {
+    "max_tokens": 8192,
+    "thinking": {
+      "type": "disabled"
+    }
+  },
+  "temperature_explicitly_sent": false,
+  "seed_explicitly_sent": false,
+  "observed_payload_without_messages": {
+    "model": "glm-4.6v",
+    "stream": false,
+    "max_tokens": 8192,
+    "thinking": {
+      "type": "disabled"
+    }
+  },
+  "cost_control": "PROVIDER_MANAGED",
+  "recorded_cost_estimate": {
+    "input_cny_per_million": 2,
+    "output_cny_per_million": 6,
+    "source": "https://docs.bigmodel.cn/cn/guide/start/pricing",
+    "kind": "UNCACHED_TOKEN_ESTIMATE_NOT_INVOICE"
+  },
+  "ledger_path": "outputs/evaluation_campaign/budget.sqlite",
+  "original_config_path": "outputs/evaluation_preparation/l2-rules-v5-20261029/config.json",
+  "original_config_sha256": "72feb666d35499ac1db3050337b87a4427bd80cad44c498874954fa1db30be37",
+  "rules": [
+    {
+      "rule_id": "R1",
+      "name": "trigger_preconditions_coverage",
+      "group": "vertical",
+      "required_slots": [
+        "preconditions",
+        "trigger"
+      ],
+      "definition_en": "trigger_preconditions_coverage — Every independent state that must already hold before\n   the Trigger must have a corresponding entry in Preconditions. The incoming message,\n   click, selection, detection or other event that CONSTITUTES the Trigger is not a\n   missing precondition and need not be duplicated there."
+    },
+    {
+      "rule_id": "R2",
+      "name": "mainflow_trigger_continuity",
+      "group": "vertical",
+      "required_slots": [
+        "trigger",
+        "main_flow"
+      ],
+      "definition_en": "mainflow_trigger_continuity — Main Flow step 1 must be logically compatible with and\n   continue from the Trigger. A concise restatement of the initiating action for readable\n   context is not itself a violation; report only a real gap, contradiction or restart of\n   a different scenario."
+    },
+    {
+      "rule_id": "R3",
+      "name": "mainflow_postconditions_reachability",
+      "group": "vertical",
+      "required_slots": [
+        "main_flow",
+        "postconditions"
+      ],
+      "definition_en": "mainflow_postconditions_reachability — The Main Flow must reasonably lead to each\n   Postcondition. A reachable UI/display/result state is allowed; do not demand that every\n   postcondition be persistent, and do not flag a reachable state merely because the last\n   main-flow step already mentions it."
+    },
+    {
+      "rule_id": "R4",
+      "name": "actor_mainflow_presence",
+      "group": "lateral",
+      "required_slots": [
+        "main_flow"
+      ],
+      "definition_en": "actor_mainflow_presence — The Primary Actor must appear (by name, exact role phrase,\n   or pronoun) in Main Flow. A step where the actor appears as object or via possessive\n   counts, and a qualified phrase such as \"receiving C2 JU\" counts for actor \"C2 JU\"."
+    },
+    {
+      "rule_id": "R5",
+      "name": "goal_mainflow_alignment",
+      "group": "lateral",
+      "required_slots": [
+        "goal",
+        "main_flow"
+      ],
+      "definition_en": "goal_mainflow_alignment — The Goal must be consistent with the behavior described in Main Flow.\n   Ignore goal phrases describing long-term / asynchronous / system-side ongoing behavior."
+    },
+    {
+      "rule_id": "R6",
+      "name": "altflow_diverge_points",
+      "group": "lateral",
+      "required_slots": [
+        "main_flow",
+        "alternative_flow"
+      ],
+      "definition_en": "altflow_diverge_points — Every divergence point referenced in Alternative Flow must\n   identify an existing step in Main Flow. The alternative's branch-specific condition\n   need not already be stated in the main step; only flag a nonexistent/out-of-range or\n   logically unrelated attachment point."
+    },
+    {
+      "rule_id": "R7",
+      "name": "exceptionflow_exit_coverage",
+      "group": "lateral",
+      "required_slots": [
+        "exception_flow"
+      ],
+      "definition_en": "exceptionflow_exit_coverage — Every branch in Exception Flow must have a clear\n   outcome: return to a Main Flow step, terminate or hand off, OR an explicit terminal\n   failure/prevention state (for example operation rejected, bid not placed, order\n   cancelled, access blocked, or an error state shown with no continuation claimed).\n   Do not demand an invented retry/return action when the branch already ends in a clear\n   documented failure state."
+    }
+  ],
+  "groups": {
+    "vertical": [
+      "R1",
+      "R2",
+      "R3"
+    ],
+    "lateral": [
+      "R4",
+      "R5",
+      "R6",
+      "R7"
+    ]
+  },
+  "input_slots": [
+    "goal",
+    "preconditions",
+    "trigger",
+    "main_flow",
+    "alternative_flow",
+    "exception_flow",
+    "postconditions"
+  ],
+  "primary_actor_is_context_not_eighth_scored_slot": true
+}
