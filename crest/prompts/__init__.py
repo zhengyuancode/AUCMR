@@ -575,6 +575,10 @@ ${exception_flow_json}
    cancelled, access blocked, or an error state shown with no continuation claimed).
    Do not demand an invented retry/return action when the branch already ends in a clear
    documented failure state.
+   If Exception Flow has no authored claims or raw_text, this rule is not applicable:
+   do not report an issue for an empty slot. coverage_state and missing_aspects are
+   internal coverage metadata, not authored exception branches. Nonempty branches
+   still require the outcomes described above.
 
 === INSTRUCTIONS ===
 - All four rules pivot on main_flow. Look at the four lateral slots together. If main_flow itself is the root cause for multiple rules, merge into ONE issue with root_slot=main_flow.

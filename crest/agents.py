@@ -1872,7 +1872,7 @@ def _validate_detector_issues(
     issues: Any, uc: UseCase, group_label: str = "",
 ) -> List[Dict[str, Any]]:
     """
-    校验 detector 输出 issue 列表的格式（仅格式，不查内容）：
+    校验 detector 输出 issue 列表的格式与规则适用性（不代替内容判断）：
       - root_slot 必须是 use case 已填的 slot
       - target_claim_index 越界则降级为 -1（slot-wide）
       - root_cause / fix_intent 必填
@@ -1905,6 +1905,13 @@ def _validate_detector_issues(
         if rule not in _DRA_RULES:
             logger.debug(f"[detect{group_label}] dropped non-R1--R7 rule={rule!r}")
             continue
+        if rule == "exceptionflow_exit_coverage":
+            exception = uc.slots.get("exception_flow")
+            # R7 checks exits of authored branches, not missing coverage metadata.
+            # A raw-text-only slot is not empty; retain its semantic check.
+            if exception is None or exception.is_empty():
+                logger.debug(f"[detect{group_label}] R7 not applicable: empty exception_flow")
+                continue
         root = it.get("root_slot")
         if root not in valid_slots:
             logger.debug(f"[detect{group_label}] dropped issue with invalid root_slot={root!r}")
