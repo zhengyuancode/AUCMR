@@ -1,5 +1,7 @@
 # L2、L3、L4 服务器运行交付
 
+> L3 更新（2026-10-31）：本文的 L3 2.0 命令及有限场景定义仅保留作历史运行说明，不用于新的 PURE 需求覆盖率任务。当前 L3 协议和准备入口见 [专用目录](codex_evaluation/l3/README.md)。L2、L4 部分未因本次 L3 更新而改变。
+
 本次补齐评价代码的实际运行入口。L2 保留原 R1–R7，另外运行独立整体一致性评价。L3 保留来源内容审计和有限场景行为检查，只修复请求中断恢复。L4 使用 Agent PCS 和辅助 PRC，撤下 PCmpS。L0、L1、生成算法、原始来源及已有生成输出未改。
 
 本轮没有调用真实模型、运行正式评价、连接服务器或推送远程。离线测试验证程序行为，不能证明裁判准确性或 AUCMR 有优势。实际验收结果见同目录 `evaluation_release_20261021/summary.json`。
@@ -52,7 +54,7 @@ python -B -m eval.l2_independent prepare-inputs --config config/agent_evaluation
 - `per_request_upper_bound` 包含 `input`、`output`、`reasoning`、`images`、`other` 五项人民币上界。未知费用不能填零。
 - L4 需要 `supports_images=true` 和 `capabilities.images=true`。L3 还需 `capabilities.structured_json=true`、`image_token_upper_bound` 和 `binding_evidence`。这些应与所用模型实际能力一致。
 
-这里没有增加裁判模型选择或评价指标要求。具体字段说明见 `AGENT_L2_INDEPENDENT_RUNBOOK.md`、`AGENT_L3_RUNBOOK.md`、`AGENT_L4_RUNBOOK.md`。
+这里没有增加裁判模型选择或评价指标要求。具体字段说明见 `AGENT_L2_INDEPENDENT_RUNBOOK.md`、[当前 L3 专用目录](codex_evaluation/l3/README.md)、`AGENT_L4_RUNBOOK.md`。
 
 ## 3. 真实运行命令
 
