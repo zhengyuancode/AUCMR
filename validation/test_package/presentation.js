@@ -1,0 +1,1 @@
+window.REVIEW_VIEWS={};
