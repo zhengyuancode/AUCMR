@@ -19,7 +19,7 @@ human-evaluation/
 | `1_artifacts/` | `aucmr_full/`（AUCMR）、`baselines/`（TextRAG/VDocRAG/ViDoRAG/ReAct/LVLM-Direct 五种基线）、`crest_without_dra/`（关闭 DRA），共 651 个 JSON；每个含八槽用例 `slots`、`evidence_summary`、`citation_audit`（每条断言的 `evidence_refs`）、`quality_flags` 等。 |
 | `2_protocols/` | L1 协议快照、L2 的 R1–R7 判据、L3 覆盖判据、L4 评分细则与聚合规则。 |
 | `3_scripts/` | `calculate.py`（NLI-G/覆盖/消融指标计算）、`l3_judge.py`（覆盖判定）、`l2_judge.py`（R1–R7 判定）、`l4_analyze.py`（PCS/PRC 统计）、`recompute.py`（指标复算校验）。均为现有实现，本包只收录、不改写。 |
-| `4_review-records/` | L1/L2/组件消融/L3/L4/机制对照六组评阅记录（逐条 + 汇总 + README）。 |
+| `4_review-records/` | L1/L2/组件消融/L3/L4/机制对照/L5 七组评阅记录（逐条 + 汇总 + README）。 |
 
 ## 二、评价流程（如何执行，简述）
 
@@ -39,7 +39,7 @@ human-evaluation/
 | L2 | 最终用例 | R1–R7 残余违规 | `4_review-records/L2_内部一致性/` |
 | L3 | 最终用例 | 需求覆盖（宏/微平均） | `4_review-records/L3_需求覆盖/` |
 | L4 | 用例质量 | PCS（0–3）、PRC（1–5） | `4_review-records/L4_人工评价/` |
-| L5 | 与人工稿对照 | 完整性 C、来源约束正确性 K、冗余度 R | 暂未纳入本包 |
+| L5 | 与人工稿对照 | 完整性 C、来源约束正确性 K、冗余度 R | `4_review-records/L5_文本源适配/` |
 | 组件消融 | 6 配置 | 后六槽支持率、主流程齐备且衔接、分支规则 | `4_review-records/组件消融/` |
 | 机制对照 | 完整 / 固定邻页 / 简化 CREST | L1/L2/L3 + 消融指标 | `4_review-records/机制对照/` |
 
