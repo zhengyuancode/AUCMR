@@ -1,0 +1,137 @@
+{
+  "version": "aucmr_ablation_metric_contract_v1",
+  "date": "2026-11-12",
+  "primary_metrics": [
+    "postgoal_supported_claim_rate",
+    "main_chain_pass_yield",
+    "branch_rule_pass_rate"
+  ],
+  "definitions": {
+    "postgoal_supported_claim_rate": {
+      "title": "后六槽证据卡支持断言率",
+      "role": "primary_support",
+      "definition": "Per-target entailed final nonempty assertions in the six post-goal slots / all final nonempty assertions in those slots. Evidence-card support only; no slot_fit conjunction or PDF truth claim."
+    },
+    "main_chain_pass_yield": {
+      "title": "主链可评且衔接通过率",
+      "role": "primary_flow_product",
+      "definition": "For each body in Sv: trigger/main_flow/postconditions must each have nonblank claims and R2/R3 must both have zero reported violations. Missing required slot gives 0 as absent evaluable product, not as a semantic violation. Missing required judgment stays unknown. Does not test source support of the whole chain."
+    },
+    "branch_rule_pass_rate": {
+      "title": "分支规则衔接通过率",
+      "role": "primary_branch",
+      "definition": "Per-target mean zero-violation indicator for applicable R6/R7. Pairwise comparison uses only the same rules applicable to BOTH bodies. No applicable rules = NA, never automatic success. This is a rule-level measure, not branch coverage."
+    },
+    "mainflow_conditional_pass_rate": {
+      "title": "共同可评主流程的衔接通过率",
+      "role": "mandatory_decomposition",
+      "definition": "Both R2/R3 must be body-applicable. Given that, both must report zero violations. Always report its applicability denominator beside main_chain_pass_yield."
+    },
+    "main_chain_available": {
+      "title": "主链结构齐备率",
+      "role": "structural_diagnostic",
+      "definition": "Trigger, main_flow and postconditions all contain nonblank claims. Presence only; no quality claim."
+    },
+    "postconditions_present": {
+      "title": "后置条件产出率",
+      "role": "structural_diagnostic",
+      "definition": "Postconditions contain at least one nonblank claim. Confounded in the existing no_cross_slot_reuse implementation."
+    },
+    "postcondition_supported_claim_rate": {
+      "title": "后置条件断言支持精度",
+      "role": "mandatory_yield_companion",
+      "definition": "Entailed postcondition assertions / all final postcondition assertions. Empty postconditions are NA, not 0 or 1. Always show presence and denominator; paired version uses common nonempty bodies."
+    },
+    "postcondition_joint_claim_rate": {
+      "title": "后置条件断言支持且槽位正确率",
+      "role": "auxiliary",
+      "definition": "Postcondition assertions simultaneously entailed and slot_fit=true / postcondition assertions. Empty postconditions are NA."
+    },
+    "qualified_postcondition_yield": {
+      "title": "至少一条合格后置条件的产出率",
+      "role": "auxiliary",
+      "definition": "At least one final postcondition assertion is entailed and slot_fit=true. Empty slot gives no successful product. This weak existential threshold does not mean all postconditions are correct."
+    },
+    "postgoal_claim_count": {
+      "title": "后六槽断言数",
+      "role": "quantity_diagnostic",
+      "definition": "Count of final nonblank assertions in post-goal slots; not requirement coverage."
+    },
+    "l2_findings": {
+      "title": "L2观察到的违规条数",
+      "role": "dra_diagnostic",
+      "definition": "Sum of reported rule findings. Not matched true repair/regression counts; show rule applicability and repeated-input judge disagreements."
+    },
+    "generation_model_events": {
+      "title": "生成阶段模型输入事件数",
+      "role": "process_only",
+      "definition": "Logical model_input events, including replay. Not paid requests, monetary cost, tokens or latency."
+    },
+    "generation_page_presentations": {
+      "title": "生成阶段页面呈现次数",
+      "role": "process_only",
+      "definition": "Sum of page occurrences in evidence_read events; repeated pages counted."
+    },
+    "generation_image_reads": {
+      "title": "生成阶段图像阅读事件数",
+      "role": "process_only",
+      "definition": "Count of evidence_read events. A multi-page read and a single-page read are not equivalent workloads."
+    },
+    "R1_pass": {
+      "title": "R1规则通过率",
+      "role": "rule_decomposition",
+      "definition": "Body-defined applicability; indicator of zero findings for that rule. Missing evaluation stays unknown."
+    },
+    "R2_pass": {
+      "title": "R2规则通过率",
+      "role": "rule_decomposition",
+      "definition": "Body-defined applicability; indicator of zero findings for that rule. Missing evaluation stays unknown."
+    },
+    "R3_pass": {
+      "title": "R3规则通过率",
+      "role": "rule_decomposition",
+      "definition": "Body-defined applicability; indicator of zero findings for that rule. Missing evaluation stays unknown."
+    },
+    "R4_pass": {
+      "title": "R4规则通过率",
+      "role": "rule_decomposition",
+      "definition": "Body-defined applicability; indicator of zero findings for that rule. Missing evaluation stays unknown."
+    },
+    "R5_pass": {
+      "title": "R5规则通过率",
+      "role": "rule_decomposition",
+      "definition": "Body-defined applicability; indicator of zero findings for that rule. Missing evaluation stays unknown."
+    },
+    "R6_pass": {
+      "title": "R6规则通过率",
+      "role": "rule_decomposition",
+      "definition": "Body-defined applicability; indicator of zero findings for that rule. Missing evaluation stays unknown."
+    },
+    "R7_pass": {
+      "title": "R7规则通过率",
+      "role": "rule_decomposition",
+      "definition": "Body-defined applicability; indicator of zero findings for that rule. Missing evaluation stays unknown."
+    }
+  },
+  "selection_basis": "Mechanism/measurement validity after independent trace and receipt review; not significance or full winning.",
+  "aggregation": {
+    "primary": "Equal target macro; all six configurations reported.",
+    "pairing": "Sv is defined solely by both bodies being evaluable. Evaluation missing stays in Sv; exact metric applicability and denominators reported separately.",
+    "branch_pairing": "Intersect R6/R7 applicability within each full/variant pair before averaging.",
+    "quality_yield": "Always publish main-chain availability and conditional R2/R3 pass rate beside main_chain_pass_yield.",
+    "postconditions": "At-least-one-qualified yield is auxiliary and must accompany per-assertion support precision and nonempty count.",
+    "missing": "No fill with zero for unknown judgments; bounds retained. Empty required chain means no evaluable product (0), not a new semantic error label.",
+    "repeat": "r1 only; no best-of selection.",
+    "documents": "Overall target macro plus every document; common-six intersection supplementary only."
+  },
+  "implementation_audit": {
+    "current_no_cross_slot_reuse": "Confounded by unavailable reuse IDs triggering stop; retain ALL targets, tag defect, do not use this comparison as clean component-contribution evidence.",
+    "future": "Audit the same failure signature for additional data. Never silently pool a repaired variant with old defective outputs. Report algorithm conditions separately."
+  },
+  "dra": "Observed L2 count delta is not true repair rate. Before/after defect identity and repeated identical input judgments require separate review; no new paid judgment in this calculation.",
+  "process": "Model events, image reads, pages and receipt tokens form a supplementary workload panel. No event-count-to-cost conversion.",
+  "inference": "Current43 is exploratory. Freeze definitions now; compute later targets without metric reselection. Report later-only and combined descriptive results separately.",
+  "references_reused": "No new common requirements. Existing L3 reference material remains unchanged; coverage is outside this metric contract.",
+  "paid_calls_allowed": false,
+  "generation_allowed": false
+}
