@@ -1,0 +1,1205 @@
+{
+  "use_case_name": "Publish Air and Surface Surveillance Tracks",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To transmit air, surface, or land tracks after achieving Active status and performing sufficient reporting responsibility checks, correlation, and data registration.",
+          "evidence_refs": [
+            "EC-G-003"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-003"
+      ],
+      "scope_contract": {
+        "goal_statement": "To transmit air, surface, or land tracks after achieving Active status and performing sufficient reporting responsibility checks, correlation, and data registration.",
+        "canonical_success_scenario": "C2 JU transmits Air and Surface surveillance tracks via the interface in one successful publishing instance.",
+        "start_boundary": "C2 JU has achieved Active status and completed sufficient reporting responsibility checks, correlation, and data registration.",
+        "success_boundary": "Air and Surface surveillance tracks have been transmitted via the interface.",
+        "in_scope_actions": [
+          "Transmit Air and Surface surveillance tracks via the interface."
+        ],
+        "excluded_adjacent_actions": [
+          "Recognition and resolution of dual designations or remote/local track comparison",
+          "Acceptance of retransmission field values when C2 JU assumes R^2 for a previously reported track",
+          "Use of reported tracks to provide threat warning information",
+          "Land track publication beyond the Air and Surface surveillance scope"
+        ],
+        "variant_dimensions": [
+          "Track domain: Air surveillance track or Surface surveillance track"
+        ],
+        "evidence_refs": [
+          "EC-G-003"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal-core-action",
+          "goal-interface",
+          "high-level objective",
+          "goal",
+          "high-level objective for track publication",
+          "transmission objective defined"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "C2 JU has achieved Active status, either initially or by returning to Active status from Inactive status or TDS Failure.",
+          "evidence_refs": [
+            "EC-PC-003"
+          ]
+        },
+        {
+          "content": "Sufficient reporting responsibility checks, correlation of local sensor data, and data registration have been performed before transmitting tracks.",
+          "evidence_refs": [
+            "EC-PC-004",
+            "EC-PC-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-003",
+        "EC-PC-004",
+        "EC-PC-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "precondition-active-status",
+          "precondition-reporting-responsibility-correlation-registration",
+          "data correlation status",
+          "originating capability requirement",
+          "automatic correlation capability requirement",
+          "system state requirement (Active status)",
+          "procedural prerequisites (checks, correlation, registration)",
+          "precondition-correlation-checks-required",
+          "precondition-conflict-detection-capability"
+        ],
+        "missing_aspects": [
+          "explicit system state requirements before track publication"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C² JU assumes R² of an IU when one of the following occurs: a J2 PPLI message is not received for 40 to 60 seconds; a J2 PPLI message other than J2.0 is received with the NPS Indicator set to Inactive or Conditional Radio Silence; a J7.0 (ACT = 0) Drop Track message is received from the FJU for a PU, RU, or other IU; or the Geodetic Position Quality in the J2 PPLI message is set to value 0.",
+          "evidence_refs": [
+            "EC-TR-008",
+            "EC-TR-009",
+            "EC-TR-010",
+            "EC-TR-011"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-008",
+        "EC-TR-009",
+        "EC-TR-010",
+        "EC-TR-011"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-timeout",
+          "trigger-status-indicator-change",
+          "trigger-drop-track-command",
+          "trigger-position-quality-degradation",
+          "explicit-trigger-events-for-track-publication",
+          "explicit trigger event for track publication use case",
+          "explicit trigger event for correlation process",
+          "trigger event for dual designation resolution"
+        ],
+        "missing_aspects": [
+          "explicit trigger event for track publication use case",
+          "explicit trigger event for general track publication use case"
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "C2 JU determines the type of surveillance message from the Environment/Category of the IU being reported.",
+          "evidence_refs": [
+            "EC-MF-001"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "C2 JU determines the IFF/SIF code status for the track as Valid Data or No Data according to the specified criteria.",
+          "evidence_refs": [
+            "EC-MF-006"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "C2 JU reports all IFF/SIF valid data locally held for the track in accordance with the J3 message transmit rules, reporting No Data as zeroes when no valid code is currently held.",
+          "evidence_refs": [
+            "EC-MF-005",
+            "EC-MF-006"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "C2 JU reports the Identity as Friend.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "C2 JU reports the Track Number, Platform, and Platform Activity values received in previous PPLI messages.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "C2 JU waits the minimum 12 seconds before reporting the Air or Surface track.",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "C2 JU, having assumed R² for the IU, reports the Air or Surface surveillance track via the interface as a track or point on the Surveillance Network PG.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-G-003"
+          ],
+          "step_number": 7
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-001",
+        "EC-MF-006",
+        "EC-MF-005",
+        "EC-MF-002",
+        "EC-MF-003",
+        "EC-MF-009",
+        "EC-MF-000",
+        "EC-G-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-message-type-by-environment-category",
+          "MF-determine-IFF-SIF-validity",
+          "MF-report-IFF-SIF-valid-data",
+          "MF-report-identity-friend",
+          "MF-report-previous-PPLI-track-metadata",
+          "MF-minimum-12-second-wait",
+          "MF-report-air-surface-track-as-track-or-point",
+          "main-flow-track-publication-action",
+          "main-flow-message-type-determination",
+          "main-flow-identity-value-constraint",
+          "main-flow-metadata-preservation",
+          "main-flow-field-value-standardization",
+          "main-flow-handoff-maintenance-rule",
+          "reporting-responsibility-action",
+          "validity-determination-criteria",
+          "change-reporting-trigger",
+          "main-flow-reporting-responsibility-checks",
+          "main-flow-correlation-and-registration",
+          "main-flow-minimum-wait-time-air-surface",
+          "main-flow-assume-reporting-responsibility",
+          "main-flow-conflict-resolution-action",
+          "actor-initiation-of-correlation",
+          "message-transmission-action",
+          "system-response-logic"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 5 when the Environment/Category changes from SPACE TRK to AIR TRK or SURF TRK: C2 JU retains the original Track Number and reports the entity in the appropriate J3.x surveillance message; if the change is proposed by J7.0 (ACT = 1), the R² JU must manually accept or reject it, and data does not change until after acceptance.",
+          "evidence_refs": [
+            "EC-AF-010"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 2 upon receipt of a J7.5 (ACT = 0) message: C2 JU automatically sets the designated mode(s) for the specified track to the No Data status.",
+          "evidence_refs": [
+            "EC-AF-019"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 3 when the clearing function (J7.5 (ACT = 0)) changes a Valid Data value to No Data status: C2 JU does not transmit a change report for that transition.",
+          "evidence_refs": [
+            "EC-AF-006"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 3 when a J7.5 (ACT = 0) message results in no IFF/SIF data being held: C2 JU does not continue transmitting the periodic J3 message that includes the continuation word containing IFF/SIF data.",
+          "evidence_refs": [
+            "EC-AF-020"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges from Step 2 when the R² unit reports a No Data status (value 0) for one or more modes in a required IFF/SIF Surveillance data report: C2 JU data updating occurs spontaneously.",
+          "evidence_refs": [
+            "EC-AF-022"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-010",
+        "EC-AF-019",
+        "EC-AF-006",
+        "EC-AF-020",
+        "EC-AF-022"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-env-cat-change-TN-retention",
+          "AF-J7.5-clearing-sets-no-data",
+          "AF-clearing-suppresses-change-report",
+          "AF-clearing-stops-IFF-continuation",
+          "AF-R2-no-data-spontaneous-update",
+          "alternative-flow-correlation-conflict-resolution",
+          "alternative-flow-ppli-integration-same-track",
+          "alternative-flow-inactive-unit-assumption",
+          "exception-handling-within-alternative-flow",
+          "alternative-flow-immediate-data-request",
+          "alternative-flow-reporting-responsibility-takeover-on-timeout",
+          "alternative-flow-reporting-responsibility-takeover-on-drop-message",
+          "suppression-of-change-report-on-clear-action",
+          "prevention-of-status-transition-on-interrogation-failure",
+          "alternative-flow-relinquish-R2",
+          "alternative-flow-becomes-active-IU",
+          "alternative-flow-TN-retention-on-ENV-CAT-change",
+          "alternative-flow-manual-acceptance-required-for-proposed-changes",
+          "alternative-flow-AOP-formation-based-TN-decision",
+          "alternative-flow-ASW-point-type-constrained-transitions",
+          "alternative-flow-operator-discretion-for-datum-reports",
+          "alternative-flow-dual-designation-resolution-initiation",
+          "alternative-flow-correlation-request-transmission",
+          "alternative-flow-receiving-iu-response-options",
+          "alternative-flow-rv-field-constraint-indication",
+          "alternative-flow-rejection-reporting-mechanism",
+          "alternative-flow-manual-initiation-handling",
+          "alternative-flow-manual-clear-initiation",
+          "alternative-flow-automatic-status-update-on-receipt",
+          "alternative-flow-cessation-of-periodic-transmission",
+          "alternative-flow-silent-local-status-change",
+          "alternative-flow-spontaneous-update-on-no-data",
+          "alternative-flow-manual-operator-update-request"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "When an operator receives an IFF/SIF data conflict alert, the operator has the following manual actions available for attempting resolution of the difference: (1) update local data manually or verify automatic inputs; (2) initiate J7.5 (ACT = 0) Clear IFF/SIF message (any mode); (3) initiate J7.5 (ACT = 1) IFF/SIF Difference Report message (any mode); (4) change local data to agree with remote data except in the case of Mode II code; (5) decorrelate the local data from the remote data, causing the assignment of a new track number to local data; (6) clear operator alert (any mode).",
+          "evidence_refs": [
+            "EC-EF-019"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If a correlation is not found for a received J2 PPLI report, the C² JU integrates it into its surveillance database; if no subsequent J2 messages are received and the C² JU still has no local data, the C² JU assumes no responsibility for reporting the subject JU on the Surveillance Network PG.",
+          "evidence_refs": [
+            "EC-EF-020",
+            "EC-EF-001"
+          ],
+          "step_number": 7
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-019",
+        "EC-EF-020",
+        "EC-EF-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-main-step-2-iff-sif-conflict-manual-actions",
+          "EF-main-step-7-no-correlation-no-local-data-no-responsibility",
+          "exception-handling-correlation-conflict-with-local-track",
+          "exception-handling-no-correlation-and-no-local-data",
+          "exception-handling-for-retransmission-conflict-with-local-data",
+          "mandatory-retransmission-of-controlling-unit-platform-fields",
+          "mandatory-retransmission-of-special-interest-indicator-value-1",
+          "local-data-override-rule-for-non-platform-fields",
+          "exception-flow-spontaneous-update-on-no-data-conflict",
+          "exception-flow-manual-operator-initiation-for-difference-report",
+          "exception-flow-suppression-of-change-report-on-clear-command",
+          "exception-flow-cessation-of-periodic-transmission-on-clear",
+          "exception-flow-operational-override-for-wait-time",
+          "exception-flow-time-constraint",
+          "exception-flow-altitude-constraint",
+          "exception_flow-message-type-constraint",
+          "exception_flow-field-configuration-rule",
+          "exception-handling-for-no-statement-conflict",
+          "exception-handling-for-tanker-platform-identity-conflict",
+          "optional-operator-alert-on-tanker-conflict"
+        ],
+        "missing_aspects": [
+          "handling for interface transmission failure or rejection",
+          "documented exit/continuation after manual resolution of IFF/SIF data conflict alert"
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The Air and Surface surveillance track has been successfully reported as a track or point on the Surveillance Network PG, with the JU with R² reporting the most current IFF/SIF surveillance data available in the interface for Air and Surface tracks.",
+          "evidence_refs": [
+            "EC-PO-002",
+            "EC-PO-005"
+          ]
+        },
+        {
+          "content": "The PPLI Track Number and Identity Indicator for the reported track or point are reported as value 1.",
+          "evidence_refs": [
+            "EC-PO-002"
+          ]
+        },
+        {
+          "content": "Upon the C2 JU assuming R² of the IU, the identity of the reported track is set to Friend.",
+          "evidence_refs": [
+            "EC-PO-003"
+          ]
+        },
+        {
+          "content": "The IFF/SIF data status in the J3 continuation word is reported with a nonzero code in the applicable Mode Code field for Valid Data, or with zeroes for No Data.",
+          "evidence_refs": [
+            "EC-PO-016"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-002",
+        "EC-PO-005",
+        "EC-PO-003",
+        "EC-PO-016"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postcondition-air-surface-track-reported-as-track-or-point",
+          "postcondition-r2-reports-current-iff-sif",
+          "postcondition-ppli-track-number-and-identity-indicator-value-1",
+          "postcondition-identity-friend-upon-r2",
+          "postcondition-iff-sif-data-status-encoded",
+          "postcondition-assumption-of-reporting-responsibility",
+          "postcondition-representation-on-surveillance-network",
+          "postcondition-automatic-correlation-restrictions",
+          "postcondition-manual-correlation-exemption",
+          "postcondition-conflict-based-inhibition",
+          "postcondition-mode-II-code-mismatch-handling",
+          "postcondition-local-track-duplication-prevention",
+          "postcondition-strength-field-threshold-rule",
+          "postcondition-retransmission-data-preservation",
+          "postcondition-local-data-override-rule",
+          "postcondition-mandatory-controlling-unit-field-retention",
+          "postcondition-special-interest-indicator-invariant",
+          "postcondition-transmission-lockout-period",
+          "postcondition-reception-lockout-period",
+          "postcondition-data-integrity-enforcement"
+        ],
+        "missing_aspects": [
+          "observable system state after successful track publication",
+          "confirmation of message transmission",
+          "update of reporting responsibility status"
+        ]
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 159,
+    "cross_page_cards": 2,
+    "modalities": {
+      "text": 154,
+      "table": 5
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1251.566,
+    "judge_calls": 0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 619.355,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 103,
+    "llm_calls": 33,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 614.275,
+    "cards_collected": 159,
+    "cards_referenced": 27
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "To transmit air, surface, or land tracks after achieving Active status and performing sufficient reporting responsibility checks, correlation, and data registration.",
+            "evidence_refs": [
+              "EC-G-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "C2 JU has achieved Active status, either initially or by returning to Active status from Inactive status or TDS Failure.",
+            "evidence_refs": [
+              "EC-PC-003"
+            ]
+          },
+          {
+            "content": "Sufficient reporting responsibility checks, correlation of local sensor data, and data registration have been performed before transmitting tracks.",
+            "evidence_refs": [
+              "EC-PC-004",
+              "EC-PC-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C² JU assumes R² of an IU when one of the following occurs: a J2 PPLI message is not received for 40 to 60 seconds; a J2 PPLI message other than J2.0 is received with the NPS Indicator set to Inactive or Conditional Radio Silence; a J7.0 (ACT = 0) Drop Track message is received from the FJU for a PU, RU, or other IU; or the Geodetic Position Quality in the J2 PPLI message is set to value 0.",
+            "evidence_refs": [
+              "EC-TR-008",
+              "EC-TR-009",
+              "EC-TR-010",
+              "EC-TR-011"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016",
+          "EC-TR-017",
+          "EC-TR-018",
+          "EC-TR-019",
+          "EC-TR-020",
+          "EC-TR-021",
+          "EC-TR-022"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "C2 JU determines the type of surveillance message from the Environment/Category of the IU being reported.",
+            "evidence_refs": [
+              "EC-MF-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "C2 JU determines the IFF/SIF code status for the track as Valid Data or No Data according to the specified criteria.",
+            "evidence_refs": [
+              "EC-MF-006"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "C2 JU reports all IFF/SIF valid data locally held for the track in accordance with the J3 message transmit rules, reporting No Data as zeroes when no valid code is currently held.",
+            "evidence_refs": [
+              "EC-MF-005",
+              "EC-MF-006"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "C2 JU reports the Identity as Friend.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "C2 JU reports the Track Number, Platform, and Platform Activity values received in previous PPLI messages.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "C2 JU waits the minimum 12 seconds before reporting the Air or Surface track.",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "C2 JU, having assumed R² for the IU, reports the Air or Surface surveillance track via the interface as a track or point on the Surveillance Network PG.",
+            "evidence_refs": [
+              "EC-MF-000",
+              "EC-G-003"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016",
+          "EC-TR-017",
+          "EC-TR-018",
+          "EC-TR-019",
+          "EC-TR-020",
+          "EC-TR-021",
+          "EC-TR-022"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 5 when the Environment/Category changes from SPACE TRK to AIR TRK or SURF TRK: C2 JU retains the original Track Number and reports the entity in the appropriate J3.x surveillance message; if the change is proposed by J7.0 (ACT = 1), the R² JU must manually accept or reject it, and data does not change until after acceptance.",
+            "evidence_refs": [
+              "EC-AF-010"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 2 upon receipt of a J7.5 (ACT = 0) message: C2 JU automatically sets the designated mode(s) for the specified track to the No Data status.",
+            "evidence_refs": [
+              "EC-AF-019"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 3 when the clearing function (J7.5 (ACT = 0)) changes a Valid Data value to No Data status: C2 JU does not transmit a change report for that transition.",
+            "evidence_refs": [
+              "EC-AF-006"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 3 when a J7.5 (ACT = 0) message results in no IFF/SIF data being held: C2 JU does not continue transmitting the periodic J3 message that includes the continuation word containing IFF/SIF data.",
+            "evidence_refs": [
+              "EC-AF-020"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 2 when the R² unit reports a No Data status (value 0) for one or more modes in a required IFF/SIF Surveillance data report: C2 JU data updating occurs spontaneously.",
+            "evidence_refs": [
+              "EC-AF-022"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016",
+          "EC-TR-017",
+          "EC-TR-018",
+          "EC-TR-019",
+          "EC-TR-020",
+          "EC-TR-021",
+          "EC-TR-022"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "When an operator receives an IFF/SIF data conflict alert, the operator has the following manual actions available for attempting resolution of the difference: (1) update local data manually or verify automatic inputs; (2) initiate J7.5 (ACT = 0) Clear IFF/SIF message (any mode); (3) initiate J7.5 (ACT = 1) IFF/SIF Difference Report message (any mode); (4) change local data to agree with remote data except in the case of Mode II code; (5) decorrelate the local data from the remote data, causing the assignment of a new track number to local data; (6) clear operator alert (any mode).",
+            "evidence_refs": [
+              "EC-EF-019"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If a correlation is not found for a received J2 PPLI report, the C² JU integrates it into its surveillance database; if no subsequent J2 messages are received and the C² JU still has no local data, the C² JU assumes no responsibility for reporting the subject JU on the Surveillance Network PG.",
+            "evidence_refs": [
+              "EC-EF-020",
+              "EC-EF-001"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-EF-047",
+          "EC-EF-048",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016",
+          "EC-TR-017",
+          "EC-TR-018",
+          "EC-TR-019",
+          "EC-TR-020",
+          "EC-TR-021",
+          "EC-TR-022"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Air and Surface surveillance track has been successfully reported as a track or point on the Surveillance Network PG, with the JU with R² reporting the most current IFF/SIF surveillance data available in the interface for Air and Surface tracks.",
+            "evidence_refs": [
+              "EC-PO-002",
+              "EC-PO-005"
+            ]
+          },
+          {
+            "content": "The PPLI Track Number and Identity Indicator for the reported track or point are reported as value 1.",
+            "evidence_refs": [
+              "EC-PO-002"
+            ]
+          },
+          {
+            "content": "Upon the C2 JU assuming R² of the IU, the identity of the reported track is set to Friend.",
+            "evidence_refs": [
+              "EC-PO-003"
+            ]
+          },
+          {
+            "content": "The IFF/SIF data status in the J3 continuation word is reported with a nonzero code in the applicable Mode Code field for Valid Data, or with zeroes for No Data.",
+            "evidence_refs": [
+              "EC-PO-016"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-EF-042",
+          "EC-EF-043",
+          "EC-EF-044",
+          "EC-EF-045",
+          "EC-EF-046",
+          "EC-EF-047",
+          "EC-EF-048",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-PO-013",
+          "EC-PO-014",
+          "EC-PO-015",
+          "EC-PO-016",
+          "EC-PO-017",
+          "EC-PO-018",
+          "EC-PO-019",
+          "EC-PO-020",
+          "EC-PO-021",
+          "EC-PO-022",
+          "EC-PO-023",
+          "EC-PO-024",
+          "EC-PO-025",
+          "EC-PO-026",
+          "EC-PO-027",
+          "EC-PO-028",
+          "EC-PO-029",
+          "EC-PO-030",
+          "EC-PO-031",
+          "EC-PO-032",
+          "EC-PO-033",
+          "EC-PO-034",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015",
+          "EC-TR-016",
+          "EC-TR-017",
+          "EC-TR-018",
+          "EC-TR-019",
+          "EC-TR-020",
+          "EC-TR-021",
+          "EC-TR-022"
+        ]
+      }
+    }
+  },
+  "method": "CREST w/o cross-slot",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "f27b04f6aa2d476e85dadb033ff4ba49"
+}

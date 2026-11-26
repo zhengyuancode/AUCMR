@@ -1,0 +1,460 @@
+{
+  "use_case_name": "Retrieve Published RLCS Status",
+  "actor": "External Traffic System",
+  "method": "VDocRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To retrieve current system status data from the RLCS for use by external systems such as AMS, Value Pricing/FasTrak, Traveler Info, and Ramp Metering Information System.",
+          "evidence_refs": [
+            "P44",
+            "P10"
+          ]
+        }
+      ],
+      "raw_text": "To retrieve current system status data from the RLCS for use by external systems such as AMS, Value Pricing/FasTrak, Traveler Info, and Ramp Metering Information System.",
+      "evidence_card_ids": [
+        "P44",
+        "P10"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "External Traffic System",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "External Traffic System",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The RLCS application is operational and running on a hardware platform compatible with Microsoft Windows NT or Unix-based operating systems.",
+          "evidence_refs": [
+            "P11"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The External Traffic System (such as AMS, Value Pricing/FasTrak, Traveler Info, or Ramp Metering Information System) is connected to the RLCS network and authorized to retrieve data.",
+          "evidence_refs": [
+            "P44",
+            "P10"
+          ]
+        },
+        {
+          "content": "System status data has been generated and stored by the RLCS Data Processing and Security function for export to external server data stores.",
+          "evidence_refs": [
+            "P29",
+            "P10"
+          ]
+        },
+        {
+          "content": "The RLCS database contains current system status information accessible via the Data Processing and Security module (3.2.4).",
+          "evidence_refs": [
+            "P29",
+            "P10"
+          ]
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P11",
+        "P44",
+        "P10",
+        "P29"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The External Traffic System requests current system status data from the RLCS.",
+          "evidence_refs": [
+            "P44",
+            "P29"
+          ]
+        }
+      ],
+      "raw_text": "The External Traffic System requests current system status data from the RLCS.",
+      "evidence_card_ids": [
+        "P44",
+        "P29"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The External Traffic System sends a request for current system status data to the RLCS.",
+          "evidence_refs": [
+            "P44"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The RLCS Data Processing and Security function (3.2.4) retrieves the requested current system status data from the internal database.",
+          "evidence_refs": [
+            "P29",
+            "P45"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The RLCS exports the system status data to the External Data Store associated with the requesting External Traffic System.",
+          "evidence_refs": [
+            "P44",
+            "P45"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The External Traffic System receives the current system status data for use in its operations (e.g., AMS, Value Pricing/FasTrak, Traveler Info, Ramp Metering).",
+          "evidence_refs": [
+            "P44"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P44",
+        "P29",
+        "P45"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If the External Traffic System is not authorized to access the RLCS data, the Data Processing and Security function (3.2.4) denies the request based on Personnel Security Level attributes including Command Level, Device, Mode, Workstation, and System Functions.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the requested system status data is not available in the RLCS database, the Data Processing and Security function returns an error indicating no current or historical data exists for the requested parameters.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the External Traffic System requests data while the RLCS is exporting system status to another external server, the request may be queued or delayed until the export operation completes.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P29"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the External Traffic System request fails authentication against Personnel Security Level attributes (Command Level, Device, Mode, Workstation, System Functions), the Data Processing and Security function denies access and terminates the use case.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the RLCS database is unavailable or corrupted, preventing retrieval of system status data, the Data Processing and Security function returns a system error and the use case terminates without data export.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the External Data Store target is unreachable during export, the RLCS logs the failure via Collect Log Data (3.2.2.7) and notifies monitoring functions; the use case terminates with partial success flag.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P29",
+        "P46"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The External Traffic System has received the current system status data exported from the RLCS.",
+          "evidence_refs": [
+            "P44"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The RLCS Data Processing and Security function (3.2.4) has successfully retrieved and exported the requested system status data to the external server data store associated with the requesting system.",
+          "evidence_refs": [
+            "P29",
+            "P44"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The transaction is logged as part of the historical transaction data stored by the RLCS database for generating reports of system operations.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P44",
+        "P29"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "To retrieve current system status data from the RLCS for use by external systems such as AMS, Value Pricing/FasTrak, Traveler Info, and Ramp Metering Information System.",
+            "evidence_refs": [
+              "P44",
+              "P10"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P29",
+          "P45",
+          "P10",
+          "P46"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The RLCS application is operational and running on a hardware platform compatible with Microsoft Windows NT or Unix-based operating systems.",
+            "evidence_refs": [
+              "P11"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The External Traffic System (such as AMS, Value Pricing/FasTrak, Traveler Info, or Ramp Metering Information System) is connected to the RLCS network and authorized to retrieve data.",
+            "evidence_refs": [
+              "P44",
+              "P10"
+            ]
+          },
+          {
+            "content": "System status data has been generated and stored by the RLCS Data Processing and Security function for export to external server data stores.",
+            "evidence_refs": [
+              "P29",
+              "P10"
+            ]
+          },
+          {
+            "content": "The RLCS database contains current system status information accessible via the Data Processing and Security module (3.2.4).",
+            "evidence_refs": [
+              "P29",
+              "P10"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P29",
+          "P11",
+          "P36",
+          "P10"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The External Traffic System requests current system status data from the RLCS.",
+            "evidence_refs": [
+              "P44",
+              "P29"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P29",
+          "P46",
+          "P44",
+          "P36",
+          "P45"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The External Traffic System sends a request for current system status data to the RLCS.",
+            "evidence_refs": [
+              "P44"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The RLCS Data Processing and Security function (3.2.4) retrieves the requested current system status data from the internal database.",
+            "evidence_refs": [
+              "P29",
+              "P45"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The RLCS exports the system status data to the External Data Store associated with the requesting External Traffic System.",
+            "evidence_refs": [
+              "P44",
+              "P45"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The External Traffic System receives the current system status data for use in its operations (e.g., AMS, Value Pricing/FasTrak, Traveler Info, Ramp Metering).",
+            "evidence_refs": [
+              "P44"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P45",
+          "P10",
+          "P29",
+          "P46"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If the External Traffic System is not authorized to access the RLCS data, the Data Processing and Security function (3.2.4) denies the request based on Personnel Security Level attributes including Command Level, Device, Mode, Workstation, and System Functions.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the requested system status data is not available in the RLCS database, the Data Processing and Security function returns an error indicating no current or historical data exists for the requested parameters.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the External Traffic System requests data while the RLCS is exporting system status to another external server, the request may be queued or delayed until the export operation completes.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P46",
+          "P10",
+          "P45",
+          "P29"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the External Traffic System request fails authentication against Personnel Security Level attributes (Command Level, Device, Mode, Workstation, System Functions), the Data Processing and Security function denies access and terminates the use case.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the RLCS database is unavailable or corrupted, preventing retrieval of system status data, the Data Processing and Security function returns a system error and the use case terminates without data export.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the External Data Store target is unreachable during export, the RLCS logs the failure via Collect Log Data (3.2.2.7) and notifies monitoring functions; the use case terminates with partial success flag.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P44",
+          "P29",
+          "P46",
+          "P45",
+          "P10"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The External Traffic System has received the current system status data exported from the RLCS.",
+            "evidence_refs": [
+              "P44"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The RLCS Data Processing and Security function (3.2.4) has successfully retrieved and exported the requested system status data to the external server data store associated with the requesting system.",
+            "evidence_refs": [
+              "P29",
+              "P44"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The transaction is logged as part of the historical transaction data stored by the RLCS database for generating reports of system operations.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P29",
+          "P44",
+          "P45",
+          "P10",
+          "P11"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 41.1
+}

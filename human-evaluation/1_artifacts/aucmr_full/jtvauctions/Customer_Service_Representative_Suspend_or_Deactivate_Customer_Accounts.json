@@ -1,0 +1,939 @@
+{
+  "use_case_name": "Suspend or Deactivate Customer Accounts",
+  "actor": "Customer Service Representative",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To suspend a customer account (placing it in 'Review' status) or deactivate a customer account.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-002",
+            "EC-G-003",
+            "EC-G-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-002",
+        "EC-G-003",
+        "EC-G-004"
+      ],
+      "scope_contract": {
+        "goal_statement": "To suspend a customer account (placing it in 'Review' status) or deactivate a customer account.",
+        "canonical_success_scenario": "A Customer Service Representative suspends a selected customer account, with permanent deactivation treated as a variant requiring Customer Care manager approval.",
+        "start_boundary": "The Customer Service Representative has identified a customer account to suspend or deactivate.",
+        "success_boundary": "The selected customer account has been placed in suspended/Review status, or has been deactivated as approved.",
+        "in_scope_actions": [
+          "suspend a customer account by placing it in Review status",
+          "deactivate a customer account through permanent suspension of bidding rights with manager approval"
+        ],
+        "excluded_adjacent_actions": [
+          "unlocking accounts placed in Review status due to expired orders or non-payment",
+          "customer login/settings access and bidding/order restrictions while suspended"
+        ],
+        "variant_dimensions": [
+          "suspension at customer request or upon evidence of fraudulent/undesirable activity",
+          "permanent deactivation requiring Customer Care manager approval"
+        ],
+        "evidence_refs": [
+          "EC-G-000",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal-literal-action",
+          "goal",
+          "goal definition for suspension/deactivation",
+          "Goal definition"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Customer Service Representative",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Customer Service Representative"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Customer Service Representative is logged into the Auction Administration workspace and has accessed the Customer History page.",
+          "evidence_refs": [
+            "EC-PC-002"
+          ]
+        },
+        {
+          "content": "The Customer Service Representative has identified the target customer account by searching using the customer's email address, phone number, or name.",
+          "evidence_refs": [
+            "EC-PC-003"
+          ],
+          "is_cross_page": true
+        },
+        {
+          "content": "The Customer Service Representative has Administrator-level access required to be granted permission to place a customer account in Review status or deactivate it.",
+          "evidence_refs": [
+            "EC-PC-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-002",
+        "EC-PC-003",
+        "EC-PC-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "pre-entry-role-session",
+          "target-account-identified",
+          "permission-to-suspend-or-deactivate",
+          "role-based entry context",
+          "required user role",
+          "entry_context_workspace",
+          "target_account_identification",
+          "system access permissions for CSR",
+          "required email account setup",
+          "system auto-locks accounts on expired orders",
+          "CSR unlocks only after cancellations (up to 3x)",
+          "escalation policy requires CSR removal from Review Status"
+        ],
+        "missing_aspects": [
+          "System state requirements prior to suspension/deactivation",
+          "Account status prerequisites",
+          "User session/role context requirements"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "After identifying the customer account, the Customer Service Representative initiates the use case by clicking 'Place Account in Review Status' or 'Deactivate an Account' on the Customer History page.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-TR-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-TR-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-initiating-decision",
+          "trigger-user-action",
+          "trigger-event-based-on-fraud-or-customer-request",
+          "trigger-action-button-click",
+          "trigger-context-after-search",
+          "trigger-customer-request",
+          "trigger-fraud-or-undesirable-activity",
+          "trigger-managerial-approval-for-deactivation",
+          "escalation_policy_threshold_trigger",
+          "automatic_lock_on_order_expiration"
+        ],
+        "missing_aspects": [
+          "The specific reasons for the decision (fraudulent/undesirable activity or customer request) are supported by EC-TR-000 but not explicitly linked to the UI action in EC-TR-001. The claim combines them well, but strict adherence requires ensuring the 'decision' aspect is clearly tied to the trigger event. However, since EC-TR-000 defines the trigger as the decision and EC-TR-001 defines the trigger as the click, combining them implies the click is the manifestation of the decision. The original claim's phrasing 'decides... because of...' is a slight over-interpretation of the simultaneous nature of the evidence. A safer rewrite focuses on the observable action after identification."
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Customer Service Representative selects the suspension option by clicking the 'GO' button next to 'Place Account in Review Status' in the Results section of the Customer History page.",
+          "evidence_refs": [
+            "EC-MF-001"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Alternatively, if the Customer Service Representative selects 'Deactivate an Account' by clicking the 'GO' button next to it in the Results section of the Customer History page (instead of 'Place Account in Review Status'), the system displays a pop-up DIV layer asking for a supervisor's authorization code; the Customer Care manager's approval via code is required, and entering a valid code allows the system to proceed with deactivation by permanently suspending bidding rights. Deactivated accounts are listed in RED in the search results.",
+          "evidence_refs": [
+            "EC-MF-001",
+            "EC-MF-002",
+            "EC-MF-004",
+            "EC-AF-010",
+            "EC-PO-001",
+            "EC-PO-003"
+          ],
+          "step_number": 2,
+          "is_cross_page": true
+        },
+        {
+          "content": "The system places the selected customer account in 'Review' status (suspended), where the customer can log in and change settings but cannot bid or generate orders.",
+          "evidence_refs": [
+            "EC-MF-003",
+            "EC-G-001"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-001",
+        "EC-MF-002",
+        "EC-MF-004",
+        "EC-AF-010",
+        "EC-PO-001",
+        "EC-PO-003",
+        "EC-MF-003",
+        "EC-G-001"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 1: Instead of selecting 'Place Account in Review Status', the Customer Service Representative selects 'Deactivate an Account'. This permanently suspends bidding rights and requires a Customer Care manager/supervisor authorization code entered via a pop-up DIV layer; the code is issued by Administrators and generated in Auction Admin, supervisors do not need Administrator access to input it.",
+          "evidence_refs": [
+            "EC-AF-010",
+            "EC-AF-003",
+            "EC-AF-007",
+            "EC-AF-006",
+            "EC-AF-008"
+          ],
+          "step_number": 1,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-010",
+        "EC-AF-003",
+        "EC-AF-007",
+        "EC-AF-006",
+        "EC-AF-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-deactivation-diverges-step-1",
+          "AF-deactivation-instead-of-review",
+          "AF-permanent-bidding-suspension",
+          "AF-manager-approval-code",
+          "AF-supervisor-authorization-code",
+          "AF-popup-div-code-entry",
+          "AF-code-issued-by-administrators",
+          "AF-code-generated-in-auction-admin",
+          "AF-valid-code-proceeds-with-deactivation",
+          "AF-supervisor-code-entry-no-admin-access",
+          "alternative_flow_divergence_point",
+          "alternative_flow_supervisor_authorization_requirement",
+          "alternative_flow_code_entry_mechanism",
+          "role_permissions_in_alternative_flow",
+          "alternative_flow_variant_escalation_policy",
+          "alternative_flow_deactivation_variant",
+          "divergence_point_action_selection",
+          "additional_condition_supervisor_code"
+        ],
+        "missing_aspects": [
+          "detailed_steps_for_escalation_policy",
+          "conditions_triggering_escalation_vs_standard_suspension",
+          "alternative_flow_variants_for_successful_completion",
+          "explicit_system_response_after_deactivation_authorization_code_entry",
+          "Explicit evidence describing the system's response or state change after the supervisor enters a valid code (e.g., confirmation message, account status update)."
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the Customer Service Representative enters an incorrect or invalid supervisor authorization code in the authorization-code pop-up, the system prevents the deactivation action from proceeding.",
+          "evidence_refs": [
+            "EC-EF-002",
+            "EC-EF-010"
+          ],
+          "step_number": 1
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-002",
+        "EC-EF-010"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EX-deactivation-invalid-supervisor-code",
+          "EX-deactivation-prevented",
+          "EX-deactivation-auth-code-popup",
+          "EX-deactivation-alternative-divergence",
+          "exception_flow_negative_file_match_prevention",
+          "exception_flow_error_message_display",
+          "exception_flow_recovery_handoff_to_customer_service",
+          "exception_flow_invalid_supervisor_code_handling",
+          "exception_flow_missing_required_fields_handling",
+          "main_flow_deactivation_authorization_requirement",
+          "exception_flow_duplicate_account_creation_prevention",
+          "exception_flow_blacklist_check",
+          "exception_flow_escalation_policy_bidding_block",
+          "exception_flow_locked_account_recovery_condition",
+          "exception_flow_csr_reminder_requirement",
+          "identification_of_missing_deactivation_code_generation_mechanism"
+        ],
+        "missing_aspects": [
+          "Recovery or exit path after an invalid supervisor authorization code (retry, cancel, or terminate) is not documented.",
+          "System response or error message after preventing deactivation is not documented.",
+          "Handling for a missing supervisor authorization code is not documented.",
+          "Exception handling for the suspension ('Place Account in Review Status') path is not documented.",
+          "Explicit validation step for the supervisor authorization code in the alternative/main flow is not documented.",
+          "How supervisor deactivation authorization codes are generated remains unresolved.",
+          "exception_flow_invalid_supervisor_code_handling",
+          "exception_flow_missing_required_fields_handling",
+          "explicit_recovery_mechanism_after_error",
+          "exception_flow_duplicate_account_creation_prevention",
+          "explicit confirmation that the exception flow diverges specifically from main-flow step 1",
+          "definition of the system's response after preventing deactivation (e.g., return to previous state)",
+          "documented recovery/exit after incorrect supervisor code (retry/cancel/terminate)",
+          "exception handling for suspension ('Place Account in Review Status') path",
+          "Explicit error message text displayed upon invalid code entry",
+          "Specific recovery mechanism (e.g., whether the pop-up remains open for retry or closes)",
+          "explicit_recovery_mechanism_for_exceptions",
+          "recovery_mechanism_for_incorrect_code_entry",
+          "system_response_after_preventing_deactivation",
+          "Explicit definition of recovery/exit behavior (e.g., retry loop, error message display, or return to previous state) after the prevention of the action."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The selected customer account is placed in 'Review' status (suspended); the customer can still log in and change settings but cannot bid or generate orders.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-PO-002"
+          ]
+        },
+        {
+          "content": "If the deactivation variant is completed successfully, the customer account is deactivated, permanently suspending bidding rights.",
+          "evidence_refs": [
+            "EC-PO-003"
+          ]
+        },
+        {
+          "content": "Deactivated accounts are listed in RED in the search results.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-000",
+        "EC-PO-002",
+        "EC-PO-003",
+        "EC-PO-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-suspended-review-status",
+          "PC-suspended-login-settings-allowed",
+          "PC-suspended-bid-order-blocked",
+          "PC-deactivated-status",
+          "PC-deactivated-bidding-rights",
+          "PC-deactivated-red-search-indicator",
+          "postcondition-suspension-status-change",
+          "postcondition-deactivation-visual-indicator",
+          "postcondition-suspension-retains-login-and-settings-access",
+          "postcondition-suspension-blocks-bidding-and-ordering",
+          "postcondition-deactivation-permanently-suspends-bidding-rights",
+          "postcondition_bidding_rights_restored",
+          "postcondition_account_active_status",
+          "postcondition_mandatory_reminder_delivery",
+          "deactivation-code-generation-mechanism",
+          "system-state-post-deactivation-approval"
+        ],
+        "missing_aspects": [
+          "Explicit login/settings access state for the customer after deactivation is not documented.",
+          "Explicit confirmation whether deactivated accounts retain login or settings access",
+          "System-generated confirmation message or UI feedback after successful suspension/deactivation",
+          "Audit trail or logging behavior triggered upon successful completion",
+          "Evidence for preventing further ordering post-deactivation"
+        ]
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] Main Flow step 3 is unconditional: it states the account is placed in 'Review' status after the deactivation alternative in step 2. If the deactivation branch is taken, step 3 contradicts the deactivation outcome and prevents the deactivation postcondition from being the resulting state. (atomic grounding: candidate remains incomplete (Evidence explicitly stating that selecting 'Place Account in Review Status' causes the system, rather than the Customer Service Representative, to place the account in Review status automatically.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] Main Flow step 3 is unconditional: it states the account is placed in 'Review' status after the deactivation alternative in step 2. If the deactivation branch is taken, step 3 contradicts the deactivation outcome and prevents the deactivation postcondition from being the resulting state.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": [
+        "The Trigger and Postconditions cover both suspension and deactivation, but the Main Flow only describes the suspension path (selecting suspension and placing the account in Review). There are no Main Flow steps for the deactivation variant, including the required manager approval, deactivation completion, or the RED search-result indicator, so the deactivation postconditions are unreachable from the Main Flow."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 72,
+    "cross_page_cards": 3,
+    "modalities": {
+      "text": 71,
+      "diagram": 1
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1214.887,
+    "judge_calls": 0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 834.537,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 60.0,
+    "llm_calls": 41.0,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 362.839,
+    "cards_collected": 72,
+    "cards_referenced": 23,
+    "dra_elapsed_seconds": 289.575,
+    "dra_judge_calls": 0,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_seconds": 289.568,
+    "dra_llm_retry_calls": 0,
+    "dra_lvlm_calls": 0,
+    "dra_llm_calls": 8,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_seconds": 0.0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "To suspend a customer account (placing it in 'Review' status) or deactivate a customer account.",
+            "evidence_refs": [
+              "EC-G-000",
+              "EC-G-002",
+              "EC-G-003",
+              "EC-G-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer Service Representative is logged into the Auction Administration workspace and has accessed the Customer History page.",
+            "evidence_refs": [
+              "EC-PC-002"
+            ]
+          },
+          {
+            "content": "The Customer Service Representative has identified the target customer account by searching using the customer's email address, phone number, or name.",
+            "evidence_refs": [
+              "EC-PC-003"
+            ]
+          },
+          {
+            "content": "The Customer Service Representative has Administrator-level access required to be granted permission to place a customer account in Review status or deactivate it.",
+            "evidence_refs": [
+              "EC-PC-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "After identifying the customer account, the Customer Service Representative initiates the use case by clicking 'Place Account in Review Status' or 'Deactivate an Account' on the Customer History page.",
+            "evidence_refs": [
+              "EC-TR-000",
+              "EC-TR-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Customer Service Representative selects the suspension option by clicking the 'GO' button next to 'Place Account in Review Status' in the Results section of the Customer History page.",
+            "evidence_refs": [
+              "EC-MF-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Alternatively, if the Customer Service Representative selects 'Deactivate an Account' by clicking the 'GO' button next to it in the Results section of the Customer History page (instead of 'Place Account in Review Status'), the system displays a pop-up DIV layer asking for a supervisor's authorization code; the Customer Care manager's approval via code is required, and entering a valid code allows the system to proceed with deactivation by permanently suspending bidding rights. Deactivated accounts are listed in RED in the search results.",
+            "evidence_refs": [
+              "EC-MF-001",
+              "EC-MF-002",
+              "EC-MF-004",
+              "EC-AF-010",
+              "EC-PO-001",
+              "EC-PO-003"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system places the selected customer account in 'Review' status (suspended), where the customer can log in and change settings but cannot bid or generate orders.",
+            "evidence_refs": [
+              "EC-MF-003",
+              "EC-G-001"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 1: Instead of selecting 'Place Account in Review Status', the Customer Service Representative selects 'Deactivate an Account'. This permanently suspends bidding rights and requires a Customer Care manager/supervisor authorization code entered via a pop-up DIV layer; the code is issued by Administrators and generated in Auction Admin, supervisors do not need Administrator access to input it.",
+            "evidence_refs": [
+              "EC-AF-010",
+              "EC-AF-003",
+              "EC-AF-007",
+              "EC-AF-006",
+              "EC-AF-008"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "If the Customer Service Representative enters an incorrect or invalid supervisor authorization code in the authorization-code pop-up, the system prevents the deactivation action from proceeding.",
+            "evidence_refs": [
+              "EC-EF-002",
+              "EC-EF-010"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The selected customer account is placed in 'Review' status (suspended); the customer can still log in and change settings but cannot bid or generate orders.",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-PO-002"
+            ]
+          },
+          {
+            "content": "If the deactivation variant is completed successfully, the customer account is deactivated, permanently suspending bidding rights.",
+            "evidence_refs": [
+              "EC-PO-003"
+            ]
+          },
+          {
+            "content": "Deactivated accounts are listed in RED in the search results.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "dfb438a609204bc5ae5d2fc7f10857e3"
+}

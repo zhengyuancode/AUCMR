@@ -1,0 +1,539 @@
+{
+  "use_case_name": "Initialize a Newly Online Control Unit",
+  "actor": "Control Unit",
+  "method": "VDocRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The use case ensures that a newly online control unit is identified, initialized with necessary device sensor data, and integrated into the system monitoring loop.",
+          "evidence_refs": [
+            "P46"
+          ]
+        }
+      ],
+      "raw_text": "The use case ensures that a newly online control unit is identified, initialized with necessary device sensor data, and integrated into the system monitoring loop.",
+      "evidence_card_ids": [
+        "P46"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Control Unit",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Control Unit",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Control Unit must be physically connected to the RLCS network and capable of communication.",
+          "evidence_refs": [
+            "P42"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The RLCS application software must be running and able to process GUI commands and device initialization data.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The system must have access to the logical database containing Device, Device Category, Location, and Device Status entities with their minimum attributes.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The Personnel Security Level entity must be configured to allow appropriate Command Level, Device, Mode, Workstation, and System Functions access for initialization operations.",
+          "evidence_refs": [
+            "P29"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Device Sensor Initialization Data must be available or generatable for the newly online unit.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P42",
+        "P46",
+        "P36",
+        "P29"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "A newly online Control Unit connects to the RLCS network and sends Device Sensor Initialization Data to initiate identification and integration into the system monitoring loop.",
+          "evidence_refs": [
+            "P46"
+          ]
+        }
+      ],
+      "raw_text": "A newly online Control Unit connects to the RLCS network and sends Device Sensor Initialization Data to initiate identification and integration into the system monitoring loop.",
+      "evidence_card_ids": [
+        "P46"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Control Unit sends Device Sensor Initialization Data to the system.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The Process GUI Commands function receives and processes the Device Sensor Initialization Data.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Identify & Initialize all Devices function uses the received data to identify the new unit.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system retrieves or references stored Device Description, Device Sensor Status, and Security Level information from the Data Processing and Security module.",
+          "evidence_refs": [
+            "P46",
+            "P29"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The Set Alarms function configures alarm criteria for the newly initialized device based on its status and type.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The Monitor Devices function begins tracking the Device Sensor Status of the newly online Control Unit.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "The Collect Log Data function records the initialization event and initial device status in the system logs.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 7
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P46",
+        "P29"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [],
+      "raw_text": ""
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the Control Unit fails to send valid Device Sensor Initialization Data, the Process GUI Commands function cannot proceed, and the system logs a Command Failure Count increment via Track # of Failed Device Commands.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the Identify & Initialize all Devices function cannot match the incoming data to any known Device ID or Device Category in the logical database, initialization is aborted and an alarm may be triggered via Set Alarms based on Device Alarm Criteria.",
+          "evidence_refs": [
+            "P36",
+            "P46"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the Personnel Security Level entity does not permit the required Command Level (e.g., ‘Control’ or ‘Override’) for initializing devices, the system denies initialization and records the failure in Device Command Log with Operator ID and timeout status.",
+          "evidence_refs": [
+            "P29",
+            "P36"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the newly online unit’s Device Status ID corresponds to an invalid or prohibited state (e.g., ‘alarm’ without clearance), the Monitor Devices function flags it as failed and triggers retry logic via Control Devices using Command Data (for retry).",
+          "evidence_refs": [
+            "P36",
+            "P46"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If the Collect Log Data function cannot write the initialization event due to database lock or full log capacity, the System Operation Command Log entity records the failure with Date, Time, and System Operational Command ID for audit recovery.",
+          "evidence_refs": [
+            "P36",
+            "P47"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P46",
+        "P36",
+        "P29",
+        "P47"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The newly online Control Unit is successfully identified and initialized within the RLCS system, with its Device Sensor Status integrated into the Monitor Devices function.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Device Sensor Initialization Data for the new unit has been processed and stored, enabling subsequent command and monitoring operations.",
+          "evidence_refs": [
+            "P46",
+            "P29"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Alarm criteria have been set for the newly initialized device based on its Device Alarm Criteria entity attributes (e.g., Alarm low/high range, Description).",
+          "evidence_refs": [
+            "P36",
+            "P46"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The initialization event and initial device status are recorded in the system logs via the Collect Log Data function, ensuring audit trail compliance.",
+          "evidence_refs": [
+            "P46",
+            "P29"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The Personnel Security Level entity confirms that appropriate Command Level, Device, Mode, Workstation, and System Functions access rights are assigned or validated for the initialized unit.",
+          "evidence_refs": [
+            "P29",
+            "P36"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P46",
+        "P29",
+        "P36"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No content produced for slot 'alternative_flow' by VDocRAG-Elaborate."
+    }
+  ],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "The use case ensures that a newly online control unit is identified, initialized with necessary device sensor data, and integrated into the system monitoring loop.",
+            "evidence_refs": [
+              "P46"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P29",
+          "P36",
+          "P46",
+          "P11",
+          "P47"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The Control Unit must be physically connected to the RLCS network and capable of communication.",
+            "evidence_refs": [
+              "P42"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The RLCS application software must be running and able to process GUI commands and device initialization data.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system must have access to the logical database containing Device, Device Category, Location, and Device Status entities with their minimum attributes.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The Personnel Security Level entity must be configured to allow appropriate Command Level, Device, Mode, Workstation, and System Functions access for initialization operations.",
+            "evidence_refs": [
+              "P29"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Device Sensor Initialization Data must be available or generatable for the newly online unit.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P11",
+          "P29",
+          "P46",
+          "P42"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "A newly online Control Unit connects to the RLCS network and sends Device Sensor Initialization Data to initiate identification and integration into the system monitoring loop.",
+            "evidence_refs": [
+              "P46"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P29",
+          "P46",
+          "P47",
+          "P11"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The Control Unit sends Device Sensor Initialization Data to the system.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Process GUI Commands function receives and processes the Device Sensor Initialization Data.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Identify & Initialize all Devices function uses the received data to identify the new unit.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system retrieves or references stored Device Description, Device Sensor Status, and Security Level information from the Data Processing and Security module.",
+            "evidence_refs": [
+              "P46",
+              "P29"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The Set Alarms function configures alarm criteria for the newly initialized device based on its status and type.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The Monitor Devices function begins tracking the Device Sensor Status of the newly online Control Unit.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "The Collect Log Data function records the initialization event and initial device status in the system logs.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P46",
+          "P29",
+          "P11",
+          "P36",
+          "P47"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "P46",
+          "P36",
+          "P29",
+          "P47",
+          "P11"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the Control Unit fails to send valid Device Sensor Initialization Data, the Process GUI Commands function cannot proceed, and the system logs a Command Failure Count increment via Track # of Failed Device Commands.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the Identify & Initialize all Devices function cannot match the incoming data to any known Device ID or Device Category in the logical database, initialization is aborted and an alarm may be triggered via Set Alarms based on Device Alarm Criteria.",
+            "evidence_refs": [
+              "P36",
+              "P46"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the Personnel Security Level entity does not permit the required Command Level (e.g., ‘Control’ or ‘Override’) for initializing devices, the system denies initialization and records the failure in Device Command Log with Operator ID and timeout status.",
+            "evidence_refs": [
+              "P29",
+              "P36"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the newly online unit’s Device Status ID corresponds to an invalid or prohibited state (e.g., ‘alarm’ without clearance), the Monitor Devices function flags it as failed and triggers retry logic via Control Devices using Command Data (for retry).",
+            "evidence_refs": [
+              "P36",
+              "P46"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If the Collect Log Data function cannot write the initialization event due to database lock or full log capacity, the System Operation Command Log entity records the failure with Date, Time, and System Operational Command ID for audit recovery.",
+            "evidence_refs": [
+              "P36",
+              "P47"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P46",
+          "P29",
+          "P36",
+          "P11",
+          "P47"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The newly online Control Unit is successfully identified and initialized within the RLCS system, with its Device Sensor Status integrated into the Monitor Devices function.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Device Sensor Initialization Data for the new unit has been processed and stored, enabling subsequent command and monitoring operations.",
+            "evidence_refs": [
+              "P46",
+              "P29"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Alarm criteria have been set for the newly initialized device based on its Device Alarm Criteria entity attributes (e.g., Alarm low/high range, Description).",
+            "evidence_refs": [
+              "P36",
+              "P46"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The initialization event and initial device status are recorded in the system logs via the Collect Log Data function, ensuring audit trail compliance.",
+            "evidence_refs": [
+              "P46",
+              "P29"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The Personnel Security Level entity confirms that appropriate Command Level, Device, Mode, Workstation, and System Functions access rights are assigned or validated for the initialized unit.",
+            "evidence_refs": [
+              "P29",
+              "P36"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P29",
+          "P36",
+          "P11",
+          "P46",
+          "P51"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 55.6
+}

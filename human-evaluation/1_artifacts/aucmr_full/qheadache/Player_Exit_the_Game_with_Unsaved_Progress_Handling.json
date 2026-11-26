@@ -1,0 +1,576 @@
+{
+  "use_case_name": "Exit the Game with Unsaved Progress Handling",
+  "actor": "Player",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The Player wants to exit (stop) the game.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "The Player wants to exit (stop) the game.",
+        "canonical_success_scenario": "The Player initiates and completes exiting the game, with any unsaved progress handled as part of that exit.",
+        "start_boundary": "The Player is in an active game and chooses to exit.",
+        "success_boundary": "The game is exited/stopped.",
+        "in_scope_actions": [
+          "Exit the game",
+          "Stop the game",
+          "Handle unsaved progress during exit"
+        ],
+        "excluded_adjacent_actions": [
+          "Saving progress outside the exit flow",
+          "Resuming play",
+          "Post-exit administrative or account processes"
+        ],
+        "variant_dimensions": [
+          "Whether unsaved progress requires handling during exit"
+        ],
+        "evidence_refs": [
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Player",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Player"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Player is in an active game session with the game's main window displayed.",
+          "evidence_refs": [
+            "EC-PC-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "PC-active-game-session",
+          "PC-main-window-displayed",
+          "system_context",
+          "preconditions"
+        ],
+        "missing_aspects": [
+          "preconditions"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Player selects 'Exit' from the File management menu.",
+          "evidence_refs": [
+            "EC-TR-000"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-exit-menu-selection",
+          "trigger",
+          "trigger_event"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Player selects 'Exit' from the File management menu.",
+          "evidence_refs": [
+            "EC-MF-000",
+            "EC-TR-000"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the game is not saved, the system displays a dialog box asking whether the Player wants to save the game, with 'Yes' and 'No' choices.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Player selects 'Yes'.",
+          "evidence_refs": [
+            "EC-MF-002",
+            "EC-MF-003"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system processes the 'Save' action.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The main window disappears.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 5
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-000",
+        "EC-TR-000",
+        "EC-MF-002",
+        "EC-MF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-trigger-exit-menu",
+          "MF-unsaved-progress-dialog",
+          "MF-save-choice",
+          "MF-save-processing",
+          "MF-main-window-disappears",
+          "exit_menu_location",
+          "main_flow_player_action",
+          "main_flow_unsaved_prompt",
+          "main_flow_save_and_exit",
+          "main_flow_discard_and_exit"
+        ],
+        "missing_aspects": [
+          "unsaved_progress_handling_logic",
+          "confirmation_dialog_steps"
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 3: If the Player selects 'No' in the save-progress dialog, the main window disappears.",
+          "evidence_refs": [
+            "EC-MF-002",
+            "EC-MF-004"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-002",
+        "EC-MF-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-discard-unsaved-and-exit"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the file update fails due to wrong permissions or a full disk, an error message is displayed.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-save-file-update-failure",
+          "EF-wrong-permissions",
+          "EF-disk-full",
+          "EF-error-message",
+          "EF-save-function-available",
+          "EF-save-as-alternative",
+          "EF-file-update-failure",
+          "EF-error-message-display"
+        ],
+        "missing_aspects": [
+          "Exception exit or recovery after the error message is displayed, including whether 'Save game as' is used, is not documented.",
+          "exception_flow",
+          "Evidence does not support that this exception occurs specifically at Step 4."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The game is exited/stopped.",
+          "evidence_refs": [
+            "EC-G-000",
+            "EC-G-001"
+          ]
+        },
+        {
+          "content": "The main window disappears.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-PO-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-000",
+        "EC-G-001",
+        "EC-PO-000",
+        "EC-PO-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postcondition-game-exited-stopped",
+          "postcondition-main-window-closed",
+          "PC-main-window-disappears",
+          "main-window-closed"
+        ],
+        "missing_aspects": [
+          "System state after exiting the game",
+          "Handling of unsaved progress upon exit",
+          "Final window status after exit"
+        ]
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 18,
+    "cross_page_cards": 1,
+    "modalities": {
+      "text": 18
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 597.178,
+    "judge_calls": 0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 377.174,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 25.0,
+    "llm_calls": 22.0,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 213.829,
+    "cards_collected": 18,
+    "cards_referenced": 11,
+    "dra_elapsed_seconds": 76.804,
+    "dra_judge_calls": 0,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_seconds": 76.803,
+    "dra_llm_retry_calls": 0,
+    "dra_lvlm_calls": 0,
+    "dra_llm_calls": 2,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_seconds": 0.0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Player wants to exit (stop) the game.",
+            "evidence_refs": [
+              "EC-G-000",
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Player is in an active game session with the game's main window displayed.",
+            "evidence_refs": [
+              "EC-PC-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-PC-000",
+          "EC-PC-001"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Player selects 'Exit' from the File management menu.",
+            "evidence_refs": [
+              "EC-TR-000"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Player selects 'Exit' from the File management menu.",
+            "evidence_refs": [
+              "EC-MF-000",
+              "EC-TR-000"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the game is not saved, the system displays a dialog box asking whether the Player wants to save the game, with 'Yes' and 'No' choices.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Player selects 'Yes'.",
+            "evidence_refs": [
+              "EC-MF-002",
+              "EC-MF-003"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system processes the 'Save' action.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The main window disappears.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 3: If the Player selects 'No' in the save-progress dialog, the main window disappears.",
+            "evidence_refs": [
+              "EC-MF-002",
+              "EC-MF-004"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-MF-002",
+          "EC-MF-004"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "If the file update fails due to wrong permissions or a full disk, an error message is displayed.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The game is exited/stopped.",
+            "evidence_refs": [
+              "EC-G-000",
+              "EC-G-001"
+            ]
+          },
+          {
+            "content": "The main window disappears.",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-PO-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "b0c7a50a65964aab8a922c10e73e42c6"
+}

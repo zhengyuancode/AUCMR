@@ -1,0 +1,516 @@
+{
+  "use_case_name": "Verify Control Unit Integrity",
+  "actor": "Operator",
+  "method": "VDocRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [],
+      "raw_text": ""
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Operator",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Operator",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The Operator must be logged in to the system with a valid Personnel ID.",
+          "evidence_refs": [
+            "P36",
+            "P51"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The Operator's Personnel Security Level must authorize access to System Functions related to device control or status monitoring.",
+          "evidence_refs": [
+            "P29",
+            "P51"
+          ]
+        },
+        {
+          "content": "The RLCS database must be operational and accessible for reading Device Status and Device information.",
+          "evidence_refs": [
+            "P29",
+            "P36"
+          ]
+        },
+        {
+          "content": "At least one Device entity must exist in the system with an associated Device Status.",
+          "evidence_refs": [
+            "P36",
+            "P47"
+          ]
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P36",
+        "P51",
+        "P29",
+        "P47"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Operator issues a Device control command, Device Macro Command, Super Macro Command, or Override Command, or initiates a Diagnostic Command.",
+          "evidence_refs": [
+            "P29",
+            "P36",
+            "P48"
+          ]
+        }
+      ],
+      "raw_text": "The Operator issues a Device control command, Device Macro Command, Super Macro Command, or Override Command, or initiates a Diagnostic Command.",
+      "evidence_card_ids": [
+        "P29",
+        "P36",
+        "P48"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Operator issues a command (Device control, Macro, Super Macro, Override, or Diagnostic) via the GUI.",
+          "evidence_refs": [
+            "P29",
+            "P46"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The RLCS application software processes the GUI command and retrieves associated Device Description, Device Sensor Status, and Security Level data from the database.",
+          "evidence_refs": [
+            "P46",
+            "P36"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The system identifies and initializes all Devices, retrieving Device Sensor Initialization Data and Device Sensor Alarm Criteria.",
+          "evidence_refs": [
+            "P46",
+            "P36"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system sets alarms based on Device Sensor Alarm Criteria and monitors Device Sensor Status.",
+          "evidence_refs": [
+            "P46",
+            "P36"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The system collects log data including Device Sensor Status and Command Failure Data for audit and reporting.",
+          "evidence_refs": [
+            "P46",
+            "P36"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "If a command fails, the system tracks the number of failed device commands and may retry the command.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "The system updates the Device Command Log or System Operation Command Log with the outcome of the command execution.",
+          "evidence_refs": [
+            "P36",
+            "P46"
+          ],
+          "step_number": 7
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P29",
+        "P46",
+        "P36"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "The system shall provide for 'Message Digest' verification requests for a given unit by operator command.",
+          "evidence_refs": [
+            "P61"
+          ]
+        },
+        {
+          "content": "If the failure occurs in checking the non-volatile memory items, the system shall prevent the affected unit from being used in control sequences.",
+          "evidence_refs": [
+            "P61"
+          ]
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P61"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the Operator's Personnel Security Level does not authorize the requested Command Level (e.g., 'Control' or 'Override'), the system shall reject the command and log the security violation.",
+          "evidence_refs": [
+            "P29",
+            "P51"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If a Device Sensor Status indicates an alarm condition based on Device Alarm Criteria, the system shall trigger an alarm and may prevent further control commands to that device until resolved.",
+          "evidence_refs": [
+            "P36",
+            "P46"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If a command execution fails, the system shall track the number of failed device commands and may attempt a retry; if retries exceed threshold, the command is aborted and logged as failed.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If verification of non-volatile memory items fails during integrity check, the system shall prevent the affected unit from being used in any control sequences.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If the RLCS database is unavailable or returns inconsistent data for Device Status or Device attributes, the system shall halt command processing and alert the Operator via GUI.",
+          "evidence_refs": [
+            "P29",
+            "P36"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P29",
+        "P51",
+        "P36",
+        "P46"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The system shall record the 'Message Digest' value verification results in the system log.",
+          "evidence_refs": [
+            "P61"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If a verification failure occurs during the integrity check, an alarm condition shall be caused for the affected control unit.",
+          "evidence_refs": [
+            "P61"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the failure occurs in checking the non-volatile memory items, the system shall prevent the affected unit from being used in control sequences.",
+          "evidence_refs": [
+            "P61"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P61"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "goal",
+      "detail": "No content produced for slot 'goal' by VDocRAG-Elaborate."
+    }
+  ],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P29",
+          "P63",
+          "P51"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The Operator must be logged in to the system with a valid Personnel ID.",
+            "evidence_refs": [
+              "P36",
+              "P51"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Operator's Personnel Security Level must authorize access to System Functions related to device control or status monitoring.",
+            "evidence_refs": [
+              "P29",
+              "P51"
+            ]
+          },
+          {
+            "content": "The RLCS database must be operational and accessible for reading Device Status and Device information.",
+            "evidence_refs": [
+              "P29",
+              "P36"
+            ]
+          },
+          {
+            "content": "At least one Device entity must exist in the system with an associated Device Status.",
+            "evidence_refs": [
+              "P36",
+              "P47"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P29",
+          "P42",
+          "P51"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The Operator issues a Device control command, Device Macro Command, Super Macro Command, or Override Command, or initiates a Diagnostic Command.",
+            "evidence_refs": [
+              "P29",
+              "P36",
+              "P48"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P29",
+          "P48",
+          "P51"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The Operator issues a command (Device control, Macro, Super Macro, Override, or Diagnostic) via the GUI.",
+            "evidence_refs": [
+              "P29",
+              "P46"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The RLCS application software processes the GUI command and retrieves associated Device Description, Device Sensor Status, and Security Level data from the database.",
+            "evidence_refs": [
+              "P46",
+              "P36"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system identifies and initializes all Devices, retrieving Device Sensor Initialization Data and Device Sensor Alarm Criteria.",
+            "evidence_refs": [
+              "P46",
+              "P36"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system sets alarms based on Device Sensor Alarm Criteria and monitors Device Sensor Status.",
+            "evidence_refs": [
+              "P46",
+              "P36"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The system collects log data including Device Sensor Status and Command Failure Data for audit and reporting.",
+            "evidence_refs": [
+              "P46",
+              "P36"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "If a command fails, the system tracks the number of failed device commands and may retry the command.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "The system updates the Device Command Log or System Operation Command Log with the outcome of the command execution.",
+            "evidence_refs": [
+              "P36",
+              "P46"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P47",
+          "P36",
+          "P48",
+          "P29",
+          "P46"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "The system shall provide for 'Message Digest' verification requests for a given unit by operator command.",
+            "evidence_refs": [
+              "P61"
+            ]
+          },
+          {
+            "content": "If the failure occurs in checking the non-volatile memory items, the system shall prevent the affected unit from being used in control sequences.",
+            "evidence_refs": [
+              "P61"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P47",
+          "P36",
+          "P46",
+          "P48",
+          "P61"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the Operator's Personnel Security Level does not authorize the requested Command Level (e.g., 'Control' or 'Override'), the system shall reject the command and log the security violation.",
+            "evidence_refs": [
+              "P29",
+              "P51"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If a Device Sensor Status indicates an alarm condition based on Device Alarm Criteria, the system shall trigger an alarm and may prevent further control commands to that device until resolved.",
+            "evidence_refs": [
+              "P36",
+              "P46"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If a command execution fails, the system shall track the number of failed device commands and may attempt a retry; if retries exceed threshold, the command is aborted and logged as failed.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If verification of non-volatile memory items fails during integrity check, the system shall prevent the affected unit from being used in any control sequences.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If the RLCS database is unavailable or returns inconsistent data for Device Status or Device attributes, the system shall halt command processing and alert the Operator via GUI.",
+            "evidence_refs": [
+              "P29",
+              "P36"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P47",
+          "P29",
+          "P46",
+          "P51"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The system shall record the 'Message Digest' value verification results in the system log.",
+            "evidence_refs": [
+              "P61"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If a verification failure occurs during the integrity check, an alarm condition shall be caused for the affected control unit.",
+            "evidence_refs": [
+              "P61"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the failure occurs in checking the non-volatile memory items, the system shall prevent the affected unit from being used in control sequences.",
+            "evidence_refs": [
+              "P61"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P29",
+          "P47",
+          "P51",
+          "P61"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 47.6
+}

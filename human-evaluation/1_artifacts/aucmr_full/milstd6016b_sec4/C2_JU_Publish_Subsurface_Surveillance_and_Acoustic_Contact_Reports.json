@@ -1,0 +1,1507 @@
+{
+  "use_case_name": "Publish Subsurface Surveillance and Acoustic Contact Reports",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The C2 JU wants to publish subsurface surveillance and acoustic contact reports containing bearings, ranges, and track data—including position, velocity, identity, and time—derived from ASW sensors, including reporting a track as a DATUM when contact is lost.",
+          "evidence_refs": [
+            "EC-G-001",
+            "EC-G-003",
+            "EC-G-002"
+          ],
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-001",
+        "EC-G-003",
+        "EC-G-002"
+      ],
+      "scope_contract": {
+        "goal_statement": "The C2 JU wants to publish subsurface surveillance and acoustic contact reports containing bearings, ranges, and track data—including position, velocity, identity, and time—derived from ASW sensors, including reporting a track as a DATUM when contact is lost.",
+        "canonical_success_scenario": "C2 JU publishes a subsurface surveillance and acoustic contact report with bearings, ranges, and track data including position, velocity, identity, and time derived from ASW sensors.",
+        "start_boundary": "C2 JU has subsurface surveillance or acoustic contact information from ASW sensors to report.",
+        "success_boundary": "A subsurface surveillance and acoustic contact report has been published with the required bearings, ranges, and track data.",
+        "in_scope_actions": [
+          "reporting subsurface surveillance information including bearings, ranges, and tracks derived from ASW sensors",
+          "reporting subsurface surveillance tracks with positional data, velocity, identity, and time",
+          "reporting a track as a DATUM when contact is lost"
+        ],
+        "excluded_adjacent_actions": [
+          "managing reporting responsibilities for tracks among JUs",
+          "integrating PPLI data into the surveillance database to reduce reporting redundancy",
+          "post-publication administrative or downstream processes"
+        ],
+        "variant_dimensions": [
+          "whether a track is reported normally or as a DATUM when contact is lost",
+          "the subsurface information included in the report, such as bearings, ranges, or track data"
+        ],
+        "evidence_refs": [
+          "EC-G-001",
+          "EC-G-003",
+          "EC-G-002"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal-core-reporting",
+          "goal-report-data-content",
+          "goal-datum-contact-loss",
+          "goal",
+          "high-level objective",
+          "High-level objective for reporting DATUM",
+          "reporting requirements",
+          "responsibility assignment"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU is in Active status, having either initially achieved Active status or returned to Active status from Inactive status or TDS Failure.",
+          "evidence_refs": [
+            "EC-PC-011"
+          ]
+        },
+        {
+          "content": "The C2 JU has correlated local sensor data.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ]
+        },
+        {
+          "content": "For a new local track to be reported, automatic correlation has been attempted and has failed on the initial correlation test or on the next test following an initial tentative correlation.",
+          "evidence_refs": [
+            "EC-PC-009"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-011",
+        "EC-PC-000",
+        "EC-PC-009"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "pre-active-status",
+          "pre-correlated-local-sensor-data",
+          "pre-new-track-correlation-failed",
+          "network_configuration_precondition",
+          "role_based_transmission_capability",
+          "correlated local sensor data prerequisite",
+          "correlation failure requirement before reporting",
+          "timing of automatic correlation tests relative to transmission",
+          "system_active_status_requirement",
+          "data_correlation_and_registration_precondition",
+          "system capability to report DATUM on contact loss",
+          "operator decision required for DATUM reporting",
+          "precondition-inactive-iu-reporting",
+          "responsibility determination",
+          "data correlation requirement"
+        ],
+        "missing_aspects": [
+          "preconditions",
+          "explicit preconditions required before publishing reports"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case starts when the C2 JU has tactically significant information derived from ASW sensors—such as bearings, ranges, or tracks—that requires reporting, or when it determines that a Subsurface IU is no longer active and it holds local data on that IU.",
+          "evidence_refs": [
+            "EC-TR-012",
+            "EC-TR-003"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-012",
+        "EC-TR-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-positive-asw-derived-info",
+          "trigger-inactive-iu-local-data",
+          "trigger-environment-category-change",
+          "explicit_positive_trigger_event_for_subsurface_reporting"
+        ],
+        "missing_aspects": [
+          "explicit_positive_trigger_event_for_subsurface_reporting",
+          "Evidence supporting the trigger condition where a JU changes a track's Environment/Category to Subsurface (maritime) from another environment."
+        ]
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "C2 JU uses J3.4 messages for subsurface surveillance track data and J5.4 messages for acoustic bearing/range data derived from ASW sensors.",
+          "evidence_refs": [
+            "EC-MF-040",
+            "EC-MF-042"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "For subsurface surveillance track reporting, C2 JU provides the source of track data (Source TN).",
+          "evidence_refs": [
+            "EC-MF-041"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "C2 JU reports established local subsurface surveillance tracks with all known parameters at the next reporting opportunity in a J3.4 message, including geodetic latitude and longitude, depth when available, velocity as course and speed, identity via the Identity field or J3.4I message, discrete identifier codes in the J7.5 message, and time of contact acquisition/loss/datum establishment in the J3.4C1 word, with all data time tagged.",
+          "evidence_refs": [
+            "EC-MF-006",
+            "EC-MF-041"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "When reporting acoustic bearing and range, C2 JU uses the J5.4 Acoustic Bearing/Range message, sets the BRT field to value 0 (Bearing and Range), populates the Bearing 1, ASW field with the bearing from the detecting sensor origin, and populates the Range field with the range.",
+          "evidence_refs": [
+            "EC-MF-031",
+            "EC-MF-042"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "When contact is lost and the operator decides to report the track as a DATUM, the C2 JU reports a J3.4 message using the same Reference TN as the lost-contact track, with DRT set to 4 (DATUM), ASW Time Function set to 3 (Time Contact Lost) or 1 (Time Datum Established), and last known position and depth; the DATUM does not move, retains last known course and speed only for DATUM Error and ASW search calculations, and shall only be dropped or purged by operator action.",
+          "evidence_refs": [
+            "EC-MF-007",
+            "EC-MF-032",
+            "EC-PO-007",
+            "EC-PO-008"
+          ],
+          "step_number": 5,
+          "is_cross_page": true
+        },
+        {
+          "content": "C2 JU transmits the surveillance information in Network PGs.",
+          "evidence_refs": [
+            "EC-MF-035"
+          ],
+          "step_number": 6
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-040",
+        "EC-MF-042",
+        "EC-MF-041",
+        "EC-MF-006",
+        "EC-MF-031",
+        "EC-MF-007",
+        "EC-MF-032",
+        "EC-PO-007",
+        "EC-PO-008",
+        "EC-MF-035"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 3: C2 JU uses the J7.0 Track Management (ACT = 1) Difference Report message to report changes in track parameters without retransmitting full track data.",
+          "evidence_refs": [
+            "EC-AF-001"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 3: when contact is lost, the decision to report a track as a DATUM is an operator function; C2 JU reports the DATUM in a J3.4 message with the same Reference TN as the track for which contact was lost and with Data Report Type (DRT) set to 4 (DATUM).",
+          "evidence_refs": [
+            "EC-AF-018",
+            "EC-AF-019"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 4: when passive bearings are ambiguous, C2 JU sets Bearing Report Type (BRT) to value 1 and reports using both the Bearing 1, ASW and Bearing 2, ASW fields of the J5.4E0 and J5.4C1 words, with the origins of both bearings being the same.",
+          "evidence_refs": [
+            "EC-AF-015"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from Step 4: when reporting range to an ASW contact without a bearing, C2 JU sets BRT to value 3 (Range Only) instead of the bearing-and-range report covered in Step 4.",
+          "evidence_refs": [
+            "EC-AF-017"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges from Step 3: when an Emergency (EMG) or Force Tell (FT) alert is active, C2 JU sets the EMG IND or FT IND to 1 in the J3.4 Subsurface Track message; this is triggered by a J7.0 message (ACT=3 for EMG, ACT=4 for FT).",
+          "evidence_refs": [
+            "EC-AF-026"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Diverges from Step 4: when an Emergency (EMG) or Force Tell (FT) alert is active, C2 JU sets the EMG IND or FT IND to 1 in the J5.4 Acoustic Bearing/Range message; this is triggered by a J7.0 message (ACT=3 for EMG, ACT=4 for FT).",
+          "evidence_refs": [
+            "EC-AF-026"
+          ],
+          "step_number": 6
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-AF-001",
+        "EC-AF-018",
+        "EC-AF-019",
+        "EC-AF-015",
+        "EC-AF-017",
+        "EC-AF-026"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "alt-difference-report-delta-update",
+          "alt-datum-on-contact-loss",
+          "alt-ambiguous-passive-bearings",
+          "alt-range-only-acoustic-report",
+          "alt-emg-ft-indicator-j34",
+          "alt-emg-ft-indicator-j54",
+          "alternative_flow-drop_track",
+          "alternative_flow-difference_report",
+          "alternative_flow-change_data_order",
+          "alternative_flow-emergency_status_change",
+          "alternative_flow-force_tell_status_change",
+          "alternative_flow-strength_change",
+          "alternative_flow-exercise_status_order",
+          "alternative_flow-data_update_request_by_indicator",
+          "alternative_flow-data_update_request_by_track_number",
+          "alternative_flow-ballistic_missile_update_request",
+          "alternative_flow-correlation_message",
+          "alternative_flow-track_identifier_assignment",
+          "alternative_flow-clear_iff_sif",
+          "alternative_flow-relinquish_responsibility_no_drop_message",
+          "alternative_flow-track_becomes_active_iu_same_tn_no_drop_message",
+          "alternative_flow-ambiguous-bearing-reporting",
+          "alternative_flow-resolved-bearing-reporting",
+          "alternative_flow-range-only-reporting",
+          "alternative_flow-bearing-and-range-combined-reporting",
+          "alternative_flow-datum-operator-decision",
+          "alternative_flow-datum-message-format",
+          "alternative_flow-contact-regained-recovery",
+          "explicit_track_termination_message_transmission",
+          "context_specific_deactivation_requirements",
+          "automatic_purge_of_stale_remote_tracks",
+          "alternative_flow-ew-fix-from-lobs-new-tn",
+          "alternative_flow-aop-to-fix-tn-reuse",
+          "alternative_flow-alert-indicator-setting",
+          "alternative_flow-trigger-condition-j70",
+          "alternative_flow-message-modification-j34-j54",
+          "constraint-emergency-prohibited-for-reference-space-tracks"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges from main flow Step 3 when C2 JU finds a correlation with a track for which it has R² responsibility: C2 JU transmits a J7.2 Correlation message with Response Value (RV) set to 1 (Reverse Correlation Not Acceptable), ceases reporting the track, and transmits a J7.0 Drop Track message. Exit: C2 JU ceases reporting that track and sends the drop-track message.",
+          "evidence_refs": [
+            "EC-EF-000"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from main flow Step 3 when C2 JU determines that a Subsurface IU is no longer active on the interface and C2 JU also holds local data on that IU: C2 JU assumes R² by reporting a J3.4 Subsurface (Maritime) Track message using the inactive IU address as the reference TN; when assuming R² under these conditions, C2 JU reports Identity as Friend, maintains previous Track Number/Platform values, and sets the PPLI Track Number and Identity Indicator to value 1. Exit: the inactive IU is reported as a subsurface track under assumed R².",
+          "evidence_refs": [
+            "EC-EF-022",
+            "EC-EF-031"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from main flow Step 3 when an inactive IU that C2 JU is reporting under assumed R² returns to the interface as an Active IU: C2 JU ceases reporting the IU and does not transmit a J7.0 (ACT = 0) message. Exit: C2 JU stops reporting that IU without sending a drop-track message.",
+          "evidence_refs": [
+            "EC-EF-023"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges from main flow Step 3 when contact is regained after a DATUM has been reported: C2 JU reports a J3.4 message with Data Report Type (DRT) set to value 0, 1, or 2 using the same TN as the DATUM, or assigns a new TN depending on operator action. Exit: C2 JU reports the regained contact via J3.4 with DRT set to 0, 1, or 2.",
+          "evidence_refs": [
+            "EC-EF-008"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-000",
+        "EC-EF-022",
+        "EC-EF-031",
+        "EC-EF-023",
+        "EC-EF-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-reverse-correlation-r2-drop",
+          "EF-inactive-subsurface-iu-assume-r2",
+          "EF-inactive-iu-assume-r2-data-format",
+          "EF-inactive-iu-return-active-cease-no-j70",
+          "EF-contact-regained-after-datum-reset-drt",
+          "exception_flow-reverse-correlation",
+          "exception_flow-inactive-iu-handling",
+          "exception_flow-recovery-on-iu-reactivation",
+          "exception_flow-contact-regained-after-datum",
+          "exception-trigger-timeout",
+          "exception-trigger-status-indicator",
+          "exception-trigger-drop-message",
+          "exception-trigger-position-quality",
+          "exception-response-assume-responsibility",
+          "exception-reporting-data-constraints",
+          "exception-wait-period-on-status-change",
+          "exception-missing-termination-message-purge",
+          "exception-surveillance-data-difference-handling",
+          "exception-no-transmission-on-purge",
+          "exception-inactive-iu-assumption-of-responsibility",
+          "exception-inactive-iu-reactivation-handling",
+          "exception-dual-designation-resolution",
+          "exception-automatic-purge-of-stale-tracks",
+          "exception-datum-exclusion-from-auto-purge",
+          "exception-suppression-of-drop-message-on-reactivation"
+        ],
+        "missing_aspects": [
+          "Explicit exit or continuation when the inactive Subsurface IU does not return to active status after being reported under assumed R²."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has published a subsurface surveillance or acoustic contact report containing bearings, ranges, and track data derived from ASW sensors.",
+          "evidence_refs": [
+            "EC-PO-004"
+          ]
+        },
+        {
+          "content": "All reported subsurface surveillance and acoustic data in the published report are time tagged.",
+          "evidence_refs": [
+            "EC-PO-005"
+          ]
+        },
+        {
+          "content": "The C2 JU holds R² for the reported subsurface track using the assigned Track Number.",
+          "evidence_refs": [
+            "EC-PO-010"
+          ]
+        },
+        {
+          "content": "If a track is reported as a DATUM after contact is lost, the track does not move; last known course and speed are retained only for calculation of DATUM Error and ASW search data.",
+          "evidence_refs": [
+            "EC-PO-007"
+          ]
+        },
+        {
+          "content": "A reported DATUM remains in the system until it is dropped or purged by operator action.",
+          "evidence_refs": [
+            "EC-PO-008"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-004",
+        "EC-PO-005",
+        "EC-PO-010",
+        "EC-PO-007",
+        "EC-PO-008"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "post-report-published",
+          "post-data-time-tagged",
+          "post-r2-retained",
+          "post-datum-track-static",
+          "post-datum-persists-until-operator-action",
+          "postcondition-network-reporting-assumed-r2",
+          "postcondition-identity-value-friend",
+          "postcondition-ppli-indicator-values",
+          "post-responsibility-retention",
+          "post-success-boundary-definition",
+          "post-publication-of-submarine-surveillance-report",
+          "post-time-tagging-compliance",
+          "post-complete-parameter-transmission-for-established-tracks",
+          "postcondition-datum-static-position",
+          "postcondition-datum-persistence-until-operator-action",
+          "postcondition-contact-regained-transition-path",
+          "postcondition-retention-of-reporting-responsibility",
+          "postcondition-conditions-for-relinquishing-responsibility",
+          "postcondition-inactive-iu-assumed-r2-state"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] Main Flow step 4 reports acoustic bearing/range via J5.4 but does not state that the acoustic data is time tagged, while Postcondition 2 requires all reported acoustic data to be time tagged. (atomic grounding: candidate remains incomplete (Cited cards refer to JUs, not specifically to C2 JU as the actor.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] Main Flow step 4 describes reporting acoustic bearing/range in J5.4 (BRT, Bearing 1 ASW, Range) but does not include time tagging. Postcondition 2 requires all reported subsurface and acoustic data to be time tagged; the 'all data time tagged' phrase in step 3 is scoped to J3.4 track reporting, so acoustic data does not clearly satisfy it. (atomic grounding: candidate remains incomplete (Evidence identifying C2 JU as the actor using the J5.4 message and performing these reporting actions.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim at index 1 handles an inactive Subsurface IU by assuming R² and reporting it, but its exit only states that the inactive IU is reported under assumed R². It does not specify whether C2 JU continues reporting under assumed R², returns to a Main Flow step, or terminates/hands off if the IU remains inactive, so the branch lacks a clear exit/continuation. (atomic grounding: candidate remains incomplete (Evidence is needed that the C2 JU continues reporting under assumed R² while the inactive IU remains inactive, and for explicit exception-flow recovery/exit behavior beyond retention of responsibility until relinquishment or track drop.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "main_flow",
+      "detail": "[mainflow_postconditions_reachability] Main Flow step 4 describes reporting acoustic bearing/range in J5.4 (BRT, Bearing 1 ASW, Range) but does not include time tagging. Postcondition 2 requires all reported subsurface and acoustic data to be time tagged; the 'all data time tagged' phrase in step 3 is scoped to J3.4 track reporting, so acoustic data does not clearly satisfy it.",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim at index 1 handles an inactive Subsurface IU by assuming R² and reporting it, but its exit only states that the inactive IU is reported under assumed R². It does not specify whether C2 JU continues reporting under assumed R², returns to a Main Flow step, or terminates/hands off if the IU remains inactive, so the branch lacks a clear exit/continuation.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": [
+        "The Main Flow only covers normal track and acoustic reporting; it has no step for reporting a track as a DATUM after contact is lost (or handling the Trigger's inactive-IU/local-data branch), so the DATUM postconditions about static position and persistence are not reached."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 167,
+    "cross_page_cards": 4,
+    "modalities": {
+      "text": 164,
+      "table": 3
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 2179.732,
+    "judge_calls": 0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 1359.088,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 93.0,
+    "llm_calls": 50.0,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 800.255,
+    "cards_collected": 167,
+    "cards_referenced": 30,
+    "dra_elapsed_seconds": 415.852,
+    "dra_judge_calls": 0,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_seconds": 415.832,
+    "dra_llm_retry_calls": 0,
+    "dra_lvlm_calls": 0,
+    "dra_llm_calls": 12,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_seconds": 0.0
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU wants to publish subsurface surveillance and acoustic contact reports containing bearings, ranges, and track data—including position, velocity, identity, and time—derived from ASW sensors, including reporting a track as a DATUM when contact is lost.",
+            "evidence_refs": [
+              "EC-G-001",
+              "EC-G-003",
+              "EC-G-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU is in Active status, having either initially achieved Active status or returned to Active status from Inactive status or TDS Failure.",
+            "evidence_refs": [
+              "EC-PC-011"
+            ]
+          },
+          {
+            "content": "The C2 JU has correlated local sensor data.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          },
+          {
+            "content": "For a new local track to be reported, automatic correlation has been attempted and has failed on the initial correlation test or on the next test following an initial tentative correlation.",
+            "evidence_refs": [
+              "EC-PC-009"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The use case starts when the C2 JU has tactically significant information derived from ASW sensors—such as bearings, ranges, or tracks—that requires reporting, or when it determines that a Subsurface IU is no longer active and it holds local data on that IU.",
+            "evidence_refs": [
+              "EC-TR-012",
+              "EC-TR-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "C2 JU uses J3.4 messages for subsurface surveillance track data and J5.4 messages for acoustic bearing/range data derived from ASW sensors.",
+            "evidence_refs": [
+              "EC-MF-040",
+              "EC-MF-042"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "For subsurface surveillance track reporting, C2 JU provides the source of track data (Source TN).",
+            "evidence_refs": [
+              "EC-MF-041"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "C2 JU reports established local subsurface surveillance tracks with all known parameters at the next reporting opportunity in a J3.4 message, including geodetic latitude and longitude, depth when available, velocity as course and speed, identity via the Identity field or J3.4I message, discrete identifier codes in the J7.5 message, and time of contact acquisition/loss/datum establishment in the J3.4C1 word, with all data time tagged.",
+            "evidence_refs": [
+              "EC-MF-006",
+              "EC-MF-041"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "When reporting acoustic bearing and range, C2 JU uses the J5.4 Acoustic Bearing/Range message, sets the BRT field to value 0 (Bearing and Range), populates the Bearing 1, ASW field with the bearing from the detecting sensor origin, and populates the Range field with the range.",
+            "evidence_refs": [
+              "EC-MF-031",
+              "EC-MF-042"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "When contact is lost and the operator decides to report the track as a DATUM, the C2 JU reports a J3.4 message using the same Reference TN as the lost-contact track, with DRT set to 4 (DATUM), ASW Time Function set to 3 (Time Contact Lost) or 1 (Time Datum Established), and last known position and depth; the DATUM does not move, retains last known course and speed only for DATUM Error and ASW search calculations, and shall only be dropped or purged by operator action.",
+            "evidence_refs": [
+              "EC-MF-007",
+              "EC-MF-032",
+              "EC-PO-007",
+              "EC-PO-008"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "C2 JU transmits the surveillance information in Network PGs.",
+            "evidence_refs": [
+              "EC-MF-035"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-MF-040",
+          "EC-MF-041",
+          "EC-MF-042",
+          "EC-MF-043",
+          "EC-MF-044",
+          "EC-MF-045",
+          "EC-MF-046",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 3: C2 JU uses the J7.0 Track Management (ACT = 1) Difference Report message to report changes in track parameters without retransmitting full track data.",
+            "evidence_refs": [
+              "EC-AF-001"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 3: when contact is lost, the decision to report a track as a DATUM is an operator function; C2 JU reports the DATUM in a J3.4 message with the same Reference TN as the track for which contact was lost and with Data Report Type (DRT) set to 4 (DATUM).",
+            "evidence_refs": [
+              "EC-AF-018",
+              "EC-AF-019"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 4: when passive bearings are ambiguous, C2 JU sets Bearing Report Type (BRT) to value 1 and reports using both the Bearing 1, ASW and Bearing 2, ASW fields of the J5.4E0 and J5.4C1 words, with the origins of both bearings being the same.",
+            "evidence_refs": [
+              "EC-AF-015"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from Step 4: when reporting range to an ASW contact without a bearing, C2 JU sets BRT to value 3 (Range Only) instead of the bearing-and-range report covered in Step 4.",
+            "evidence_refs": [
+              "EC-AF-017"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges from Step 3: when an Emergency (EMG) or Force Tell (FT) alert is active, C2 JU sets the EMG IND or FT IND to 1 in the J3.4 Subsurface Track message; this is triggered by a J7.0 message (ACT=3 for EMG, ACT=4 for FT).",
+            "evidence_refs": [
+              "EC-AF-026"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Diverges from Step 4: when an Emergency (EMG) or Force Tell (FT) alert is active, C2 JU sets the EMG IND or FT IND to 1 in the J5.4 Acoustic Bearing/Range message; this is triggered by a J7.0 message (ACT=3 for EMG, ACT=4 for FT).",
+            "evidence_refs": [
+              "EC-AF-026"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-MF-040",
+          "EC-MF-041",
+          "EC-MF-042",
+          "EC-MF-043",
+          "EC-MF-044",
+          "EC-MF-045",
+          "EC-MF-046",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from main flow Step 3 when C2 JU finds a correlation with a track for which it has R² responsibility: C2 JU transmits a J7.2 Correlation message with Response Value (RV) set to 1 (Reverse Correlation Not Acceptable), ceases reporting the track, and transmits a J7.0 Drop Track message. Exit: C2 JU ceases reporting that track and sends the drop-track message.",
+            "evidence_refs": [
+              "EC-EF-000"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from main flow Step 3 when C2 JU determines that a Subsurface IU is no longer active on the interface and C2 JU also holds local data on that IU: C2 JU assumes R² by reporting a J3.4 Subsurface (Maritime) Track message using the inactive IU address as the reference TN; when assuming R² under these conditions, C2 JU reports Identity as Friend, maintains previous Track Number/Platform values, and sets the PPLI Track Number and Identity Indicator to value 1. Exit: the inactive IU is reported as a subsurface track under assumed R².",
+            "evidence_refs": [
+              "EC-EF-022",
+              "EC-EF-031"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from main flow Step 3 when an inactive IU that C2 JU is reporting under assumed R² returns to the interface as an Active IU: C2 JU ceases reporting the IU and does not transmit a J7.0 (ACT = 0) message. Exit: C2 JU stops reporting that IU without sending a drop-track message.",
+            "evidence_refs": [
+              "EC-EF-023"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges from main flow Step 3 when contact is regained after a DATUM has been reported: C2 JU reports a J3.4 message with Data Report Type (DRT) set to value 0, 1, or 2 using the same TN as the DATUM, or assigns a new TN depending on operator action. Exit: C2 JU reports the regained contact via J3.4 with DRT set to 0, 1, or 2.",
+            "evidence_refs": [
+              "EC-EF-008"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-MF-040",
+          "EC-MF-041",
+          "EC-MF-042",
+          "EC-MF-043",
+          "EC-MF-044",
+          "EC-MF-045",
+          "EC-MF-046",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU has published a subsurface surveillance or acoustic contact report containing bearings, ranges, and track data derived from ASW sensors.",
+            "evidence_refs": [
+              "EC-PO-004"
+            ]
+          },
+          {
+            "content": "All reported subsurface surveillance and acoustic data in the published report are time tagged.",
+            "evidence_refs": [
+              "EC-PO-005"
+            ]
+          },
+          {
+            "content": "The C2 JU holds R² for the reported subsurface track using the assigned Track Number.",
+            "evidence_refs": [
+              "EC-PO-010"
+            ]
+          },
+          {
+            "content": "If a track is reported as a DATUM after contact is lost, the track does not move; last known course and speed are retained only for calculation of DATUM Error and ASW search data.",
+            "evidence_refs": [
+              "EC-PO-007"
+            ]
+          },
+          {
+            "content": "A reported DATUM remains in the system until it is dropped or purged by operator action.",
+            "evidence_refs": [
+              "EC-PO-008"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-AF-012",
+          "EC-AF-013",
+          "EC-AF-014",
+          "EC-AF-015",
+          "EC-AF-016",
+          "EC-AF-017",
+          "EC-AF-018",
+          "EC-AF-019",
+          "EC-AF-020",
+          "EC-AF-021",
+          "EC-AF-022",
+          "EC-AF-023",
+          "EC-AF-024",
+          "EC-AF-025",
+          "EC-AF-026",
+          "EC-AF-027",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-EF-022",
+          "EC-EF-023",
+          "EC-EF-024",
+          "EC-EF-025",
+          "EC-EF-026",
+          "EC-EF-027",
+          "EC-EF-028",
+          "EC-EF-029",
+          "EC-EF-030",
+          "EC-EF-031",
+          "EC-EF-032",
+          "EC-EF-033",
+          "EC-EF-034",
+          "EC-EF-035",
+          "EC-EF-036",
+          "EC-EF-037",
+          "EC-EF-038",
+          "EC-EF-039",
+          "EC-EF-040",
+          "EC-EF-041",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-MF-019",
+          "EC-MF-020",
+          "EC-MF-021",
+          "EC-MF-022",
+          "EC-MF-023",
+          "EC-MF-024",
+          "EC-MF-025",
+          "EC-MF-026",
+          "EC-MF-027",
+          "EC-MF-028",
+          "EC-MF-029",
+          "EC-MF-030",
+          "EC-MF-031",
+          "EC-MF-032",
+          "EC-MF-033",
+          "EC-MF-034",
+          "EC-MF-035",
+          "EC-MF-036",
+          "EC-MF-037",
+          "EC-MF-038",
+          "EC-MF-039",
+          "EC-MF-040",
+          "EC-MF-041",
+          "EC-MF-042",
+          "EC-MF-043",
+          "EC-MF-044",
+          "EC-MF-045",
+          "EC-MF-046",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009",
+          "EC-TR-010",
+          "EC-TR-011",
+          "EC-TR-012",
+          "EC-TR-013",
+          "EC-TR-014",
+          "EC-TR-015"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "40f21c90d6574de7b4d510233df66624"
+}

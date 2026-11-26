@@ -1,0 +1,541 @@
+{
+  "use_case_name": "Resolve Dual Designations via Track Correlation",
+  "actor": "C2 JU",
+  "method": "ViDoRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To resolve dual designations by initiating correlation actions to determine if two tracks represent the same object and identifying which track number (TN) to retain or drop.",
+          "evidence_refs": [
+            "P113"
+          ]
+        }
+      ],
+      "raw_text": "To resolve dual designations by initiating correlation actions to determine if two tracks represent the same object and identifying which track number (TN) to retain or drop.",
+      "evidence_card_ids": [
+        "P113"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU recognizes that two tracks which are being reported to the interface are eligible for correlation.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The system is capable of transmitting and receiving all the response values of the J7.2 message for real-time air and/or surface tracks, which are held locally by their system.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Each track is subject to one or more (not necessarily the same) of the below operational contingency constraints (OCC).",
+          "evidence_refs": [
+            "P35"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If conflicting IDs is the only correlation restriction, the operator shall be alerted.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P113",
+        "P35",
+        "P36"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "A C² JU recognizes that two tracks which are being reported to the interface are eligible for correlation.",
+          "evidence_refs": [
+            "P113"
+          ]
+        }
+      ],
+      "raw_text": "A C² JU recognizes that two tracks which are being reported to the interface are eligible for correlation.",
+      "evidence_card_ids": [
+        "P113"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The recognizing C² JU shall initiate action, either automatically or manually, to resolve the dual designation.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "The recognizing C² JU shall transmit the J7.2 Correlation message requesting all other C² IUs to perform a correlation of the two tracks.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The J7.2 message identifies the TN to be retained and the TN to be dropped.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Receiving IUs shall accept the requested correlation unless certain prespecified conditions exist which require or allow the receiving IU to reject the requested correlation or respond with a reverse correlation request.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If any constraint exists that would prohibit accepting a reverse correlation, the originating JU indicates this in the J7.2 message using the Response Value (RV) field.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "When the RV field is set to value 0, it indicates a reverse correlation would be acceptable; when set to value 1, it indicates a reverse correlation request would be rejected.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "Receiving IUs desiring to reverse the requested correlation use the RV field to determine if a reverse correlation request should be originated or if the original correlation request should be rejected.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "Whenever a correlation request is rejected, the J7.2 message with the RV field set to value 2 shall be transmitted to report the rejection.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "When the RV field is set to value 3, it indicates the correlation was manually initiated and shall be accepted unless certain conditions apply which require rejection.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 8
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P113"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [],
+      "raw_text": ""
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the TN is the subject of a current engagement status message (i.e., the TN is the same TN appearing in a J10.2 Engagement Status message Target TN or Reference TN field), correlation may be rejected.",
+          "evidence_refs": [
+            "P35"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "If the TN is the subject of a pending J9.0 Command message originated by or addressed to own unit or a J12.0 Mission Assignment message originated by own unit for which a reply is required and has not been transmitted or received, correlation may be rejected.",
+          "evidence_refs": [
+            "P35"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If the TN is currently a controlled track (i.e., a J10.5 Controlling Unit Report message has been transmitted or received), correlation may be rejected.",
+          "evidence_refs": [
+            "P35"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the TN is an active or inactive IU, correlation may be rejected.",
+          "evidence_refs": [
+            "P35"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "JUs may apply one exception: if either subject track in the Target TN in a J10.2 Engagement Status message originated by the unit attempting correlation has an ID of Unknown or Hostile, and the other subject track has an ID of Friend, then automatic correlation may be allowed — but the Unknown/Hostile track shall be dropped (Track Number = TN-2).",
+          "evidence_refs": [
+            "P35"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "This exception allows breaking the engagement and/or destroying missile(s) in flight and must be applied by any JU upon receipt of a J7.2 Correlation message; thus, any JU receiving a J7.2 Correlation message and also holding OCCs on both tracks or conflicting IDs on the two tracks (if the ID conflict correlation restriction is enabled per paragraph 4.4.4.3.1g(1)) shall reject the correlation in accordance with paragraph 4.7.3.7a(1).",
+          "evidence_refs": [
+            "P35"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "If conflicting IDs is the only correlation restriction, the operator shall be alerted to take one of the following actions: change the local TN or Exercise Indicator and ID (thereby allowing automatic correlation), or transmit an ID Difference Report (thereby allowing automatic correlation if the remote ID or Exercise Indicator and ID is changed).",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P35",
+        "P36"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The dual designation is resolved by correlating two tracks, with one Track Number (TN) retained and the other TN dropped.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "All receiving C² IUs have accepted the requested correlation unless prespecified conditions required rejection or a reverse correlation request was originated.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If a reverse correlation was requested and acceptable (RV=0), it has been processed; if prohibited (RV=1), no reverse correlation was initiated.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If any receiving IU rejected the correlation, a J7.2 message with RV field set to value 2 was transmitted to report the rejection.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If the correlation was manually initiated (RV=3), it was accepted unless specific conditions requiring rejection applied.",
+          "evidence_refs": [
+            "P113"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P113"
+      ]
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No content produced for slot 'alternative_flow' by ViDoRAG-Elaborate."
+    }
+  ],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "To resolve dual designations by initiating correlation actions to determine if two tracks represent the same object and identifying which track number (TN) to retain or drop.",
+            "evidence_refs": [
+              "P113"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The C2 JU recognizes that two tracks which are being reported to the interface are eligible for correlation.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system is capable of transmitting and receiving all the response values of the J7.2 message for real-time air and/or surface tracks, which are held locally by their system.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Each track is subject to one or more (not necessarily the same) of the below operational contingency constraints (OCC).",
+            "evidence_refs": [
+              "P35"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If conflicting IDs is the only correlation restriction, the operator shall be alerted.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P35",
+          "P36"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "A C² JU recognizes that two tracks which are being reported to the interface are eligible for correlation.",
+            "evidence_refs": [
+              "P113"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P35",
+          "P25"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The recognizing C² JU shall initiate action, either automatically or manually, to resolve the dual designation.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "The recognizing C² JU shall transmit the J7.2 Correlation message requesting all other C² IUs to perform a correlation of the two tracks.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The J7.2 message identifies the TN to be retained and the TN to be dropped.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Receiving IUs shall accept the requested correlation unless certain prespecified conditions exist which require or allow the receiving IU to reject the requested correlation or respond with a reverse correlation request.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If any constraint exists that would prohibit accepting a reverse correlation, the originating JU indicates this in the J7.2 message using the Response Value (RV) field.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "When the RV field is set to value 0, it indicates a reverse correlation would be acceptable; when set to value 1, it indicates a reverse correlation request would be rejected.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "Receiving IUs desiring to reverse the requested correlation use the RV field to determine if a reverse correlation request should be originated or if the original correlation request should be rejected.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "Whenever a correlation request is rejected, the J7.2 message with the RV field set to value 2 shall be transmitted to report the rejection.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "When the RV field is set to value 3, it indicates the correlation was manually initiated and shall be accepted unless certain conditions apply which require rejection.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 8
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P35",
+          "P25"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "P113",
+          "P35",
+          "P36"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the TN is the subject of a current engagement status message (i.e., the TN is the same TN appearing in a J10.2 Engagement Status message Target TN or Reference TN field), correlation may be rejected.",
+            "evidence_refs": [
+              "P35"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "If the TN is the subject of a pending J9.0 Command message originated by or addressed to own unit or a J12.0 Mission Assignment message originated by own unit for which a reply is required and has not been transmitted or received, correlation may be rejected.",
+            "evidence_refs": [
+              "P35"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If the TN is currently a controlled track (i.e., a J10.5 Controlling Unit Report message has been transmitted or received), correlation may be rejected.",
+            "evidence_refs": [
+              "P35"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the TN is an active or inactive IU, correlation may be rejected.",
+            "evidence_refs": [
+              "P35"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "JUs may apply one exception: if either subject track in the Target TN in a J10.2 Engagement Status message originated by the unit attempting correlation has an ID of Unknown or Hostile, and the other subject track has an ID of Friend, then automatic correlation may be allowed — but the Unknown/Hostile track shall be dropped (Track Number = TN-2).",
+            "evidence_refs": [
+              "P35"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "This exception allows breaking the engagement and/or destroying missile(s) in flight and must be applied by any JU upon receipt of a J7.2 Correlation message; thus, any JU receiving a J7.2 Correlation message and also holding OCCs on both tracks or conflicting IDs on the two tracks (if the ID conflict correlation restriction is enabled per paragraph 4.4.4.3.1g(1)) shall reject the correlation in accordance with paragraph 4.7.3.7a(1).",
+            "evidence_refs": [
+              "P35"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "If conflicting IDs is the only correlation restriction, the operator shall be alerted to take one of the following actions: change the local TN or Exercise Indicator and ID (thereby allowing automatic correlation), or transmit an ID Difference Report (thereby allowing automatic correlation if the remote ID or Exercise Indicator and ID is changed).",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113",
+          "P35",
+          "P25",
+          "P67",
+          "P36"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The dual designation is resolved by correlating two tracks, with one Track Number (TN) retained and the other TN dropped.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "All receiving C² IUs have accepted the requested correlation unless prespecified conditions required rejection or a reverse correlation request was originated.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If a reverse correlation was requested and acceptable (RV=0), it has been processed; if prohibited (RV=1), no reverse correlation was initiated.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If any receiving IU rejected the correlation, a J7.2 message with RV field set to value 2 was transmitted to report the rejection.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If the correlation was manually initiated (RV=3), it was accepted unless specific conditions requiring rejection applied.",
+            "evidence_refs": [
+              "P113"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P113"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 157.7
+}

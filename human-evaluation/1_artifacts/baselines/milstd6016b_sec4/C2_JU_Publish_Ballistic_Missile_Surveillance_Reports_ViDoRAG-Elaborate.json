@@ -1,0 +1,690 @@
+{
+  "use_case_name": "Publish Ballistic Missile Surveillance Reports",
+  "actor": "C2 JU",
+  "method": "ViDoRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To ensure that ballistic missile surveillance information reported on the interface is complete, accurate, and timely as possible, with data correlated and dual designation minimized, following proper reporting rules.",
+          "evidence_refs": [
+            "P64"
+          ]
+        }
+      ],
+      "raw_text": "To ensure that ballistic missile surveillance information reported on the interface is complete, accurate, and timely as possible, with data correlated and dual designation minimized, following proper reporting rules.",
+      "evidence_card_ids": [
+        "P64"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The C2 JU has determined whether data points being detected by its local sensors are currently reported on the interface and if there are any conflicts between locally derived information and information reported on the interface.",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Track reporting conflicts have been resolved per R² rules as specified in paragraph 4.4.6.10, with appropriate J7 messages transmitted or voice coordination performed.",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Ballistic missile track/point data is complete, accurate, and timely as possible.",
+          "evidence_refs": [
+            "P64"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Data has been correlated and dual designation minimized.",
+          "evidence_refs": [
+            "P64"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Proper rules for reporting a ballistic missile track/point are followed.",
+          "evidence_refs": [
+            "P64"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "If an initial surveillance report is being generated, the predicted time to impact is not less than 10 seconds.",
+          "evidence_refs": [
+            "P65"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "If an initial surveillance report is being generated, the altitude of the descending ballistic missile is not less than 8 data miles.",
+          "evidence_refs": [
+            "P65"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "The system has achieved Active status (or returned to Active status from Inactive or TCS Failure) and sufficient reporting responsibility checks, correlation, and data registration have been performed.",
+          "evidence_refs": [
+            "P54"
+          ],
+          "step_number": 8
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P68",
+        "P64",
+        "P65",
+        "P54"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The C² JU with R² for the Reference TN shall respond with a J3.6 Space Track message upon receipt of a J7.1 message with the Data Update Request Action field set to value 2, Ballistic Missile Update Request, on a specific TN.",
+          "evidence_refs": [
+            "P110"
+          ]
+        }
+      ],
+      "raw_text": "The C² JU with R² for the Reference TN shall respond with a J3.6 Space Track message upon receipt of a J7.1 message with the Data Update Request Action field set to value 2, Ballistic Missile Update Request, on a specific TN.",
+      "evidence_card_ids": [
+        "P110"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU reports ballistic missile positional data as X, Y, Z position in earth-centered, earth-fixed (ECEF) Cartesian coordinates defined by the World Geodetic System-84 (WGS-84) Reference Frame.",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The C2 JU reports the velocity of ballistic missile tracks as the rate of change along the X, Y, Z axis.",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The C2 JU includes ballistic missile covariance data related to the reported state vector (consisting of the three position coordinates followed by the three velocity values).",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "When reported, the ballistic missile covariance data includes the best estimate of both tracking errors and statistical estimates of biases produced by emplacement errors, alignment errors, and other systematic errors.",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Instead of transmitting the covariance matrix directly, the C2 JU transmits the root variances of the covariance matrix and elements of the Cholesky decomposition of the precompensated correlation matrix as defined.",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "If reporting friendly interceptor missile tracks, the C2 JU reports them on the interface using the J3.2 Air Track message for missiles capable only of endoatmospheric intercepts, and the J3.6 Space Track message for others.",
+          "evidence_refs": [
+            "P64"
+          ],
+          "step_number": 6
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P68",
+        "P64"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If a correlation is found with a track for which the C² JU has R², the J7.2 Correlation message shall be transmitted with the Response Value (RV) field set to value 1 (Reverse Correlation Not Acceptable), and with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN. The C² JU shall cease reporting the track and transmit a J7.0 (ACT = 0) Drop Track message on the surveillance TN.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are different, the J7.2 (RV = 1) Correlation message shall be transmitted, with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the Surveillance TN as the Dropped TN.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are the same, the JU receiving the J2 shall accept the PPLI information into its surveillance database and shall disregard the J3 surveillance data on the specified track except when Geodetic Position Quality in the PPLI message is set to value 0, in which case the surveillance track is accepted and the PPLI message shall be discarded.",
+          "evidence_refs": [
+            "P7"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If an R² shift occurs during execution of a DUR response, where the Number/Frequency of Updates field is set to value 2 or 3, the JU assuming R² shall not respond to any prior Data Update Request.",
+          "evidence_refs": [
+            "P110"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "NonR² JUs shall not respond to a J7.1 (ACT = 2) Ballistic Missile Update Request.",
+          "evidence_refs": [
+            "P110"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P7",
+        "P110"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "A JU shall not transmit an initial surveillance report on a ballistic missile if the predicted time to impact is less than 16 seconds.",
+          "evidence_refs": [
+            "P65"
+          ],
+          "step_number": 0
+        },
+        {
+          "content": "A JU shall not transmit an initial surveillance report on a ballistic missile if the altitude of the descending ballistic missile is less than 8 data miles.",
+          "evidence_refs": [
+            "P65"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "If a correlation is not found, the C² JU shall integrate the received J2 PPLI report into its surveillance database as part of the surveillance picture.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If J2 messages are not received subsequent to integration and the receiving C² JU still has no local data, the C² JU assumes no responsibility for reporting the subject JU on the Surveillance Network PG.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the position or other data in a PPLI meet a system's decorrelation criteria, the PPLI and local track data shall be decorrelated.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "After decorrelation, the C² JU shall initiate a surveillance track report with locally held data using a new track number.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The PPLI Track Number and Identity Indicator field and the PPLI IPF/SIF Indicator field shall both be reported as No Statement after decorrelation.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "A C² JU shall assume R² of an IU (including C² and nonC² JUs and forwarded PUs and RUs) in accordance with the reporting rules for a real-time track if the C² JU has correlated local sensor data when a J2 PPLI message is not received for 40 to 60 seconds.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 7
+        },
+        {
+          "content": "A C² JU shall assume R² of an IU if a J2 PPLI message, other than J2.0, is received with the NPS Indicator set to Inactive or Conditional Radio Silence.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 8
+        },
+        {
+          "content": "A C² JU shall assume R² of an IU if a J7.0 (ACT = 0) Drop Track message is received from the EJU for a PU, RU, or other IU.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 9
+        },
+        {
+          "content": "A C² JU shall assume R² of an IU if the Geodetic Position Quality in the J2 PPLI message is set to value 0.",
+          "evidence_refs": [
+            "P8"
+          ],
+          "step_number": 10
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P65",
+        "P8"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "Ballistic missile positional data has been reported in the Space Track message as X, Y, Z position in earth-centered, earth-fixed (ECF) Cartesian coordinates defined by the World Geodetic System-84 (WGS-84) Reference Frame.",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The velocity of ballistic missile tracks has been reported as the rate of change along the X, Y, Z axis.",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Ballistic missile covariance data related to the reported state vector (consisting of the three position coordinates followed by the three velocity values) has been transmitted in accordance with the transmit/receive rules for the Space Track Message.",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The transmitted ballistic missile covariance data includes the best estimate of both tracking errors and statistical estimates of biases produced by emplacement errors, alignment errors, and other systematic errors.",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Instead of transmitting the covariance matrix directly, the root variances of the covariance matrix and elements of the Cholesky decomposition of the precompensated correlation matrix have been transmitted as defined.",
+          "evidence_refs": [
+            "P68"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P68"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "To ensure that ballistic missile surveillance information reported on the interface is complete, accurate, and timely as possible, with data correlated and dual designation minimized, following proper reporting rules.",
+            "evidence_refs": [
+              "P64"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P68",
+          "P64",
+          "P7",
+          "P110"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The C2 JU has determined whether data points being detected by its local sensors are currently reported on the interface and if there are any conflicts between locally derived information and information reported on the interface.",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Track reporting conflicts have been resolved per R² rules as specified in paragraph 4.4.6.10, with appropriate J7 messages transmitted or voice coordination performed.",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Ballistic missile track/point data is complete, accurate, and timely as possible.",
+            "evidence_refs": [
+              "P64"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Data has been correlated and dual designation minimized.",
+            "evidence_refs": [
+              "P64"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Proper rules for reporting a ballistic missile track/point are followed.",
+            "evidence_refs": [
+              "P64"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "If an initial surveillance report is being generated, the predicted time to impact is not less than 10 seconds.",
+            "evidence_refs": [
+              "P65"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "If an initial surveillance report is being generated, the altitude of the descending ballistic missile is not less than 8 data miles.",
+            "evidence_refs": [
+              "P65"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "The system has achieved Active status (or returned to Active status from Inactive or TCS Failure) and sufficient reporting responsibility checks, correlation, and data registration have been performed.",
+            "evidence_refs": [
+              "P54"
+            ],
+            "step_number": 8
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P7",
+          "P68",
+          "P65",
+          "P54",
+          "P64"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The C² JU with R² for the Reference TN shall respond with a J3.6 Space Track message upon receipt of a J7.1 message with the Data Update Request Action field set to value 2, Ballistic Missile Update Request, on a specific TN.",
+            "evidence_refs": [
+              "P110"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P7",
+          "P110",
+          "P64",
+          "P80"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The C2 JU reports ballistic missile positional data as X, Y, Z position in earth-centered, earth-fixed (ECEF) Cartesian coordinates defined by the World Geodetic System-84 (WGS-84) Reference Frame.",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU reports the velocity of ballistic missile tracks as the rate of change along the X, Y, Z axis.",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The C2 JU includes ballistic missile covariance data related to the reported state vector (consisting of the three position coordinates followed by the three velocity values).",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "When reported, the ballistic missile covariance data includes the best estimate of both tracking errors and statistical estimates of biases produced by emplacement errors, alignment errors, and other systematic errors.",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Instead of transmitting the covariance matrix directly, the C2 JU transmits the root variances of the covariance matrix and elements of the Cholesky decomposition of the precompensated correlation matrix as defined.",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "If reporting friendly interceptor missile tracks, the C2 JU reports them on the interface using the J3.2 Air Track message for missiles capable only of endoatmospheric intercepts, and the J3.6 Space Track message for others.",
+            "evidence_refs": [
+              "P64"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P7",
+          "P68",
+          "P81",
+          "P110",
+          "P64"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If a correlation is found with a track for which the C² JU has R², the J7.2 Correlation message shall be transmitted with the Response Value (RV) field set to value 1 (Reverse Correlation Not Acceptable), and with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the surveillance TN as the Dropped TN. The C² JU shall cease reporting the track and transmit a J7.0 (ACT = 0) Drop Track message on the surveillance TN.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are different, the J7.2 (RV = 1) Correlation message shall be transmitted, with the Source TN in the Header word of the J2 PPLI message as the Retained TN and the Surveillance TN as the Dropped TN.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If a correlation is found with a track for which another C² JU has R² and the TNs are the same, the JU receiving the J2 shall accept the PPLI information into its surveillance database and shall disregard the J3 surveillance data on the specified track except when Geodetic Position Quality in the PPLI message is set to value 0, in which case the surveillance track is accepted and the PPLI message shall be discarded.",
+            "evidence_refs": [
+              "P7"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If an R² shift occurs during execution of a DUR response, where the Number/Frequency of Updates field is set to value 2 or 3, the JU assuming R² shall not respond to any prior Data Update Request.",
+            "evidence_refs": [
+              "P110"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "NonR² JUs shall not respond to a J7.1 (ACT = 2) Ballistic Missile Update Request.",
+            "evidence_refs": [
+              "P110"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P7",
+          "P68",
+          "P110",
+          "P64"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "A JU shall not transmit an initial surveillance report on a ballistic missile if the predicted time to impact is less than 16 seconds.",
+            "evidence_refs": [
+              "P65"
+            ],
+            "step_number": 0
+          },
+          {
+            "content": "A JU shall not transmit an initial surveillance report on a ballistic missile if the altitude of the descending ballistic missile is less than 8 data miles.",
+            "evidence_refs": [
+              "P65"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "If a correlation is not found, the C² JU shall integrate the received J2 PPLI report into its surveillance database as part of the surveillance picture.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If J2 messages are not received subsequent to integration and the receiving C² JU still has no local data, the C² JU assumes no responsibility for reporting the subject JU on the Surveillance Network PG.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the position or other data in a PPLI meet a system's decorrelation criteria, the PPLI and local track data shall be decorrelated.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "After decorrelation, the C² JU shall initiate a surveillance track report with locally held data using a new track number.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The PPLI Track Number and Identity Indicator field and the PPLI IPF/SIF Indicator field shall both be reported as No Statement after decorrelation.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "A C² JU shall assume R² of an IU (including C² and nonC² JUs and forwarded PUs and RUs) in accordance with the reporting rules for a real-time track if the C² JU has correlated local sensor data when a J2 PPLI message is not received for 40 to 60 seconds.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 7
+          },
+          {
+            "content": "A C² JU shall assume R² of an IU if a J2 PPLI message, other than J2.0, is received with the NPS Indicator set to Inactive or Conditional Radio Silence.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 8
+          },
+          {
+            "content": "A C² JU shall assume R² of an IU if a J7.0 (ACT = 0) Drop Track message is received from the EJU for a PU, RU, or other IU.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 9
+          },
+          {
+            "content": "A C² JU shall assume R² of an IU if the Geodetic Position Quality in the J2 PPLI message is set to value 0.",
+            "evidence_refs": [
+              "P8"
+            ],
+            "step_number": 10
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P7",
+          "P65",
+          "P8"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "Ballistic missile positional data has been reported in the Space Track message as X, Y, Z position in earth-centered, earth-fixed (ECF) Cartesian coordinates defined by the World Geodetic System-84 (WGS-84) Reference Frame.",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The velocity of ballistic missile tracks has been reported as the rate of change along the X, Y, Z axis.",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Ballistic missile covariance data related to the reported state vector (consisting of the three position coordinates followed by the three velocity values) has been transmitted in accordance with the transmit/receive rules for the Space Track Message.",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The transmitted ballistic missile covariance data includes the best estimate of both tracking errors and statistical estimates of biases produced by emplacement errors, alignment errors, and other systematic errors.",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Instead of transmitting the covariance matrix directly, the root variances of the covariance matrix and elements of the Cholesky decomposition of the precompensated correlation matrix have been transmitted as defined.",
+            "evidence_refs": [
+              "P68"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P68"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 204.4
+}

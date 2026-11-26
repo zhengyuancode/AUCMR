@@ -1,0 +1,797 @@
+{
+  "use_case_name": "Clear Exercise Surveillance Data on an Exercise Status Order",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "C2 JU wants to clear Exercise Surveillance Data on an Exercise Status Order by using the J7.0 (ACT = 6) Exercise Status Order message to rapidly clear the Exercise Indicator and all artificial data from exercise tracks.",
+          "evidence_refs": [
+            "EC-G-002",
+            "EC-G-003",
+            "EC-G-005"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002",
+        "EC-G-003",
+        "EC-G-005"
+      ],
+      "scope_contract": {
+        "goal_statement": "C2 JU wants to clear Exercise Surveillance Data on an Exercise Status Order by using the J7.0 (ACT = 6) Exercise Status Order message to rapidly clear the Exercise Indicator and all artificial data from exercise tracks.",
+        "canonical_success_scenario": "C2 JU uses the J7.0 (ACT = 6) Exercise Status Order message to clear the Exercise Indicator and all artificial data from the exercise tracks.",
+        "start_boundary": "C2 JU has an Exercise Status Order (J7.0, ACT = 6) to apply to exercise surveillance data.",
+        "success_boundary": "The Exercise Indicator and all artificial data are cleared from the exercise tracks.",
+        "in_scope_actions": [
+          "Use the J7.0 (ACT = 6) Exercise Status Order message",
+          "Clear the Exercise Indicator",
+          "Clear all artificial data from exercise tracks"
+        ],
+        "excluded_adjacent_actions": [
+          "Resolve field-value differences using the J7.0 (ACT = 2) Change Data Order message",
+          "Report IFF/SIF surveillance data in J3.2C1 and J3.3C1 words",
+          "Transmit the J7.0 (ACT = 0) Drop Track Report message"
+        ],
+        "variant_dimensions": [],
+        "evidence_refs": [
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-005"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal",
+          "goal-action",
+          "goal-target",
+          "goal definition"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The J7.0 (ACT = 6) Exercise Status Order message is a valid Information Management data type used for the exchange of surveillance data.",
+          "evidence_refs": [
+            "EC-MF-013"
+          ]
+        },
+        {
+          "content": "C2 JU's database contains tracks with the Exercise Indicator set to value 1, and data concerning those tracks is considered artificial for exercise purposes.",
+          "evidence_refs": [
+            "EC-PC-000",
+            "EC-PC-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-013",
+        "EC-PC-000",
+        "EC-PC-004"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "A JU receives a J7.0 (ACT = 6) Exercise Status Order message.",
+          "evidence_refs": [
+            "EC-PC-004"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger",
+          "trigger-event",
+          "trigger-message-receipt"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "Upon receipt of a J7.0 (ACT = 6) message, C2 JU applies the order to all tracks in its database with the Exercise Indicator set to value 1.",
+          "evidence_refs": [
+            "EC-PC-004"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "For those tracks, C2 JU automatically sets the Identity Amplifying Descriptor to Exercise Friend.",
+          "evidence_refs": [
+            "EC-PC-004",
+            "EC-MF-015"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "C2 JU breaks any locally originated engagement involving the TN by transmitting a J10.2 (WES = 8) message to report the engagement broken.",
+          "evidence_refs": [
+            "EC-MF-008"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "C2 JU terminates any locally originated Command message with Command values 2, 3, 5, or 7 involving the TN by transmitting a J9.0 message with the Command field set to value 4 (Cease Engage), or value 5 (Hold Fire) if the Engagement Status field is set to value 4 (Firing).",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "For those tracks, C2 JU automatically sets all data fields that may contain artificial information to the No Statement, default value, or actual values if held in database.",
+          "evidence_refs": [
+            "EC-PC-004",
+            "EC-MF-007"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "For those tracks, C2 JU sets the Exercise Indicator to value 0.",
+          "evidence_refs": [
+            "EC-PC-004",
+            "EC-MF-007",
+            "EC-MF-016"
+          ],
+          "step_number": 6
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-004",
+        "EC-MF-015",
+        "EC-MF-008",
+        "EC-MF-009",
+        "EC-MF-007",
+        "EC-MF-016"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-receive-order",
+          "MF-select-exercise-tracks",
+          "MF-set-IAD",
+          "MF-break-engagement",
+          "MF-terminate-command",
+          "MF-clear-artificial-fields",
+          "MF-reset-exercise-indicator",
+          "MF-sequential-system-response",
+          "MF-success-boundary",
+          "message-identification",
+          "main_flow_action_sequence",
+          "system_response_to_trigger"
+        ],
+        "missing_aspects": [
+          "main_flow",
+          "The cited card EC-PC-004 describes the actions taken 'Upon receipt' of the message but does not explicitly state that the C2 JU receives it or identify the sender. The claim should be restricted to the trigger condition supported by the evidence.",
+          "main_flow-steps",
+          "system-response"
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 4: When C2 JU terminates a locally originated Command message involving the TN and the Engagement Status field is set to value 4 (Firing), it may transmit a J9.0 message with the Command field set to value 5 (Hold Fire).",
+          "evidence_refs": [
+            "EC-MF-009"
+          ],
+          "step_number": 1
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-009"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-step4-firing-hold-fire"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "At main flow Step 5, when a data field on an exercise track is one of the fields that shall not be considered artificial for exercise purposes—Track Number; Tracking Data (Latitude, Longitude, Altitude/Elevation/Depth, Course, Speed, Minute, Hour, and Track Quality); Simulation Indicator; Environment/Category; Status Data on Air Tracks (Fuel Function, Fuel, Time Report Function, Minute, and Hour); or Status Data on Surface (Maritime) Tracks (Flight Deck Status, Landing/Approach Condition, and associated Time Report Function, Minute, and Hour)—C2 JU does not treat that field as artificial exercise data.",
+          "evidence_refs": [
+            "EC-EF-011"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "After main flow Step 6, when a subsequent message is received with the Exercise Indicator set to value 1, C2 JU discards that message.",
+          "evidence_refs": [
+            "EC-EF-009"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "After main flow Step 6, when C2 JU would originate a message with the Exercise Indicator set to value 1, it does not originate that message until local operator action is taken to reenable the JU.",
+          "evidence_refs": [
+            "EC-EF-021"
+          ],
+          "step_number": 6,
+          "is_cross_page": true
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-011",
+        "EC-EF-009",
+        "EC-EF-021"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-step5-exempt-fields-not-artificial",
+          "EF-after-step6-discard-incoming-EI1",
+          "EF-after-step6-prevent-outgoing-EI1-until-reenable",
+          "exception-data-exclusions",
+          "exception_flow_drop_track",
+          "exception_flow_new_track_report",
+          "exception_condition_operator_error",
+          "exception_rule_exemption_fju",
+          "exception-trigger-ID-conflict",
+          "exception-response-inhibit-transmission",
+          "exception-response-operator-alert",
+          "exception-resolution-manual",
+          "EF-lockout-period",
+          "EF-invalid-id-rejection",
+          "EF-capability-mismatch-response",
+          "exception_flow_incoming_message_handling",
+          "exception_flow_outgoing_message_prevention"
+        ],
+        "missing_aspects": [
+          "Documented exit/continuation after excluding non-artificial fields from artificial-data clearing",
+          "exception_flow"
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "For every track in the JU's database that had the Exercise Indicator set to value 1, the Exercise Indicator is set to value 0.",
+          "evidence_refs": [
+            "EC-PC-004",
+            "EC-MF-007",
+            "EC-MF-016"
+          ]
+        },
+        {
+          "content": "For those tracks, all data fields that may contain artificial information are set to the No Statement or default value, or to actual values if held in the database.",
+          "evidence_refs": [
+            "EC-PC-004",
+            "EC-MF-007",
+            "EC-MF-016"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-004",
+        "EC-MF-007",
+        "EC-MF-016"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "post-exercise-indicator-cleared",
+          "post-artificial-data-cleared"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 0 handles the Step 5 case where a field is exempt from artificial-data clearing, but it only states that C2 JU does not treat that field as artificial exercise data. It does not say whether processing continues with remaining fields, returns to Main Flow Step 5 or Step 6, or terminates. Thus the branch lacks a clear documented exit or continuation. (atomic grounding: candidate remains incomplete (Evidence that the specific actor is C2 JU rather than all JUs.; Explicit evidence that processing continues to clear the remaining data fields after encountering an excluded field (recovery/continuation).))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 0 at main flow Step 5 only says exempt fields are not treated as artificial exercise data. It does not state whether processing resumes Step 5 for remaining fields, proceeds to Step 6, or terminates, so the branch lacks a clear exit/continuation outcome. (atomic grounding: candidate remains incomplete (Explicit evidence that after the listed non-artificial-field exception, processing continues and the resulting settings persist until operator action or a remote report with Exercise Indicator 0 changes them; EC-EF-028 only states this after data fields are set to No Statement/default values.; Evidence for C2 JU as the actor and for 'local' operator action; the cited cards do not name C2 JU and refer to an operator, not a local operator.))",
+      "evidence_refs": []
+    },
+    {
+      "flag_type": "unresolved_inconsistency",
+      "slot": "exception_flow",
+      "detail": "[exceptionflow_exit_coverage] Exception flow claim 0 at main flow Step 5 only says exempt fields are not treated as artificial exercise data. It does not state whether processing resumes Step 5 for remaining fields, proceeds to Step 6, or terminates, so the branch lacks a clear exit/continuation outcome.",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "consistency_revision",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": [
+        "Preconditions claim 0 asserts that C2 JU has already received the J7.0 (ACT = 6) Exercise Status Order, but receipt of that same message is the Trigger. This duplicates and temporally contradicts the trigger event instead of describing a state that must hold before the trigger."
+      ]
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 76,
+    "cross_page_cards": 3,
+    "modalities": {
+      "text": 72,
+      "table": 4
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1193.831,
+    "judge_calls": 0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 765.268,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 63.0,
+    "llm_calls": 41.0,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 414.141,
+    "cards_collected": 67,
+    "cards_referenced": 14,
+    "dra_elapsed_seconds": 316.53,
+    "dra_judge_calls": 0,
+    "dra_lvlm_retry_calls": 0,
+    "dra_llm_seconds": 285.061,
+    "dra_llm_retry_calls": 0,
+    "dra_lvlm_calls": 3,
+    "dra_llm_calls": 11,
+    "dra_judge_seconds": 0.0,
+    "dra_lvlm_seconds": 30.784
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "C2 JU wants to clear Exercise Surveillance Data on an Exercise Status Order by using the J7.0 (ACT = 6) Exercise Status Order message to rapidly clear the Exercise Indicator and all artificial data from exercise tracks.",
+            "evidence_refs": [
+              "EC-G-002",
+              "EC-G-003",
+              "EC-G-005"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The J7.0 (ACT = 6) Exercise Status Order message is a valid Information Management data type used for the exchange of surveillance data.",
+            "evidence_refs": [
+              "EC-MF-013"
+            ]
+          },
+          {
+            "content": "C2 JU's database contains tracks with the Exercise Indicator set to value 1, and data concerning those tracks is considered artificial for exercise purposes.",
+            "evidence_refs": [
+              "EC-PC-000",
+              "EC-PC-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "A JU receives a J7.0 (ACT = 6) Exercise Status Order message.",
+            "evidence_refs": [
+              "EC-PC-004"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-PC-004"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Upon receipt of a J7.0 (ACT = 6) message, C2 JU applies the order to all tracks in its database with the Exercise Indicator set to value 1.",
+            "evidence_refs": [
+              "EC-PC-004"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "For those tracks, C2 JU automatically sets the Identity Amplifying Descriptor to Exercise Friend.",
+            "evidence_refs": [
+              "EC-PC-004",
+              "EC-MF-015"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "C2 JU breaks any locally originated engagement involving the TN by transmitting a J10.2 (WES = 8) message to report the engagement broken.",
+            "evidence_refs": [
+              "EC-MF-008"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "C2 JU terminates any locally originated Command message with Command values 2, 3, 5, or 7 involving the TN by transmitting a J9.0 message with the Command field set to value 4 (Cease Engage), or value 5 (Hold Fire) if the Engagement Status field is set to value 4 (Firing).",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "For those tracks, C2 JU automatically sets all data fields that may contain artificial information to the No Statement, default value, or actual values if held in database.",
+            "evidence_refs": [
+              "EC-PC-004",
+              "EC-MF-007"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "For those tracks, C2 JU sets the Exercise Indicator to value 0.",
+            "evidence_refs": [
+              "EC-PC-004",
+              "EC-MF-007",
+              "EC-MF-016"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 4: When C2 JU terminates a locally originated Command message involving the TN and the Engagement Status field is set to value 4 (Firing), it may transmit a J9.0 message with the Command field set to value 5 (Hold Fire).",
+            "evidence_refs": [
+              "EC-MF-009"
+            ],
+            "step_number": 1
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-MF-009"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "At main flow Step 5, when a data field on an exercise track is one of the fields that shall not be considered artificial for exercise purposes—Track Number; Tracking Data (Latitude, Longitude, Altitude/Elevation/Depth, Course, Speed, Minute, Hour, and Track Quality); Simulation Indicator; Environment/Category; Status Data on Air Tracks (Fuel Function, Fuel, Time Report Function, Minute, and Hour); or Status Data on Surface (Maritime) Tracks (Flight Deck Status, Landing/Approach Condition, and associated Time Report Function, Minute, and Hour)—C2 JU does not treat that field as artificial exercise data.",
+            "evidence_refs": [
+              "EC-EF-011"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "After main flow Step 6, when a subsequent message is received with the Exercise Indicator set to value 1, C2 JU discards that message.",
+            "evidence_refs": [
+              "EC-EF-009"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "After main flow Step 6, when C2 JU would originate a message with the Exercise Indicator set to value 1, it does not originate that message until local operator action is taken to reenable the JU.",
+            "evidence_refs": [
+              "EC-EF-021"
+            ],
+            "step_number": 6
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-AF-010",
+          "EC-AF-011",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-EF-019",
+          "EC-EF-020",
+          "EC-EF-021",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-G-006",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-MF-017",
+          "EC-MF-018",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "For every track in the JU's database that had the Exercise Indicator set to value 1, the Exercise Indicator is set to value 0.",
+            "evidence_refs": [
+              "EC-PC-004",
+              "EC-MF-007",
+              "EC-MF-016"
+            ]
+          },
+          {
+            "content": "For those tracks, all data fields that may contain artificial information are set to the No Statement or default value, or to actual values if held in the database.",
+            "evidence_refs": [
+              "EC-PC-004",
+              "EC-MF-007",
+              "EC-MF-016"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-EF-009",
+          "EC-EF-011",
+          "EC-EF-021",
+          "EC-G-002",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-016",
+          "EC-PC-004"
+        ]
+      }
+    }
+  },
+  "method": "AUCMR (CREST full)",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "a922671fbd6b49e580bbfa1f83480f78"
+}

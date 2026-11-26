@@ -1,0 +1,542 @@
+{
+  "use_case_name": "Diagnose a Failed Device",
+  "actor": "Field Maintenance Staff",
+  "method": "VDocRAG-Elaborate",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To diagnose a failed device by identifying the specific failure and generating diagnostic commands to determine the root cause.",
+          "evidence_refs": [
+            "P46"
+          ]
+        }
+      ],
+      "raw_text": "To diagnose a failed device by identifying the specific failure and generating diagnostic commands to determine the root cause.",
+      "evidence_card_ids": [
+        "P46"
+      ]
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Field Maintenance Staff",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Field Maintenance Staff",
+      "evidence_card_ids": []
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "The system must be initialized and monitoring devices.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A device failure must have been detected and tracked by the system (indicated by a non-zero 'Command Failure Count').",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The Field Maintenance Staff must be logged into the system with appropriate Personnel Security Level permissions to access diagnostic functions.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 3
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P46",
+        "P36",
+        "P50"
+      ]
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The system detects a device failure during the monitoring process, resulting in an increment of the Command Failure Count.",
+          "evidence_refs": [
+            "P46",
+            "P36"
+          ]
+        }
+      ],
+      "raw_text": "The system detects a device failure during the monitoring process, resulting in an increment of the Command Failure Count.",
+      "evidence_card_ids": [
+        "P46",
+        "P36"
+      ]
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Field Maintenance Staff accesses the system interface to view device status information.",
+          "evidence_refs": [
+            "P46",
+            "P36"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The staff identifies the specific failed device by reviewing the 'Device Status' (Entity #13) and 'Command Failure Count' tracked by the 'Monitor Devices' function.",
+          "evidence_refs": [
+            "P46",
+            "P36"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The staff selects or creates a 'Diagnostic Command' (Entity #14) associated with the failed device.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system processes the command request through the 'Process GUI Commands' function, validating the staff's 'Personnel Security Level' (Entity #20).",
+          "evidence_refs": [
+            "P46",
+            "P36"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The system transmits the 'Device Sensor Command' to the 'RLCS Field Devices'.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The system receives 'Device Sensor Status' and initialization data from the field device.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "The system updates the 'Device Status' and logs the transaction in the 'Device Command Log' (Entity #10).",
+          "evidence_refs": [
+            "P46",
+            "P36"
+          ],
+          "step_number": 7
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P46",
+        "P36",
+        "P50"
+      ]
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "If the 'Diagnostic Command' fails to execute or returns an error status, the system increments the 'Command Failure Count' and routes the failure data to the 'Track # of Failed Device Commands' function.",
+          "evidence_refs": [
+            "P46"
+          ]
+        },
+        {
+          "content": "If the device is determined to be non-responsive after diagnostic attempts, the Field Maintenance Staff may generate a 'Problem Work Order' (Entity #26) to schedule physical repair or replacement.",
+          "evidence_refs": [
+            "P36"
+          ]
+        },
+        {
+          "content": "If the 'Device Sensor Status' indicates an alarm condition rather than a communication failure, the system triggers the 'Set Alarms' process based on the 'Device Alarm Criteria' (Entity #6).",
+          "evidence_refs": [
+            "P46",
+            "P36"
+          ]
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P46",
+        "P36"
+      ]
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "If the 'Diagnostic Command' execution results in a failure or error status, the system captures the 'Command Failure Data' and routes it to the 'Track # of Failed Device Commands' function (3.2.2.5).",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Upon receiving 'Command Failure Data', the system increments the 'Command Failure Count' associated with the specific device.",
+          "evidence_refs": [
+            "P46"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The system updates the 'Device Status' (Entity #13) to reflect the alarm or failure condition based on the received sensor data.",
+          "evidence_refs": [
+            "P46",
+            "P50"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system generates an entry in the 'Device Command Log' (Entity #10) recording the failed diagnostic attempt, including the date, time, and operator ID.",
+          "evidence_refs": [
+            "P36"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "If the 'Device Sensor Status' indicates an alarm condition rather than a simple communication failure, the system triggers the 'Set Alarms' process (3.2.2.3) utilizing the defined 'Device Alarm Criteria' (Entity #6).",
+          "evidence_refs": [
+            "P46",
+            "P36"
+          ],
+          "step_number": 5
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P46",
+        "P50",
+        "P36"
+      ]
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The 'Device Status' (Entity #13) of the diagnosed device is updated to reflect its current operational state or failure condition.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "A record of the diagnostic attempt, including the date, time, and operator ID, is created in the 'Device Command Log' (Entity #10).",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "If the diagnosis reveals an alarm condition, the system status reflects this based on the 'Device Alarm Criteria' (Entity #6).",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "If the device is confirmed as non-responsive or requiring physical intervention, a 'Problem Work Order' (Entity #26) may be generated and linked to the relevant personnel.",
+          "evidence_refs": [
+            "P36",
+            "P50"
+          ],
+          "step_number": 4
+        }
+      ],
+      "raw_text": "",
+      "evidence_card_ids": [
+        "P36",
+        "P50"
+      ]
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [],
+  "evidence_summary": {
+    "total_cards": 0,
+    "cross_page_cards": 0,
+    "modalities": {}
+  },
+  "citation_audit": {
+    "version": "pre_constraint_draft_v1",
+    "description": "Parsed baseline candidates before deterministic citation whitelisting. Final slots remain evidence-valid.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "claims": [
+          {
+            "content": "To diagnose a failed device by identifying the specific failure and generating diagnostic commands to determine the root cause.",
+            "evidence_refs": [
+              "P46"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P48",
+          "P50",
+          "P47",
+          "P46"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "claims": [
+          {
+            "content": "The system must be initialized and monitoring devices.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A device failure must have been detected and tracked by the system (indicated by a non-zero 'Command Failure Count').",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The Field Maintenance Staff must be logged into the system with appropriate Personnel Security Level permissions to access diagnostic functions.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P48",
+          "P50",
+          "P47",
+          "P46"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "claims": [
+          {
+            "content": "The system detects a device failure during the monitoring process, resulting in an increment of the Command Failure Count.",
+            "evidence_refs": [
+              "P46",
+              "P36"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P48",
+          "P47",
+          "P46",
+          "P50"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "claims": [
+          {
+            "content": "The Field Maintenance Staff accesses the system interface to view device status information.",
+            "evidence_refs": [
+              "P46",
+              "P36"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The staff identifies the specific failed device by reviewing the 'Device Status' (Entity #13) and 'Command Failure Count' tracked by the 'Monitor Devices' function.",
+            "evidence_refs": [
+              "P46",
+              "P36"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The staff selects or creates a 'Diagnostic Command' (Entity #14) associated with the failed device.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system processes the command request through the 'Process GUI Commands' function, validating the staff's 'Personnel Security Level' (Entity #20).",
+            "evidence_refs": [
+              "P46",
+              "P36"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The system transmits the 'Device Sensor Command' to the 'RLCS Field Devices'.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The system receives 'Device Sensor Status' and initialization data from the field device.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "The system updates the 'Device Status' and logs the transaction in the 'Device Command Log' (Entity #10).",
+            "evidence_refs": [
+              "P46",
+              "P36"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P48",
+          "P46",
+          "P36",
+          "P47",
+          "P50"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "claims": [
+          {
+            "content": "If the 'Diagnostic Command' fails to execute or returns an error status, the system increments the 'Command Failure Count' and routes the failure data to the 'Track # of Failed Device Commands' function.",
+            "evidence_refs": [
+              "P46"
+            ]
+          },
+          {
+            "content": "If the device is determined to be non-responsive after diagnostic attempts, the Field Maintenance Staff may generate a 'Problem Work Order' (Entity #26) to schedule physical repair or replacement.",
+            "evidence_refs": [
+              "P36"
+            ]
+          },
+          {
+            "content": "If the 'Device Sensor Status' indicates an alarm condition rather than a communication failure, the system triggers the 'Set Alarms' process based on the 'Device Alarm Criteria' (Entity #6).",
+            "evidence_refs": [
+              "P46",
+              "P36"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P48",
+          "P36",
+          "P46",
+          "P47",
+          "P50"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "claims": [
+          {
+            "content": "If the 'Diagnostic Command' execution results in a failure or error status, the system captures the 'Command Failure Data' and routes it to the 'Track # of Failed Device Commands' function (3.2.2.5).",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Upon receiving 'Command Failure Data', the system increments the 'Command Failure Count' associated with the specific device.",
+            "evidence_refs": [
+              "P46"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system updates the 'Device Status' (Entity #13) to reflect the alarm or failure condition based on the received sensor data.",
+            "evidence_refs": [
+              "P46",
+              "P50"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system generates an entry in the 'Device Command Log' (Entity #10) recording the failed diagnostic attempt, including the date, time, and operator ID.",
+            "evidence_refs": [
+              "P36"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "If the 'Device Sensor Status' indicates an alarm condition rather than a simple communication failure, the system triggers the 'Set Alarms' process (3.2.2.3) utilizing the defined 'Device Alarm Criteria' (Entity #6).",
+            "evidence_refs": [
+              "P46",
+              "P36"
+            ],
+            "step_number": 5
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P48",
+          "P46",
+          "P47",
+          "P50"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "claims": [
+          {
+            "content": "The 'Device Status' (Entity #13) of the diagnosed device is updated to reflect its current operational state or failure condition.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "A record of the diagnostic attempt, including the date, time, and operator ID, is created in the 'Device Command Log' (Entity #10).",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "If the diagnosis reveals an alarm condition, the system status reflects this based on the 'Device Alarm Criteria' (Entity #6).",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "If the device is confirmed as non-responsive or requiring physical intervention, a 'Problem Work Order' (Entity #26) may be generated and linked to the relevant personnel.",
+            "evidence_refs": [
+              "P36",
+              "P50"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "P36",
+          "P48",
+          "P50",
+          "P47",
+          "P29"
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 49.3
+}

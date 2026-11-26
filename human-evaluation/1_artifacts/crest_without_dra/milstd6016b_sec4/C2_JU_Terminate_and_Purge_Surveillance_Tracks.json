@@ -1,0 +1,1126 @@
+{
+  "use_case_name": "Terminate and Purge Surveillance Tracks",
+  "actor": "C2 JU",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "To terminate and purge the C2 JU's surveillance tracks, including Air, Surface/Maritime, Land/Ground, subsurface, and ballistic missile tracks.",
+          "evidence_refs": [
+            "EC-G-002",
+            "EC-G-004",
+            "EC-G-003",
+            "EC-G-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002",
+        "EC-G-004",
+        "EC-G-003",
+        "EC-G-001"
+      ],
+      "scope_contract": {
+        "goal_statement": "To terminate and purge the C2 JU's surveillance tracks, including Air, Surface/Maritime, Land/Ground, subsurface, and ballistic missile tracks.",
+        "canonical_success_scenario": "The C2 JU terminates and purges a surveillance track instance for a supported track category, such as an Air, Surface/Maritime, Land/Ground, subsurface, or ballistic missile track.",
+        "start_boundary": "A surveillance track exists for the C2 JU and is eligible for termination and purge, such as when the JU ceases reporting the track, deactivates relevant NOTACK areas, Moving Havens, or FWDAs, or the specified purge interval since the track's last report elapses.",
+        "success_boundary": "The surveillance track is terminated and purged.",
+        "in_scope_actions": [
+          "Terminate and purge Air, Surface/Maritime, and Land/Ground surveillance tracks.",
+          "Terminate and purge ballistic missile surveillance tracks.",
+          "Transmit a J7.0 (ACT = 0) message for subsurface surveillance-track termination when the JU ceases reporting the track or deactivates relevant NOTACK areas, Moving Havens, and FWDAs.",
+          "Automatically drop a remote track/point after the specified time interval has elapsed since its last report."
+        ],
+        "excluded_adjacent_actions": [
+          "Using PPLI data from J2 messages to reduce redundancy in surveillance track reporting.",
+          "Terminating EW product information transmission when information is no longer valid or update requirements are not met."
+        ],
+        "variant_dimensions": [
+          "Track category: Air, Surface/Maritime, Land/Ground, subsurface, ballistic missile",
+          "Termination condition: ceased reporting or deactivation for subsurface tracks, or elapsed purge interval for remote tracks/points"
+        ],
+        "evidence_refs": [
+          "EC-G-002",
+          "EC-G-004",
+          "EC-G-003",
+          "EC-G-001"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal-core-action",
+          "goal-track-categories",
+          "goal",
+          "Goal definition",
+          "termination goal definition"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "C2 JU",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "C2 JU"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "A surveillance track exists for the C2 JU as either a local track or a common local track, or, for automatic purge, a remote track/point exists.",
+          "evidence_refs": [
+            "EC-PC-013",
+            "EC-PC-002"
+          ]
+        },
+        {
+          "content": "Before a J7.0 (ACT = 0) termination message is transmitted for a track, the C2 JU currently has R² for that specific track.",
+          "evidence_refs": [
+            "EC-PC-003",
+            "EC-PC-008"
+          ]
+        },
+        {
+          "content": "For automatic purging of a remote track/point, the specified time interval since its last report has elapsed, no J7.0 (ACT = 0) message has been received for it, and no further updates have been received on it.",
+          "evidence_refs": [
+            "EC-PC-002",
+            "EC-PC-015"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-013",
+        "EC-PC-002",
+        "EC-PC-003",
+        "EC-PC-008",
+        "EC-PC-015"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "precondition-track-exists",
+          "precondition-R2-for-J7.0-termination",
+          "precondition-remote-purge-no-J7.0-no-updates",
+          "precondition-automatic-purge-timer-expiry",
+          "precondition for local track termination message",
+          "precondition for remote track purging",
+          "precondition for subsurface J7.0 (ACT = 0) termination when relevant NOTACK areas, Moving Havens, or FWDAs are deactivated"
+        ],
+        "missing_aspects": [
+          "specific preconditions for subsurface track termination involving NOTACK/Moving Havens/FWDAs (referenced but not detailed in this region)",
+          "preconditions"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The use case is triggered when the C2 JU ceases reporting a surveillance track, deactivates relevant NOTACK areas, Moving Havens, or FWDAs for a subsurface track, or when the specified time interval since a remote track/point's last report has elapsed without further updates and without a J7.0 (ACT = 0) message.",
+          "evidence_refs": [
+            "EC-TR-005",
+            "EC-TR-008",
+            "EC-TR-002",
+            "EC-TR-001",
+            "EC-TR-007"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-005",
+        "EC-TR-008",
+        "EC-TR-002",
+        "EC-TR-001",
+        "EC-TR-007"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-ceased-reporting",
+          "trigger-subsurface-deactivation",
+          "trigger-remote-purge-interval",
+          "trigger-events-for-track-status-change",
+          "trigger-automatic-purge-timer-expiry",
+          "trigger-subsurface-termination-by-deactivation-or-cease-reporting",
+          "trigger-termination-message-transmission",
+          "trigger-automatic-purge",
+          "trigger-cessation-of-reporting",
+          "trigger-deactivation-of-area",
+          "trigger-timeout-for-purge",
+          "trigger-local-track-termination",
+          "trigger-remote-track-purge"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The C2 JU identifies a surveillance track to terminate and purge, selecting from a supported track category such as Air, Surface/Maritime, Land/Ground, or subsurface.",
+          "evidence_refs": [
+            "EC-G-002",
+            "EC-G-003"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The C2 JU ceases reporting the selected track while it currently has R² for that track.",
+          "evidence_refs": [
+            "EC-MF-007",
+            "EC-PC-003"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The system transmits a J7.0 (ACT = 0) message for the selected track.",
+          "evidence_refs": [
+            "EC-MF-007",
+            "EC-MF-010",
+            "EC-G-003"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "The system terminates and purges the selected surveillance track.",
+          "evidence_refs": [
+            "EC-G-002",
+            "EC-G-003"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002",
+        "EC-G-003",
+        "EC-MF-007",
+        "EC-PC-003",
+        "EC-MF-010"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-track-selection",
+          "MF-cease-reporting",
+          "MF-J7.0-termination-message",
+          "MF-terminate-and-purge-success",
+          "main_flow-initiate-new-track-after-decorrelation",
+          "main_flow-report-fields-as-no-statement-post-decorrelation",
+          "main_flow-automatic-purge-action",
+          "main_flow-no-termination-message-for-auto-purge",
+          "main_flow-termination-message-transmission",
+          "main_flow-local-purge-no-message",
+          "main_flow-emergency-point-termination",
+          "main_flow_transmit_termination_message",
+          "main_flow_automatic_purge_remote_tracks",
+          "main_flow_purge_timer_parameter",
+          "main_flow-transmit-J7.0-on-cease-reporting",
+          "main_flow-transmit-J7.0-on-deactivation",
+          "main_flow-automatic-purge-remote-tracks",
+          "main_flow-remote-track-purge-mechanism",
+          "main_flow-message-processing"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "claims": [
+        {
+          "content": "Diverges from Step 2: for a subsurface track, termination and purge can be triggered when the C2 JU deactivates relevant NOTACK areas, Moving Havens, or FWDAs, rather than the JU ceasing to report the track.",
+          "evidence_refs": [
+            "EC-G-003",
+            "EC-TR-002"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "Diverges from Step 3: when a remote track/point (DRT = 0-3) receives no J7.0 (ACT = 0) message and no further updates, the system automatically purges it after the specified time interval since its last report, without transmitting a J7.0 (ACT = 0) message.",
+          "evidence_refs": [
+            "EC-AF-005",
+            "EC-AF-001",
+            "EC-TR-001"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "Diverges from Step 3: when a track becomes an Active IU on the network with the same TN (for a subsurface track, the same address as was previously being used as the reference TN), the termination proceeds without transmitting a J7.0 (ACT = 0) message.",
+          "evidence_refs": [
+            "EC-AF-003",
+            "EC-AF-004"
+          ],
+          "step_number": 3
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-003",
+        "EC-TR-002",
+        "EC-AF-005",
+        "EC-AF-001",
+        "EC-TR-001",
+        "EC-AF-003",
+        "EC-AF-004"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "AF-subsurface-deactivation-trigger",
+          "AF-automatic-remote-purge-no-J7.0",
+          "AF-active-IU-same-TN-no-J7.0",
+          "alternative_flow-live-to-simulated-acceptance-from-FJU",
+          "alternative_flow-auto-purge-no-J7-message",
+          "alternative_flow-no-J7.0-on-relinquishment",
+          "alternative_flow-no-J7.0-on-active-IU",
+          "alternative_flow-subsurface-becomes-active-IU",
+          "alternative_flow-automatic-purge-by-timeout",
+          "alternative_flow-ballistic-missile-position-velocity-difference-no-report",
+          "alternative_flow-ballistic-missile-launch-point-responsibility-exemption",
+          "alternative_flow-automatic-purge-remote-tracks",
+          "alternative_flow_no_message_on_R2_shift"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "Diverges at Step 3: when the C2 JU ceases reporting a track because it has relinquished R² to another JU, the J7.0 (ACT = 0) termination message shall not be transmitted. Exit: the termination message is suppressed.",
+          "evidence_refs": [
+            "EC-EF-015"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges at Step 3: if for any reason, such as operator error, it is desired to change the simulation status of a track, the track shall be dropped using the J7.0 (ACT = 0) message, and a new track shall be reported. Exit: the track is dropped and a new track is reported.",
+          "evidence_refs": [
+            "EC-EF-000"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges at Step 3: as an exception to the simulation-status change rule, a change from live to simulated shall be accepted if the track is being received from an FJU. Exit: the live-to-simulated change is accepted.",
+          "evidence_refs": [
+            "EC-EF-001"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "Diverges at Step 4: if the track selected for automatic purge is a DATUM (DRT = 4), the system shall not purge it automatically. Exit: automatic purge does not occur for that DATUM.",
+          "evidence_refs": [
+            "EC-EF-005"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges at Step 4: for a ballistic missile track, a unit assuming R² for the ballistic missile track need not assume R² for the associated launch point; the unit no longer holding R² on the ballistic missile track may continue to report the launch point in accordance with transmit/receive rules. Exit: the associated launch point may continue to be reported.",
+          "evidence_refs": [
+            "EC-EF-010"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "Diverges at Step 4: if contact is regained for a DATUM (a terminated subsurface track), the system shall report a J3.4 message with DRT set to value 0, 1, or 2 using the same TN as the DATUM or a new TN depending on operator action. Exit: reporting resumes via J3.4.",
+          "evidence_refs": [
+            "EC-EF-016"
+          ],
+          "step_number": 4
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-015",
+        "EC-EF-000",
+        "EC-EF-001",
+        "EC-EF-005",
+        "EC-EF-010",
+        "EC-EF-016"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-no-J7.0-on-relinquished-R2",
+          "EF-operator-error-simulation-status-drop-re-report",
+          "EF-FJU-live-to-simulated-accepted",
+          "EF-datum-no-auto-purge",
+          "EF-ballistic-launch-point-retained",
+          "EF-contact-regained-DATUM-report-J3.4",
+          "exception_flow-correlation-timeout-failure",
+          "exception_flow-unexpected-dropped-tn-report-handling",
+          "exception_flow-retry-prevention-mechanism",
+          "exception_flow_relinquishment_no_message",
+          "exception_flow-contact-regained-recovery-path",
+          "exception_flow-DATUM-resumption-protocol",
+          "exception-flow-no-auto-resolution-for-position-velocity-depth",
+          "exception-flow-datum-tracks-excluded-from-automatic-purge"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The surveillance track is terminated and purged from the system.",
+          "evidence_refs": [
+            "EC-PO-008"
+          ]
+        },
+        {
+          "content": "After successful termination and purge, the C2 JU ceases reporting the track on the interface and no longer holds R² for it.",
+          "evidence_refs": [
+            "EC-PO-002",
+            "EC-PO-005"
+          ]
+        },
+        {
+          "content": "Upon successful termination of a surveillance track by the C2 JU, except where an active IU assumption or R² relinquishment applies, a J7.0 (ACT = 0) Drop Track Report message has been transmitted for that track.",
+          "evidence_refs": [
+            "EC-PO-001"
+          ]
+        },
+        {
+          "content": "For automatic purging of a remote track/point (DRT = 0-3) after the specified time interval since its last report or update, the system has dropped it from the database, no longer retains or displays it, and has not transmitted a J7.0 (ACT = 0) message.",
+          "evidence_refs": [
+            "EC-PO-000",
+            "EC-PO-003",
+            "EC-PO-006",
+            "EC-PO-009"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PO-008",
+        "EC-PO-002",
+        "EC-PO-005",
+        "EC-PO-001",
+        "EC-PO-000",
+        "EC-PO-003",
+        "EC-PO-006",
+        "EC-PO-009"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postcondition-track-terminated-purged",
+          "postcondition-cessation-reporting-R2-relinquished",
+          "postcondition-J7.0-transmitted",
+          "postcondition-remote-auto-purge-drop-no-message",
+          "postcondition-remote-track-dropped",
+          "postcondition-termination-message-transmitted",
+          "postcondition-cease-reporting-and-relinquish-R2",
+          "postcondition-automatic-purge-no-message",
+          "postcondition-termination-without-J7.0-on-active-IU-transition",
+          "postcondition-cease-reporting-after-J7.0-transmission",
+          "postcondition-automatic-purge-removes-remote-track",
+          "postcondition-DATUM-not-auto-purged",
+          "postcondition-track-terminated-and-purged",
+          "postcondition-automatic-purge-success",
+          "postcondition-message-driven-purge",
+          "postcondition-track-dropped-or-ceased-reporting",
+          "postcondition-no-J7.0-on-R2-shift"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 98,
+    "cross_page_cards": 3,
+    "modalities": {
+      "text": 98
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 1053.034,
+    "judge_calls": 0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 551.397,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 69,
+    "llm_calls": 25,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 488.933,
+    "cards_collected": 98,
+    "cards_referenced": 34
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "To terminate and purge the C2 JU's surveillance tracks, including Air, Surface/Maritime, Land/Ground, subsurface, and ballistic missile tracks.",
+            "evidence_refs": [
+              "EC-G-002",
+              "EC-G-004",
+              "EC-G-003",
+              "EC-G-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "A surveillance track exists for the C2 JU as either a local track or a common local track, or, for automatic purge, a remote track/point exists.",
+            "evidence_refs": [
+              "EC-PC-013",
+              "EC-PC-002"
+            ]
+          },
+          {
+            "content": "Before a J7.0 (ACT = 0) termination message is transmitted for a track, the C2 JU currently has R² for that specific track.",
+            "evidence_refs": [
+              "EC-PC-003",
+              "EC-PC-008"
+            ]
+          },
+          {
+            "content": "For automatic purging of a remote track/point, the specified time interval since its last report has elapsed, no J7.0 (ACT = 0) message has been received for it, and no further updates have been received on it.",
+            "evidence_refs": [
+              "EC-PC-002",
+              "EC-PC-015"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-PC-021",
+          "EC-PC-022"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The use case is triggered when the C2 JU ceases reporting a surveillance track, deactivates relevant NOTACK areas, Moving Havens, or FWDAs for a subsurface track, or when the specified time interval since a remote track/point's last report has elapsed without further updates and without a J7.0 (ACT = 0) message.",
+            "evidence_refs": [
+              "EC-TR-005",
+              "EC-TR-008",
+              "EC-TR-002",
+              "EC-TR-001",
+              "EC-TR-007"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-PC-021",
+          "EC-PC-022",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The C2 JU identifies a surveillance track to terminate and purge, selecting from a supported track category such as Air, Surface/Maritime, Land/Ground, or subsurface.",
+            "evidence_refs": [
+              "EC-G-002",
+              "EC-G-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The C2 JU ceases reporting the selected track while it currently has R² for that track.",
+            "evidence_refs": [
+              "EC-MF-007",
+              "EC-PC-003"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system transmits a J7.0 (ACT = 0) message for the selected track.",
+            "evidence_refs": [
+              "EC-MF-007",
+              "EC-MF-010",
+              "EC-G-003"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "The system terminates and purges the selected surveillance track.",
+            "evidence_refs": [
+              "EC-G-002",
+              "EC-G-003"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-PC-021",
+          "EC-PC-022",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges from Step 2: for a subsurface track, termination and purge can be triggered when the C2 JU deactivates relevant NOTACK areas, Moving Havens, or FWDAs, rather than the JU ceasing to report the track.",
+            "evidence_refs": [
+              "EC-G-003",
+              "EC-TR-002"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "Diverges from Step 3: when a remote track/point (DRT = 0-3) receives no J7.0 (ACT = 0) message and no further updates, the system automatically purges it after the specified time interval since its last report, without transmitting a J7.0 (ACT = 0) message.",
+            "evidence_refs": [
+              "EC-AF-005",
+              "EC-AF-001",
+              "EC-TR-001"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "Diverges from Step 3: when a track becomes an Active IU on the network with the same TN (for a subsurface track, the same address as was previously being used as the reference TN), the termination proceeds without transmitting a J7.0 (ACT = 0) message.",
+            "evidence_refs": [
+              "EC-AF-003",
+              "EC-AF-004"
+            ],
+            "step_number": 3
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-PC-021",
+          "EC-PC-022",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "Diverges at Step 3: when the C2 JU ceases reporting a track because it has relinquished R² to another JU, the J7.0 (ACT = 0) termination message shall not be transmitted. Exit: the termination message is suppressed.",
+            "evidence_refs": [
+              "EC-EF-015"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges at Step 3: if for any reason, such as operator error, it is desired to change the simulation status of a track, the track shall be dropped using the J7.0 (ACT = 0) message, and a new track shall be reported. Exit: the track is dropped and a new track is reported.",
+            "evidence_refs": [
+              "EC-EF-000"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges at Step 3: as an exception to the simulation-status change rule, a change from live to simulated shall be accepted if the track is being received from an FJU. Exit: the live-to-simulated change is accepted.",
+            "evidence_refs": [
+              "EC-EF-001"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "Diverges at Step 4: if the track selected for automatic purge is a DATUM (DRT = 4), the system shall not purge it automatically. Exit: automatic purge does not occur for that DATUM.",
+            "evidence_refs": [
+              "EC-EF-005"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges at Step 4: for a ballistic missile track, a unit assuming R² for the ballistic missile track need not assume R² for the associated launch point; the unit no longer holding R² on the ballistic missile track may continue to report the launch point in accordance with transmit/receive rules. Exit: the associated launch point may continue to be reported.",
+            "evidence_refs": [
+              "EC-EF-010"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "Diverges at Step 4: if contact is regained for a DATUM (a terminated subsurface track), the system shall report a J3.4 message with DRT set to value 0, 1, or 2 using the same TN as the DATUM or a new TN depending on operator action. Exit: reporting resumes via J3.4.",
+            "evidence_refs": [
+              "EC-EF-016"
+            ],
+            "step_number": 4
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-PC-021",
+          "EC-PC-022",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The surveillance track is terminated and purged from the system.",
+            "evidence_refs": [
+              "EC-PO-008"
+            ]
+          },
+          {
+            "content": "After successful termination and purge, the C2 JU ceases reporting the track on the interface and no longer holds R² for it.",
+            "evidence_refs": [
+              "EC-PO-002",
+              "EC-PO-005"
+            ]
+          },
+          {
+            "content": "Upon successful termination of a surveillance track by the C2 JU, except where an active IU assumption or R² relinquishment applies, a J7.0 (ACT = 0) Drop Track Report message has been transmitted for that track.",
+            "evidence_refs": [
+              "EC-PO-001"
+            ]
+          },
+          {
+            "content": "For automatic purging of a remote track/point (DRT = 0-3) after the specified time interval since its last report or update, the system has dropped it from the database, no longer retains or displays it, and has not transmitted a J7.0 (ACT = 0) message.",
+            "evidence_refs": [
+              "EC-PO-000",
+              "EC-PO-003",
+              "EC-PO-006",
+              "EC-PO-009"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-AF-005",
+          "EC-AF-006",
+          "EC-AF-007",
+          "EC-AF-008",
+          "EC-AF-009",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-EF-004",
+          "EC-EF-005",
+          "EC-EF-006",
+          "EC-EF-007",
+          "EC-EF-008",
+          "EC-EF-009",
+          "EC-EF-010",
+          "EC-EF-011",
+          "EC-EF-012",
+          "EC-EF-013",
+          "EC-EF-014",
+          "EC-EF-015",
+          "EC-EF-016",
+          "EC-EF-017",
+          "EC-EF-018",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-G-003",
+          "EC-G-004",
+          "EC-G-005",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-MF-007",
+          "EC-MF-008",
+          "EC-MF-009",
+          "EC-MF-010",
+          "EC-MF-011",
+          "EC-MF-012",
+          "EC-MF-013",
+          "EC-MF-014",
+          "EC-MF-015",
+          "EC-MF-016",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-PC-002",
+          "EC-PC-003",
+          "EC-PC-004",
+          "EC-PC-005",
+          "EC-PC-006",
+          "EC-PC-007",
+          "EC-PC-008",
+          "EC-PC-009",
+          "EC-PC-010",
+          "EC-PC-011",
+          "EC-PC-012",
+          "EC-PC-013",
+          "EC-PC-014",
+          "EC-PC-015",
+          "EC-PC-016",
+          "EC-PC-017",
+          "EC-PC-018",
+          "EC-PC-019",
+          "EC-PC-020",
+          "EC-PC-021",
+          "EC-PC-022",
+          "EC-PO-000",
+          "EC-PO-001",
+          "EC-PO-002",
+          "EC-PO-003",
+          "EC-PO-004",
+          "EC-PO-005",
+          "EC-PO-006",
+          "EC-PO-007",
+          "EC-PO-008",
+          "EC-PO-009",
+          "EC-PO-010",
+          "EC-PO-011",
+          "EC-PO-012",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004",
+          "EC-TR-005",
+          "EC-TR-006",
+          "EC-TR-007",
+          "EC-TR-008",
+          "EC-TR-009"
+        ]
+      }
+    }
+  },
+  "method": "CREST w/o cross-slot",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "af6ad699a2d94778be7c407b17fd7554"
+}

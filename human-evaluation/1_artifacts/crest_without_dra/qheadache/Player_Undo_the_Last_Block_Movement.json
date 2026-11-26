@@ -1,0 +1,683 @@
+{
+  "use_case_name": "Undo the Last Block Movement",
+  "actor": "Player",
+  "slots": {
+    "goal": {
+      "slot": "goal",
+      "claims": [
+        {
+          "content": "The user can cancel a movement.",
+          "evidence_refs": [
+            "EC-G-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002"
+      ],
+      "scope_contract": {
+        "goal_statement": "The user can cancel a movement.",
+        "canonical_success_scenario": "The Player triggers cancellation of the most recent block movement, and that movement is cancelled.",
+        "start_boundary": "The Player has a last block movement available to cancel.",
+        "success_boundary": "The last block movement is cancelled.",
+        "in_scope_actions": [
+          "Cancel the last block movement."
+        ],
+        "excluded_adjacent_actions": [
+          "Undo or redo a history of the last thousand actions.",
+          "Perform a generic undo action not tied to a specific block movement."
+        ],
+        "variant_dimensions": [],
+        "evidence_refs": [
+          "EC-G-002"
+        ]
+      },
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "goal-cancel-last-movement",
+          "goal",
+          "Goal definition"
+        ],
+        "missing_aspects": [
+          "goal"
+        ]
+      }
+    },
+    "primary_actor": {
+      "slot": "primary_actor",
+      "claims": [
+        {
+          "content": "Player",
+          "evidence_refs": []
+        }
+      ],
+      "raw_text": "Player"
+    },
+    "preconditions": {
+      "slot": "preconditions",
+      "claims": [
+        {
+          "content": "An action has occurred.",
+          "evidence_refs": [
+            "EC-PC-000"
+          ]
+        },
+        {
+          "content": "The associated block movement is available to be undone.",
+          "evidence_refs": [
+            "EC-PC-001"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-PC-000",
+        "EC-PC-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "precondition-movement-occurred",
+          "precondition-action-available",
+          "undo-action-is-tied-to-specific-actions",
+          "menu_availability_constraint"
+        ],
+        "missing_aspects": [
+          "explicit-precondition-state-before-undo-trigger",
+          "preconditions"
+        ]
+      }
+    },
+    "trigger": {
+      "slot": "trigger",
+      "claims": [
+        {
+          "content": "The Player selects 'Undo' from the menu.",
+          "evidence_refs": [
+            "EC-TR-000",
+            "EC-TR-004",
+            "EC-TR-002"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-TR-000",
+        "EC-TR-004",
+        "EC-TR-002"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "trigger-undo-menu-selection",
+          "trigger_event",
+          "trigger-event-identification",
+          "trigger-menu-selection",
+          "trigger-action-definition",
+          "trigger-availability-constraint"
+        ],
+        "missing_aspects": []
+      }
+    },
+    "main_flow": {
+      "slot": "main_flow",
+      "claims": [
+        {
+          "content": "The Player selects 'Undo' from the menu.",
+          "evidence_refs": [
+            "EC-MF-005",
+            "EC-TR-004",
+            "EC-TR-002"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The system performs the 'Undo' action.",
+          "evidence_refs": [
+            "EC-MF-005"
+          ],
+          "step_number": 2
+        },
+        {
+          "content": "The system cancels the last block movement.",
+          "evidence_refs": [
+            "EC-G-002"
+          ],
+          "step_number": 3
+        },
+        {
+          "content": "This action is considered like a movement.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ],
+          "step_number": 4
+        },
+        {
+          "content": "The game displays the block positions at the places where they were before the last movement.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ],
+          "step_number": 5
+        },
+        {
+          "content": "The game displays the new game board.",
+          "evidence_refs": [
+            "EC-MF-004"
+          ],
+          "step_number": 6
+        },
+        {
+          "content": "After the Undo action is performed, the menu disappears.",
+          "evidence_refs": [
+            "EC-MF-006"
+          ],
+          "step_number": 7
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-MF-005",
+        "EC-TR-004",
+        "EC-TR-002",
+        "EC-G-002",
+        "EC-MF-003",
+        "EC-MF-002",
+        "EC-MF-004",
+        "EC-MF-006"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "MF-entry-undo-selection",
+          "MF-system-undo-action",
+          "MF-cancel-last-block-movement",
+          "MF-undo-treated-as-movement",
+          "MF-display-previous-block-positions",
+          "MF-display-new-board",
+          "MF-menu-disappears",
+          "main_flow_location_identified",
+          "undo-scope-definition",
+          "main_flow_system_action",
+          "main_flow_history_update",
+          "main_flow_output",
+          "main_flow_step_1_trigger_action_mapping",
+          "main_flow_step_2_post_action_state"
+        ],
+        "missing_aspects": [
+          "step_by_step_interaction_sequence",
+          "main-flow-step-by-step-interaction",
+          "main_flow"
+        ]
+      }
+    },
+    "alternative_flow": {
+      "slot": "alternative_flow",
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "alternative_flow_redo_action",
+          "alternative_flow_game_end_transition",
+          "alternative-flow-no-prior-movement-blocks-undo",
+          "alternative_flow_trigger_unavailability"
+        ],
+        "missing_aspects": [
+          "documented legal alternative path diverging from a specific main-flow step while still achieving the same successful postcondition",
+          "alternative_flow"
+        ]
+      }
+    },
+    "exception_flow": {
+      "slot": "exception_flow",
+      "claims": [
+        {
+          "content": "The Undo menu selection is unavailable if the associated action is unavailable.",
+          "evidence_refs": [
+            "EC-EF-003"
+          ],
+          "step_number": 1
+        },
+        {
+          "content": "The Undo action is unavailable if there was no previous movement.",
+          "evidence_refs": [
+            "EC-EF-001"
+          ],
+          "step_number": 2
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-EF-003",
+        "EC-EF-001"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "EF-menu-selection-unavailable",
+          "EF-undo-unavailable-no-previous-movement",
+          "exception-no-previous-movement",
+          "exception-flow-trigger-condition",
+          "exception_flow_trigger_unavailability"
+        ],
+        "missing_aspects": [
+          "documented exit or recovery path when Undo menu selection is unavailable",
+          "documented exit or recovery path when Undo action is unavailable because no previous movement exists",
+          "exception_flow_trigger_condition",
+          "exception_flow_system_response",
+          "exception_flow",
+          "Source evidence does not explicitly state that the unavailability occurs 'At step 1'.",
+          "Source evidence does not explicitly state that this condition applies 'At step 2'."
+        ]
+      }
+    },
+    "postconditions": {
+      "slot": "postconditions",
+      "claims": [
+        {
+          "content": "The last block movement is cancelled.",
+          "evidence_refs": [
+            "EC-G-002"
+          ]
+        },
+        {
+          "content": "The game displays the block positions at the places where they were before the last movement.",
+          "evidence_refs": [
+            "EC-MF-002"
+          ]
+        },
+        {
+          "content": "A new game board display is shown.",
+          "evidence_refs": [
+            "EC-MF-004"
+          ]
+        },
+        {
+          "content": "The menu disappears.",
+          "evidence_refs": [
+            "EC-MF-006"
+          ]
+        },
+        {
+          "content": "The undo action is considered like a movement.",
+          "evidence_refs": [
+            "EC-MF-003"
+          ]
+        }
+      ],
+      "evidence_card_ids": [
+        "EC-G-002",
+        "EC-MF-002",
+        "EC-MF-004",
+        "EC-MF-006",
+        "EC-MF-003"
+      ],
+      "coverage_state": {
+        "covered_aspect_ids": [
+          "postcondition-last-movement-cancelled",
+          "postcondition-board-positions-restored",
+          "postcondition-new-board-displayed",
+          "postcondition-menu-disappears",
+          "postcondition-undo-treated-as-movement"
+        ],
+        "missing_aspects": []
+      }
+    }
+  },
+  "quality_flags": [
+    {
+      "flag_type": "no_evidence",
+      "slot": "alternative_flow",
+      "detail": "No evidence found for slot 'alternative_flow'",
+      "evidence_refs": []
+    }
+  ],
+  "revision_history": [
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "goal"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "user_input",
+      "revised_slots": [
+        "primary_actor"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "preconditions"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "trigger"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "main_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "alternative_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "exception_flow"
+      ],
+      "inconsistency_hints": []
+    },
+    {
+      "round_num": 0,
+      "action": "initial_fill",
+      "revised_slots": [
+        "postconditions"
+      ],
+      "inconsistency_hints": []
+    }
+  ],
+  "evidence_summary": {
+    "total_cards": 26,
+    "cross_page_cards": 0,
+    "modalities": {
+      "text": 26
+    }
+  },
+  "runtime_stats": {
+    "elapsed_seconds": 410.633,
+    "judge_calls": 0,
+    "lvlm_retry_calls": 0,
+    "llm_seconds": 266.697,
+    "llm_retry_calls": 0,
+    "lvlm_calls": 33,
+    "llm_calls": 22,
+    "judge_seconds": 0.0,
+    "lvlm_seconds": 135.669,
+    "cards_collected": 26,
+    "cards_referenced": 13
+  },
+  "citation_audit": {
+    "version": "final_semantic_verified_candidate_v2",
+    "description": "Latest model-authored candidates after internal semantic grounding verification and DRA; aligned with delivered slots.",
+    "pre_constraint_slots": {
+      "goal": {
+        "slot": "goal",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The user can cancel a movement.",
+            "evidence_refs": [
+              "EC-G-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002"
+        ]
+      },
+      "preconditions": {
+        "slot": "preconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "An action has occurred.",
+            "evidence_refs": [
+              "EC-PC-000"
+            ]
+          },
+          {
+            "content": "The associated block movement is available to be undone.",
+            "evidence_refs": [
+              "EC-PC-001"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000",
+          "EC-PC-001"
+        ]
+      },
+      "trigger": {
+        "slot": "trigger",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Player selects 'Undo' from the menu.",
+            "evidence_refs": [
+              "EC-TR-000",
+              "EC-TR-004",
+              "EC-TR-002"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "main_flow": {
+        "slot": "main_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Player selects 'Undo' from the menu.",
+            "evidence_refs": [
+              "EC-MF-005",
+              "EC-TR-004",
+              "EC-TR-002"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The system performs the 'Undo' action.",
+            "evidence_refs": [
+              "EC-MF-005"
+            ],
+            "step_number": 2
+          },
+          {
+            "content": "The system cancels the last block movement.",
+            "evidence_refs": [
+              "EC-G-002"
+            ],
+            "step_number": 3
+          },
+          {
+            "content": "This action is considered like a movement.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ],
+            "step_number": 4
+          },
+          {
+            "content": "The game displays the block positions at the places where they were before the last movement.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ],
+            "step_number": 5
+          },
+          {
+            "content": "The game displays the new game board.",
+            "evidence_refs": [
+              "EC-MF-004"
+            ],
+            "step_number": 6
+          },
+          {
+            "content": "After the Undo action is performed, the menu disappears.",
+            "evidence_refs": [
+              "EC-MF-006"
+            ],
+            "step_number": 7
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "alternative_flow": {
+        "slot": "alternative_flow",
+        "status": "semantic_verified",
+        "claims": [],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "exception_flow": {
+        "slot": "exception_flow",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The Undo menu selection is unavailable if the associated action is unavailable.",
+            "evidence_refs": [
+              "EC-EF-003"
+            ],
+            "step_number": 1
+          },
+          {
+            "content": "The Undo action is unavailable if there was no previous movement.",
+            "evidence_refs": [
+              "EC-EF-001"
+            ],
+            "step_number": 2
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-AF-000",
+          "EC-AF-001",
+          "EC-AF-002",
+          "EC-AF-003",
+          "EC-AF-004",
+          "EC-EF-000",
+          "EC-EF-001",
+          "EC-EF-002",
+          "EC-EF-003",
+          "EC-G-000",
+          "EC-G-001",
+          "EC-G-002",
+          "EC-MF-000",
+          "EC-MF-001",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-005",
+          "EC-MF-006",
+          "EC-PC-000",
+          "EC-PC-001",
+          "EC-TR-000",
+          "EC-TR-001",
+          "EC-TR-002",
+          "EC-TR-003",
+          "EC-TR-004"
+        ]
+      },
+      "postconditions": {
+        "slot": "postconditions",
+        "status": "semantic_verified",
+        "claims": [
+          {
+            "content": "The last block movement is cancelled.",
+            "evidence_refs": [
+              "EC-G-002"
+            ]
+          },
+          {
+            "content": "The game displays the block positions at the places where they were before the last movement.",
+            "evidence_refs": [
+              "EC-MF-002"
+            ]
+          },
+          {
+            "content": "A new game board display is shown.",
+            "evidence_refs": [
+              "EC-MF-004"
+            ]
+          },
+          {
+            "content": "The menu disappears.",
+            "evidence_refs": [
+              "EC-MF-006"
+            ]
+          },
+          {
+            "content": "The undo action is considered like a movement.",
+            "evidence_refs": [
+              "EC-MF-003"
+            ]
+          }
+        ],
+        "exposed_evidence_refs": [
+          "EC-G-002",
+          "EC-MF-002",
+          "EC-MF-003",
+          "EC-MF-004",
+          "EC-MF-006"
+        ]
+      }
+    }
+  },
+  "method": "CREST w/o cross-slot",
+  "generation_version": "crest-monotonic-atomic-dra-v6-self-validated-collector",
+  "artifact_revision_id": "dcfab6e9d6a24871aa4a63d054fa82b9"
+}
